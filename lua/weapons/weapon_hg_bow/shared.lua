@@ -145,5 +145,3 @@ SWEP.AnimArHoldtypes = {
 	fire_iron = true,
 	idle_to_iron = true
 }
-
--- read if cute :3

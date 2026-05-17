@@ -4,7 +4,7 @@ if SERVER then AddCSLuaFile() end
 SWEP.PrintName = "TPIK Base 1"
 SWEP.Instructions = "Tpik Base 1"
 SWEP.Category = "ZCity Anims items"
-SWEP.Instructions = ":3 если вы скриптхукнули знайте вы для нас вонючка."
+SWEP.Instructions = ""
 SWEP.Spawnable = false
 SWEP.AdminOnly = true
 SWEP.Slot = 1

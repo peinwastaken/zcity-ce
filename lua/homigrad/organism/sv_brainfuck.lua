@@ -117,7 +117,6 @@ local function processFlexion(rag, fade)
 	end
 end
 
---;; when furfag
 local function applyFencingToPlayer(ply, org)
 	if not IsValid(ply) or not ply:Alive() then return end
 	if org.fencing then return end 

@@ -238,9 +238,6 @@ function hg.GenerateLoot(ply,ent,func)
 
 		tab = tabs
 		
-		if curRound.name == "pathowogen" and time < 90 then
-			tab = chances[1][2]
-		end
 	end
 
 	--print(tab)

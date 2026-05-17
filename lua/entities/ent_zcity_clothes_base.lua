@@ -1,5 +1,3 @@
--- meow
-
 AddCSLuaFile()
 
 ENT.Type = "anim"

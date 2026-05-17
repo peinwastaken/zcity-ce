@@ -81,11 +81,3 @@ SWEP.ItemsBones = {
 }
 SWEP.spoon = ""
 SWEP.CoolDown = 0
-
-
-
-
-
-
-
--- read if cute :3

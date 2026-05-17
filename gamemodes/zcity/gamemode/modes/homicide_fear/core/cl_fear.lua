@@ -20,7 +20,7 @@ function MODE:PreDrawPlayer2(ent, ply)
 		return
 	end
 
-	local bool = lply:GetNetVar("disappearance", nil) // it's not actually bool but float. works either way :3. update: it's a bool now >w<
+	local bool = lply:GetNetVar("disappearance", nil)
 	if bool then
 		ShowShadows(ent, ply, false)
 		local wpn = ply.GetActiveWeapon and ply:GetActiveWeapon()

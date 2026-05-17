@@ -88,7 +88,7 @@ AddItemToBUY( "XM-1014", "Weapon", "weapon_xm1014", 2300, "Shotguns", {"holo14",
 AddItemToBUY( "M249", "Weapon", "weapon_m249", 5750, "Heavy", {"holo1","holo2","supressor2","holo15"} )
 AddItemToBUY( "M60", "Weapon", "weapon_m60", 7000, "Heavy", {} )
 AddItemToBUY( "PKM", "Weapon", "weapon_pkm", 7800, "Heavy", {"optic4"} )
-AddItemToBUY( "RPK-74", "Weapon", "weapon_rpk", 3700, "Heavy", {"optic4", "holo6", "holo13", "holo14", "holo6fur"} )
+AddItemToBUY( "RPK-74", "Weapon", "weapon_rpk", 3700, "Heavy", {"optic4", "holo6", "holo13", "holo14", "holo6alt"} )
 
 AddItemToBUY( "SR-25", "Weapon", "weapon_sr25", 5500, "Marksman/Sniper", {"supressor7","optic6", "optic2", "grip2"} , nil, 1)
 AddItemToBUY( "Karabiner 98k", "Weapon", "weapon_kar98", 2100, "Marksman/Sniper", {"optic12"} )

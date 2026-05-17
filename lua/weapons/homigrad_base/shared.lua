@@ -449,13 +449,6 @@ function SWEP:CanPrimaryAttack()
 	local owner = self:GetOwner()
 	if !IsValid(owner) then return end
 
-	if owner.PlayerClassName and owner.PlayerClassName == "furry" and owner.suiciding then
-		if SERVER then
-			owner:Notify(table.Random(CantDoIt), 20, "cantdoit", 0)
-		end
-		return false
-	end
-
 	//local owner = self:GetOwner()
 	--[[if owner.suiciding then
 		if (owner:GetNetVar("suicide_time",CurTime()) + 8) < CurTime() then if SERVER then owner:SetNetVar("suicide_time",nil) end return true end
@@ -998,7 +991,7 @@ if CLIENT then
 		end
 	end)
 
-	hook.Add("Player Think", "OwOasss", function(ply)
+	hook.Add("Player Think", "HomigradWeaponStep", function(ply)
 		local wep = ply:GetActiveWeapon()
 		if wep and IsValid(wep) and wep.Step then
 			wep:Step()
@@ -1658,7 +1651,7 @@ function SWEP:GetAdditionalValues()
 		self.worldModel:SetCycle(CurTime()%3 / 3)
 	end--]]
 
-	--[[if (self.huytimeUwU or 0) < CurTime() then
+	--[[if (self.viewOffsetUpdateTime or 0) < CurTime() then
 		local eyeangs = ply:GetAimVector():Angle()
 		local lastView = ply.lastView or eyeangs
 		local curView = eyeangs
@@ -1676,7 +1669,7 @@ function SWEP:GetAdditionalValues()
 		ply.offsetView = self:GetOffsetView()
 		ply.offsetView = ply.offsetView or Angle()
 		ply.offsetView:Zero()
-		self.huytimeUwU = CurTime() + (SERVER and engine.AbsoluteFrameTime() or engine.ServerFrameTime())
+		self.viewOffsetUpdateTime = CurTime() + (SERVER and engine.AbsoluteFrameTime() or engine.ServerFrameTime())
 	end--]]
 
 	self.AdditionalPosPreLerp:Zero()

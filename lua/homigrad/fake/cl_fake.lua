@@ -178,7 +178,7 @@ hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 	
 	--q = q * lerpedq
 
-    local newAng = q:Angle() --thank you, Bara :3
+    local newAng = q:Angle()
 
 	angle.pitch = newAng.p
     angle.yaw = newAng.y

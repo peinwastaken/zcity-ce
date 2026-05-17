@@ -1,4 +1,4 @@
---made by mrrp :3
+-- Chat UI
 
 local maxLength = GetConVar("zchat_maxmessagelength")
 

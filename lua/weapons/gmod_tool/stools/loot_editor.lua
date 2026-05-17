@@ -174,7 +174,7 @@ do return end
 -- 	surface.DrawRect( 0, 0, width, height )
 	
 -- 	-- Draw white text in middle
--- 	draw.SimpleText( "#UwUs", "Default", width / 2, height / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+-- 	draw.SimpleText( "#Items", "Default", width / 2, height / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
 -- 	draw.SimpleText(GetConVar("loot_editor_point"):GetString(), "Default", width / 2, height * 0.7, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 -- end

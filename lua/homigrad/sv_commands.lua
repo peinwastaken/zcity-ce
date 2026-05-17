@@ -135,7 +135,7 @@ if SERVER then
 
     COMMANDS.punish = {function(ply, args)
         if #args < 1 then
-            ply:ChatPrint("Give me the name of this OwO .")
+            ply:ChatPrint("Give me the target name.")
             return
         end
 
@@ -149,7 +149,7 @@ if SERVER then
         end
 
         if not IsValid(target) then
-            ply:ChatPrint("I don't see that OwO .")
+            ply:ChatPrint("I don't see that target.")
             return
         end
 

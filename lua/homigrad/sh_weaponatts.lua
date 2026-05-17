@@ -87,7 +87,7 @@ hg.attachments.sight = {
 		PhysAng = Angle(0, 90, 0),
 		valid = true,
 	},
-	["holo5fur"] = {
+	["holo5alt"] = {
 		"sight",
 		"models/weapons/arc9/darsu_eft/mods/scope_all_ekb_okp7.mdl",
 		Angle(0, 0, -90),
@@ -121,7 +121,7 @@ hg.attachments.sight = {
 		PhysAng = Angle(0, 90, 0),
 		valid = true,
 	},
-	["holo6fur"] = {
+	["holo6alt"] = {
 		"sight",
 		"models/weapons/arc9_eft_shared/atts/optic/dovetail/okp7.mdl",
 		Angle(0, 0, -90),
@@ -1348,9 +1348,9 @@ local attNames = {
 	["grip3"] = "Magpul AFG Tactical Grip",
 	["grip_akdong"] = "AK-74 Dong Grip",
 	["holo5"] = "\"ОКП-7\"",
-	["holo5fur"] = "\"ОКП-7\" Furry",
+	["holo5alt"] = "\"ОКП-7\" Alternate",
 	["holo6"] = "\"ОКП-7\" Dovetail",
-	["holo6fur"] = "\"ОКП-7\" Dovetail Furry",
+	["holo6alt"] = "\"ОКП-7\" Dovetail Alternate",
 	["holo7"] = "BelOMO PK-06",
 	["holo8"] = "Holosun \"HS401G5\"",
 	["holo9"] = "Leapers \"UTG\"",
@@ -1400,9 +1400,9 @@ local attachmentsIcons = {
 	["grip2"] = "entities/eft_attachments/foregrips/ash12.png",
 	["grip_akdong"] = "entities/ak74hg.png",
 	["holo5"] = "entities/eft_attachments/scopes/okp7.png",
-	["holo5fur"] = "entities/eft_attachments/scopes/okp7.png",
+	["holo5alt"] = "entities/eft_attachments/scopes/okp7.png",
 	["holo6"] = "entities/eft_attachments/scopes/s_okp.png",
-	["holo6fur"] = "entities/eft_attachments/scopes/s_okp.png",
+	["holo6alt"] = "entities/eft_attachments/scopes/s_okp.png",
 	["holo7"] = "entities/eft_attachments/scopes/pk06.png",
 	["holo8"] = "entities/eft_attachments/scopes/hs401g5.png",
 	["holo9"] = "entities/eft_attachments/scopes/utg.png",

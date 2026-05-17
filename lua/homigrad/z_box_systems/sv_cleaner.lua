@@ -1,4 +1,4 @@
--- Очистка карты, вывоз 200-х, мародерство оружия и лута :3
+-- Очистка карты, вывоз 200-х, мародерство оружия и лута
 ZBox = ZBox or {}
 ZBox.Plugins = ZBox.Plugins or {}
 ZBox.Plugins["Cleaner"] = ZBox.Plugins["Cleaner"] or {}

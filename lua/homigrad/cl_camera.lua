@@ -778,7 +778,7 @@ net.Receive("LookAway",function()
 	local ply = net.ReadEntity()
 	local LookX = net.ReadFloat()
 	local LookY = net.ReadFloat()
-	-- THE MOST TERRRRIBLE EXPPPLOIT EVERRR IS FFFRIXED!!!!!!!!!! :3 -w-
+	-- Camera exploit guard.
 	ply.LookX1 = math.Clamp(LookX,MinLookX,MaxLookX)
 	ply.LookY1 = math.Clamp(LookY,MinLookY,MaxLookY)
 	ply.LastLookSend = CurTime()

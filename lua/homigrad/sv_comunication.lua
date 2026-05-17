@@ -122,22 +122,10 @@ local function funca(ply, txt)
 	return txt
 end
 
-local hg_furcity = ConVarExists("hg_furcity") and GetConVar("hg_furcity") or CreateConVar("hg_furcity", 0, bit.bor(FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_LUA_SERVER), "Toggle phrase furryfier :3", 0, 1)
-
 hook.Add("HG_PlayerSay", "huy", function(ply, txt)
 	local text = txt[1]
 
 	txt[1] = funca(ply, text)
-end)
-
-hook.Add("HG_PlayerSay", "furrifyPhraseOwO", function(ply, txt)
-	local text = txt[1]
-	
-	if hg_furcity:GetBool() or ply.PlayerClassName == "furry" then
-		text = hg.FurrifyPhrase(text)
-	end
-
-	txt[1] = text
 end)
 
 hook.Add("HG_PlayerCanHearPlayersVoice","BrainDamage", function(listener, speaker)

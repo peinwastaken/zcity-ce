@@ -34,7 +34,7 @@ end
 ------------------------
 local inf,ninf,ind = 1/0,-1/0,(1/0)/(1/0)
 
---(ind==ind) == false :(. This should do though. >= and <= because you never know :3
+-- (ind == ind) == false for NaN. This range check covers it.
 
 function math.BadNumber(v) 
 	return not v or v==inf or v==ninf or not (v>=0 or v<=0) or tostring(v) == "nan"

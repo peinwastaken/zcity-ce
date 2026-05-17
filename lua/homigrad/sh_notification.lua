@@ -1,90 +1,3 @@
-local hg_furcity = ConVarExists("hg_furcity") and GetConVar("hg_furcity") or CreateConVar("hg_furcity", 0, bit.bor(FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_LUA_SERVER), "Toggle phrase furryfier :3", 0, 1)
-
-hg.fur = {
-	" rawr~",
-	" mrrrph~~",
-	" meow :3",
-	" uwu",
-	" >w<",
-	" OwO",
-	" ^w^",
-	" *blushes*",
-	" -w-",
-	" ~w~",
-	" mrrawr~~",
-	" mrrp~",
-	" mrreow~",
-	" mwah~",
-	"~",
-	"~~"
-}
-
-local translateSymbol = {
-	["r"] = "w",
-	["R"] = "W",
-	["l"] = "w",
-	["L"] = "W",
-	["з"] = "в",
-	["З"] = "В",
-	["ш"] = "ф",
-	["Ш"] = "Ф",
-	--["ч"] = "т",
-	--["Ч"] = "Т",
-	--["у"] = "ю",
-	--["У"] = "Ю",
-	--["т"] = "в",
-	--["Т"] = "В",
-}
-
-local repeating = {
-	["r"] = true,
-	["R"] = true,
-	["р"] = true,
-	["Р"] = true,
-}
-
-// можно сделать чтобы оно просто брало стринг, текущее местоположение буквы и добавляло ещё сверху
-//
-
-
-
-function hg.FurrifyPhrase(msg)
-	local iter = utf8.codes(msg)
-	local len = 0
-	local chars = {}
-
-	for i, code in iter do
-		len = len + 1
-		chars[len] = utf8.char(code)
-	end
-
-	-- local lastpos = 0
-	-- while lastpos != -1 do
-	--     local newpos = string.find(msg, "[rR]", lastpos)
-
-	-- end
-
-
-	--i нельзя менять
-	for i = #chars, 1, -1 do
-		if repeating[chars[i]] and math.random(2) == 1 then
-			for i2 = 1, math.random(3) do
-				table.insert(chars, i, chars[i])
-			end
-		elseif translateSymbol[chars[i]] and math.random(2) == 1 then
-			chars[i] = translateSymbol[chars[i]]
-		end
-	end--legendary
-
-	msg = table.concat(chars)
-
-	if math.random(4) == 1 then
-		msg = msg..hg.fur[math.random(#hg.fur)]
-	end
-
-	return msg
-end
-
 if CLIENT then
 	local hg_old_notificate = ConVarExists("hg_old_notificate") and GetConVar("hg_old_notificate") or CreateConVar("hg_old_notificate",0,{FCVAR_USERINFO,FCVAR_ARCHIVE},"Toggle old notifications (chatprints)",0,1)
 
@@ -149,10 +62,6 @@ if CLIENT then
 	local defaultShowTimer = 3
 
 	local function CreateNotification(msg, showTimer, clr)
-		if hg_furcity:GetBool() or lply.PlayerClassName == "furry" then
-			msg = hg.FurrifyPhrase(msg)
-		end
-
 		if lply:IsBerserk() then
 			return
 		end
@@ -161,10 +70,6 @@ if CLIENT then
 	end
 
 	local function CreateNotificationBerserk(msg, showTimer, clr)
-		if hg_furcity:GetBool() or lply.PlayerClassName == "furry" then
-			msg = hg.FurrifyPhrase(msg) -- uhhhh... hate to break it to you but-
-		end
-
 		local tbl = hg.currentNotification
 
 		local clr = tbl and tbl[4] and IsColor(tbl[4]) and tbl[4] or Color(255, 255, 255, 255)
@@ -343,7 +248,7 @@ if CLIENT then
 					cam.PushModelMatrix( m, true )
 					DisableClipping(true)
 						local col2
-						for i = 1, 40 do // erm maybe 40 is too much? idk i don't care :3 :3 :3
+						for i = 1, 40 do
 							col2 = HSVToColor(350 + (math.sin(SysTime() + i / 50) * 10 * hg.berserkIntensity), 0.8, 0.9)
 							local posX = -math.sin(RealTime() * 7) * i / 2 * hg.berserkIntensity
 							local posY = -math.cos(RealTime() * 7) * i / 2 * hg.berserkIntensity
@@ -356,11 +261,6 @@ if CLIENT then
 					cam.PopModelMatrix()
 
 					render.PopFilterMag()
-				elseif lply.PlayerClassName == "furry" then
-					local x, y = ScrW() / 2 - txtw / 2 + math.Rand(0, org.pain > 10 and org.pain / 10 or 0) + math.Rand(0, (255 - clr.g) / 255 * 2), ScrH() - ScrH() / 6 + math.Rand(0, org.pain > 10 and org.pain / 10 or 0) + math.Rand(0, (255 - clr.g) / 255 * 2)
-
-					draw.SimpleText(last_message or txt, "ZB_ProotOSMedium", x + 2, y + 2, ColorAlpha(color_black, col.a), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-					draw.SimpleText(last_message or txt, "ZB_ProotOSMedium", x, y, ColorAlpha(bluewhite, col.a), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 				else
 					local x, y = ScrW() / 2 - txtw / 2 + math.Rand(0, org.pain > 10 and org.pain / 10 or 0) + math.Rand(0, (255 - clr.g) / 255 * 2), ScrH() - ScrH() / 6 + math.Rand(0, org.pain > 10 and org.pain / 10 or 0) + math.Rand(0, (255 - clr.g) / 255 * 2)
 

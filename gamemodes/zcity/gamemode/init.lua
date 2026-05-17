@@ -62,7 +62,7 @@ end
 
 getRandSpawn()
 
-hook.Add("InitPostEntity", "OwOmooooove", function()
+hook.Add("InitPostEntity", "ZCityRefreshSpawns", function()
 	getRandSpawn()
 end)
 

@@ -419,21 +419,21 @@ local function DrawWorldModel(self, force)
 				local pos = newmat:GetTranslation()
 				local ang = newmat:GetAngles()
 				
-				self.OwOmodel = IsValid(self.OwOmodel) and self.OwOmodel or ClientsideModel(self.MagModel or "models/weapons/upgrades/w_magazine_m1a1_30.mdl")
+				self.DebugMagazineModel = IsValid(self.DebugMagazineModel) and self.DebugMagazineModel or ClientsideModel(self.MagModel or "models/weapons/upgrades/w_magazine_m1a1_30.mdl")
 				debugoverlay.BoxAngles( pos, vec, -vec, ang, 0.1, Color(255,0,0))
 				local pos, ang = LocalToWorld(lpos, lang, pos, ang)
-				self.OwOmodel:SetNoDraw(true)
-				self.OwOmodel:SetMaterial("models/wireframe")
-				self.OwOmodel:SetPos(pos)
-				self.OwOmodel:SetAngles(ang)
-				self.OwOmodel:DrawModel()
+				self.DebugMagazineModel:SetNoDraw(true)
+				self.DebugMagazineModel:SetMaterial("models/wireframe")
+				self.DebugMagazineModel:SetPos(pos)
+				self.DebugMagazineModel:SetAngles(ang)
+				self.DebugMagazineModel:DrawModel()
 
 				self.worldModel:CallOnRemove("removeMreowu", function()
-					if IsValid(self.OwOmodel) then self.OwOmodel:Remove() end
+					if IsValid(self.DebugMagazineModel) then self.DebugMagazineModel:Remove() end
 				end)
 			end
 		else
-			if IsValid(self.OwOmodel) then self.OwOmodel:Remove() end
+			if IsValid(self.DebugMagazineModel) then self.DebugMagazineModel:Remove() end
 		end
 		--hg.StartCaptureRender()
 		self.worldModel:SetupBones()

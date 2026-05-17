@@ -232,23 +232,23 @@ function hg.Ragdoll_Create(ply)
 
 			ply:SetEyeAngles(angle_zero)
 
-			local OwOveh = veh:GetModel() == "models/props_junk/popcan01a.mdl"
+			local isCanVehicle = veh:GetModel() == "models/props_junk/popcan01a.mdl"
 			local add = vector_origin
 
-			local OwOcar = false
+			local isVan = false
 			if veh2:GetModel() == "models/vehicles/7seatvan.mdl" then
-				OwOcar = true
+				isVan = true
 			end
 
 			local matrix = ply:GetBoneMatrix(bone)
 
-			local pos = matrix:GetTranslation() + veh:GetAngles():Up() * 5// + (OwOcar and veh:GetAngles():Right() * 3 + veh:GetAngles():Forward() * 2 or vector_origin)
+			local pos = matrix:GetTranslation() + veh:GetAngles():Up() * 5
 			if veh:GetClass() == "prop_vehicle_airboat" and veh:GetInternalVariable("EnableGun") then
 				--pos:Add(veh:GetAngles():Right() * 10 + veh:GetAngles():Forward() * -10 + veh:GetAngles():Up() * -15)
 				pos:Add(veh:GetAngles():Right() * 10)
 			end
 			
-			local ang = matrix:GetAngles()// + (OwOcar and Angle(0, -90, 0) or Angle(0, 0, 0))
+			local ang = matrix:GetAngles()
 
 			//ply:GetBoneMatrix(0):GetTranslation()
 			//local pos, ang = hg.RotateAroundPoint2(pos, ang, vector_origin, vector_origin, Angle(-90,0,0))
@@ -262,7 +262,7 @@ function hg.Ragdoll_Create(ply)
 
 				ragdoll.welds = ragdoll.welds or {}
 				table.insert(ragdoll.welds, weld)
-				weld:CallOnRemove("removeOwO", function()
+				weld:CallOnRemove("removeVehicleWeld", function()
 					if ragdoll.removingwelds then return end
 					//hook.Run("CanExitVehicle", ply, veh)
 					if !hg.leaveveh then hg.fallfromveh = true end

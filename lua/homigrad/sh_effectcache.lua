@@ -1,7 +1,7 @@
 local game, PrecacheParticleSystem = game, PrecacheParticleSystem
 local AddParticles = game.AddParticles
 
--- PewPaws!!!
+-- Effect cache
 AddParticles("particles/muzzleflashes_test.pcf")
 AddParticles("particles/muzzleflashes_test_b.pcf")
 AddParticles("particles/pcfs_jack_muzzleflashes.pcf")

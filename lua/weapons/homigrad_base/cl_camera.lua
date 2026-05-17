@@ -33,7 +33,7 @@ local hg_realismcam = ConVarExists("hg_realismcam") and GetConVar("hg_realismcam
 local zoomPosSetter = Vector()
 local isSettingZoom = false
 
-hook.Add("HG.InputMouseApply", "huyUwU", function(tbl)
+hook.Add("HG.InputMouseApply", "HGZoomPositionEditor", function(tbl)
 	if IsValid(lply) and lply:IsSuperAdmin() and hg_setzoompos:GetBool() and lply:KeyDown(IN_ATTACK2) then
 		zoomPosSetter:Add(Vector(tbl.cmd:GetMouseWheel(), -tbl.x / 500, -tbl.y / 500))
 		local str = "SWEP.ZoomPos = Vector("..math.Round(zoomPosSetter[1], 4)..", "..math.Round(zoomPosSetter[2], 4)..", "..math.Round(zoomPosSetter[3], 4)..")"

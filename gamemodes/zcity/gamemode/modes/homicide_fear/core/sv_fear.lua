@@ -525,7 +525,7 @@ function MODE:RoundThink()
 			end
 		end
 
-		if flag then -- we can kill him :3	
+		if flag then
 			if math.random(2) == 1 then
 				ply:KillSilent()
 			elseif math.random(2) == 1 then

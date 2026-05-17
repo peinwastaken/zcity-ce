@@ -980,7 +980,7 @@ hg.Accessories = {
         skin = 0,
         placement = "spine",
         bPointShop = true,
-        price = 1, -- for those who notices :3
+        price = 1,
         vpos = Vector(0,0,0),
         name = "Pink Lizard"
     },

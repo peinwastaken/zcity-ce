@@ -58,18 +58,16 @@ hg.settings:AddOpt("Gameplay","hg_deathfadeout", "Death fade out")
 if not game.IsDedicated() then
 	hg.settings:AddOpt("Serverside gameplay","hg_toughnpcs", "Tough npcs")
 	hg.settings:AddOpt("Serverside gameplay","hg_thirdperson", "Thirdperson (WIP)")
-	hg.settings:AddOpt("Serverside gameplay","hg_legacycam", "Legacy camera")
-	hg.settings:AddOpt("Serverside gameplay","hg_ragdollcombat", "Ragdoll combat mode")
-	hg.settings:AddOpt("Serverside gameplay","hg_movement_stamina_debuff", "Movement stamina debuff")
-	hg.settings:AddOpt("Serverside gameplay","hg_furcity", "Furcity")
-	hg.settings:AddOpt("Serverside gameplay","hg_appearance_access_for_all", "Appearance full access for all", nil, nil, "bool")
+		hg.settings:AddOpt("Serverside gameplay","hg_legacycam", "Legacy camera")
+		hg.settings:AddOpt("Serverside gameplay","hg_ragdollcombat", "Ragdoll combat mode")
+		hg.settings:AddOpt("Serverside gameplay","hg_movement_stamina_debuff", "Movement stamina debuff")
+		hg.settings:AddOpt("Serverside gameplay","hg_appearance_access_for_all", "Appearance full access for all", nil, nil, "bool")
 	hg.settings:AddOpt("Serverside gameplay","hg_healanims", "Heal & food animations")
 	hg.settings:AddOpt("Serverside gameplay","hg_aimtoshoot", "DarkRP-like shoot system (aim to shoot)")
 	hg.settings:AddOpt("Serverside gameplay","hg_slings", "Sling system")
     hg.settings:AddOpt("Serverside gameplay","homicide_traitoramount", "Homicide: Traitor Amount", nil, nil, "int")
 end
 --hg_appearance_access_for_all
---hg_furcity
 --hg_legacycam
 --hg_toughnpcs
 

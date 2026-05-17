@@ -172,9 +172,7 @@ if CLIENT then
 	hook.Add("ModifyMessageBuffer", "ChatFont", function(buffer, speaker)
 		if !IsValid(speaker) or !speaker:IsPlayer() then return end
 
-		if speaker.PlayerClassName == "furry" then
-			buffer[#buffer + 1] = "<font=ZB_ProotOSChat>"
-		elseif speaker:IsBerserk() then
+		if speaker:IsBerserk() then
 			buffer[#buffer + 1] = "<font=BerserkChatFont>"
 		end
 	end)

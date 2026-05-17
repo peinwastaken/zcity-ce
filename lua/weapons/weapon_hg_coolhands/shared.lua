@@ -32,10 +32,8 @@ SWEP.WorkWithFake = false
 SWEP.supportTPIK = true
 SWEP.ismelee = true
 
-local math = math -- owo
+local math = math
 local math_random, math_Clamp, CurTime, Color = math.random, math.Clamp, CurTime, Color
-
--- read if cute :3
 
 function SWEP:SetupDataTables()
 	self:NetworkVar("Float", 0, "NextIdle")

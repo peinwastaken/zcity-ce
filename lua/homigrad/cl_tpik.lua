@@ -1,4 +1,3 @@
--- uzelezz smart UwU
 local TPIKBones = {
     "ValveBiped.Bip01_L_Wrist",
     "ValveBiped.Bip01_L_Ulna",
@@ -515,13 +514,13 @@ function hg._DeprecatedDoTPIK(ply, ent, rhmat, lhmat)
         end
     end
 
-    if IsValid(self.OwOmodel) and developer:GetBool() and lply:IsSuperAdmin() and self.lmagpos3 then
+    if IsValid(self.DebugMagazineModel) and developer:GetBool() and lply:IsSuperAdmin() and self.lmagpos3 then
         local hand = ply_l_hand_matrix
         local pos, ang = LocalToWorld(self.lmagpos3, self.lmagang3, hand:GetTranslation(), hand:GetAngles())
-        self.OwOmodel:SetPos(pos)
-        self.OwOmodel:SetAngles(ang)
-        self.OwOmodel:SetupBones()
-        self.OwOmodel:DrawModel()
+        self.DebugMagazineModel:SetPos(pos)
+        self.DebugMagazineModel:SetAngles(ang)
+        self.DebugMagazineModel:SetupBones()
+        self.DebugMagazineModel:DrawModel()
     end
 
     local l_arm_startingpos = ply_l_upperarm_matrix:GetTranslation()
