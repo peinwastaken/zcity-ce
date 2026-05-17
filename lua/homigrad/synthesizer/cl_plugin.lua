@@ -1,6 +1,6 @@
 --\\
-	--; уод
-	--; уоп
+	--; uod
+	--; uop
 --//
 
 --\\Vocal Synthesizer Lore (insert funny_research_compilation.mp4 here)
@@ -10,7 +10,7 @@
 	--; https://thewolfsound.com/sine-saw-square-triangle-pulse-basic-waveforms-in-synthesis/
 	--; https://ru.wikipedia.org/wiki/%D0%A1%D0%B8%D0%BD%D1%82%D0%B5%D0%B7_%D1%80%D0%B5%D1%87%D0%B8
 	--; https://ru.wikipedia.org/wiki/%D0%92%D0%BE%D0%BA%D0%BE%D0%B4%D0%B5%D1%80
-	--; (Шум для согласных, Вокодер)
+	--; (Noise for consonants, vocoder)
 	--; https://www.mathworks.com/help/dsp/ref/colorednoise.html#buqdklf-1_sep_mw_437cf358-4478-4c35-ae64-963078342054
 	--; https://stackoverflow.com/questions/67085963/generate-colors-of-noise-in-python
 	--; https://people.sc.fsu.edu/~jburkardt/presentations/pink_noise.pdf
@@ -18,18 +18,18 @@
 	--; https://github.com/steveseguin/pink-noise-generator/blob/main/index.html
 	--; https://people.sc.fsu.edu/~jburkardt/m_src/pink_noise/pink_noise.html
 	--; https://www.firstpr.com.au/dsp/pink-noise/
-	--; Приятный набор интересных статей для прочтения, лучше бы я так к зачётам готовился
+	--; A pleasant set of interesting articles to read; I wish I had studied for exams like this
 	--; https://en.wikipedia.org/wiki/Fourier_transform
 	--; https://en.wikipedia.org/wiki/Fast_Fourier_transform
-	--; В коде создания """голоса""" были совершены преступления против некоторых наук, найдите их и напишите снизу, для дополнительных баллов
+	--; In the code that creates """voice""" crimes against several sciences were committed; find them and write them below for extra points
 	--; https://en.wikipedia.org/wiki/Angular_frequency
 	--; https://www.youtube.com/watch?v=eL2b5DEzcqI
-	--; Дальше:
+	--; Next:
 	--; https://ccrma.stanford.edu/CCRMA/Courses/152/speech.html
 	--; https://en.m.wikipedia.org/wiki/Vocal_tract
 	--; SAM
 	--; https://habr.com/ru/articles/500764/
-	--; Спектрограммы и прочее
+	--; Spectrograms and other things
 	--; https://habr.com/ru/articles/469775/
 --//
 
@@ -38,22 +38,22 @@
 --//
 
 --\\
-	--; В целом звуки речи подразделяются на шумы и тоны: 
-	--; тоны в речи возникают в результате колебания голосовых складок; 
-	--; шумы образуются в результате непериодических колебаний выходящей из лёгких струи воздуха.
-	--; Тонами являются обычно гласные; почти же все глухие согласные относятся к шумам.
-	--; Звонкие согласные образуются путём слияния шумов и тонов.
-	--; Шумы и тоны исследуются по их высоте, тембру, силе и многим другим характеристикам.
-	--; Согласные состоят из шумов...
+	--; In general, speech sounds are divided into noises and tones:
+	--; tones in speech arise from vocal fold vibration;
+	--; noises are formed by non-periodic vibrations of an air stream coming from the lungs.
+	--; Tones are usually vowels; almost all voiceless consonants are noises.
+	--; Voiced consonants are formed by merging noises and tones.
+	--; Noises and tones are studied by pitch, timbre, strength, and many other characteristics.
+	--; Consonants consist of noises...
 --//
 
---\\Звуки
-	--; Тональные
-	--; Шипящие
-	--; Нозальные
+--\\Sounds
+	--; Tonal
+	--; Sibilants
+	--; Nasals
 --//
 
---\\Перевод плагиновых штук в ваши штуки
+--\\Translate plugin things into your things
 	hg.Synthesizer = hg.Synthesizer or {}
 	local PLUGIN = hg.Synthesizer
 --//
@@ -240,7 +240,7 @@ local vocals = {
 			{0.3, "sin", 0.5, 1.0, {Pitch = 7}},
 			{mh, "sin", 0.0, 1.0, {Pitch = 7}},
 		},
-		["た"] = {	--; НЕ ПОХОЖЕ ДАЖЕ БЛИЗКО
+		["た"] = {	--; NOT EVEN CLOSE
 			{0, "saw_a", 0.0, 0.15, {Period = 2, Pitch = 1, Trebble = 0.1}},
 			{0.1, "saw_a", 0.5, 0.15, {Period = 2, Pitch = 1, Trebble = 0.1}},
 			{0.11, "saw_a", 0.5, 0.2, {Period = 2, Pitch = 16, Trebble = 0.1}},
@@ -256,7 +256,7 @@ local vocals = {
 			-- {0.3, "sin", 0.5, 1.0, {Pitch = 7}},
 			-- {mh, "sin", 0.0, 1.0, {Pitch = 7}},
 		},
-		["ま"] = {	--; ЗВУКЧИТ КАК БА А НЕ МА
+		["ま"] = {	--; SOUNDS LIKE BA, NOT MA
 			{0, "sin", 0.0, 0.85, {Pitch = 5, Trebble = 0.2, A = 1000, B = 4}},
 			{0.06, "sin", 0.5, 0.85, {Pitch = 5, Trebble = 0.2, A = 1000, B = 4}},
 			{0.07, "sin", 0.5, 1.0, {Pitch = 4, Trebble = 1.0}},
@@ -282,7 +282,7 @@ local vocals = {
 			{0.151, "sin", 0.3, 0.85, {Pitch = 5, Trebble = 1.0, Length = 0.50}},
 			{mh, "sin", 0.0, 0.85, {Pitch = 5, Trebble = 1.0, Length = 0.50}},
 		},
-		["г"] = { -- ГОВНО
+		["г"] = { -- SHIT
 			{0, {["tri_sine"] = 0.91, ["sqr"] = 0.11, ["noise_pink"] = 0.6}, 0.0, 0.65, {Pitch = 1, Trebble = 0.1, A = 10, B = 5, Period = 16, Mul = 1, SineDiv = 2}},
 			{0.01, {["tri_sine"] = 0.21, ["sqr"] = 0.01, ["noise_pink"] = 0.6}, 0.5, 0.65, {Pitch = 1, Trebble = 0.1, A = 10, B = 5, Period = 16, Mul = 1, SineDiv = 2}},
 			{0.02, {["tri_sine"] = 0.91, ["sqr"] = 0.11, ["noise_pink"] = 0.6}, 0.5, 0.65, {Pitch = 1, Trebble = 0.1, A = 10, B = 5, Period = 16, Mul = 1, SineDiv = 2}},
@@ -299,13 +299,13 @@ local vocals = {
 			{0.04, {["saw_sine"] = 0.41, ["sqr"] = 0.11, ["noise_pink"] = 0.6}, 0.3, 0.65, {Pitch = 1, Trebble = 0.1, A = 10, B = 5, Period = 16, Mul = 1, SineDiv = 2}},
 			{mh, {["saw_sine"] = 0.41, ["sqr"] = 0.11, ["noise_pink"] = 0.6}, 0.0, 0.65, {Pitch = 1, Trebble = 0.1, A = 10, B = 5, Period = 16, Mul = 1, SineDiv = 2}},
 		},
-		["е"] = {	--; Непродолжительно
+		["е"] = {	--; Short
 			{0, {["tri_sine"] = 0.6, ["noise_pink"] = 0.1}, 0.0, 0.15, {Pitch = 5, Trebble = 1.0, A = 10000, B = 2, Length = 0.70, SineDiv = 2}},
 			{0.06, {["tri_sine"] = 0.6, ["noise_pink"] = 0.1}, 0.3, 0.35, {Pitch = 7, Trebble = 1.0, A = 10000, B = 2, Length = 0.70, SineDiv = 2}},
 			{0.2, {["tri_sine"] = 0.6, ["noise_pink"] = 0.1}, 0.3, 0.85, {Pitch = 7, Trebble = 1.0, A = 10000, B = 2, Length = 0.70, SineDiv = 1}},
 			{mh, {["tri_sine"] = 0.6, ["noise_pink"] = 0.1}, 0.0, 0.85, {Pitch = 7, Trebble = 1.0, A = 10000, B = 2, Length = 0.70, SineDiv = 1}},
 		},
-		["ё"] = {	--; Непродолжительно
+		["ё"] = {	--; Short
 			{0, {["tri_sine"] = 0.6, ["noise_pink"] = 0.1}, 0.0, 0.15, {Pitch = 5, Trebble = 1.0, A = 10000, B = 2, Length = 0.70, SineDiv = 2}},
 			{0.06, {["tri_sine"] = 0.6, ["noise_pink"] = 0.1}, 0.3, 0.35, {Pitch = 7, Trebble = 1.0, A = 10000, B = 2, Length = 0.70, SineDiv = 2}},
 			{0.2, {["tri_sine"] = 0.6, ["noise_pink"] = 0.3}, 0.3, 0.65, {Pitch = 7, Trebble = 1.0, A = 10000, B = 2, Length = 0.70, SineDiv = 1}},
@@ -337,7 +337,7 @@ local vocals = {
 			-- {0.1, {["tri_sine"] = 0.6, ["noise_pink"] = 0.1}, 0.3, 0.55, {Pitch = 7, Trebble = 1.0, A = 10000, B = 2, Length = 0.70, SineDiv = 1}},
 			{mh, {["tri_sine"] = 0.6, ["noise_pink"] = 0.1}, 0.0, 0.85, {Pitch = 7, Trebble = 1.0, A = 10000, B = 2, Length = 0.70, SineDiv = 1}},
 		},
-		["к"] = { -- ГОВНО
+		["к"] = { -- SHIT
 			{0, {["t"] = 0.8, ["noise_pink"] = 0.1}, 0.0, 17.05, {Pitch = 4, Trebble = 1.4, A = 100, B = 5, Period = 16, Mul = 1}},
 			{0.01, {["t"] = 0.8, ["noise_pink"] = 0.1}, 0.5, 17.05, {Pitch = 4, Trebble = 1.4, A = 100, B = 5, Period = 16, Mul = 1}},
 			{0.02, {["t"] = 0.8, ["noise_pink"] = 1.1}, 0.5, 17.05, {Pitch = 4, Trebble = 1.4, A = 100, B = 5, Period = 16, Mul = 1}},
@@ -350,7 +350,7 @@ local vocals = {
 			{0.04, {["tri_sine"] = 0.91, ["sqr"] = 0.31, ["noise_pink"] = 0.2}, 0.5, 1.85, {Pitch = 1, Trebble = 0.1, A = 10, B = 5, Period = 16, Mul = 1, SineDiv = 1}},
 			{mh, {["tri_sine"] = 0.91, ["sqr"] = 0.31, ["noise_pink"] = 0.2}, 0.0, 1.85, {Pitch = 1, Trebble = 0.1, A = 10, B = 5, Period = 16, Mul = 1, SineDiv = 1}},
 		},
-		["м"] = {	--; Первый нозальный звук
+		["м"] = {	--; First nasal sound
 			{0, {["tri"] = 0.51, ["sqr"] = 0.51, ["noise_pink"] = 0.4}, 0.0, 0.15, {Pitch = 1, Trebble = 0.1, A = 400, B = 30, Period = 16, Mul = 1, SineDiv = 1}},
 			{0.02, {["tri"] = 0.51, ["sqr"] = 0.51, ["noise_pink"] = 0.4}, 0.5, 0.75, {Pitch = 1, Trebble = 0.1, A = 400, B = 30, Period = 16, Mul = 1, SineDiv = 1}},
 			{0.04, {["tri"] = 0.51, ["sqr"] = 0.51, ["noise_pink"] = 0.4}, 0.5, 0.75, {Pitch = 1, Trebble = 0.1, A = 400, B = 30, Period = 16, Mul = 1, SineDiv = 1}},
@@ -368,7 +368,7 @@ local vocals = {
 			{0.2, "sin", 0.3, 0.9, {Pitch = 5, Trebble = 1.0, Length = 1.00}},
 			{mh, "sin", 0.0, 0.9, {Pitch = 5, Trebble = 1.0, Length = 1.00}},
 		},
-		["п"] = { -- ПЫХ
+		["п"] = { -- PUFF
 			{0, {["p"] = 0.8, ["noise_pink"] = 1.1}, 0.0, 1.05, {Pitch = 1, Trebble = 1.4, A = 100, B = 5, Period = 16, Mul = 1}},
 			{0.01, {["p"] = 0.8, ["noise_pink"] = 0.1}, 0.9, 1.05, {Pitch = 1, Trebble = 1.4, A = 100, B = 5, Period = 16, Mul = 1}},
 			{0.02, {["p"] = 0.8, ["noise_pink"] = 1.1}, 0.9, 1.05, {Pitch = 1, Trebble = 1.4, A = 100, B = 5, Period = 16, Mul = 1}},
@@ -403,7 +403,7 @@ local vocals = {
 			{0.04, {["p"] = 1.0, ["noise_pink"] = 1.1}, 0.1, 15.05, {Pitch = 1, Trebble = 1.4, A = 100, B = 5, Period = 16, Mul = 1}},
 			{mh, {["p"] = 1.0, ["noise_pink"] = 1.1}, 0.0, 15.05, {Pitch = 1, Trebble = 1.4, A = 100, B = 5, Period = 16, Mul = 1}},
 		},
-		-- ["п"] = {
+		-- ["p"] = {
 			-- {0, {["p"] = 1.0, ["noise_pink"] = 0.1}, 0.0, 25.05, {Pitch = 1, Trebble = 1.4, A = 100, B = 5, Period = 16, Mul = 1}},
 			-- {0.01, {["p"] = 1.0, ["noise_pink"] = 0.1}, 0.5, 25.05, {Pitch = 1, Trebble = 1.4, A = 100, B = 5, Period = 16, Mul = 1}},
 			-- {0.02, {["p"] = 1.0, ["noise_pink"] = 0.1}, 0.5, 25.05, {Pitch = 1, Trebble = 1.4, A = 100, B = 5, Period = 16, Mul = 1}},
@@ -411,7 +411,7 @@ local vocals = {
 			-- {0.1, {["p"] = 0.5, ["noise_pink"] = 0.2}, 0.2, 35.45, {Pitch = 1, Trebble = 1.4, A = 100, B = 5, Period = 16, Mul = 1}},
 			-- {mh, {["p"] = 0.5, ["noise_pink"] = 0.2}, 0.0, 35.45, {Pitch = 1, Trebble = 1.4, A = 100, B = 5, Period = 16, Mul = 1}},
 		-- },
-		["у"] = {	-- ДСП
+		["у"] = {	-- DSP
 			{0, {["tri_sine"] = 0.6, ["noise_pink"] = 0.2}, 0.0, 1.15, {Pitch = 2, Trebble = 1.0, A = 10000, B = 2, Length = 10, SineDiv = 1}},
 			{0.06, {["tri_sine"] = 0.6, ["noise_pink"] = 0.2}, 0.3, 1.15, {Pitch = 2, Trebble = 1.0, A = 10000, B = 2, Length = 10, SineDiv = 1}},
 			{0.2, {["tri_sine"] = 0.6, ["noise_pink"] = 0.2}, 0.3, 1.15, {Pitch = 2, Trebble = 1.0, A = 10000, B = 2, Length = 10, SineDiv = 1}},
@@ -459,7 +459,7 @@ local vocals = {
 			{0.2, {["tri_sine"] = 0.7, ["noise_pink"] = 0.2}, 0.3, 1.15, {Pitch = 2, Trebble = 1.1, A = 10000, B = 2, Length = 5, SineDiv = 1}},
 			{mh, {["tri_sine"] = 0.7, ["noise_pink"] = 0.2}, 0.0, 1.15, {Pitch = 2, Trebble = 1.1, A = 10000, B = 2, Length = 5, SineDiv = 1}},
 		},
-		["э"] = {	-- ДСП РОБОТИЧЕСКИ2
+		["э"] = {	-- DSP ROBOTIC2
 			{0, {["tri_sine"] = 0.6, ["noise_pink"] = 0.1}, 0.0, 0.85, {Pitch = 7, Trebble = 1.0, A = 10000, B = 2, Length = 0.70, SineDiv = 2}},
 			{0.06, {["tri_sine"] = 0.6, ["noise_pink"] = 0.1}, 0.3, 0.85, {Pitch = 7, Trebble = 1.0, A = 10000, B = 2, Length = 0.70, SineDiv = 2}},
 			{0.2, {["tri_sine"] = 0.6, ["noise_pink"] = 0.1}, 0.3, 0.85, {Pitch = 7, Trebble = 1.0, A = 10000, B = 2, Length = 0.70, SineDiv = 2}},
@@ -483,7 +483,7 @@ local vocals = {
 			-- {0.5, "sin", 0.0, 0.0, {Pitch = 1, Trebble = 1.0, Length = 1}},
 			{mh, "sin", 0.0, 0.0, {Pitch = 1, Trebble = 1.0, Length = 1}},
 		},
-		-- ["э"] = {	-- РОБОТИЧЕСКИ1
+		-- ["e"] = {	-- ROBOTIC1
 			-- {0, {["sin"] = 0.6, ["noise_pink"] = 0.3}, 0.0, 0.85, {Pitch = 7, Trebble = 1.0, Length = 0.70}},
 			-- {0.1, {["sin"] = 0.6, ["noise_pink"] = 0.3}, 0.5, 0.85, {Pitch = 7, Trebble = 1.0, Length = 0.70}},
 			-- {0.11, {["sin"] = 0.6, ["noise_pink"] = 0.3}, 0.5, 0.85, {Pitch = 7, Trebble = 1.0, Length = 0.70}},
@@ -569,7 +569,7 @@ local function vocal_sample_calc(func_name, args, val, current_frequency, work_t
 		if(queue_line.Samples >= samples_per_tick)then
 			queue_line.Samples = -1
 			
-			-- coroutine.yield()	--; Нельзя илдидть Си функцию
+			-- coroutine.yield()	--; Cannot yield a C function
 		end
 	end
 
@@ -772,12 +772,12 @@ concommand.Add("dogma_playvocal", function(ply, cmd, args)
 	PLUGIN.TextToSpeech(text)
 end)
 
--- play_vocal("а")
--- play_vocal("п", 0.2)
--- play_vocal("г", 0.2)
--- timer.Simple(0.22 * 2, function() play_vocal("о") end)
--- timer.Simple(0.22 * 3, function() play_vocal("п", 0.2) end)
--- timer.Simple(0.22 * 4, function() play_vocal("а") end)
+-- play_vocal("a")
+-- play_vocal("p", 0.2)
+-- play_vocal("g", 0.2)
+-- timer.Simple(0.22 * 2, function() play_vocal("o") end)
+-- timer.Simple(0.22 * 3, function() play_vocal("p", 0.2) end)
+-- timer.Simple(0.22 * 4, function() play_vocal("a") end)
 
 -- play_vocal("ま")
 -- timer.Simple(0.22 * 1, function() play_vocal("ま") end)

@@ -318,7 +318,7 @@ hg.attachments.sight = {
 		valid = true,
 	},
 	["optic0"] = {
-		"sight", --встроенный
+		"sight", --built-in
 		"",
 		Angle(0, 0, 0),
 		{},

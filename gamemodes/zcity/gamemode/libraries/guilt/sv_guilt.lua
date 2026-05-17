@@ -1,4 +1,4 @@
--- СДЕЛАЙТЕ СИНХРУ С СКУЭЛЬ УЖЕ // ЛАДНО Я САМ СДЕЛАЮ
+-- MAKE SQL SYNC ALREADY // FINE, I WILL DO IT MYSELF
 zb = zb or {}
 
 zb.GuiltTable = zb.GuiltTable or {}

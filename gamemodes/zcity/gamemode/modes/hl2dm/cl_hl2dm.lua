@@ -24,7 +24,7 @@ local teams = {
         name = "a Combine Soldier",
         name_elite = "the Elite Combine Soldier",
         name_shotgunner = "the Combine Shotgunner",
-        color1 = Color(0, 200, 220), -- самый
+        color1 = Color(0, 200, 220), -- the most
         color2 = Color(0, 180, 200),
         color3 = Color(180, 15, 15),
 		color4 = Color(160, 0, 0),
@@ -41,7 +41,7 @@ function MODE:RenderScreenspaceEffects()
     surface.DrawRect(-1,-1,ScrW() + 1,ScrH() + 1)
 end
 
---// Ну вроде сделал его чуточку читаемым 
+--// Well, I made it a bit more readable
 function MODE:HUDPaint()
     if zb.ROUND_START + 8.5 < CurTime() then return end
      
@@ -55,7 +55,7 @@ function MODE:HUDPaint()
 
     draw.SimpleText("ZBattle | Half-Life 2 Deathmatch", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0, 162, 255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
-	--; Любимое ООП шарика
+	--; Sharik's favorite OOP
     local role_data = {
         name = team_data.name,
         color = team_data.color1,

@@ -167,7 +167,7 @@ function hg.ExplosionDisorientation(enta, tinnitus, disorientation)
 	enta.organism.owner:AddTinnitus(tinnitus)
 	enta.organism.disorientation = enta.organism.disorientation + (disorientation)
 
-	net.Start("organism_send") // отправляем только дизориентацию (чтобы не нагружать нет), и сразу
+	net.Start("organism_send") // send only disorientation (to avoid overloading net), and immediately
 	local tbl = {}
 	tbl.disorientation = enta.organism.disorientation
 	tbl.shock = enta.organism.shock
@@ -176,7 +176,7 @@ function hg.ExplosionDisorientation(enta, tinnitus, disorientation)
 	net.WriteBool(true)
 	net.WriteBool(false)
 	net.WriteBool(false)
-	net.WriteBool(true) // вот эта шняга отвечает за то чтобы оно просто мерджнуло и всё
+	net.WriteBool(true) // this thing makes it just merge and that is all
 	net.Send(enta.organism.owner)
 end
 
@@ -227,7 +227,7 @@ local function ExplodeTheItem(self,ent)
 
 		timer.Simple(0.2,function()
 			if not IsValid(ent) then self:Remove() return end
-			util.BlastDamage(self, IsValid(self:GetOwner()) and self:GetOwner() or self, EntPos, BlastDis / 0.01905, BlastDamage * 0.1) -- эта функция полное говно кстати. бьет сковзь любые пропы...
+			util.BlastDamage(self, IsValid(self:GetOwner()) and self:GetOwner() or self, EntPos, BlastDis / 0.01905, BlastDamage * 0.1) -- this function is complete shit, by the way. It hits through any props...
 			
 			local dis = BlastDis / 0.01905
 			local disorientation_dis = 10 / 0.01905  

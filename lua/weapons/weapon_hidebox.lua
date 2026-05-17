@@ -83,7 +83,7 @@ end
 
 SWEP.Hidden = false
 local dmgmdl1, dmgmdl2 = "models/props_junk/wood_crate001a_damaged.mdl", "models/props_junk/wood_crate001a_damagedmax.mdl"
-function SWEP:Think() -- вообще вместо манипуляций с ворлдмоделькой я бы мог тут создавать проп и парентить к игроку но эээ
+function SWEP:Think() -- instead of worldmodel manipulation I could create a prop here and parent it to the player, but uhh
 	self:SetHold(self.HoldType)
 
 	local owner = self:GetOwner()

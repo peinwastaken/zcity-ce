@@ -10,7 +10,7 @@ team.SetUp(2, "Players3", Color(0, 255, 0))
 DeriveGamemode("sandbox")
 
 local blur = Material("pp/blurscreen")
-local hg_potatopc -- НАДО ЭТО ГОВНО ПЕРЕПИСАТЬ НОРМАЛЬНО, И ВСЕ МЕНЮШКИ ОДИНАКОВЫЕ ТОЖЕ!!!
+local hg_potatopc -- NEED TO REWRITE THIS SHIT PROPERLY, AND ALL MENUS SHOULD BE THE SAME TOO!!!
 function hg.DrawBlur(panel, amount, passes, alpha)
 	if is3d2d then return end
 	amount = amount or 5
@@ -126,7 +126,7 @@ function zb:CheckPlaying()
 	end
 	return tbl
 end
--- А это разве не в корне?
+-- Is this not in the root?
 function GM:HandlePlayerLanding( ply, velocity, WasOnGround )
 	if SERVER then return end
 	if ply == LocalPlayer() and ply == GetViewEntity() then return end

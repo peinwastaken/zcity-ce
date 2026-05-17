@@ -7,7 +7,7 @@ MODE.LootSpawn = false
 
 MODE.ForBigMaps = true
 
-function MODE:ClearPlayerRoles() -- Щпасибо деке!!
+function MODE:ClearPlayerRoles() -- Thanks to Deka!!
     for _, ply in player.Iterator() do
         ply:SetNWString("PlayerRole", "")
     end

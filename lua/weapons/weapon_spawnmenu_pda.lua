@@ -1,4 +1,4 @@
--- Сообщение всем скриптхукерам, ну вы это хоть оставляйте тех кто это кодил. Уважайте чужой труд!
+-- Message to all script hookers: at least leave the people who coded this. Respect other people's work!
 if SERVER then AddCSLuaFile() end
 SWEP.Base = "weapon_tpik1_base"
 SWEP.PrintName = "Tablet"
@@ -237,10 +237,10 @@ function SWEP:CreateMenu()
     if IsValid(self.menu) then self.menu:Remove() end
     self.menu = vgui.Create( "DFrame" )
     self.menu:SetSize( 625, 468 )
-    -- Если б я мог поменять хтмл говно я бы сделал лучше
+    -- If I could change the HTML shit I would make it better
     self.menu:Center()
     self.menu:SetY(ScrH()-470)
-    -- увы пока только такой костыль...
+    -- unfortunately, only this hack for now...
     self.menu:SetTitle("Order menu")
     self.menu:SetDraggable(false)
     local tablet = self
@@ -451,7 +451,7 @@ Cost: Free]])
     html:OpenURL("https://google.com/?persist_app=1&app=m")
     html.HTMLPosX = 0
     html.HTMLPosY = 0
-    -- ПРОСТИТЕ ЗА ЖУТКИЙ КОСТЫЛЬ, НО ОНО РАБОТАЕТ!!!
+    -- SORRY FOR THE HORRIBLE HACK, BUT IT WORKS!!!
     function html:OnCursorMoved( X, Y )
         self.HTMLPosX = X
         self.HTMLPosY = Y

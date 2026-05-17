@@ -1386,7 +1386,7 @@ function hg.FlashlightPos(ply)
         if attachmentData then flashlightwep = attachmentData.supportFlashlight end
     end
 
-    if flashlightwep then if IsValid(ply.flashlight) then ply.flashlight:Remove() end return end -- может хуки добавить для подобной хрени
+    if flashlightwep then if IsValid(ply.flashlight) then ply.flashlight:Remove() end return end -- maybe add hooks for this kind of crap
     
     local ent = ply.FakeRagdoll
 	local rh,lh = ply:LookupBone("ValveBiped.Bip01_R_Hand"), ply:LookupBone("ValveBiped.Bip01_L_Hand")
@@ -1477,14 +1477,14 @@ function hg.DragHands(ply,self)
 	if pos then
         local dot = (pos - ply_spine_matrix:GetTranslation()):GetNormalized():Dot(eyetr.Normal:Angle():Right())
 
-		if wep and not ishgweapon(wep) then -- ЮЗЛЕСС ПРАТСИИИИ ПРАСТИИИИИИИИ
+		if wep and not ishgweapon(wep) then -- USELESS, SORRYYYY, SORRYYYYYYY
 			hg.bone.Set(ply, "spine", vector_origin, Angle(0, 0, -dot * 20), "holding")
 			hg.bone.Set(ply, "spine2", vector_origin, Angle(0, 0, -dot * 25), "holding2")
 			hg.bone.Set(ply, "head", vector_origin, -Angle(0, 0, -dot * 30), "holding3")
 		end
-        --надо тогда и на сервере делать, а то будет различаться --!! не так уж и сильно различается
+        --need to do it on the server too, otherwise it will differ --!! not that much difference
 
-		--!! ломает аксесуары
+		--!! breaks accessories
         --local matang = ply_spine_matrix:GetAngles()
         --matang[2] = matang[2] - dot * 40
         --ply_spine_matrix:SetAngles(matang)

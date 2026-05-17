@@ -245,7 +245,7 @@ function SWEP:Shoot(override)
 				end
 			end)
 
-			--чзх добавить возможность тазерить мощнее при нажатии лкм
+			--wtf add the ability to tase harder when pressing LMB
 			local i = 1
 			local max = math.Round(time * 80)
 			timer.Create("Tasering"..ent:EntIndex(), 0.01, max,function()

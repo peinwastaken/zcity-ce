@@ -182,7 +182,7 @@ function SWEP:SetupBoneMerge(mdl)
 	end
 end
 
-function SWEP:DrawPost() --!! оно на груди не видно а еще целится невозможно
+function SWEP:DrawPost() --!! it is not visible on the chest and aiming is impossible too
 	local owner = self:GetOwner()
 	if IsValid(owner) and owner.GetActiveWeapon and IsValid(owner:GetActiveWeapon()) then
 		if owner:GetActiveWeapon() ~= nil and owner:GetActiveWeapon() ~= NULL and owner:GetActiveWeapon() ~= self then return end

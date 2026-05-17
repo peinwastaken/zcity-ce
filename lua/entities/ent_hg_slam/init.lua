@@ -6,7 +6,7 @@ function ENT:Initialize()
 	self:SetModel(self.WorldModel)
 	self:SetBodygroup(0,1)
 	self:PhysicsInit(SOLID_VPHYSICS)
-	self:SetMoveType(MOVETYPE_VPHYSICS)  -- Фурри
+	self:SetMoveType(MOVETYPE_VPHYSICS)
 	self:SetSolid(SOLID_VPHYSICS)
 	self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 	self:SetUseType(SIMPLE_USE) 

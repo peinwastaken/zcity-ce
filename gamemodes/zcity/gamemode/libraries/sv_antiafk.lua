@@ -22,7 +22,7 @@ timer.Create("ZB_AntiAfkThink",10,0,function()
     for k,ply in player.Iterator() do
         if not IsValid(ply) or ply:IsBot() then continue end
         
-        if ply:Alive() and not ply.organism.otrub then --дека по русски пиши ZZZZZZZZZZ
+        if ply:Alive() and not ply.organism.otrub then --Deka, write in Russian ZZZZZZZZZZ
           ply.afkTime = ply.afkTime + 10
         end
 

@@ -140,7 +140,7 @@ if CLIENT then
 			hg.currentNotification = {tbl[1], time_spent, tbl[2], tbl[3]}
 
 			table.remove(hg.notifications,1)
-		end--показываем только одну нотификацию за раз (остальные держим в уме....)
+		end--show only one notification at a time (keep the rest in mind....)
 	end
 
 	local colBrown = Color(40,40,40)

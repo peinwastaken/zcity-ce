@@ -16,7 +16,7 @@ if(CLIENT)then
 end
 
 --; TODO
---; Инженер - шахид бомба + иеды
+--; Engineer - suicide bomb + IEDs
 
 MODE.SubRoles = {
 	--=\\Traitor
@@ -134,8 +134,8 @@ For people who like to play chess.]],
 	--==//
 	
 	--==\\
-	--; СДЕЛАТЬ ЕМУ ЛУТ ДРУГИХ ИГРОКОВ ДАЖЕ ПОКА У НИХ НЕТ ПУШКИ В РУКАХ
-	--; Сделать ему вырубание по вагус нерву
+	--; MAKE HIM LOOT OTHER PLAYERS EVEN WHILE THEY HAVE NO GUN IN HANDS
+	--; Make him knock out via the vagus nerve
 	["traitor_assasin"] = {
 		Name = "Assasin",
 		Description = [[Can quickly disarm people from any angle.
@@ -299,8 +299,8 @@ MODE.Professions = {
 --//
 
 --\\
---; Названия перменных чуть чуть конченные получились, нужно будет подумать как улучшить
---; ужас
+--; The variable names came out a little messed up; need to think about improving them
+--; terrible
 MODE.FadeScreenTime = 1.5
 MODE.DefaultRoundStartTime = 6
 MODE.RoleChooseRoundStartTime = 10
@@ -313,7 +313,7 @@ MODE.RoleChooseRoundTypes = {
 			["traitor_infiltrator"] = true,
 			["traitor_chemist"] = true,
 			["traitor_assasin"] = true,
-			--; ОБЪЕДЕНИТЬ ХИМИКА И ДИВЕРСАНТА!!! наверное
+			--; MERGE CHEMIST AND SABOTEUR!!! probably
 			-- ["traitor_demoman"] = true,
 		},
 		Professions = {

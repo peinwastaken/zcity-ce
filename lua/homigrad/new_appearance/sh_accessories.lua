@@ -1225,7 +1225,7 @@ hg.Accessories = {
         bonemerge = true,
         bSetColor = false,
         bPointShop = true,
-        price = 99999999, -- не должно быть видно в поинтшопе типо нельзя купить (пасхалка)
+        price = 99999999, -- should not be visible in pointshop, like it cannot be bought (easter egg)
         vpos = Vector(0,0,5),
         name = "Burger King Crown"
     },

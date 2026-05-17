@@ -472,7 +472,7 @@ hook.Add("PostCleanupMap","changelevel_generate",function()
             dist = dist2
             map = ent
         end
-    end--выбираем самый дальний ченджлевел
+    end--choose the farthest changelevel
 
     if not IsValid(map) then map = select(2, table.Random(maps)) end
     
@@ -514,7 +514,7 @@ function GM:EntityKeyValue( ent, key, value )
 					dist = dist2
 					map = ent
 				end
-			end--выбираем самый дальний ченджлевел
+			end--choose the farthest changelevel
 			print("Next map is: "..map.map)
 			if not map then map = maps[1] end
 

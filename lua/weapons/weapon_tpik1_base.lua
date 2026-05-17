@@ -1,5 +1,5 @@
--- Это база для ручной настройки тпик... афигеть да?
--- Сообщение всем скриптхукерам, ну вы это хоть оставляйте тех кто это кодил. Уважайте чужой труд!
+-- This is a base for manual TPIK setup... amazing, right?
+-- Message to all script hookers: at least leave the people who coded this. Respect other people's work!
 if SERVER then AddCSLuaFile() end
 SWEP.PrintName = "TPIK Base 1"
 SWEP.Instructions = "Tpik Base 1"
@@ -113,7 +113,7 @@ function SWEP:SetHandPos(noset)
 	local vec1, ang1 = -(-self.handPos), -(-self.handAng)
 	
 	--[[
-	--второй способ гавна
+	--second shit method
 	local matrix = Matrix()
 	matrix:SetTranslation(self.WorldPos)
 	matrix:SetAngles(self.WorldAng)

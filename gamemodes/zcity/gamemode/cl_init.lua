@@ -677,7 +677,7 @@ function GM:ScoreboardShow()
 		end
 	end
 
-	--без матов
+	--no swearing
 
 	local DScrollPanel = vgui.Create("DScrollPanel", scoreBoardMenu)
 	DScrollPanel:SetPos(10, ScreenScaleH(58))
@@ -693,7 +693,7 @@ function GM:ScoreboardShow()
 	end
 
 	local disappearance = lply:GetNetVar("disappearance", nil)
-	for i, ply in player.Iterator() do -- надо это говно переделать.
+	for i, ply in player.Iterator() do -- need to redo this shit.
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		if CurrentRound().name == "fear" and !ply:Alive() then continue end
 		if disappearance and ply != lply then continue end
@@ -857,7 +857,7 @@ hook.Add("PlayerStartVoice", "showVoicePanels", function(ply)
 	return other_alive or nil
 end)
 
--- свет от молнии а саму молнию я не сделал skill issue
+-- light from lightning; I did not make the lightning itself, skill issue
 if CLIENT then
 	net.Receive("PunishLightningEffect", function()
 		local target = net.ReadEntity()
@@ -876,7 +876,7 @@ if CLIENT then
 	end)
 end
 
-/*  -- а кстати зачем здесь нэт, это же можно было на клиенте полностью сделать...
+/*  -- by the way, why is there net here; this could have been done entirely client-side...
 	if CLIENT then
 		net.Receive("PluvCommand", function()
 			local specialSteamID = "STEAM_0:1:81850653" 
@@ -943,7 +943,7 @@ end
 
 local snakeGameOpen = false
 
-concommand.Add("zb_snake", function() -- вот как здесь!
+concommand.Add("zb_snake", function() -- like here!
     if snakeGameOpen then
         print("[Snake Game] Игра уже запущена!")
         return
@@ -1084,7 +1084,7 @@ concommand.Add("zb_snake", function() -- вот как здесь!
     end
 
 
-    function frame:OnKeyCodePressed(key) -- ФУРИ МУВ теперь понятно почему лагает змейка
+    function frame:OnKeyCodePressed(key)
         if key == KEY_W and snakeDirection ~= "DOWN" then
             snakeDirection = "UP"
         elseif key == KEY_S and snakeDirection ~= "UP" then
@@ -1110,7 +1110,7 @@ concommand.Add("zb_snake", function() -- вот как здесь!
     frame.OnClose = function()
         timer.Remove("SnakeGameTimer")
         snakeGameOpen = false  
-        print("[Snake Game] Игра закрыта.") -- НЕ РАБОТАЕТ
+        print("[Snake Game] Игра закрыта.") -- DOES NOT WORK
     end
 
 

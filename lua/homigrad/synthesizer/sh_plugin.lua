@@ -1,10 +1,10 @@
 --\\
 	--; TODO
-	--; Что я пытаюсь достичь?
-	--; Я просто должен использовать банк голоса и не париться с математическим синтезированием
+	--; What am I trying to achieve?
+	--; I just need to use a voice bank and not bother with mathematical synthesis
 --//
 
---\\Перевод плагиновых штук в ваши штуки
+--\\Translate plugin things into your things
 	hg.Synthesizer = hg.Synthesizer or {}
 	local PLUGIN = hg.Synthesizer
 --//
@@ -45,7 +45,7 @@ PLUGIN.Version = 1
 	end
 --//
 
---; Дайте мне незалицензированные звуки человеческого голоса плиз
+--; Please give me unlicensed human voice sounds
 
 --\\ Random
 	--[[-------------------------------------------------------------------------

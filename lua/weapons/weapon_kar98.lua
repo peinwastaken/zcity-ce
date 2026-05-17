@@ -1,4 +1,4 @@
--- каряк сделан барой.. пулл реквест до того как стал известен
+-- Kar98 was made by Bara.. pull request before he became known
 SWEP.Base = "weapon_m4super"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
@@ -23,7 +23,7 @@ SWEP.FakeBodyGroups = "000000000"
 SWEP.BarrelLength = 40
 SWEP.SUPBarrelLenght = 47
 SWEP.OpenBolt = false
-SWEP.CantFireFromCollision = false // 2 спусковых крючка все дела
+SWEP.CantFireFromCollision = false // 2 triggers and all that
 
 SWEP.FakeViewBobBone = "ValveBiped.Bip01_L_Hand"
 SWEP.FakeViewBobBaseBone = "ValveBiped.Bip01_L_UpperArm"

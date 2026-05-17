@@ -163,26 +163,26 @@ MODE.LootTableStandard = {
 }
 
 -- MODE.TraitorWords = {
-	-- "пистолет",
-	-- "трейтор",
-	-- "ганмен",
-	-- "калаш (винтовка)",
-	-- "бомба",
-	-- "цианид",
-	-- "нож",
-	-- "труба",
-	-- "топор",
-	-- "юсп (пистолет)",
-	-- "арка (винтовка)",
-	-- "каряк (винтовка)",
-	-- "граната",
-	-- "улица",
-	-- "здание",
-	-- "патроны",
-	-- "бинт",
-	-- "аптечка",
-	-- "обезболивающее",
-	-- "дробовик",
+	-- "pistol",
+	-- "traitor",
+	-- "gunman",
+	-- "Kalash (rifle)",
+	-- "bomb",
+	-- "cyanide",
+	-- "knife",
+	-- "pipe",
+	-- "axe",
+	-- "USP (pistol)",
+	-- "AR (rifle)",
+	-- "Kar98 (rifle)",
+	-- "grenade",
+	-- "street",
+	-- "building",
+	-- "cartridges",
+	-- "bandage",
+	-- "medkit",
+	-- "painkiller",
+	-- "shotgun",
 -- }
 
 MODE.TraitorWordsAdjectives = {
@@ -201,7 +201,7 @@ MODE.TraitorWordsAdjectives = {
 	"cyan",
 	"pink",
 	"mesmerizing",
-	"",	--; да да
+	"",	--; yes yes
 }
 
 MODE.TraitorWords = {
@@ -1545,7 +1545,7 @@ function MODE.SpawnPlayers(spawn_with_subroles)
         end
     end
 
-    --= Профессии
+    --= Professions
     local professions = {}
     if(spawn_with_subroles and MODE.RoleChooseRoundTypes[MODE.Type])then
         local professions_possible_pre = MODE.RoleChooseRoundTypes[MODE.Type].Professions

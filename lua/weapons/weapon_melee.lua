@@ -92,7 +92,7 @@ if CLIENT then
 	SWEP.BounceWeaponIcon = false
 end
 
-SWEP.AttackSwing = "weapons/slam/throw.wav" --!! заменить звуки
+SWEP.AttackSwing = "weapons/slam/throw.wav" --!! replace sounds
 SWEP.AttackHit = "snd_jack_hmcd_knifehit.wav"
 SWEP.Attack2Hit = "snd_jack_hmcd_knifehit.wav"
 SWEP.AttackHitFlesh = "snd_jack_hmcd_knifestab.wav"
@@ -1143,7 +1143,7 @@ function SWEP:CustomThink()
 
             owner:LagCompensation(false)
 
-            if SERVER and (owner:OnGround() or owner.organism.superfighter) then -- ранбуст для супербойцов
+            if SERVER and (owner:OnGround() or owner.organism.superfighter) then -- runboost for superfighters
                 local vec = owner:GetAimVector() * math.min(self.DamagePrimary * 0.5, 20)
                 vec[3] = 0
 
@@ -1310,7 +1310,7 @@ function SWEP:CustomThink()
 
             ent:PrecacheGibs()
 
-            if SERVER then -- ранбуст для супербойцов and (ent:OnGround() or ent.organism and ent.organism.superfighter)
+            if SERVER then -- runboost for superfighters and (ent:OnGround() or ent.organism and ent.organism.superfighter)
                 local vec = trace.Normal * math.min(self.DamageSecondary  * 0.5, 20)
                 vec[3] = 0
                 

@@ -8,11 +8,11 @@ function ENT:Initialize()
 	self:SetSolid(SOLID_VPHYSICS)
 	self:SetUseType(SIMPLE_USE)
 
-	self:SetModel(self.Model) --| Стандартные функции спавна
+	self:SetModel(self.Model) --| Standard spawn functions
 
 	local phys = self:GetPhysicsObject()
 	if IsValid(phys) then
-		phys:SetMass(75) --| ДАЙТЕ ЕМУ ВЕС
+		phys:SetMass(75) --| GIVE IT WEIGHT
 		phys:Wake()
 		phys:EnableMotion(true)
 	end
@@ -20,58 +20,58 @@ function ENT:Initialize()
     self.Loot = {
         --[[ 
             [ ID ] = { 
-                class = "ИМЯ КЛАССА",
+                class = "CLASS NAME",
                 entData = {
-                    DataETC = "ДАТА" --| Для контейнеров игроков, где можно хранить вещи.
-                    --| Кстати с помощью этого можно делать уникальные ентити которые будут иметь свои приколы, хоть по суте один и тот-же класс
+                    DataETC = "DATA" --| For player containers where items can be stored.
+                    --| By the way, this can be used to make unique entities with their own quirks, even though they are basically the same class
                 }
             }, 
         --]]
     }
     self.ShowContainer = {
-        --| Игроки которые открыли контейнер
+        --| Players who opened the container
 
     }
 end
 
 local loottypes = {
     [ "entity" ] = function( self, user, class, spawnFunctions, entData )
-        if not IsValid( user ) or not user:IsPlayer() then return false end --| Проверяем валидность игрока.
-        --| После проверки создаем ентити.
+        if not IsValid( user ) or not user:IsPlayer() then return false end --| Check player validity.
+        --| After checking, create the entity.
         local ent = ents.Create( class )
-        --| Не забываем выдать свойство заспавнености. Выключает возможность автоподбора.
+        --| Do not forget to set the spawned property. Disables auto-pickup.
         ent.IsSpawned = true
-        --| Ищим позицую для спавна нашего ентити.
+        --| Look for a spawn position for our entity.
         local spawnPos = util.TraceEntityHull( {
             start = self:GetPos() + ( vector_up * 5 ),
             endpos = user:GetPos() + ( vector_up * 15 ),
             filter = { self },
             mask = MASK_SHOT
         }, ent ).HitPos
-        ent:SetPos( spawnPos ) --| Ставим позицию.
-        ent:Spawn() --| И спавним.
+        ent:SetPos( spawnPos ) --| Set position.
+        ent:Spawn() --| And spawn it.
 
-        --| Если была какая либо записанная дата, даем ее ентити.
+        --| If any saved data existed, give it to the entity.
         if entData then
             for k,data in pairs( entData ) do
                 ent[ k ] = data
             end
         end
-        --| Производим спавнфункции, если они есть.
+        --| Run spawn functions, if any.
         if spawnFunctions then
             for _, func in ipairs( spawnFunctions ) do
                 func( ent )
             end
         end
 
-        return ent --| Возврат ентити.
+        return ent --| Return entity.
     end,
 }
 
 ZBox = ZBox or {}
 ZBox.LootSystem = ZBox.LootSystem or {}
 
-function ENT:TakeItem( ply, itemID ) --| Хватай бесплатно
+function ENT:TakeItem( ply, itemID ) --| Grab it for free
     local item = self.Loot[itemID]
     local spawnFunctions = ZBox.LootSystem.spawnFunctions or {}
     if item then
@@ -81,8 +81,8 @@ function ENT:TakeItem( ply, itemID ) --| Хватай бесплатно
     end
 end
 
-function ENT:Use( activator ) --| Передача данных о крейте только в момент открытия. Чтобы не СРАЛО
-    if !IsValid( activator ) or !activator:IsPlayer() then return false end --| Проверяем валидность игрока...
+function ENT:Use( activator ) --| Crate data is sent only when opening so it does not SPAM
+    if !IsValid( activator ) or !activator:IsPlayer() then return false end --| Check player validity...
     if ( activator:GetPos() - self:GetPos() ):Length() > 400 then 
         print( "[ ZBox | LootSystem ]: ".. activator .. "[SteamID:".. activator:SteamID() .. "]" .." trying USE CONTAINER but, he not in radius CHEATS?" ) 
         return false 
@@ -93,12 +93,12 @@ end
 
 util.AddNetworkString( "ZBox_LootSystem_net" )
 
-function ZBox.LootSystem.SendLootTable( ent, ply, tbl ) --| Отправка крутых нетов.
+function ZBox.LootSystem.SendLootTable( ent, ply, tbl ) --| Send cool net messages.
 
     net.Start( "ZBox_LootSystem_net" )
         net.WriteEntity( ent )
-        net.WriteString( util.TableToJSON( tbl ) ) --| Зачем тратить лишние ресурсы на таблицу, давайте ее просто переведем в стринг лол.
-    net.Send( ply )--ресурсы одна "с" дебил
+        net.WriteString( util.TableToJSON( tbl ) ) --| Why waste extra resources on a table; let's just convert it to a string lol.
+    net.Send( ply )--"resources" has one "s", idiot
 
     return true
 end
@@ -130,13 +130,13 @@ end)
 
 local SendLootTable = ZBox.LootSystem.SendLootTable
 
-function ENT:OpenContainer( ply ) --| Открываем контейнер игроку.
-    local OptimizedTable = {} --| Создаем пустую таблицу для отправки клиенту.
-    for k, data in pairs( self.Loot ) do --| Запись в таблицу.
+function ENT:OpenContainer( ply ) --| Open the container for the player.
+    local OptimizedTable = {} --| Create an empty table to send to the client.
+    for k, data in pairs( self.Loot ) do --| Write into table.
         OptimizedTable[ k ] = { class = data.class }
     end
     self:EmitSound("items/ammocrate_open.wav")
-    SendLootTable( self, ply, OptimizedTable ) --| Отправка клиенту.
+    SendLootTable( self, ply, OptimizedTable ) --| Send to client.
     self.ShowContainer[ ply:EntIndex() ] = ply
 end
 

@@ -134,7 +134,7 @@ do return end
 -- hg.Boxes = Boxes
 -- function TOOL.BuildCPanel( CPanel )
 
--- 	CPanel:AddControl( "Header", { Description = "ура удобный инструмент я в шоке!!" } )
+-- 	CPanel:AddControl( "Header", { Description = "hurray, convenient tool; I am shocked!!" } )
 
 -- 	local dlist = vgui.Create("DListView")
 -- 	dlist:Dock(TOP)

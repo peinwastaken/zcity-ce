@@ -359,7 +359,7 @@ net.Receive("LookAway",function(len,ply)
 end)
 
 hg = hg or {}
--- С помощью этой функции можно пугать неписей.. Либо наоборот приманивать туда куда надо, мгс5 режим можно устроить
+-- This function can be used to scare NPCs.. Or lure them where needed, MGS5 mode
 function hg.EmitAISound(pos, vol, dur, typ) -- https://developer.valvesoftware.com/wiki/Ai_sound
 	local snd = ents.Create("ai_sound")
 	snd:SetPos(pos)
@@ -1576,7 +1576,7 @@ hg.MapTemps = {
 	["gm_fork_north"] = -16,
 	["gm_fork_north_day"] = -21,
 	["gm_ijm_boreas"] = -40,
-	["gm_construct"] = 20 -- тест температуры
+	["gm_construct"] = 20 -- temperature test
 }
 
 function hg.TranslateToBodyTemp(temp, org)
@@ -1590,7 +1590,7 @@ hook.Add("StormFox2.PostEntityScan","load-stormfox-support",function()
 	sf2_get_temp = StormFox2 and StormFox2.Temperature and StormFox2.Temperature.Get or nil
 end)
 
-hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- переделал систему температуры
+hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- redesigned temperature system
 	if not owner:IsPlayer() or not owner:Alive() then return end
 	if owner.GetPlayerClass and owner:GetPlayerClass() and owner:GetPlayerClass().NoFreeze then return end
 	if !hg_temperaturesystem:GetBool() then return end
@@ -1670,7 +1670,7 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- пе
 
 	org.temperature = math.Approach(org.temperature, hg.TranslateToBodyTemp(temp, org), org.tempchanging)
 
-	-- При холоде
+	-- When cold
 	if owner:Alive() and not org.otrub and org.temperature < 36 then
 		org.FreezeSndCD = org.FreezeSndCD or CurTime() + math.random(5, 15)
 		
@@ -1687,7 +1687,7 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- пе
 		org.FreezeDMGCd = CurTime() + 0.5
 	end
 
-	-- При жаре
+	-- When hot
 	if owner:Alive() and org.temperature > 40 then
 		org.VomitCD = org.VomitCD or CurTime() + math.random(35, 75)
 		
@@ -1712,9 +1712,9 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- пе
 	org.heatbuff = math.Approach(org.heatbuff, 120 * MaxWarmMul, timeValue * math.Clamp(warming * 1, 0, 4))
 
 	//PrintTable(ents.FindInSphere(org.owner:GetPos(), 128))
-	--мб сделать тепло от env_sprite?
+	--maybe make heat from env_sprite?
 	--hz...
-	--дороговато
+	--a bit expensive
 end)
 
 hook.Add("SetupMove","hg_FallSound",function(ply)
@@ -1856,7 +1856,7 @@ if !istable(gmnetwork) and util.IsBinaryModuleInstalled("network") then
 end
 
 
-hook.Add("SetupMove", "AntiCrouchSpam", function(ply, mvd, cmd) -- на самом деле довольно безполезная херня просто нельзя спамить присядом лол
+hook.Add("SetupMove", "AntiCrouchSpam", function(ply, mvd, cmd) -- actually pretty useless crap; just prevents crouch spam lol
 	if !ply:Alive() or !hg.GetCurrentCharacter( ply ):IsPlayer() then return end
 
 	ply.OldCrouchState = ply.OldCrouchState or false

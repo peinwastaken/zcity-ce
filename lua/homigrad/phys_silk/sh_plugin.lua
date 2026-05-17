@@ -1,18 +1,18 @@
---\\Перевод плагиновых штук в ваши штуки
+--\\Translate plugin things into your things
 	hg.PhysSilk = hg.PhysSilk or {}
 	local PLUGIN = hg.PhysSilk
 	PLUGIN.ID = "PhysSilk"
 --//
 
---\\Литература
+--\\Literature
 	--; Philip Schneider David Eberly - Geometric Tools for Computer Graphics
 --//
 
 --\\
 	--; TODO
-	--; Граплинг хук физика
-	--; Шёлковые ленточки на стрелах
-	--; Шёлковые ленточки на палочках
+	--; Grappling hook physics
+	--; Silk ribbons on arrows
+	--; Silk ribbons on sticks
 --//
 
 PLUGIN.Name = "Physics Silk"
@@ -60,7 +60,7 @@ PLUGIN.SilkTableClient = PLUGIN.SilkTableClient or {}
 				segment.Pos = self.Pos
 			else
 				if(!self.NoGravity)then
-					segment.Vel = segment.Vel + physenv_gravity * interval	--; Ослабить взаимодействие в зависимости от того, какой сегмент по очереди и кол-ва сегментов
+					segment.Vel = segment.Vel + physenv_gravity * interval	--; Weaken interaction depending on which segment is in order and the segment count
 				end
 				
 				local vel_len = segment.Vel:Length()
@@ -136,7 +136,7 @@ PLUGIN.SilkTableClient = PLUGIN.SilkTableClient or {}
 							local projection = trace_normal - trace_normal:Dot(trace_hitnormal) * trace_hitnormal
 							local projection_ang = projection:Angle()
 							
-							projection_ang:RotateAroundAxis(trace_hitnormal, 180) --; Вроде оптимизировано должно быть а вроде?
+							projection_ang:RotateAroundAxis(trace_hitnormal, 180) --; It seems like this should be optimized, maybe?
 							
 							projection = projection_ang:Forward()
 							local trace_info_2 = {

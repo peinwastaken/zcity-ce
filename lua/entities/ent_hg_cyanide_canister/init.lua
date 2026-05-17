@@ -24,7 +24,7 @@ end
 local ents_FindInSphere, CurTime, ipairs, table, math, VectorRand = ents.FindInSphere, CurTime, ipairs, table, math, VectorRand
 function ENT:Think()
 	if self.spawntime + 10 > CurTime() then return end
-	--if util.PointContents(self:GetPos()) --если в воде добавить проверку потом
+	--if util.PointContents(self:GetPos()) --if in water, add a check later
 	if (#self.particles < self.totalparticles) and ((math.Round(CurTime() - self.spawntime) % 3) == 0) then
 		table.insert(self.particles,{self:GetPos(),VectorRand(-5,5),CurTime() + 60})
 	end

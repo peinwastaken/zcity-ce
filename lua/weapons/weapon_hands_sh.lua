@@ -491,7 +491,7 @@ function SWEP:SetHandPos(noset)
 		kastet:SetAngles(newAng)
 		kastet:SetupBones()
 		kastet:DrawModel()
-		kastet:SetModelScale(0.9) -- с новыми руками можно будет 1 оставить
+		kastet:SetModelScale(0.9) -- with new hands, 1 can be left
 	end
 
 	hg.DragHands(self:GetOwner(), self)
@@ -1450,7 +1450,7 @@ local vent = {
 function SWEP:AttackFront(special_attack, rand)
 	if CLIENT then return end
 	local owner = self:GetOwner()
-	--self.PenetrationCopy = -(-self.Penetration) -- это как
+	--self.PenetrationCopy = -(-self.Penetration) -- how does this work
 	owner:LagCompensation(true)
 	local Ent, HitPos, _, physbone, trace = WhomILookinAt(owner, .3, special_attack and 35 or 45)
 	if clawClasses[owner.PlayerClassName] then

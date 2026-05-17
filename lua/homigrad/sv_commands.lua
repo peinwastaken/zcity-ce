@@ -74,7 +74,7 @@ function COMMAND_Input(ply,args)
 
 	return true,cmd[1](ply,args)
 end
--- Мдаааа А ПЛЕЙРСЕЙ ДЛЯ КОГО НУЖЕН????
+-- Uh, WHAT IS PLAYERSEI FOR THEN????
 hook.Add("HG_PlayerSay","commands-chat",function(ply, txtTbl, text)
 	COMMAND_Input(ply, COMMAND_GETARGS(string.Split(string.sub(text, 2, #text), " ")))
 end)

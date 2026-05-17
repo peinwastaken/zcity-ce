@@ -1,4 +1,4 @@
--- Запреты спавна вещей, и прочего не нужного дерьма.
+-- Spawn restrictions for items and other unnecessary shit.
 ZBox = ZBox or {}
 ZBox.Plugins = ZBox.Plugins or {}
 ZBox.Plugins["Restrictions"] = ZBox.Plugins["Restrictions"] or {}
@@ -25,7 +25,7 @@ for k,v in pairs(DisableHookSpawns) do
 end
 
 
--- Доставка дерьма!
+-- Shit delivery!
 local RandomPrashe = {
 "WHAT THE HELL ARE YOU BUILDING?",
 "You realize you're not the only builder out there, right? Let us deliver to others",
@@ -68,7 +68,7 @@ function Hook.PlayerSpawnProp(ply, model)
     --end
 end
 
---Ресрикт оружия...
+--Weapon restriction...
 local weaponRestrict = {
     ["gmod_camera"] = true,["weapon_fists"] = true, ["weapon_flechettegun"] = true, ["manhack_welder"] = true,
     ["weapon_medkit"] = true,["gmod_tool"] = true, ["weapon_physgun"] = true, ["weapon_physcannon"] = true,

@@ -226,8 +226,8 @@ What it does?:
 	},
 }
 
---; Добавить ритуалы:
---; Создание магической тыкалки
+--; Add rituals:
+--; Create a magic poker
 
 function ABNORMALTIESHELP:OpenStats(Recipe)
 	Recipe=Recipe or 1

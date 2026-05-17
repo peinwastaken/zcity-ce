@@ -1,5 +1,5 @@
--- Спавны игроков, благо я научился это по нормальному делать :steamhappy:
---; Их сделал дека >:D
+-- Player spawns; thankfully I learned to do this properly :steamhappy:
+--; Deka made them >:D
 ZBox = ZBox or {}
 ZBox.Plugins = ZBox.Plugins or {}
 ZBox.Plugins["Spawnpoints"] = ZBox.Plugins["Spawnpoints"] or {}
@@ -161,12 +161,12 @@ function Hook.HG_PlayerSay(ply, txtTbl, text)
    --        local randomSpawn = findRandomSpawnLocation()
    --        if randomSpawn then
    --            targetPlayer:SetPos(randomSpawn)
-   --            ply:ChatPrint("лох " .. targetPlayer:Nick() .. " заспавнен.")
+   --            ply:ChatPrint("loser " .. targetPlayer:Nick() .. " spawned.")
    --        else
-   --            ply:ChatPrint("не нашел.")
+   --            ply:ChatPrint("did not find.")
    --        end
    --    else
-   --        ply:ChatPrint("лох \"" .. targetName .. "\" не найден")
+   --        ply:ChatPrint("loser \"" .. targetName .. "\" not found")
    --    end
 
    --    return "" 

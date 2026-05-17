@@ -267,7 +267,7 @@ function ENT:Explode()
 
 	util.BlastDamage(self, IsValid(self.owner) and self.owner or self, selfPos, self.BlastDis / 0.01905, 35)
 
-	--;; Расскажу вам тайну но у нас трассировка делалась просто ужасно
+	--;; I will tell you a secret: our tracing was done terribly
 	local dis = self.BlastDis / 0.01905
 	local disorientation_dis = 6 / 0.01905  
 	local entsCount = 0
@@ -404,10 +404,10 @@ function ENT:Explode()
 		end
 	end)
 	util.ScreenShake( selfPos, 35, 1, 1, 1000, true )
-	hg.EmitAISound(self:GetPos(), 300, 3, bit.bor(1, 33554432)) -- надеюсь буде работать
+	hg.EmitAISound(self:GetPos(), 300, 3, bit.bor(1, 33554432)) -- hope it works
 end
 
---;; Салат если ты подумаешь что это чатговноти то это послание вам - FUCK YOU!
+--;; Salat, if you think this is ChatGPT shit, this is a message for you - FUCK YOU!
 local vec10 = Vector(0, 0, 10)
 function ENT:PlaySndExplosion(snd, server, chan, vol, pitch, entity, tripleaffirmative)
 	if SERVER and not server then return end
@@ -439,7 +439,7 @@ function ENT:PlaySndExplosion(snd, server, chan, vol, pitch, entity, tripleaffir
 	end
 end
 
--- дека это че
+-- Deka, what is this
 --[[function ENT:PlaySndExplosion(snd, server, chan, vol, pitch, entity, tripleaffirmative)
 	if SERVER and not server then return end
 	
@@ -454,7 +454,7 @@ end
 		EmitSound(snd, self:GetPos() - Vector(0, 0, 10), (entity or self:EntIndex()) + 1, chan, vol, 75, nil, pitch + rand - 2)
 		EmitSound(snd, self:GetPos() + Vector(0, 0, 10), (entity or self:EntIndex()) + 2, chan, vol * 0.9, 75, nil, pitch + rand + 2)
 	end
-end]] -- омнипроджект кодинг возвращение
+end]] -- omni project coding returns
 
 function ENT:PlaySndDebris(snd, vol, pitch)
 	vol = vol or 1

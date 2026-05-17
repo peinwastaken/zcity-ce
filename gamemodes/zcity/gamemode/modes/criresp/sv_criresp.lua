@@ -31,7 +31,7 @@ function MODE:AssignTeams()
 		numSWAT = 2
 	elseif numPlayers == 7 then
 		numSWAT = 3
-	elseif numPlayers >= 8 then -- возвращение великой elseif таблицы
+	elseif numPlayers >= 8 then -- return of the great elseif table
 		numSWAT = 4
 	end
 

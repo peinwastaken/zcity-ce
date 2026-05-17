@@ -12,7 +12,7 @@ hook.Add("DatabaseConnected", "ExperienceCreateData", function()
 		query:Create("steamid", "VARCHAR(20) NOT NULL")
 		query:Create("steam_name", "VARCHAR(32) NOT NULL")
 		query:Create("skill", "FLOAT NOT NULL")
-		query:Create("experience", "INT NOT NULL") -- Надо перевести в большие числа INT НЕ ХВАТАЕТ!!! - хватает просто кое-кто придурок да салат?
+		query:Create("experience", "INT NOT NULL") -- Need to switch to bigger numbers; INT IS NOT ENOUGH!!! - it is enough, someone is just an idiot, right Salat?
         query:Create("deaths", "INT NOT NULL")
         query:Create("kills", "INT NOT NULL")
         query:Create("suicides", "INT NOT NULL")

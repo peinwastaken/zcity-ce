@@ -515,7 +515,7 @@ hook.Add("Think", "Fake", function()
 	
 				ent = trace.Entity
 				
-				if IsValid(ent) and ent:IsRagdoll() and trace.PhysicsBone == realPhysNum(ent, 10) then -- Отрубил чтобы ошибок не было пока...
+				if IsValid(ent) and ent:IsRagdoll() and trace.PhysicsBone == realPhysNum(ent, 10) then -- Disabled for now to avoid errors...
 					choking = ent
 					local head = ent:GetPhysicsObjectNum(realPhysNum(ent, 10))
 					chokinghead = head

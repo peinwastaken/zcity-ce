@@ -621,7 +621,7 @@ function SWEP:SyncAtts()
 	--net.Start("sync_atts")
 	--net.WriteEntity(self)
 	--net.SendToServer()
-end-- ХD
+end-- XD
 
 if CLIENT then
 	concommand.Add("ZB_AttachAdd", function(ply, cmd, args)

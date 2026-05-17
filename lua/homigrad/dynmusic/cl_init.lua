@@ -1,15 +1,15 @@
 --[[ 
     TO-DO:
-        - Переход с эмбианта на динамику
-        - Синхра с серверным режимом - 
-                    coop значит играет hl_coop
+        - Transition from ambient to dynamic music
+        - Sync with server mode -
+                    coop means hl_coop plays
                     dm - medge
-                    игрок комбайн - combine team и т.д.
-        - Конструктор паков музыки (просто функция с добавлением трека в лист :) )
-        - Возможность отклюичть музыку.
-        - Возможность выбрать пак музыки для режимов где нет определенного класса музыки.
-        - Возможность настроить громкость эмбианта
-        - Переход музыки зависит от адреналина и полученого дамага - (чтобы милишки тоже это вызвали)
+                    combine player - combine team, etc.
+        - Music pack builder (just a function that adds a track to the list :) )
+        - Ability to disable music.
+        - Ability to choose a music pack for modes without a specific music class.
+        - Ability to adjust ambient volume
+        - Music transition depends on adrenaline and damage received - (so melee users trigger this too)
 --]]
 
 hg = hg or {}

@@ -4,7 +4,7 @@ hg.organism.module.lungs = {}
 local module = hg.organism.module.lungs
 module[1] = function(org)
 	org.lungsL = {
-		0, --состояние,пневмотаракс
+		0, --state, pneumothorax
 		0
 	}
 
@@ -40,7 +40,7 @@ function hg.organism.CanBreath(org)
 end
 
 local function insta_send_holdingbreath(org)
-	net.Start("organism_send") // отправляем только дизориентацию (чтобы не нагружать нет), и сразу
+	net.Start("organism_send") // send only disorientation (to avoid overloading net), and immediately
 	
 	local tbl = {}
 	tbl.holdingbreath = org.holdingbreath
@@ -50,7 +50,7 @@ local function insta_send_holdingbreath(org)
 	net.WriteBool(true)
 	net.WriteBool(false)
 	net.WriteBool(false)
-	net.WriteBool(true) // вот эта шняга отвечает за то чтобы оно просто мерджнуло и всё
+	net.WriteBool(true) // this thing makes it just merge and that is all
 	net.Send(org.owner)
 end
 

@@ -174,7 +174,7 @@ function SWEP:DrawWorldModel()
 
 		local pos = tr.StartPos + ang:Forward() * (-14) + ang:Up() * -9 * self.blockinganim
 		if owner.PlayerClassName == "sc_infiltrator" then
-			pos = tr.StartPos + ang:Forward() * (-18) + ang:Up() * -5 -- этим кулакам никакой оффсет не поможет
+			pos = tr.StartPos + ang:Forward() * (-18) + ang:Up() * -5 -- no offset will help these fists
 		end
 
 		local ang = owner:EyeAngles()
@@ -486,7 +486,7 @@ function SWEP:SetHandPos(noset)
 		kastet:SetAngles(newAng)
 		kastet:SetupBones()
 		kastet:DrawModel()
-		kastet:SetModelScale(0.9) -- с новыми руками можно будет 1 оставить
+		kastet:SetModelScale(0.9) -- with new hands, 1 can be left
 	end
 
 	hg.DragHands(self:GetOwner(),self)

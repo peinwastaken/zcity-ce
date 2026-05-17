@@ -1,41 +1,41 @@
 --\\
 --; TODO
---; Трейтор видит суброли других игроков в начале раунда
---; Трейтору даётся время на выбор своей суброли
+--; The traitor sees other players' subroles at round start
+--; The traitor gets time to choose their subrole
 
---; Суброли Трейтора:
+--; Traitor subroles:
 --=\\Jack of all Trades
---; Все стандартно как сейчас
+--; Everything is standard like now
 --=//
---=\\Ассасин -имба
---; Оружие:
---; Плевалка парализующими дротиками (3 дротика)
---; Способности:
---; Отобрать оружие со спины (даже если оно используется), Подсечка (сбивает с ног)
---; Пассивки:
---; Эксперт по обращению с любым оружием (особенно с кулаками), при ударе из-за спины кулаками парализует жертву на 3 секунды
---=//
-
---=\\Пила +-инженер
---; Оружие:
---; Нож, СВУ
---; Способности:
---; Хихихихихихихихих
---; Пассивки:
---; Крафт из любых пропов на карте и предметов
+--=\\Assassin - OP
+--; Weapons:
+--; Paralyzing dart spitter (3 darts)
+--; Abilities:
+--; Take a weapon from the back (even if it is being used), Trip (knocks down)
+--; Passives:
+--; Expert with any weapon (especially with fists), paralyzes the victim for 3 seconds with a fist hit from behind
 --=//
 
---=\\Диверсант
---; Оружие:
---; Нож, СВУ, Граната, Дымовуха, Адреналин, Капкан???, Блокаторы дверей
---; Способности:
---; Спрятаться в подходящий для этого проп, Полностью сменить внешность на внешность трупа (включая кожу), Свернуть шею сзади
+--=\\Saw +- engineer
+--; Weapons:
+--; Knife, IED
+--; Abilities:
+--; Hihihihihihihi
+--; Passives:
+--; Crafting from any props on the map and items
 --=//
 
---; Свернуть шею сзади
+--=\\Saboteur
+--; Weapons:
+--; Knife, IED, Grenade, Smoke, Adrenaline, Bear trap???, Door blockers
+--; Abilities:
+--; Hide in a suitable prop, fully change appearance to a corpse's appearance (including skin), Break neck from behind
+--=//
+
+--; Break neck from behind
 --//
 
---\\Перевод плагиновых штук в ваши штуки
+--\\Translate plugin things into your things
 hg.RolePlus = hg.RolePlus or {}
 local PLUGIN = hg.RolePlus
 PLUGIN.ID = "RolePlus"

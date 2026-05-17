@@ -15,7 +15,7 @@ mat_huy:SetTexture("$basetexture",texture)
 
 local cloudmat = Material("effects/smoke_b")
 
---оставь это лучше выглядит
+--leave this; it looks better
 --[[for i = 4, 6 do
 	mats[i-3] = Material("homigrad/decals/bld" .. i)
 end]]

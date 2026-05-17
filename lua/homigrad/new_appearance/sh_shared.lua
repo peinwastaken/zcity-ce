@@ -65,14 +65,14 @@ local function AppAddModel(strName, strMdl, bFemale, tSubmaterialSlots)
 end
 
 AppAddModel("Male 01", "models/zcity/m/male_01.mdl", false, {
-	main = "models/humans/male/group01/players_sheet", -- сделал бы автоматом если бы слоты не отличались...
+	main = "models/humans/male/group01/players_sheet", -- I would have done it automatically if the slots were not different...
 	pants = "distac/gloves/pants",
 	boots = "distac/gloves/cross",
 	hands = "distac/gloves/hands"
 })
 
 AppAddModel("Male 02", "models/zcity/m/male_02.mdl", false, {
-	main = "models/humans/male/group01/players_sheet", -- забудьте я просто шизик, сделал более удобную штуку
+	main = "models/humans/male/group01/players_sheet", -- forget it, I am just crazy and made a more convenient thing
 	pants = "distac/gloves/pants",
 	boots = "distac/gloves/cross",
 	hands = "distac/gloves/hands"

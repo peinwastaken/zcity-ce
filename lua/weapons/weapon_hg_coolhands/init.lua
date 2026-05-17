@@ -661,7 +661,7 @@ local concrete = {
 function SWEP:AttackFront(special_attack, rand)
 	if CLIENT then return end
 	local owner = self:GetOwner()
-	--self.PenetrationCopy = -(-self.Penetration) -- это как
+	--self.PenetrationCopy = -(-self.Penetration) -- how does this work
 	owner:LagCompensation(true)
 	local Ent, HitPos, _, physbone, trace = WhomILookinAt(owner, .3, special_attack and 35 or 45)
 	local AimVec = owner:GetAimVector()

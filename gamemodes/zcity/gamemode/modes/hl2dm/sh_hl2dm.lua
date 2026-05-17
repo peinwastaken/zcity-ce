@@ -2,11 +2,11 @@ local MODE = MODE
 
 zb = zb or {}
 
---[[ Идеи
-    Слабая зона глаз у комбайнов
-    //Убрать возможность комбайнам надевать броню
-    //Выдать очки ночного зрения комбайнам ;; Им их выдавать не надо, надо сделать просто функционал встроенный в их класс!!!
-    //Аирстрайки у елитовцев
+--[[ Ideas
+    Weak eye zone on combines
+    //Remove the ability for combines to wear armor
+    //Give combine NVG goggles ;; They do not need to be given them; just make the functionality built into their class!!!
+    //Airstrikes for elites
 ]]
 
 zb = zb or {}

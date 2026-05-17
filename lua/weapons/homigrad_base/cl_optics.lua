@@ -342,7 +342,7 @@ function SWEP:DoHolo()
 end
 
 local blured
-// ПОЙНТ ТЫ НУБ ПОЛНЫЙ
+// POINT, YOU ARE A TOTAL NOOB
 --local hg_blur_holo = GetConVar("hg_blur_holo") or CreateClientConVar("hg_blur_holo", "1", true, false, "Disable this if holo blur makes your fps cry.", 0, 1)
 
 local invcolor = Color(0,0,0,0)
@@ -360,11 +360,11 @@ hook.Add("PostDrawTranslucentRenderables","stencil-test-holo2",function()
 	local hitPos = eyePos + ang:Forward() * 2624
 	
 	if blured ~= self.holo then
-		// МОЙ ДРУГ ТОЛЬКО С ПРОЦЕССОРОМ НЕ МОГ ИГРАТЬ НОРМАЛЬНО С ГОЛОГРАФАМИ!!!!
-		// ТЫ ОЧЕНЬ ПЛОХОЙ!!! И НУЫЫЫЫЫ																							|\_/|
-		// Короче я пофиксил какашку, теперь блюр один раз на изменение текстуры, теперь смешных приколов фпс падений не будет. |'.'|
-		// ПЛЫВ ПЛЫВ ПЛЫВ																										|	|
-		// ЭТО САМЫЙ БОЛЬШОЙ КОМЕНТАРИЙ ХЕХЕХЕХЕХЕЕХ																		   	|___|
+		// MY FRIEND WITH ONLY A CPU COULD NOT PLAY NORMALLY WITH HOLOGRAPHS!!!!
+		// TY OWHATN PLOKhOY!!! I NUYYYYY																							|\_/|
+		// In short, I fixed the mess; now blur runs once per texture change, so there will be no funny FPS drops. |'.'|
+		// PLYV PLYV PLYV																										|	|
+		// ETO SAMYY BOLShOY KOMENTARIY KhEKhEKhEKhEKhEEKh																		   	|___|
 		render.PushRenderTarget( exampleRT )
 			render.OverrideAlphaWriteEnable( true, true )
 

@@ -490,10 +490,10 @@ function MODE:RoundThink()
             end
         end
         
-        -- Для чего ты вызываешь вообще все ентити, ТЕБЕ БАНАЛЬНО ВЫГОДНО ИСПОЛЬЗОВАТЬ ents.FindByClass() 
-        -- КАКОГО ЧЕРТА У ТЕБЯ ТУТ ВООБЩЕ ЧЕРЕЗ ПЕЙРСЫ... И еще и в думалке D:
+        -- Why are you iterating over all entities; it is obviously better to use ents.FindByClass()
+        -- WHY THE HELL IS THIS USING PAIRS AT ALL... and inside Think too D:
         for _, ent in ents.Iterator() do
-			-- бедни дека
+			-- poor Deka
             if IsValid(ent) and ent.IsDefenseWaveNPC and not ent.DefenseNPCCountedAsDead then
                 local class = ent:GetClass() or ""
                 

@@ -7,7 +7,7 @@ SWEP.Instructions =
 LMB - High ready
 
 RMB - Low ready
-]]--"тильда двуеточее три"
+]]
 SWEP.Category = "Weapons - Explosive"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
