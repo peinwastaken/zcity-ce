@@ -46,13 +46,13 @@ function MODE:HUDPaint()
 	end
 
     if zb.ROUND_START + 8.5 < CurTime() then return end
-	 
+
 	if not lply:Alive() then return end
     local fade = math.Clamp(zb.ROUND_START + 8 - CurTime(), 0, 1)
 	local team_ = lply:Team()
     draw.SimpleText("ZBattle | HL2 Base Defense", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	
-    local playerRole = lply:GetNWString("PlayerRole", "Refugee") 
+
+    local playerRole = lply:GetNWString("PlayerRole", "Refugee")
     local roleColor = teams[team_].color1
     roleColor.a = 255 * fade
     draw.SimpleText("You are a " .. playerRole, "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.5, roleColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -75,7 +75,7 @@ end
 net.Receive("defense_highlight_last_npcs", function()
     local npcs = net.ReadTable()
     highlightNPCs = {}
-    
+
     for _, entIndex in ipairs(npcs) do
         local ent = Entity(entIndex)
         if IsValid(ent) then
@@ -93,7 +93,7 @@ hook.Add("SetupOutlines", "HighlightLastNPCs", function(outline_Add)
             highlightNPCs[entIndex] = nil
             continue
         end
-        
+
         outline_Add(npc, Color(255, 50, 50), OUTLINE_MODE_BOTH)
     end
 end)
@@ -120,18 +120,12 @@ local colGray = Color(85,85,85,255)
 local colRed = Color(130,10,10)
 local colRedUp = Color(160,30,30)
 
-local colBlue = Color(10,10,160)
-local colBlueUp = Color(40,40,160)
 local col = Color(255,255,255,255)
 
 local colSpect1 = Color(75,75,75,255)
 local colSpect2 = Color(255,255,255)
 
-local colorBG = Color(55,55,55,255)
-local colorBGBlacky = Color(40,40,40,255)
 
-local blurMat = Material("pp/blurscreen")
-local Dynamic = 0
 
 BlurBackground = BlurBackground or hg.DrawBlur
 
@@ -165,7 +159,7 @@ CreateEndMenu = function()
 	closebutton:SetPos(5,5)
 	closebutton:SetSize(ScrW() / 20,ScrH() / 30)
 	closebutton:SetText("")
-	
+
 	closebutton.DoClick = function()
 		if IsValid(hmcdEndMenu) then
 			hmcdEndMenu:Close()
@@ -178,7 +172,7 @@ CreateEndMenu = function()
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 		surface.SetFont( "ZB_InterfaceMedium" )
 		surface.SetTextColor(col.r,col.g,col.b,col.a)
-		local lengthX, lengthY = surface.GetTextSize("Close")
+		local lengthX, _ = surface.GetTextSize("Close")
 		surface.SetTextPos( lengthX - lengthX/1.1, 4)
 		surface.DrawText("Close")
 	end
@@ -187,7 +181,7 @@ CreateEndMenu = function()
 
 		surface.SetFont( "ZB_InterfaceMediumLarge" )
 		surface.SetTextColor(col.r,col.g,col.b,col.a)
-		local lengthX, lengthY = surface.GetTextSize("Players:")
+		local lengthX, _ = surface.GetTextSize("Players:")
 		surface.SetTextPos(w / 2 - lengthX/2,20)
 		surface.DrawText("Players:")
 	end
@@ -196,7 +190,7 @@ CreateEndMenu = function()
 	DScrollPanel:SetPos(10, 80)
 	DScrollPanel:SetSize(sizeX - 20, sizeY - 90)
 
-	for i,ply in player.Iterator() do
+	for _,ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		local but = vgui.Create("DButton",DScrollPanel)
 		but:SetSize(100,50)
@@ -213,8 +207,8 @@ CreateEndMenu = function()
 
             local col = ply:GetPlayerColor():ToColor()
 			surface.SetFont( "ZB_InterfaceMediumLarge" )
-			local lengthX, lengthY = surface.GetTextSize( ply:GetPlayerName() or "He quited..." )
-			
+			local _, lengthY = surface.GetTextSize( ply:GetPlayerName() or "He quited..." )
+
 			surface.SetTextColor(0,0,0,255)
 			surface.SetTextPos(w / 2 + 1,h/2 - lengthY/2 + 1)
 			surface.DrawText(ply:GetPlayerName() or "He quited...")
@@ -223,11 +217,11 @@ CreateEndMenu = function()
 			surface.SetTextPos(w / 2,h/2 - lengthY/2)
 			surface.DrawText(ply:GetPlayerName() or "He quited...")
 
-            
+
 			local col = colSpect2
 			surface.SetFont( "ZB_InterfaceMediumLarge" )
 			surface.SetTextColor(col.r,col.g,col.b,col.a)
-			local lengthX, lengthY = surface.GetTextSize( ply:GetPlayerName() or "He quited..." )
+			local _, lengthY = surface.GetTextSize( ply:GetPlayerName() or "He quited..." )
 			surface.SetTextPos(15,h/2 - lengthY/2)
 			surface.DrawText((ply:Name() .. (not ply:Alive() and " - died" or "")) or "He quited...")
 
@@ -302,24 +296,24 @@ hook.Add("radialOptions", "CommanderSupportOptions", function()
 end)
 
 local currentMusic
-local fadeDuration = 2  
-local fadeInterval = 0.1  
+local fadeDuration = 2
+local fadeInterval = 0.1
 
 local musicConvar = CreateConVar("cl_wavemusic", "1", FCVAR_ARCHIVE, "Toggle music during enemy waves.")
 
 local function FadeOutMusic(music, duration, interval)
     if not IsValid(music) then return end
-    
+
     local volume = music:GetVolume()
     local steps = duration / interval
     local stepDecrease = volume / steps
 
     timer.Create("MusicFadeOut", interval, steps, function()
-        if not IsValid(music) then 
+        if not IsValid(music) then
             timer.Remove("MusicFadeOut")
-            return 
+            return
         end
-        
+
         volume = volume - stepDecrease
         if volume <= 0 then
             music:Stop()
@@ -360,7 +354,7 @@ net.Receive("StartWaveMusic", function()
 
     game.RemoveRagdolls()
 
-    StopCurrentMusic(true) 
+    StopCurrentMusic(true)
 
     if musicConvar:GetBool() then
         PlayMusic(musicFile)
@@ -368,20 +362,20 @@ net.Receive("StartWaveMusic", function()
 end)
 
 net.Receive("StopWaveMusic", function()
-    StopCurrentMusic(true)  
+    StopCurrentMusic(true)
 end)
 
 cvars.AddChangeCallback("cl_wavemusic", function(convar_name, old_value, new_value)
     if tonumber(new_value) == 0 then
-        StopCurrentMusic(true)  
+        StopCurrentMusic(true)
     elseif tonumber(new_value) == 1 then
-        
+
     end
 end)
 
 cvars.AddChangeCallback("snd_musicvolume", function(convar_name, old_value, new_value)
     if IsValid(currentMusic) then
-        local newVolume = tonumber(new_value) * 0.5  
+        local newVolume = tonumber(new_value) * 0.5
         currentMusic:SetVolume(newVolume)
     end
 end)
@@ -404,42 +398,42 @@ local function CreateVoteFonts()
         antialias = true,
         shadow = true
     })
-    
+
     surface.CreateFont("Defense_Subtitle", {
         font = "Roboto",
         size = 22,
         weight = 500,
         antialias = true
     })
-    
+
     surface.CreateFont("Defense_Button", {
         font = "Roboto",
         size = 24,
         weight = 600,
         antialias = true
     })
-    
+
     surface.CreateFont("Defense_Description", {
         font = "Roboto",
         size = 18,
         weight = 400,
         antialias = true
     })
-    
+
     surface.CreateFont("Defense_SmallText", {
         font = "Roboto",
         size = 16,
         weight = 400,
         antialias = true
     })
-    
+
     surface.CreateFont("Defense_Stats", {
         font = "Roboto",
         size = 16,
         weight = 500,
         antialias = true
     })
-    
+
     surface.CreateFont("Defense_Timer", {
         font = "Roboto",
         size = 26,
@@ -455,10 +449,10 @@ CreateVoteFonts()
 local function DrawBackgroundBlur()
     local x, y = 0, 0
     local scrW, scrH = ScrW(), ScrH()
-    
+
     surface.SetDrawColor(0, 0, 0, 150)
     surface.SetMaterial(Material("pp/blurscreen"))
-    
+
     for i = 1, 5 do
         Material("pp/blurscreen"):SetFloat("$blur", (i / 3) * 4)
         Material("pp/blurscreen"):Recompute()
@@ -471,8 +465,8 @@ local function DrawBackgroundBlur()
 end
 
 local function CreateVoteMenu()
-    if IsValid(voteMenu) then 
-        voteMenu:Remove() 
+    if IsValid(voteMenu) then
+        voteMenu:Remove()
     end
 
     local blurPanel = vgui.Create("DPanel")
@@ -484,13 +478,13 @@ local function CreateVoteMenu()
     end
 
     voteMenu = vgui.Create("ZFrame")
-    voteMenu:SetSize(950, 850) 
+    voteMenu:SetSize(950, 850)
     voteMenu:Center()
     voteMenu:SetTitle("")
     voteMenu:SetDraggable(false)
     voteMenu:ShowCloseButton(false)
     voteMenu:MakePopup()
-    
+
 
     voteMenu.OnRemove = function()
         if IsValid(blurPanel) then
@@ -500,44 +494,44 @@ local function CreateVoteMenu()
 
     local gradientDown = Material("gui/gradient_down")
     local gradientUp = Material("gui/gradient_up")
-    
+
     voteMenu.Paint = function(self, w, h)
 
         draw.RoundedBox(8, 0, 0, w, h, Color(30, 30, 30, 220))
-        
+
 
 
         surface.SetDrawColor(40, 40, 40, 230)
         surface.DrawRect(0, 0, w, 80)
-        
+
         surface.SetDrawColor(50, 50, 50, 100)
         surface.SetMaterial(gradientDown)
         surface.DrawTexturedRect(0, 0, w, 80)
 
         surface.SetDrawColor(70, 70, 70, 150)
         surface.DrawLine(50, 80, w - 50, 80)
-        
+
 
         surface.SetDrawColor(40, 40, 40, 230)
-        surface.DrawRect(0, h - 150, w, 150) 
-        
+        surface.DrawRect(0, h - 150, w, 150)
+
         surface.SetDrawColor(60, 60, 60, 100)
         surface.SetMaterial(gradientUp)
         surface.DrawTexturedRect(0, h - 150, w, 150)
-        
+
 
         surface.SetDrawColor(70, 70, 70, 150)
         surface.DrawLine(50, h - 150, w - 50, h - 150)
-        
+
 
         draw.SimpleText("SELECT GAME MODE", "Defense_Title", w / 2, 28, Color(230, 230, 230), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         draw.SimpleText("Vote for the current round mode", "Defense_Subtitle", w / 2, 55, Color(200, 200, 200), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
-    
+
 
     local timerPanel = vgui.Create("DPanel", voteMenu)
     timerPanel:SetSize(180, 50)
-    timerPanel:SetPos(voteMenu:GetWide() / 2 - 90, 735) 
+    timerPanel:SetPos(voteMenu:GetWide() / 2 - 90, 735)
     timerPanel.Paint = function(self, w, h)
         local timeLeft = math.ceil(voteEndTime - CurTime())
         local timeColor = Color(255, 255, 255)
@@ -547,43 +541,43 @@ local function CreateVoteMenu()
         elseif timeLeft <= 20 then
             timeColor = Color(255, 200, 50)
         end
-        
+
         draw.RoundedBox(6, 0, 0, w, h, Color(40, 40, 40, 180))
         draw.SimpleText("TIME LEFT:", "Defense_Stats", w / 2, 12, Color(200, 200, 200), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         draw.SimpleText(timeLeft .. " SEC", "Defense_Timer", w / 2, 32, timeColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
-    
+
 
     local voteStatsPanel = vgui.Create("DPanel", voteMenu)
-    voteStatsPanel:SetSize(870, 70) 
-    voteStatsPanel:SetPos(voteMenu:GetWide() / 2 - 435, 795) 
+    voteStatsPanel:SetSize(870, 70)
+    voteStatsPanel:SetPos(voteMenu:GetWide() / 2 - 435, 795)
     voteStatsPanel.Paint = function(self, w, h)
         draw.RoundedBox(6, 0, 0, w, h, Color(40, 40, 40, 180))
-        
+
         local standardPercent = totalVotes > 0 and math.floor((voteResults[1] or 0) / totalVotes * 100) or 0
         local extendedPercent = totalVotes > 0 and math.floor((voteResults[2] or 0) / totalVotes * 100) or 0
         local zombiePercent = totalVotes > 0 and math.floor((voteResults[3] or 0) / totalVotes * 100) or 0
-        
+
 
         draw.SimpleText("Vote Statistics:", "Defense_Stats", 20, 20, Color(200, 200, 200), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         draw.SimpleText("Total votes: " .. totalVotes, "Defense_Stats", w - 20, 20, Color(200, 200, 200), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-        
+
 
         draw.RoundedBox(5, 170, 15, 140, 40, Color(50, 100, 200, 150))
         draw.SimpleText("Standard: " .. standardPercent .. "%", "Defense_Stats", 240, 33, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         draw.SimpleText("(" .. (voteResults[1] or 0) .. " votes)", "Defense_SmallText", 240, 48, Color(220, 220, 220), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        
+
 
         draw.RoundedBox(5, 370, 15, 140, 40, Color(200, 100, 50, 150))
         draw.SimpleText("Extended: " .. extendedPercent .. "%", "Defense_Stats", 440, 33, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         draw.SimpleText("(" .. (voteResults[2] or 0) .. " votes)", "Defense_SmallText", 440, 48, Color(220, 220, 220), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        
+
 
         draw.RoundedBox(5, 570, 15, 140, 40, Color(50, 200, 50, 150))
         draw.SimpleText("Zombie: " .. zombiePercent .. "%", "Defense_Stats", 640, 33, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         draw.SimpleText("(" .. (voteResults[3] or 0) .. " votes)", "Defense_SmallText", 640, 48, Color(220, 220, 220), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
-    
+
 
     voteMenu.Think = function()
         if CurTime() >= voteEndTime then
@@ -591,7 +585,7 @@ local function CreateVoteMenu()
             return
         end
     end
-    
+
     local modeDescriptions = {
         [1] = {
             title = "Standard Mode",
@@ -629,7 +623,7 @@ local function CreateVoteMenu()
             }
         }
     }
-    
+
 
     local function CreateModeButton(index, yPos)
         local button = vgui.Create("DButton", voteMenu)
@@ -639,15 +633,13 @@ local function CreateVoteMenu()
         button.Color = modeDescriptions[index].color
         button.HoverFrac = 0
         button.SelectedFrac = 0
-        
-  
+
+
         local isDisabled = false
-        
+
         button.Paint = function(self, w, h)
             local baseColor = modeDescriptions[index].color
-            local darkColor = Color(baseColor.r * 0.6, baseColor.g * 0.6, baseColor.b * 0.6)
-            local brightColor = Color(baseColor.r * 1.2, baseColor.g * 1.2, baseColor.b * 1.2)
-            
+
 
 
             if not isDisabled then
@@ -657,41 +649,41 @@ local function CreateVoteMenu()
                 self.HoverFrac = 0
                 self.SelectedFrac = 0
             end
-            
+
 
             if isDisabled then
                 draw.RoundedBox(6, 0, 0, w, h, Color(20, 20, 20, 220))
             else
                 draw.RoundedBox(6, 0, 0, w, h, Color(30, 30, 30, 200))
             end
-            
+
             local borderColor
             if isDisabled then
-                borderColor = Color(70, 70, 70, 100) 
+                borderColor = Color(70, 70, 70, 100)
             else
                 borderColor = ColorAlpha(baseColor, 100 + 100 * math.max(self.HoverFrac, self.SelectedFrac))
             end
-            
+
             surface.SetDrawColor(borderColor)
             surface.DrawOutlinedRect(0, 0, w, h, 2)
-            
+
 
             local gradientColor
             if isDisabled then
                 gradientColor = Color(40, 40, 40, 100)
             else
-                gradientColor = self.SelectedFrac > 0 and 
+                gradientColor = self.SelectedFrac > 0 and
                     Color(baseColor.r * 0.5, baseColor.g * 0.5, baseColor.b * 0.5, 100 * self.SelectedFrac) or
                     Color(50, 50, 50, 100)
             end
-                
+
             surface.SetDrawColor(gradientColor)
             surface.SetMaterial(gradientDown)
             surface.DrawTexturedRect(0, 0, w, h)
-            
+
 
             local percent = totalVotes > 0 and math.floor((voteResults[index] or 0) / totalVotes * 100) or 0
-            
+
             if isDisabled then
                 draw.RoundedBox(4, w - 180, 10, 170, 30, Color(40, 40, 40, 180))
                 draw.SimpleText("IN DEVELOPMENT", "Defense_Stats", w - 95, 25, Color(255, 70, 70), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -699,37 +691,36 @@ local function CreateVoteMenu()
                 draw.RoundedBox(4, w - 70, 10, 60, 30, Color(40, 40, 40, 180))
                 draw.SimpleText(percent .. "%", "Defense_Stats", w - 40, 25, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
-            
+
             local textColor = isDisabled and Color(150, 150, 150) or Color(255, 255, 255)
             draw.SimpleText(modeDescriptions[index].title, "Defense_Button", 20, 22, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             draw.SimpleText(modeDescriptions[index].shortDesc, "Defense_SmallText", 20, 50, isDisabled and Color(120, 120, 120) or Color(200, 200, 200), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-            
+
 
             if self.SelectedFrac > 0 and not isDisabled then
                 draw.SimpleText("SELECTED", "Defense_SmallText", w - 120, 50, Color(255, 255, 255, 255 * self.SelectedFrac), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
         end
-        
+
         button.DoClick = function()
             if isDisabled then
                 surface.PlaySound("buttons/button10.wav")
                 return
             end
-            
+
             local previousSelection = selectedMode
             selectedMode = index
-            
+
             if previousSelection ~= selectedMode then
                 surface.PlaySound("ui/buttonclick.wav")
-                
+
 
                 net.Start("defense_change_vote")
-                net.WriteInt(previousSelection or 0, 4) 
-                net.WriteInt(selectedMode, 4) 
+                net.WriteInt(selectedMode, 4)
                 net.SendToServer()
             end
         end
-        
+
 
         local descPanel = vgui.Create("DPanel", voteMenu)
         descPanel:SetSize(750, 110)
@@ -741,7 +732,7 @@ local function CreateVoteMenu()
 
             local textColor = isDisabled and Color(150, 150, 150) or Color(220, 220, 220)
             draw.DrawText(modeDescriptions[index].longDesc, "Defense_Description", 15, 10, textColor, TEXT_ALIGN_LEFT)
-            
+
 
             local y = 40
             local maxFeaturesPerRow = 2
@@ -752,26 +743,26 @@ local function CreateVoteMenu()
                 local col = (i - 1) % maxFeaturesPerRow
                 local xPos = 15 + col * featureWidth
                 local yPos = y + row * 18
-                
-                if yPos + 18 <= h then 
+
+                if yPos + 18 <= h then
                     local featureColor = isDisabled and Color(130, 130, 130) or Color(200, 200, 200)
                     draw.SimpleText(feature, "Defense_SmallText", xPos, yPos, featureColor, TEXT_ALIGN_LEFT)
                 end
             end
-            
+
 
             if isDisabled then
-                draw.SimpleText("This mode is currently under development and will be available soon!", 
+                draw.SimpleText("This mode is currently under development and will be available soon!",
                                "Defense_SmallText", w/2, h-20, Color(255, 100, 100), TEXT_ALIGN_CENTER)
             end
         end
-        
+
         return button
     end
 
-    local standardButton = CreateModeButton(1, 100)
-    local extendedButton = CreateModeButton(2, 300)
-    local zombieButton = CreateModeButton(3, 500)
+    CreateModeButton(1, 100)
+    CreateModeButton(2, 300)
+    CreateModeButton(3, 500)
 end
 
 net.Receive("defense_start_vote", function()
@@ -793,11 +784,11 @@ end)
 net.Receive("defense_vote_result", function()
     currentSubMode = net.ReadString()
     voteResults = net.ReadTable()
-    
+
     if IsValid(voteMenu) then
         voteMenu:Remove()
     end
-    
+
     surface.PlaySound("buttons/button14.wav")
 end)
 
@@ -806,7 +797,7 @@ net.Receive("defense_show_selected_mode", function()
     currentSubMode = mode
     showSelectedMode = true
     selectedModeDisplayTime = CurTime()
-    
+
     if mode == "ZOMBIE" then
         surface.PlaySound("npc/zombie/zombie_alert1.wav")
     elseif mode == "EXTENDED" then
@@ -821,17 +812,17 @@ MODE.HUDPaint = function(self)
     if originalHUDPaint then
         originalHUDPaint(self)
     end
-    
+
     if showSelectedMode and CurTime() - selectedModeDisplayTime < selectedModeDisplayDuration then
         local alpha = 255
         if CurTime() - selectedModeDisplayTime > selectedModeDisplayDuration - 1 then
             alpha = 255 * (1 - (CurTime() - (selectedModeDisplayTime + selectedModeDisplayDuration - 1)))
         end
-        
+
         local modeName = "Unknown"
         local modeColor = Color(255, 255, 255)
         local description = ""
-        
+
         if currentSubMode == "STANDARD" then
             modeName = "Standard Mode"
             modeColor = Color(50, 150, 255)
@@ -845,15 +836,15 @@ MODE.HUDPaint = function(self)
             modeColor = Color(50, 255, 50)
             description = "6 waves of zombie apocalypse"
         end
-        
+
         modeColor.a = alpha
-        
+
         local text = "Selected mode: " .. modeName
-        
+
         draw.SimpleText(text, "Defense_Title", ScrW() * 0.5, ScrH() * 0.3, modeColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         draw.SimpleText(description, "Defense_Subtitle", ScrW() * 0.5, ScrH() * 0.35, Color(255, 255, 255, alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
-    
+
     if showSelectedMode and CurTime() - selectedModeDisplayTime >= selectedModeDisplayDuration then
         showSelectedMode = false
     end
@@ -866,17 +857,17 @@ hook.Remove("radialOptions", "CommanderSupportOptions")
 
 net.Receive("defense_submit_vote", function(len, ply)
     if not IsValid(ply) then return end
-    
+
     local vote = net.ReadInt(4)
     if vote < 1 or vote > 3 then return end
-    
+
     local MODE = CurrentRound()
     if not MODE or MODE.name ~= "defense" or not MODE.VoteInProgress then return end
-    
+
     if not ply.HasVoted then
         MODE.VoteResults[vote] = MODE.VoteResults[vote] + 1
-        ply.HasVoted = vote 
-        
+        ply.HasVoted = vote
+
         net.Start("defense_vote_update")
         net.WriteTable(MODE.VoteResults)
         net.Broadcast()
@@ -886,9 +877,9 @@ end)
 hook.Add("Think", "MonitorPlayerRoleChange", function()
     local ply = LocalPlayer()
     if not IsValid(ply) then return end
-    
+
     local currentRole = ply:GetNWString("PlayerRole", "")
-    
+
     if not ply.lastRole then
         ply.lastRole = currentRole
     elseif ply.lastRole ~= currentRole then
@@ -901,10 +892,10 @@ end)
 local bossWaveData = {
     active = false,
     startTime = 0,
-    duration = 6, 
-    fadeInTime = 0.5, 
+    duration = 6,
+    fadeInTime = 0.5,
     showTime = 5,
-    fadeOutTime = 0.5, 
+    fadeOutTime = 0.5,
     scale = 0,
     targetScale = 1
 }
@@ -923,7 +914,7 @@ net.Receive("defense_boss_incoming", function()
     bossWaveData.active = true
     bossWaveData.startTime = CurTime()
     bossWaveData.scale = 0
-    
+
 
     surface.PlaySound("ambient/alarms/razortrain_horn1.wav")
     timer.Simple(0.8, function()
@@ -934,7 +925,7 @@ end)
 
 local function DrawBossIncomingBanner()
     if not bossWaveData.active then return end
-    
+
     local curTime = CurTime()
     local elapsedTime = curTime - bossWaveData.startTime
 
@@ -945,10 +936,10 @@ local function DrawBossIncomingBanner()
 
     local alpha = 255
     local centerX = ScrW() / 2
-    local centerY = ScrH() * 0.2 
-    local bannerWidth = ScrW() * 0.45 
-    local bannerHeight = ScrH() * 0.13 
-    
+    local centerY = ScrH() * 0.2
+    local bannerWidth = ScrW() * 0.45
+    local bannerHeight = ScrH() * 0.13
+
 
     if elapsedTime < bossWaveData.fadeInTime then
 
@@ -959,62 +950,62 @@ local function DrawBossIncomingBanner()
 
         local progress = (elapsedTime - (bossWaveData.duration - bossWaveData.fadeOutTime)) / bossWaveData.fadeOutTime
         alpha = 255 * (1 - progress)
-        bossWaveData.scale = Lerp(progress, 1, 1.1) 
+        bossWaveData.scale = Lerp(progress, 1, 1.1)
     else
 
-        bossWaveData.scale = 1 
+        bossWaveData.scale = 1
     end
-    
+
     local scaledWidth = bannerWidth * bossWaveData.scale
     local scaledHeight = bannerHeight * bossWaveData.scale
     local x = centerX - scaledWidth / 2
     local y = centerY - scaledHeight / 2
-    
+
     local mainColor = Color(bossBannerColors.main.r, bossBannerColors.main.g, bossBannerColors.main.b, alpha)
     local textColor = Color(bossBannerColors.text.r, bossBannerColors.text.g, bossBannerColors.text.b, alpha)
     local shadowColor = Color(bossBannerColors.shadow.r, bossBannerColors.shadow.g, bossBannerColors.shadow.b, alpha * 0.8)
     local backgroundColor = Color(bossBannerColors.background.r, bossBannerColors.background.g, bossBannerColors.background.b, alpha * 0.9)
     local borderColor = Color(bossBannerColors.border.r, bossBannerColors.border.g, bossBannerColors.border.b, alpha)
-    
+
 
     surface.SetDrawColor(0, 0, 0, alpha * 0.15)
     surface.DrawRect(0, 0, ScrW(), ScrH())
-    
+
 
     draw.RoundedBox(6, x, y, scaledWidth, scaledHeight, backgroundColor)
-    
+
 
     local headerHeight = scaledHeight * 0.55
     draw.RoundedBoxEx(6, x, y, scaledWidth, headerHeight, mainColor, true, true, false, false)
-    
+
 
     surface.SetDrawColor(borderColor)
     for i = 1, 2 do
         surface.DrawOutlinedRect(x + (i-1), y + (i-1), scaledWidth - (i-1)*2, scaledHeight - (i-1)*2)
     end
-    
+
 
     local textY = y + headerHeight / 2
-    
+
 
     draw.SimpleText("BOSS INCOMING", "ZB_HomicideMediumLarge", centerX + 2, textY + 2, shadowColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    
+
 
     draw.SimpleText("BOSS INCOMING", "ZB_HomicideMediumLarge", centerX, textY, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    
+
 
     local infoY = y + headerHeight + (scaledHeight - headerHeight) / 2
     draw.SimpleText("Prepare for a powerful enemy!", "ZB_HomicideMedium", centerX, infoY, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    
+
 
     local barHeight = scaledHeight * 0.04
-    local barY = y + scaledHeight - barHeight 
-    local barWidth = scaledWidth 
-    local barX = x 
-    
+    local barY = y + scaledHeight - barHeight
+    local barWidth = scaledWidth
+    local barX = x
+
 
     draw.RoundedBox(0, barX, barY, barWidth, barHeight, Color(50, 50, 50, alpha * 0.7))
-    
+
 
     local barProgress = 1 - (elapsedTime / bossWaveData.duration)
     local barProgressWidth = barWidth * barProgress
@@ -1030,15 +1021,14 @@ hook.Add("HUDPaint", "DrawBossIncomingBanner", DrawBossIncomingBanner)
     bossWaveData.active = true
     bossWaveData.startTime = CurTime()
     bossWaveData.scale = 0
-    
+
 
     surface.PlaySound("ambient/alarms/razortrain_horn1.wav")
     timer.Simple(0.8, function()
         surface.PlaySound("ambient/alarms/klaxon1.wav")
     end)
-    
+
     --chat.AddText(Color(255, 50, 50), "[DEFENSE] ", Color(255, 255, 255), "Boss banner test activated!")
 end)]]
-
 
 

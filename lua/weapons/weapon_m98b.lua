@@ -150,7 +150,7 @@ function SWEP:AnimationPostPost()
 	else
 		sin = sin * 1
 	end
-	
+
 	if sin > 0 then
 		sin = sin * 2
 		sin = math.ease.InOutSine(sin)
@@ -189,9 +189,6 @@ SWEP.LHPos = Vector(15,1.5,-3.7)
 SWEP.LHAng = Angle(-90,-150,-0)
 
 local finger1 = Angle(-35, -25, 0)
-local finger2 = Angle(-0, 10, 0)
-local finger3 = Angle(-0, -20, 0)
-local angZero = Angle(0, 0, 0)
 
 function SWEP:AnimHoldPost(model)
 	self:BoneSet("l_finger0", vector_zero, finger1)
@@ -230,7 +227,6 @@ function SWEP:InsertAmmo(need)
 end
 
 SWEP.ReloadCooldown = 0.1
-local math_min = math.min
 function SWEP:ReloadEnd()
 	self:InsertAmmo(self:GetMaxClip1() - self:Clip1() + (self.drawBullet ~= nil and not self.OpenBolt and 1 or 0))
 	self.ReloadNext = CurTime() + self.ReloadCooldown --I have no fucking idea what this is

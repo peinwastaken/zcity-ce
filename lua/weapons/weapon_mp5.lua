@@ -44,7 +44,7 @@ SWEP.FakeEmptyReloadSounds = {
 	[0.85] = "weapons/arccw_ur/mp5/chamber.ogg"
 }
 
-SWEP.MagModel = "models/bshields/drgordon/weapons/h&k/h&k_mp5a3_30_round_9x19mm_magazine.mdl" 
+SWEP.MagModel = "models/bshields/drgordon/weapons/h&k/h&k_mp5a3_30_round_9x19mm_magazine.mdl"
 
 SWEP.DropMagBone = 45
 SWEP.lmagpos = Vector(0,0,0)
@@ -76,7 +76,7 @@ if CLIENT then
 			--self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 0.58 * timeMul)
 		end,
 		[0.25] = function( self, timeMul )
-			self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 0.5 * timeMul,nil,nil,function() 
+			self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 0.5 * timeMul,nil,nil,function()
 				self:GetWM():ManipulateBoneScale(53, vector_full)
 				self:GetWM():ManipulateBoneScale(44, vector_full)
 				self:GetWM():ManipulateBoneScale(45, vector_full)
@@ -88,7 +88,7 @@ if CLIENT then
 				self:GetWM():ManipulateBoneScale(44, vector_origin)
 				self:GetWM():ManipulateBoneScale(45, vector_origin)
 				self:GetWM():ManipulateBoneScale(46, vector_origin)
-				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1 * timeMul,nil,nil,function() 
+				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1 * timeMul,nil,nil,function()
 					self:GetWM():ManipulateBoneScale(44, vector_origin)
 					self:GetWM():ManipulateBoneScale(45, vector_origin)
 					self:GetWM():ManipulateBoneScale(46, vector_origin)
@@ -217,11 +217,6 @@ SWEP.RHAng = Angle(0,-8,90)
 SWEP.LHPos = Vector(11,1.6,-3)
 SWEP.LHAng = Angle(-110,-180,5)
 
-local finger1 = Angle(-15,-22, 20)
-local finger2 = Angle(0, 10, 0)
-local finger3 = Angle(0, -5, -15)
-local finger4 = Angle(-10, -35, 0)
-local finger5 = Angle(0, 40, 0)
 
 SWEP.ShootAnimMul = 2
 
@@ -294,7 +289,7 @@ SWEP.ReloadAnimLHAng = {
 	Angle(-80,0,120),
 	Angle(-80,0,120),
 	Angle(-80,0,120),
-	Angle(-80,0,120),	
+	Angle(-80,0,120),
 	Angle(0,0,0),
 	Angle(0,0,0)
 }

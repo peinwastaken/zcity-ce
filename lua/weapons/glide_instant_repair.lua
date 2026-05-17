@@ -15,7 +15,6 @@ if CLIENT then
 end
 
 local CurTime = CurTime
-local REPAIR_SOUND = "glide/train/track_clank_%d.wav"
 local anims_rnd = {
 	ACT_HL2MP_GESTURE_RANGE_ATTACK_KNIFE,
 	ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE,
@@ -38,7 +37,6 @@ function SWEP:PrimaryAttack()
     local ent = self.repairTarget
     if not ent then return end
 
-    local engineHealth = ent:GetEngineHealth()
     local chassisHealth = ent:GetChassisHealth()
 
     if chassisHealth < ent.MaxChassisHealth then
@@ -51,7 +49,7 @@ function SWEP:PrimaryAttack()
         end
 
 		ent:Repair()
-		user:EmitSound( "buttons/lever6.wav", 75, math.random( 110, 120 ), 0.5 ) 
+		user:EmitSound( "buttons/lever6.wav", 75, math.random( 110, 120 ), 0.5 )
 		ent:SetChassisHealth( ent.MaxChassisHealth )
 		ent:SetEngineHealth( ent.MaxEngineHealth )
     end

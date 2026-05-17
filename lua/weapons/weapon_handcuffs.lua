@@ -137,11 +137,11 @@ function SWEP:Tie(tr)
     local ent = tr.Entity
 	--self:EmitSound()
 	--timer.Simple(1,function()
-		if IsValid(ent) and IsValid(self) and IsValid(self:GetOwner()) and self:GetOwner():Alive() and self:GetOwner():GetPos():Distance(ent:GetPos()) < 500 then 
+		if IsValid(ent) and IsValid(self) and IsValid(self:GetOwner()) and self:GetOwner():Alive() and self:GetOwner():GetPos():Distance(ent:GetPos()) < 500 then
 			if IsValid(ent) and (ent:IsRagdoll() or (ent:IsPlayer() and ent:GetVelocity():Length() < 1)) and hg.RagdollOwner(ent) ~= self:GetOwner() then
 				--if ent.handcuffed then return end
 				self:GetOwner():ChatPrint("Threat handcuffed.")
-				
+
 				if ent:IsRagdoll() then handcuff(ent) end
 
 				ent:EmitSound("weapons/357/357_reload3.wav")
@@ -153,7 +153,7 @@ function SWEP:Tie(tr)
 					ply:SelectWeapon("weapon_hands_sh")
 					ply:SetNetVar("handcuffed",true)
 				end
-				
+
 				self:GetOwner():SelectWeapon("weapon_hands_sh")
 
 				org.handcuffed = true
@@ -166,7 +166,7 @@ end
 
 if SERVER then
 	hook.Add("Org Clear","Removehandcuffs",function(org)
-		org.handcuffed = false 
+		org.handcuffed = false
 		if IsValid(org.owner) and org.owner:IsPlayer() then
 			org.owner:SetNetVar("handcuffed",false)
 		end
@@ -206,7 +206,6 @@ end )
 function SWEP:PrimaryAttack()
 	if SERVER then
 		if self.CoolDown > CurTime() then return end
-        local tr = self:GetEyeTrace()
 		--self:SetHolding(math.min(self:GetHolding() + 7, 100))
 		self:PlayAnim("attack")
 		timer.Simple(0.5,function()

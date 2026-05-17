@@ -5,7 +5,7 @@ function wOS.DynaBase:CreateUserMount( data )
 	if not data then return end
 	if not data.Name then return end
 	self.UserMounts[ data.Name ] = data
-	
+
 	local mounts = file.Read( "wos/dynabase/usermounts/mounts.txt", "DATA" ) or "{}"
 	local local_mounts = util.JSONToTable( mounts )
 
@@ -32,7 +32,7 @@ function wOS.DynaBase:GetAllUserMounts()
 end
 
 function wOS.DynaBase:GetUserMount( name )
-	return self.UserMounts[ name ] 
+	return self.UserMounts[ name ]
 end
 
 function wOS.DynaBase:CreateLocalMenu( parent, old_data )
@@ -51,7 +51,7 @@ function wOS.DynaBase:CreateLocalMenu( parent, old_data )
     frame.Think = function( pan )
         pan:OldThink()
         if parent:HasFocus() then pan:MoveToFront() end
-        if not self.AnimMenu then parent:Remove() end 
+        if not self.AnimMenu then parent:Remove() end
     end
 
     local fw, fh = frame:GetSize()
@@ -68,7 +68,7 @@ function wOS.DynaBase:CreateLocalMenu( parent, old_data )
     for _, addon in ipairs( engine.GetAddons() ) do
         if not addon.downloaded then continue end
         if not addon.mounted then continue end
-        local row = addon_list:AddLine( addon.title )
+        addon_list:AddLine( addon.title )
     end
 
     local browser = vgui.Create( "DFileBrowser", frame )
@@ -96,8 +96,6 @@ function wOS.DynaBase:CreateLocalMenu( parent, old_data )
     creation_frame:SetBackgroundColor( Color( 130, 130, 130 ) )
     creation_frame:Dock( LEFT )
     creation_frame:DockPadding( fw*0.005, 0, fw*0.01, 0 )
-
-    local cw, ch = creation_frame:GetSize()
 
     local name_lab =  vgui.Create( "DLabel", creation_frame )
     name_lab:SetTextColor( color_white )
@@ -230,7 +228,7 @@ end
 
 hook.Add( "Initialize", "wOS.DynaBase.LoadUserMounts", function()
 	local mounts = file.Read( "wos/dynabase/usermounts/mounts.txt", "DATA" ) or "{}"
-	local local_mounts = util.JSONToTable( mounts )		
+	local local_mounts = util.JSONToTable( mounts )
 
 	for mount, data in pairs( local_mounts ) do
 		wOS.DynaBase.UserMounts[ mount ] = data

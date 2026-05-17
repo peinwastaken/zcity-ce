@@ -1,11 +1,10 @@
-
 local PLAYER = FindMetaTable("Player")
 util.AddNetworkString("hg_headcrab")
 function PLAYER:AddHeadcrab(headcrab)
 	if self.PlayerClassName == "headcrabzombie" then return end
     --self.organism.headcrabon = headcrab
     self:SetNetVar("headcrab",headcrab)
-   
+
     self.organism.headcrabon = headcrab and CurTime()
 	self.organism.headcrabevent = false
 
@@ -30,23 +29,6 @@ hook.Add("Org Clear", "removeheadcrab", function(org)
 	org.noHead = false
 end)
 
-local fallbackMats = {
-	["Rebel"] = {
-		["main"] = "models/zombie_classic/zombie_classic_sheet",
-		["pants"] = "models/zombie_classic/zombie_classic_sheet",
-		["boots"] = "models/zombie_classic/zombie_classic_sheet",
-	},
-	["Metrocop"] = {
-		["main"] = "models/balaclava_hood/berd_diff_018_a_uni",
-		["pants"] = "models/humans/male/group02/lambda",
-		["boots"] = "models/humans/male/group01/formal"
-	},
-	["Combine"] = {
-		["main"] = "models/zombie_classic/combinesoldiersheet_zombie",
-		["pants"] = "models/gruchk_uwrist/css_seb_swat/swat/gear2",
-		["boots"] = "models/humans/male/group01/formal"
-	},
-}
 
 local clr_red, lerpAng = Color(150, 0, 0), Angle(0, 0, 0)
 hook.Add("Org Think", "Headcrab",function(owner, org, timeValue)

@@ -8,17 +8,13 @@ SWEP.AutoSwitchFrom = false
 SWEP.SpecialTime = 0
 
 local math = math
-local math_random, math_Clamp, CurTime, Color = math.random, math.Clamp, CurTime, Color
+local math_random, math_Clamp, CurTime, _ = math.random, math.Clamp, CurTime, Color
 
-local ang4 = Angle(0,0,180)
-local ang5 = Angle(0,0,0)
 
-local ang3 = Angle(0,0,180)
-local clamp = math_Clamp
 
 local function WhomILookinAt(ply, cone, dist)
 	local CreatureTr, ObjTr, OtherTr
-	for i = 1, 150 * cone do
+	for _ = 1, 150 * cone do
 		local Tr = hg.eyeTrace(ply,dist)
 		if Tr.Hit and not Tr.HitSky and Tr.Entity then
 			local Ent, Class = Tr.Entity, Tr.Entity:GetClass()
@@ -71,13 +67,12 @@ function SWEP:SecondaryAttack()
 	if self:GetOwner():GetNetVar("handcuffed",false) then return end
 	if SERVER then
 		self:SetCarrying()
-		local ply = self:GetOwner()
 		local pos = hg.eye(self:GetOwner())
 		local tr = util.QuickTrace(pos, self:GetOwner():GetAimVector() * self.ReachDistance, {self:GetOwner()})
 
 		--if (IsValid(tr.Entity) or game.GetWorld() == tr.Entity) and self:CanPickup(tr.Entity) and not tr.Entity:IsPlayer() then
 		if (IsValid(tr.Entity)) and self:CanPickup(tr.Entity) and not tr.Entity:IsPlayer() then
-			local Dist = (select(1, hg.eye(self:GetOwner())) - tr.HitPos):Length()
+			local Dist = (pos - tr.HitPos):Length()
 			--if Dist < self.ReachDistance then
 				sound.Play("weapons/melee/blunt_light"..math_random(8)..".wav", self:GetOwner():GetShootPos(), 65, math_random(90, 110))
 				self:SetCarrying(tr.Entity, tr.PhysicsBone, tr.HitPos, Dist)
@@ -85,7 +80,7 @@ function SWEP:SecondaryAttack()
 				self:ApplyForce()
 			--end
 		elseif IsValid(tr.Entity) and tr.Entity:IsPlayer() then
-			local Dist = (select(1, hg.eye(self:GetOwner())) - tr.HitPos):Length()
+			local Dist = (pos - tr.HitPos):Length()
 			if Dist < self.ReachDistance then
 				sound.Play("weapons/melee/blunt_light"..math_random(8)..".wav", self:GetOwner():GetShootPos(), 65, math_random(90, 110))
 				self:GetOwner():SetVelocity(self:GetOwner():GetAimVector() * 20)
@@ -123,7 +118,7 @@ SWEP.Checking = 0
 
 function SWEP:ApplyForce()
 	local ply = self:GetOwner()
-	local target = self:GetOwner():GetAimVector() * self.CarryDist + select(1, hg.eye(ply))
+	local target = self:GetOwner():GetAimVector() * self.CarryDist + hg.eye(ply)
 	if not IsValid(self.CarryEnt) then return end
 	local phys = self.CarryEnt:GetPhysicsObjectNum(self.CarryBone)
 
@@ -187,7 +182,7 @@ function SWEP:ApplyForce()
 
 		if SERVER then
 			if self.CarryEnt.welds then
-				for i, weld in pairs(self.CarryEnt.welds) do
+				for _, weld in pairs(self.CarryEnt.welds) do
 					if IsValid(weld) then weld:Remove() end
 				end
 				self.CarryEnt.welds = nil
@@ -452,43 +447,33 @@ end
 SWEP.DamagePrimary = 10
 
 function SWEP:BlockingLogic(ent, mul, attacktype, trace)
-	local ent = hg.RagdollOwner(ent) or ent
+    ent = hg.RagdollOwner(ent) or ent
 
-	if ent:IsPlayer() then
-		local wep = ent:GetActiveWeapon()
+    if ent:IsPlayer() then
+        local wep = ent:GetActiveWeapon()
+        local owner = self:GetOwner()
+        local pos, aimvec = hg.eye(ent)
+        local dist = util.DistanceToLine(pos + aimvec * 100, pos, trace.HitPos)
+        local dmg = wep.DamagePrimary
+        local selfdmg = self.DamagePrimary * 0.2
 
-		local owner = self:GetOwner()
+        if wep.GetBlocking and wep:GetBlocking() and wep.SetStartedBlocking and dist < 10 then
+            ent.organism.stamina.subadd = ent.organism.stamina.subadd + mul * math_Clamp(selfdmg / dmg, 0.1, 1) * selfdmg * (1 - math_Clamp((self:GetStartedBlocking() - CurTime() + 0.1), 0, 0.1) / 0.1)
 
-		local pos, aimvec = hg.eye(ent)
-		local pos2, aimvec2 = hg.eye(owner)
+            wep:SetLastBlocked(CurTime())
+            self:PunchPlayer(owner, attacktype, -owner:GetAimVector(), selfdmg / 2)
+            self:PunchPlayer(ent, attacktype, owner:GetAimVector(), selfdmg / 2)
+            ent:EmitSound("physics/body/body_medium_impact_soft6.wav")
 
-		local dist, posHit, distLine = util.DistanceToLine(pos + aimvec * 100, pos, trace.HitPos)
+            if wep.SetLastBlocked then
+                wep:SetLastBlocked(CurTime())
+            end
 
-		//print(dist, distLine)
+            return math_Clamp(selfdmg / dmg / math_Clamp(ent.organism.stamina[1] / (ent.organism.stamina.max * 0.66), 0.1, 1), 0.1, 1)
+        end
+    end
 
-		local dmg = wep.DamagePrimary
-		local selfdmg = self.DamagePrimary * 0.2
-
-		if wep.GetBlocking and wep:GetBlocking() and wep.SetStartedBlocking and dist < 10 then
-			ent.organism.stamina.subadd = ent.organism.stamina.subadd + mul * math_Clamp(selfdmg / dmg, 0.1, 1) * selfdmg * (1 - math_Clamp((self:GetStartedBlocking() - CurTime() + 0.1), 0, 0.1) / 0.1)
-
-			wep:SetLastBlocked(CurTime())
-
-			//viewpunch the attacker maybe?
-			self:PunchPlayer(owner, attacktype, -owner:GetAimVector(), selfdmg / 2)
-			self:PunchPlayer(ent, attacktype, owner:GetAimVector(), selfdmg / 2)
-
-			ent:EmitSound("physics/body/body_medium_impact_soft6.wav") -- parry sound
-
-			if wep.SetLastBlocked then
-				wep:SetLastBlocked(CurTime())
-			end
-
-			return math_Clamp(selfdmg / dmg / math_Clamp(ent.organism.stamina[1] / (ent.organism.stamina.max * 0.66), 0.1, 1), 0.1, 1)
-		end
-	end
-
-	return 1
+    return 1
 end
 
 function SWEP:Think()
@@ -548,7 +533,7 @@ function SWEP:Think()
 				self.SpecialTime = 0
 			end
 		end
-		
+
 		if self:GetBlocking() then
 			self:SetNextDown(Time + 1)
 
@@ -784,8 +769,6 @@ function SWEP:Reload()
 	local ent = self:GetCarrying()
 
 	if SERVER then
-		local target,_ = WorldToLocal(self:GetOwner():GetAimVector() * (self.CarryDist or 50) + self:GetOwner():GetShootPos(),angle_zero,self:GetOwner():EyePos(),self:GetOwner():EyeAngles())
-
 		if IsValid(ent) then
 			local owner = self:GetOwner()
 			local bon = self.CarryEnt:TranslatePhysBoneToBone(self.CarryBone)

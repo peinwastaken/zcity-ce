@@ -113,8 +113,7 @@ function SWEP:Shoot(override)
 	self:SetLastShootTime(CurTime())
 	primary.Automatic = weapons.Get(self:GetClass()).Primary.Automatic
 
-    local gun = self:GetWeaponEntity()
-	local tr, pos, ang = self:GetTrace(true)
+	local _, pos, ang = self:GetTrace(true)
 	self:TakePrimaryAmmo(1)
 
 	local owner = self:GetOwner()

@@ -88,13 +88,13 @@ local function GetContainingAddon( mdl )
 	mdl = mdl or "models/m_anm.mdl"
 	for _, addon in pairs( engine.GetAddons() ) do
 		local modelFound = file.Find(mdl, addon.title)
-		if #modelFound != 0 then return addon end 
+		if #modelFound != 0 then return addon end
 	end
 end
 
 local function GetWorkshopInfo( addon, callback )
 	if not addon or not callback then return end
-	if wOS.DynaBase.WorkshopCache[ addon.wsid ] then 
+	if wOS.DynaBase.WorkshopCache[ addon.wsid ] then
 		callback( wOS.DynaBase.WorkshopCache[ addon.wsid ].Data, wOS.DynaBase.WorkshopCache[ addon.wsid ].Icon )
 		return
 	end
@@ -112,20 +112,20 @@ local function GetWorkshopInfo( addon, callback )
 			local baseTex = ( mat and mat:GetTexture("$basetexture") ) or nil
 			if baseTex == nil then
 				mat = AddonMaterial(cache)
-			end			
+			end
 			wOS.DynaBase.WorkshopCache[ addon.wsid ].Icon =  mat
 			callback( result, mat )
-		end ) 
+		end )
 	end )
 end
 
 function wOS.DynaBase:OpenConfigMenu()
 
-	if self.OverFrame then 
+	if self.OverFrame then
 		self.OverFrame:Remove()
 		self.OverFrame = nil
 		gui.EnableScreenClicker( false )
-		return 
+		return
 	end
 
 	self.OverFrame = vgui.Create( "DFrame" )
@@ -135,7 +135,7 @@ function wOS.DynaBase:OpenConfigMenu()
 	self.OverFrame:SetTitle( "" )
 	self.OverFrame:ShowCloseButton( false )
 	self.OverFrame:SetDraggable( false )
-	
+
 	gui.EnableScreenClicker( true )
 	self.AnimMenu = vgui.Create( "DFrame", self.OverFrame )
 	self.AnimMenu:SetSize( w*0.4, h*0.5 )
@@ -161,7 +161,7 @@ function wOS.DynaBase:OpenConfigMenu()
 	sheet:AddSheet( "Server Animations", scroll, "icon16/server.png" )
 
 	//placehold
-	local layout2 
+	local layout2
 	local layout = vgui.Create("DListLayout", scroll)
 	layout:SetSize(sw, sh)
 	layout:SetPaintBackground(true)
@@ -169,7 +169,7 @@ function wOS.DynaBase:OpenConfigMenu()
 
 	local temp_loaded = {}
 	local temp_count = 0
-	local drop_check = WOS_DYNABASE_ENFORCECONTENT_CVAR:GetInt() >= 2 and WOS_DYNABASE_LOADORDERENFORCE_CVAR:GetBool() 
+	local drop_check = WOS_DYNABASE_ENFORCECONTENT_CVAR:GetInt() >= 2 and WOS_DYNABASE_LOADORDERENFORCE_CVAR:GetBool()
 	if !drop_check then
 		layout:MakeDroppable( "WOS_DYNABASE_DROPPABLE" )
 		layout.OnModified = function( pan, opnl )
@@ -208,7 +208,7 @@ function wOS.DynaBase:OpenConfigMenu()
 	local order_checker = {}
 	local disabled_list = {}
 	if WOS_DYNABASE_LOADORDERENFORCE_CVAR:GetBool() and self.EnforceCount >= 1 and self.EnforcedOrder then
-		for cnt, name in ipairs( self.EnforcedOrder ) do
+		for _, name in ipairs( self.EnforcedOrder ) do
 			local data = self:GetSource( name )
 			if not data then continue end
 			temp_loaded[ name ] = true
@@ -267,7 +267,7 @@ function wOS.DynaBase:OpenConfigMenu()
 
 			surface.SetDrawColor( Color( 255, 255, 255, 100 ) )
 			surface.DrawOutlinedRect( 0, 0, ww, hh )
-			
+
 
 			if !drop_check and not pan.PreventSort then
 				surface.SetDrawColor( color_white )
@@ -285,12 +285,12 @@ function wOS.DynaBase:OpenConfigMenu()
 			end
 
 
-			local tx, th = draw.SimpleText( pan.RegisterName, "wOS.DynaBase.TitleFont", hh*0.1 + add_pad + iw + ww*0.01, hh*0.06, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP  )
+			local _, th = draw.SimpleText( pan.RegisterName, "wOS.DynaBase.TitleFont", hh*0.1 + add_pad + iw + ww*0.01, hh*0.06, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP  )
 			tx, th = draw.SimpleText( pan.AddonTitle or "Local File", "wOS.DynaBase.DescFont", hh*0.1 + add_pad + iw + ww*0.01, hh*0.06 + th + hh*0.03, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP  )
-				
+
 
 			surface.SetDrawColor( color_white )
-			if not pan.Icon then 
+			if not pan.Icon then
 				surface.DrawOutlinedRect( hh*0.05 + add_pad , hh*0.05, iw, ih  )
 				draw.SimpleText( "?", "wOS.DynaBase.QuestionFont", hh*0.05 + iw*0.5 + add_pad, hh*0.05 + ih*0.5, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER  )
 			else
@@ -298,14 +298,14 @@ function wOS.DynaBase:OpenConfigMenu()
 				surface.DrawTexturedRect( hh*0.05 + add_pad, hh*0.05, iw, ih )
 			end
 			if pan.Toggled then return end
-			draw.RoundedBox( 0, hh*0.05 + add_pad, hh*0.05, iw, ih, Color( 0, 0, 0, 215 ) )			
+			draw.RoundedBox( 0, hh*0.05 + add_pad, hh*0.05, iw, ih, Color( 0, 0, 0, 215 ) )
 
 		end
 
 		local url = vgui.Create( "DButton", frame )
 		url:SetPos(fh*0.1 + fw*0.01 + iw + add_pad, fh - fh*0.15)
 		url:SetSize(fw*0.43, fh*0.125)
-		url:SetColor( color_white ) 
+		url:SetColor( color_white )
 		url:SetFont( "wOS.DynaBase.URLFont" )
 		url:SetText( "" )
 		url.Paint = function( pan, ww, hh )
@@ -322,7 +322,6 @@ function wOS.DynaBase:OpenConfigMenu()
 		icon:SetPos(lw*0.01 + add_pad, lw*0.01)
 		icon:SetSize(iw, ih)
 
-		local ix, iy = icon:GetPos()
 
 		local validated = vgui.Create("DImage", icon)
 		validated:SetPos( -8, -8 )
@@ -337,8 +336,8 @@ function wOS.DynaBase:OpenConfigMenu()
 					pan:SetImage( "icon16/accept.png" )
 					icon:SetTooltip( "This item is registered by the server and client"  )
 				else
-					pan:SetImage( "icon16/error.png" )		
-					icon:SetTooltip( "This item is only registered by the client and may cause unpredictable issues"  )	
+					pan:SetImage( "icon16/error.png" )
+					icon:SetTooltip( "This item is only registered by the client and may cause unpredictable issues"  )
 				end
 			end
 		end
@@ -356,10 +355,10 @@ function wOS.DynaBase:OpenConfigMenu()
 
 		if data.Type == WOS_DYNABASE.REANIMATION then
 			thetype:SetImage( reanim_mat )
-			thetype:SetTooltip( "This addon replaces existing animations" )	
+			thetype:SetTooltip( "This addon replaces existing animations" )
 		else
 			thetype:SetImage( extend_mat )
-			thetype:SetTooltip( "This addon includes new animations" )	
+			thetype:SetTooltip( "This addon includes new animations" )
 		end
 
 		local div = vgui.Create("DPanel", dock_bar)
@@ -369,7 +368,7 @@ function wOS.DynaBase:OpenConfigMenu()
 			surface.SetDrawColor( color_white )
 			surface.DrawRect( ww*0.45, 0, ww*0.1, hh )
 		end
-		
+
 		local shared = vgui.Create("DImageButton", dock_bar)
 		shared:SetTall( fh*0.2 )
 		shared:SetWide( fh*0.2 )
@@ -426,7 +425,7 @@ function wOS.DynaBase:OpenConfigMenu()
 					frame.Description = ndat.description
 					frame.ID = ndat.id
 
-					url.URL = "https://steamcommunity.com/sharedfiles/filedetails/?id=" .. ndat.id 
+					url.URL = "https://steamcommunity.com/sharedfiles/filedetails/?id=" .. ndat.id
 					url:SetDisabled( false )
 				end
 				frame.Icon = mat
@@ -478,7 +477,7 @@ function wOS.DynaBase:OpenConfigMenu()
 	-- 	err:Dock( FILL )
 	-- 	err.Paint = function( pan, ww, hh )
 	-- 		draw.SimpleText( "SERVER HAS DISABLED LOCAL ANIMATION CONTENT", "wOS.DynaBase.TitleFont", ww/2, hh*0.4, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-	-- 		draw.SimpleText( "USE THE SERVER TAB FOR AVAILABILITY", "wOS.DynaBase.TitleFont", ww/2, hh*0.6, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )		
+	-- 		draw.SimpleText( "USE THE SERVER TAB FOR AVAILABILITY", "wOS.DynaBase.TitleFont", ww/2, hh*0.6, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 	-- 	end
 	-- 	sheet:AddSheet( "User Animations", err, "icon16/user.png" )
 	-- else
@@ -509,7 +508,7 @@ function wOS.DynaBase:OpenConfigMenu()
 		local local_temp_loaded = {}
 		local lw, lh = layout2:GetSize()
 		local fw, fh = lw, lh*0.13
-		local iw, ih = 0, 0
+		local iw, _ = 0, 0
 
 		local add_pad = lw*0.05
 
@@ -520,7 +519,7 @@ function wOS.DynaBase:OpenConfigMenu()
 		local enabled_check = {}
 
 		if table.Count( local_order ) > 0 then
-			for id, dd in ipairs( local_order ) do
+			for _, dd in ipairs( local_order ) do
 				local name = dd.Name
 				local data = self:GetUserMount( name )
 				if not data then continue end
@@ -535,7 +534,7 @@ function wOS.DynaBase:OpenConfigMenu()
 			table.insert( local_order_checker, data )
 		end
 
-		for order, data in ipairs( local_order_checker ) do
+		for _, data in ipairs( local_order_checker ) do
 			local name  = data.Name
 			local frame = vgui.Create( "DPanel", layout2 )
 			frame:SetSize( fw, fh )
@@ -547,7 +546,7 @@ function wOS.DynaBase:OpenConfigMenu()
 
 				surface.SetDrawColor( Color( 255, 255, 255, 100 ) )
 				surface.DrawOutlinedRect( 0, 0, ww, hh )
-				
+
 				surface.SetDrawColor( color_white )
 				for i=0, 1 do
 					surface.DrawRect( ww*0.005 + add_pad*0.2 + i*(add_pad*0.4), hh*0.32, add_pad*0.2, add_pad*0.2 )
@@ -561,7 +560,7 @@ function wOS.DynaBase:OpenConfigMenu()
 					surface.DrawRect( ww*0.005 + add_pad*0.2 + i*(add_pad*0.4), hh*0.68, add_pad*0.2, add_pad*0.2 )
 				end
 
-				local tx, th = draw.SimpleText( pan.RegisterName, "wOS.DynaBase.TitleFont", hh*0.1 + add_pad + iw + ww*0.01, hh*0.06, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP  )					
+				draw.SimpleText( pan.RegisterName, "wOS.DynaBase.TitleFont", hh*0.1 + add_pad + iw + ww*0.01, hh*0.06, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP  )
 			end
 
 			local dock_bar = vgui.Create( "DPanel", frame )
@@ -599,7 +598,7 @@ function wOS.DynaBase:OpenConfigMenu()
 				surface.SetDrawColor( color_white )
 				surface.DrawRect( ww*0.45, 0, ww*0.1, hh )
 			end
-			
+
 			local mdls = {}
 
 			local shared = vgui.Create("DImageButton", dock_bar)
@@ -728,8 +727,8 @@ function wOS.DynaBase:OpenConfigMenu()
 			layout2:Add( frame )
 		end
 	end
-	
-	create_butt.DoClick = function(pan) 
+
+	create_butt.DoClick = function(pan)
 		if IsValid( pan.OverFrame ) then pan.OverFrame:Remove() pan.OverFrame = nil end
 		pan.OverFrame = vgui.Create( "DPanel" )
 		pan.OverFrame:SetPaintBackground( true )
@@ -750,15 +749,14 @@ function wOS.DynaBase:OpenConfigMenu()
 	local scroll = vgui.Create("DScrollPanel", sheet )
 	scroll:SetSize(aw*0.9, ah*0.8)
 	scroll.ReloadAddons = function() PopulateEntries() end
-	local sw, sh = scroll:GetSize()
 	sheet:AddSheet( "Helper Functions", scroll, "icon16/heart.png" )
 
 	local download_butt = vgui.Create( "DButton", scroll )
 	download_butt:SetSize( aw*0.9, ah*0.05 )
 	download_butt:Dock( TOP )
 	download_butt:SetText( "Convert Server to User Mounts (Will overwrite mounts with the same name!)" )
-	download_butt.DoClick = function(pan) 
-		for name, data in pairs( self:GetAllSources() ) do
+	download_butt.DoClick = function(pan)
+		for _, data in pairs( self:GetAllSources() ) do
 			if data.Core then continue end
 			if data.PreventActivities then continue end
 			self:CreateUserMount( data )

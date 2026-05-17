@@ -88,7 +88,7 @@ function SWEP:ThinkAdd()
 	if SERVER and ply.suiciding then
 		self:SetNetVar("AttackMode", 1)
 	end
-	
+
 	if self:GetNetVar("AttackMode", 1) == 1 then
 		self.DamagePrimary = 15
 		self.DamageType = DMG_CLUB
@@ -135,7 +135,7 @@ local function BindObjects(ent1, pos1, ent2, pos2, power, bone1, bone2)
 	if not ent1.Nails[bone1] then
 			local weld =
 			(
-				not ent1:IsRagdoll() and not ent2:IsRagdoll() 
+				not ent1:IsRagdoll() and not ent2:IsRagdoll()
 				and constraint.Ballsocket(ent1, ent2, bone1 or 0, bone2 or 0, ent1:WorldToLocal(pos1), (500 + 1 * 100) * 5)
 			)
 			or constraint.Weld(ent1, ent2, bone1 or 0, bone2 or 0, (500 + 1 * 100) * 15, false, false)
@@ -145,8 +145,8 @@ local function BindObjects(ent1, pos1, ent2, pos2, power, bone1, bone2)
 			weld:CallOnRemove("removefromtbl", function() ent1.Nails[bone1] = nil end)
 		end
 	else
-		if not ent1:IsRagdoll() and not ent2:IsRagdoll() then 
-			local weld = constraint.Ballsocket(ent1, ent2, bone1 or 0, bone2 or 0, ent2:WorldToLocal(pos2), (500 + 1 * 100) * 5)
+		if not ent1:IsRagdoll() and not ent2:IsRagdoll() then
+			constraint.Ballsocket(ent1, ent2, bone1 or 0, bone2 or 0, ent2:WorldToLocal(pos2), (500 + 1 * 100) * 5)
 		end
 		local weld = ent1.Nails[bone1][1]
 		if IsValid(weld) and (ent2:IsRagdoll() or ent1:IsRagdoll()) then
@@ -167,15 +167,15 @@ local function BindObjects(ent1, pos1, ent2, pos2, power, bone1, bone2)
 			weld:CallOnRemove("removefromtbl", function() ent2.Nails[bone2] = nil end)
 		end
 	else
-		if not ent1:IsRagdoll() and not ent2:IsRagdoll() then 
-			local weld = constraint.Ballsocket(ent1, ent2, bone1 or 0, bone2 or 0, ent2:WorldToLocal(pos2), (500 + 1 * 100) * 5)
+		if not ent1:IsRagdoll() and not ent2:IsRagdoll() then
+			constraint.Ballsocket(ent1, ent2, bone1 or 0, bone2 or 0, ent2:WorldToLocal(pos2), (500 + 1 * 100) * 5)
 		end
 		local weld = ent2.Nails[bone2][1]
 		if IsValid(weld) and (ent2:IsRagdoll() or ent1:IsRagdoll()) then
 			weld:SetKeyValue("forcelimit", tostring( tonumber(weld:GetInternalVariable("forcelimit")) + ((500 + 1 * 100) * 5) ))
 		end
 		ent2.Nails[bone2][2] = ent2.Nails[bone2][2] + 1
-		
+
 	end
 
 	if ent2.Nails[bone2] then ent2.Nails[bone2][3] = ent1.Nails[bone1] and ent1.Nails[bone1][1] end
@@ -230,7 +230,6 @@ if SERVER then
 	end)
 end
 
-local vec1, vec2, vec3 = Vector(0, 0, .15), Vector(0, .15, 0), Vector(.15, 0, 0)
 function SWEP:SprayDecals()
 	local Owner = self:GetOwner()
 	local Tr = util.QuickTrace(Owner:GetShootPos(), Owner:GetAimVector() * 70, {Owner})
@@ -365,7 +364,7 @@ function SWEP:SecondaryAttack()
 						Owner:ChatPrint("Bond strength: " .. tostring(Strength))
 						Owner:ViewPunch(vpang)
 						self:PlayAnim("attack", 0.6, false, nil, false, true)
-						
+
 						self:SetNextSecondaryFire(CurTime() + 2.5)
 						self:SetNextPrimaryFire(CurTime() + 2.5)
 						self:SetLastBlocked(CurTime())

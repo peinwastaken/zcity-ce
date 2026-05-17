@@ -19,12 +19,10 @@ function EFFECT:Init(data)
 	self.smokeparticles = {}
 	self.Emitter = ParticleEmitter(Pos)
 
-	local spawnpos = Pos
 	local Scayul=data:GetScale()
 	self.Scayul=Scayul
 
-	local AddVel=Vector(0,0,0)
-	for k=0,50*Scayul do
+	for _ = 0,50*Scayul do
 		local sprite="particle/smokesprites_000"..math.random(1,9)
 		local particle=self.Emitter:Add(sprite,Pos+VectorRand())
 		particle:SetVelocity(VectorRand()*math.Rand(1,15))

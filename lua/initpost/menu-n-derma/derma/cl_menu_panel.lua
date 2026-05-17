@@ -1,5 +1,5 @@
 local PANEL = {}
-local curent_panel 
+local curent_panel
 local red_select = Color(0,154,192)
 
 DISCORD_URL = "https://discord.gg/475EmEdTgH"
@@ -29,12 +29,12 @@ local Selects = {
             luaMenu:Close()
             hg.SelectPlayerRole(nil, "soe")
         end
-    
+
         local selfa = self
         function btn:Think()
             self.HoverLerp = selfa.HoverLerp
             self.HoverLerp2 = LerpFT(0.2, self.HoverLerp2 or 0, self:IsHovered() and 1 or 0)
-                
+
             self:SetTextColor(self.RColor:Lerp(self.WColor:Lerp(red_select, self.HoverLerp2), self.HoverLerp))
             self:SetX(self.x + ScreenScaleH(40) + self.HoverLerp * ScreenScaleH(50))
         end
@@ -57,24 +57,24 @@ local Selects = {
             luaMenu:Close()
             hg.SelectPlayerRole(nil, "standard")
         end
-    
+
         function btn:Think()
             self.HoverLerp = selfa.HoverLerp
             self.HoverLerp2 = LerpFT(0.2, self.HoverLerp2 or 0, self:IsHovered() and 1 or 0)
-    
+
             self:SetTextColor(self.RColor:Lerp(self.WColor:Lerp(red_select, self.HoverLerp2), self.HoverLerp))
             self:SetX(self.x + ScreenScaleH(35))
         end
     end,
     Func = function(luaMenu)
-        
+
     end,
     },
-    {Title = "Achievements", Func = function(luaMenu,pp) 
+    {Title = "Achievements", Func = function(luaMenu,pp)
         hg.DrawAchievmentsMenu(pp)
     end},
-    {Title = "Settings", Func = function(luaMenu,pp) 
-        hg.DrawSettings(pp) 
+    {Title = "Settings", Func = function(luaMenu,pp)
+        hg.DrawSettings(pp)
     end},
     {Title = "Binds", Func = function(luamenu, pp)
         hg.DrawBinds(pp)
@@ -121,7 +121,6 @@ function PANEL:InitializeMarkup()
     return markup.Parse(text)
 end
 
-local color_red = Color(255,25,25,45)
 local clr_gray = Color(255,255,255,25)
 local clr_verygray = Color(10,10,19,235)
 
@@ -160,7 +159,7 @@ function PANEL:Init()
     end
 
     self.Buttons = {}
-    for k, v in ipairs(Selects) do
+    for _, v in ipairs(Selects) do
         if v.GamemodeOnly and engine.ActiveGamemode() != "zcity" then continue end
         self:AddSelect(lDock, v.Title, v)
     end
@@ -174,7 +173,7 @@ function PANEL:Init()
     self.panelparrent:SetPos(bottomDock:GetWide()+bottomDock:GetX(), 0)
     self.panelparrent:SetSize(ScrW() - bottomDock:GetWide()*1, ScrH())
     self.panelparrent.Paint = function(this, w, h) end
-    
+
     local git = vgui.Create("DLabel", bottomDock)
     git:Dock(BOTTOM)
     git:DockMargin(ScreenScale(10), 0, 0, 0)
@@ -213,7 +212,7 @@ function PANEL:First( ply )
 end
 
 local gradient_d = surface.GetTextureID("vgui/gradient-d")
-local gradient_r = surface.GetTextureID("vgui/gradient-u")
+surface.GetTextureID("vgui/gradient-u")
 local gradient_l = surface.GetTextureID("vgui/gradient-l")
 
 local clr_1 = Color(0,36,102,35)
@@ -241,27 +240,27 @@ function PANEL:AddSelect( pParent, strTitle, tbl )
     btn:DockMargin(ScreenScale(15),ScreenScale(1.5),0,0)
     btn.Func = tbl.Func
     btn.HoveredFunc = tbl.HoveredFunc
-    local luaMenu = self 
+    local luaMenu = self
     if tbl.CreatedFunc then tbl.CreatedFunc(btn, self, luaMenu) end
     btn.RColor = Color(225,225,225)
     function btn:DoClick()
         -- ,kz needs optimization, but there is an error(cache luaMenu.panelparrent instead of calling it every time)
         if curent_panel == string.lower(strTitle) then
-			for i = 1, 3 do
+			for _ = 1, 3 do
 				surface.PlaySound("shitty/tap_release.wav")
 			end
             luaMenu.panelparrent:AlphaTo(0,0.2,0,function()
                 luaMenu.panelparrent:Remove()
                 luaMenu.panelparrent = nil
                 luaMenu.panelparrent = vgui.Create("DPanel", luaMenu)
-                
+
                 luaMenu.panelparrent:SetPos(some_coordinates_x, 0)
                 luaMenu.panelparrent:SetSize(some_size_x, some_size_y)
                 luaMenu.panelparrent.Paint = function(this, w, h) end
                 --btn.Func(luaMenu,luaMenu.panelparrent)
                 curent_panel = nil
             end)
-            return 
+            return
         end
         some_size_x = luaMenu.panelparrent:GetWide()
         some_size_y = luaMenu.panelparrent:GetTall()
@@ -270,14 +269,14 @@ function PANEL:AddSelect( pParent, strTitle, tbl )
             luaMenu.panelparrent:Remove()
             luaMenu.panelparrent = nil
             luaMenu.panelparrent = vgui.Create("DPanel", luaMenu)
-            
+
             luaMenu.panelparrent:SetPos(some_coordinates_x, 0)
             luaMenu.panelparrent:SetSize(some_size_x, some_size_y)
             luaMenu.panelparrent.Paint = function(this, w, h) end
             btn.Func(luaMenu,luaMenu.panelparrent)
             curent_panel = string.lower(strTitle)
         end)
-		for i = 1, 3 do
+		for _ = 1, 3 do
 			surface.PlaySound("shitty/tap_depress.wav")
 		end
     end

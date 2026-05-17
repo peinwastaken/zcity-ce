@@ -59,7 +59,7 @@ if CLIENT then
 				hg.CreateMag( self, Vector(0,0,-50), "111111")
 				self:GetWM():ManipulateBoneScale(67, vecPochtiZero)
 
-			end 
+			end
 		end,
 		[0.6] = function( self, timeMul )
 			if self:Clip1() < 1 then
@@ -182,7 +182,6 @@ SWEP.FOVMax = 10
 SWEP.huyRotate = 25
 SWEP.FOVScoped = 40
 
-local vecZero = Vector(0, 0, 0)
 
 SWEP.DistSound = "weapons/tfa_ins2/sks/sks_dist.wav"
 
@@ -198,12 +197,6 @@ SWEP.LHAng = Angle(-110,-180,-5)
 
 SWEP.ShootAnimMul = 5
 
-local lfang2 = Angle(-2, -35, -1)
-local lfang21 = Angle(0, 35, 20)
-local lfang1 = Angle(5, -15,-20)
-local lfang0 = Angle(-0, -5, 0)
-local vec_zero = Vector(0,0,0)
-local ang_zero = Angle(0,0,0)
 function SWEP:AnimHoldPost()
 	--self:BoneSet("l_finger0", vec_zero, lfang0)
 

@@ -16,7 +16,7 @@ SWEP.WepSelectIcon = Material("vgui/wep_jack_hmcd_hands")
 SWEP.IconOverride = "vgui/wep_jack_hmcd_hands.png"
 SWEP.visualweight = 2
 local math = math
-local math_random, math_Clamp, CurTime, Color = math.random, math.Clamp, CurTime, Color
+local _, math_Clamp, CurTime, Color = math.random, math.Clamp, CurTime, Color
 
 local colWhite = Color(255, 255, 255, 255)
 local lerpthing = 1
@@ -27,7 +27,6 @@ local colred = Color(122, 0, 0, 0)
 local ang4 = Angle(0,0,180)
 local ang5 = Angle(0,0,0)
 
-local ang3 = Angle(0,0,180)
 local clamp = math_Clamp
 
 function SWEP:SecondaryAttack()
@@ -71,7 +70,7 @@ function SWEP:DrawHUD()
 		surface.SetFont("HomigradFontLarge")
 		surface.SetTextColor(255, 255, 255, lerpalpha)
 		local txt = "Afflictions shown for "..ent:GetPlayerName()..":"
-		local w1, h1 = surface.GetTextSize(txt)
+		local _, h1 = surface.GetTextSize(txt)
 		surface.SetTextPos(scrw * 0.05, scrh * 0.95 - h - h1)
 		surface.DrawText(txt)
 
@@ -321,8 +320,6 @@ SWEP.offsetAng = Angle(0, 90, 90)
 SWEP.idleVec = Vector(4.5, -2, -0.2)
 SWEP.idleAng = Angle(0, 0, -80)
 
-local blockingR = Vector()
-local blockingL = Vector()
 local vecIdleR = Vector(-1, 1, 1)
 local vecIdleL = Vector(-4, -2, 0.5)
 local vecBlockingR = Vector(-1, 1, 2)
@@ -342,7 +339,6 @@ function SWEP:SetHandPos(noset)
 	self.rhandik = (self:GetFists()) or (IsValid(ent) and twohands)
 	self.lhandik = (self:GetFists() and hg.CanUseLeftHand(ply)) or IsValid(ent)
 
-	local bones2 = hg.TPIKBonesOther
 
 	local ply_spine_index = ply:LookupBone("ValveBiped.Bip01_Spine4")
 	if !ply_spine_index then return end
@@ -556,7 +552,7 @@ function SWEP:Think()
 		end
 		self.changedName = true
 	-- end
-	
+
 
 	if self:GetBlocking() then
 		if not self.blockSound then

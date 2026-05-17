@@ -187,8 +187,6 @@ SWEP.availableAttachments = {
 	}
 }
 
-local vector_one = Vector(1,1,1)
-local vector_zero = Vector(0,0,0)
 
 function SWEP:DrawPost()
 	local wep = self:GetWeaponEntity()

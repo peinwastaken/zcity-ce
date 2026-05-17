@@ -85,10 +85,10 @@ hook.Add("Org Clear", "Main", function(org)
 	end
 
 	org.allowholster = false
-	
+
 	org.just_damaged_bone = nil
 	org.LodgedEntities = nil
-	
+
 	org.dmgstack = {}
 
 	org.SpawnedBrainChunks = nil
@@ -106,7 +106,6 @@ local hg_unreliable_nets = ConVarExists("hg_unreliable_nets") and GetConVar("hg_
 util.AddNetworkString("organism_send")
 util.AddNetworkString("organism_sendply")
 local CurTime = CurTime
-local nullTbl = {}
 local hg_developer = ConVarExists("hg_developer") and GetConVar("hg_developer") or CreateConVar("hg_developer", 0, FCVAR_SERVER_CAN_EXECUTE, "Toggle developer mode (enables damage traces)", 0, 1)
 local function send_organism(org, ply)
 	if not IsValid(org.owner) then return end
@@ -326,7 +325,7 @@ hook.Add("Org Think", "Main", function(owner, org, timeValue)
 	else
 		org.alive = false
 	end
-	
+
 	org.needotrub = false
 	org.needfake = false
 	if isPly then
@@ -433,7 +432,7 @@ hook.Add("Org Think", "Main", function(owner, org, timeValue)
 
 	org.canmove = (org.spine2 < hg.organism.fake_spine2 and org.spine3 < hg.organism.fake_spine3) and not org.otrub
 	org.canmovehead = (org.spine3 < hg.organism.fake_spine3) and not org.otrub
-	
+
 	if not (org.canmove and org.canmovehead and (org.stun - CurTime()) < 0) then org.needfake = true end
 	if (org.blood < 2700) then org.needfake = true end
 
@@ -493,7 +492,7 @@ hook.Add("Org Think", "Main", function(owner, org, timeValue)
 
 	org.otrub = org.needotrub
 	org.fake = org.needfake
-	
+
 	if org.needfake and owner:IsNPC() then
 		local dmgInfo = DamageInfo()
 		dmgInfo:SetDamage(10000)
@@ -562,11 +561,11 @@ hook.Add("Org Think", "regenerationberserk", function(owner, org, timeValue)
 
 	org.blood = math.Approach(org.blood, 5000, timeValue * 60)
 
-	for i, wound in pairs(org.wounds) do
+	for _, wound in pairs(org.wounds) do
 		wound[1] = math.max(wound[1] - timeValue * 10,0)
 	end
 
-	for i, wound in pairs(org.arterialwounds) do
+	for _, wound in pairs(org.arterialwounds) do
 		wound[1] = math.max(wound[1] - timeValue * 10,0)
 	end
 
@@ -613,7 +612,7 @@ end)
 hook.Add("Org Think", "regenerationnoradrenaline", function(owner, org, timeValue)
 	if not owner:IsPlayer() or not owner:Alive() then return end
 	if org.noradrenaline <= 0 then return end
-	
+
 	local regen = timeValue / 60 * org.noradrenaline
 
 	org.lungsR[1] = math.max(org.lungsR[1] - regen, 0)
@@ -656,7 +655,7 @@ concommand.Add("hg_organism_setvalue", function(ply, cmd, args)
 	end
 
 	if args[3] then
-		for i,pl in pairs(player.GetListByName(args[3])) do
+		for _,pl in pairs(player.GetListByName(args[3])) do
 			if isbool(pl.organism[args[1]]) then
 				pl.organism[args[1]] = tonumber(args[2]) != 0
 			else
@@ -680,7 +679,7 @@ concommand.Add("hg_organism_clear", function(ply, cmd, args)
 	end
 
 	if args[1] then
-		for i,pl in pairs(player.GetListByName(args[1])) do
+		for _,pl in pairs(player.GetListByName(args[1])) do
 			hg.organism.Clear(pl.organism)
 		end
 	end
@@ -716,7 +715,7 @@ end)
 
 hook.Add("HG_OnOtrub", "fearful", function( plya )// WHAT
 	local ent = hg.GetCurrentCharacter(plya)
-	for i,ply in ipairs(ents.FindInSphere(ent:GetPos(),256)) do
+	for _,ply in ipairs(ents.FindInSphere(ent:GetPos(),256)) do
 		if not ply:IsPlayer() or not ply.organism or plya == ply then continue end
 
 		local tr = {}
@@ -764,7 +763,7 @@ local function fixlimb(org, key, fixer)
 		org.fearadd = org.fearadd + 0.3
 
 		org.owner:EmitSound("physics/body/body_medium_impact_soft"..math.random(7)..".wav", 65)
-		
+
 		if fixer.Profession != "doctor" and math.random(5) == 1 then
 			local dmgInfo = DamageInfo()
 			dmgInfo:SetDamage(50)

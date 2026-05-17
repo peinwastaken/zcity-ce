@@ -56,57 +56,8 @@ local function disableSpawnPoint(index, duration)
 end
 
 
-local function isValidSpawnLocation(pos)
-
-    local traceDown = util.TraceLine({
-        start = pos,
-        endpos = pos - Vector(0, 0, 500),
-        mask = MASK_SOLID_BRUSHONLY
-    })
 
 
-    if not traceDown.Hit or traceDown.HitSky then
-        return false
-    end
-
-
-    if bit.band(util.PointContents(traceDown.HitPos), CONTENTS_WATER) == CONTENTS_WATER then
-        return false
-    end
-
-    
-    local traceHull = util.TraceHull({
-        start = pos,
-        endpos = pos + Vector(0, 0, 1), 
-        mins = Vector(-16, -16, 0), 
-        maxs = Vector(16, 16, 72),
-        mask = MASK_PLAYERSOLID
-    })
-
-    if traceHull.Hit then
-        return false
-    end
-
-    return true
-end
-
-
-local function findRandomSpawnLocation()
-    local maxAttempts = 100
-    for _ = 1, maxAttempts do
-        local pos = Vector(
-            math.random(minBound.x, maxBound.x),
-            math.random(minBound.y, maxBound.y),
-            math.random(minBound.z, maxBound.z)
-        )
-
-
-        if isValidSpawnLocation(pos) then
-            return pos
-        end
-    end
-    return nil 
-end
 
 
 Hook["Player Spawn"]= function(ply)
@@ -116,7 +67,7 @@ Hook["Player Spawn"]= function(ply)
     if not spawnPoints then return end
 
 
-    for index, pos in pairs(spawnPoints) do
+    for index, _ in pairs(spawnPoints) do
         if isSpawnPointAvailable(index) then
             availableSpawnIndex = index
             break
@@ -125,14 +76,14 @@ Hook["Player Spawn"]= function(ply)
 
     if availableSpawnIndex then
         ply:SetPos(spawnPoints[availableSpawnIndex])
-        disableSpawnPoint(availableSpawnIndex, 30) 
+        disableSpawnPoint(availableSpawnIndex, 30)
     else
-        
+
         --local randomSpawn = findRandomSpawnLocation()
         --if randomSpawn then
         --    ply:SetPos(randomSpawn)
         --else
-           
+
             ply:SetPos(spawnPoints[1])
         --end
     end
@@ -148,7 +99,7 @@ function Hook.HG_PlayerSay(ply, txtTbl, text)
    --    local targetName = args[2]
    --    local targetPlayer = nil
 
-   --   
+   --
    --    for _, player in ipairs(player.GetAll()) do
    --        if string.find(string.lower(player:Nick()), string.lower(targetName)) then
    --            targetPlayer = player
@@ -157,7 +108,7 @@ function Hook.HG_PlayerSay(ply, txtTbl, text)
    --    end
 
    --    if targetPlayer then
-   --        
+   --
    --        local randomSpawn = findRandomSpawnLocation()
    --        if randomSpawn then
    --            targetPlayer:SetPos(randomSpawn)
@@ -169,7 +120,7 @@ function Hook.HG_PlayerSay(ply, txtTbl, text)
    --        ply:ChatPrint("loser \"" .. targetName .. "\" not found")
    --    end
 
-   --    return "" 
+   --    return ""
    --end
 end
 

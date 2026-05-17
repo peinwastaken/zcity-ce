@@ -1,4 +1,3 @@
-
 if not util.IsBinaryModuleInstalled("mysqloo") then return end
 
 hg.EarlyAccess = hg.EarlyAccess or {}
@@ -19,12 +18,12 @@ end)
 local VerficationTable = {}
 local STEAMIDs = {}
 
-if file.Exists("zcity/verification.json","DATA") then 
+if file.Exists("zcity/verification.json","DATA") then
     VerficationTable = util.JSONToTable(file.Read("zcity/verification.json","DATA"))
     STEAMIDs={}
     timer.Simple(0,function()
-        for Z,T in pairs(VerficationTable) do 
-            STEAMIDs[T]=true 
+        for _, T in pairs(VerficationTable) do
+            STEAMIDs[T]=true
         end
     end)
 end
@@ -37,7 +36,7 @@ hook.Add("PlayerInitialSpawn","AddInWL",function(ply)
         if not PLUGIN.Active then
             PLUGIN.PlayerInstances[steamID64] = {}
             return
-        end 
+        end
 
 	    local query = mysql:Select("hg_betatesters")
 	    	query:Where("steamid", steamID64)

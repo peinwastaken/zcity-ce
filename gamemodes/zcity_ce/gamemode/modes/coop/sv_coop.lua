@@ -1,4 +1,3 @@
-
 MODE.name = "coop"
 MODE.PrintName = "CO-OP"
 MODE.randomSpawns = false
@@ -15,7 +14,7 @@ MODE.LootSpawn = false
 
 
 MODE.Lootables = {}
-for model, data in pairs(hg.loot_boxes or {}) do
+for model, _ in pairs(hg.loot_boxes or {}) do
     MODE.Lootables[model] = true
 end
 
@@ -30,10 +29,10 @@ local friendlytable = {
 
 hg.FriendlyClasses = {}
 
-for i, tbl in ipairs(friendlytable) do
-    for j, class in ipairs(tbl) do
+for _, tbl in ipairs(friendlytable) do
+    for _, class in ipairs(tbl) do
         hg.FriendlyClasses[class] = {}
-        for k, class2 in ipairs(tbl) do
+        for _, class2 in ipairs(tbl) do
             hg.FriendlyClasses[class][class2] = true
         end
     end
@@ -41,7 +40,7 @@ end
 
 function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
     if !hg.FriendlyClasses[Attacker.PlayerClassName] or !hg.FriendlyClasses[Attacker.PlayerClassName][Victim.PlayerClassName] then return 0, false end
-	
+
     return 1.5, true
 end
 
@@ -50,7 +49,7 @@ function MODE:GetLootTable()
     local mapData = self.Maps[currentMap] or {PlayerEqipment = "rebel"}
 
     local lootData = mapData.PlayerEqipment == "rebel" and self.LootTable[2] or self.LootTable[1]
-    return lootData[2] 
+    return lootData[2]
 end
 
 
@@ -61,15 +60,15 @@ MODE.LootTable = {
 		{3,"weapon_bigconsumable"},
 		{3,"weapon_painkillers"},
 		{3,"weapon_bigbandage_sh"},
-		
+
         {2,"weapon_medkit_sh"},
 		{2,"weapon_bloodbag"},
-		
+
         {1,"weapon_mini14"},
         {1,"ent_ammo_5.56x45mm"},
         {1,"weapon_m16a2"},
     }},
-	
+
 	[2] = {1, {
 		{9,"ent_ammo_pulse"},
 		{9,"ent_ammo_9x19mmparabellum"},
@@ -81,14 +80,14 @@ MODE.LootTable = {
         {7,"ent_ammo_7.62x39mm"},
         {7,"ent_ammo_5.45x39mm"},
         {6,"ent_ammo_rpg-7projectile"},
-        
+
         {8,"weapon_bigconsumable"},
 		{7,"weapon_painkillers"},
 		{6,"weapon_bigbandage_sh"},
         {5,"weapon_morphine"},
         {5,"weapon_naloxone"},
         {4,"weapon_mannitol"},
-        
+
         {9,"weapon_hk_usp"},
         {8,"weapon_revolver357"},
 		{6,"weapon_spas12"},
@@ -101,8 +100,8 @@ MODE.LootTable = {
         {6,"ent_ammo_14.5x114mm"},
         {2,"weapon_hg_rpg"},
         {6,"ent_ammo_rpg7"},
-        
-        
+
+
 
 
 		{6,"ent_armor_vest3"},
@@ -184,11 +183,11 @@ end
 function MODE:Intermission()
     self.LootTimer = CurTime() + 2
     game.CleanUpMap()
-    
+
 
     self.COOPPoints = zb.GetMapPoints("HMCD_COOP_SPAWN")
 
-    for k, ply in player.Iterator() do
+    for _, ply in player.Iterator() do
         if ply:Team() == TEAM_SPECTATOR then continue end
         ply:SetupTeam(0)
     end
@@ -203,7 +202,7 @@ end
 function MODE:ZB_OnEntCreated( ent )
 end
 
-local mapchange = CreateConVar("zb_coop_autochangelevel", "1", FCVAR_PROTECTED, "Toggle auto changelevel in Half-Life 2 CO-OP mode", 0, 1)
+CreateConVar("zb_coop_autochangelevel", "1", FCVAR_PROTECTED, "Toggle auto changelevel in Half-Life 2 CO-OP mode", 0, 1)
 
 function MODE:ShouldRoundEnd()
 
@@ -223,7 +222,7 @@ function MODE:ShouldRoundEnd()
             if hg.CoopPersistence and hg.CoopPersistence.SaveAllPlayers then
                 hg.CoopPersistence.SaveAllPlayers()
             end
-            
+
             RunConsoleCommand("changelevel", hg.NextMap)
         end)
     end
@@ -233,18 +232,18 @@ end
 function MODE:RoundStart()
     for _, ply in player.Iterator() do
         if ply.PlayerClassName == "Gordon" then
-            for k, ent in ipairs(ents.FindInSphere( ply:GetPos(), 512 )) do
+            for _, ent in ipairs(ents.FindInSphere( ply:GetPos(), 512 )) do
                 if RemoveGordonWeapons[ent:GetClass()] and not IsValid(ent:GetOwner()) then
                     SafeRemoveEntity(ent)
                 end
             end
         else
-            for k, v in ipairs(ply:GetWeapons()) do
+            for _, v in ipairs(ply:GetWeapons()) do
                 if v:GetClass() == "weapon_bugbait" then
                     ply:StripWeapon("weapon_bugbait")
                 end
 
-                if v:GetClass() == "weapon_physcannon" then 
+                if v:GetClass() == "weapon_physcannon" then
                     ply:StripWeapon("weapon_physcannon")
                 end
             end
@@ -254,32 +253,32 @@ end
 
 local function getspawnpos(i)
     local tab = {}
-    
+
     local coopSpawns = zb.GetMapPoints("HMCD_COOP_SPAWN") or {}
-    for k, v in pairs(coopSpawns) do
+    for _, v in pairs(coopSpawns) do
         if v.pos then
             tab[#tab + 1] = v.pos
         end
     end
-    
+
     if #tab == 0 then
         local tbl = ents.FindByClass("info_player_start")
 
         local hasMasterSpawn = false
-        for k, v in pairs(tbl) do
+        for _, v in pairs(tbl) do
             if v:HasSpawnFlags(1) then hasMasterSpawn = true break end
         end
 
-        for k, v in pairs(tbl) do
+        for _, v in pairs(tbl) do
             if hasMasterSpawn and !v:HasSpawnFlags(1) then continue end
             tab[#tab + 1] = v:GetPos()
         end
     end
-    
+
     if #tab == 0 then
         tab[#tab + 1] = Vector(0, 0, 0)
     end
-    
+
     local index = math.Clamp(i % #tab + 1, 1, #tab)
     return tab[index] or Vector(0, 0, 0)
 end
@@ -305,20 +304,20 @@ function MODE:GiveEquipment()
         local hasGordon = false
 
         local currentMap = game.GetMap()
-        local mapData = self.Maps[currentMap] or {PlayerEqipment = "rebel"} 
+        local mapData = self.Maps[currentMap] or {PlayerEqipment = "rebel"}
         local playerClass = mapData.PlayerEqipment
-        
+
         local maxMedics = math.max(1, math.min(3, math.floor(#players / 5)))
         local maxGrenadier = math.max(1, math.min(3, math.floor(#players / 5)))
 
-        local savedGordonExists, savedGordonSteamID = false, nil
+        local savedGordonExists, _ = false, nil
         if hg.CoopPersistence and hg.CoopPersistence.HasSurvivedGordon then
             savedGordonExists, savedGordonSteamID = hg.CoopPersistence.HasSurvivedGordon()
         end
 
         for _, ply in RandomPairs(players) do
-            local pos = self:GetPlySpawn(ply)
-            
+            self:GetPlySpawn(ply)
+
             if not ply:Alive() then continue end
 
             ply:SetSuppressPickupNotices(true)
@@ -326,7 +325,7 @@ function MODE:GiveEquipment()
 
             local hasSavedData = false
             local savedData = nil
-            
+
             if hg.CoopPersistence and hg.CoopPersistence.GetPlayerData then
                 savedData = hg.CoopPersistence.GetPlayerData(ply:SteamID())
                 if savedData then
@@ -336,24 +335,24 @@ function MODE:GiveEquipment()
 
             if hasSavedData and savedData then
                 local restored, data = hg.CoopPersistence.RestorePlayerData(ply)
-                
+
                 if restored and data then
                     local savedPlayerClass = data.PlayerClass
                     local savedRole = data.Role
                     local savedRoleColor = data.RoleColor and Color(data.RoleColor[1], data.RoleColor[2], data.RoleColor[3]) or clr_rebel
                     local savedSubClass = data.SubClass
-                    
-                    
+
+
                     if savedPlayerClass == "Gordon" or savedRole == "Freeman" then
-                       
+
                         ply:SetPlayerClass("Gordon", {bRestored = true})
                         zb.GiveRole(ply, "Freeman", clr_rebel)
                         hasGordon = true
                     elseif savedSubClass == "medic" then
                         ply.subClass = "medic"
                         medicCount = medicCount + 1
-                        
-                        
+
+
                         if savedPlayerClass == "Refugee" then
                             ply:SetPlayerClass("Refugee", {bNoEquipment = true})
                         else
@@ -363,8 +362,8 @@ function MODE:GiveEquipment()
                     elseif savedSubClass == "grenadier" then
                         ply.subClass = "grenadier"
                         grenadierCount = grenadierCount + 1
-                        
-                        
+
+
                         if savedPlayerClass == "Refugee" then
                             ply:SetPlayerClass("Refugee", {bNoEquipment = true})
                         else
@@ -373,8 +372,8 @@ function MODE:GiveEquipment()
                         zb.GiveRole(ply, "Grenadier", clr_grenadier)
                     else
                         ply.subClass = nil
-                        
-                        
+
+
                         if savedPlayerClass == "Refugee" then
                             ply:SetPlayerClass("Refugee", {bNoEquipment = true})
                             zb.GiveRole(ply, savedRole or "Refugee", savedRoleColor)
@@ -383,7 +382,7 @@ function MODE:GiveEquipment()
                             zb.GiveRole(ply, savedRole or "Rebel", savedRoleColor)
                         end
                     end
-                    
+
                     hg.CoopPersistence.MarkPlayerRestored(ply:SteamID())
                 else
                     self:GiveDefaultEquipment(ply, playerClass, hasGordon, medicCount, maxMedics, savedGordonExists)
@@ -400,7 +399,7 @@ function MODE:GiveEquipment()
                 if wasGrenadier then grenadierCount = grenadierCount + 1 end
             end
 
-            local hands = ply:Give("weapon_hands_sh")
+            ply:Give("weapon_hands_sh")
             ply:SelectWeapon("weapon_hands_sh")
 
             timer.Simple(0.1, function()
@@ -416,7 +415,7 @@ function MODE:GiveDefaultEquipment(ply, playerClass, hasGordon, medicCount, maxM
     local wasGordon = false
     local wasMedic = false
     local wasGrenadier = false
-    
+
     local inv = ply:GetNetVar("Inventory")
     inv["Weapons"]["hg_sling"] = true
     inv["Weapons"]["hg_flashlight"] = true
@@ -467,7 +466,7 @@ function MODE:GiveDefaultEquipment(ply, playerClass, hasGordon, medicCount, maxM
             zb.GiveRole(ply, "Rebel", clr_rebel)
         end
     end
-    
+
     return wasGordon, wasMedic, wasGrenadier
 end
 
@@ -522,19 +521,19 @@ end
 
 local function GetNPCWeapon(npc)
     if not IsValid(npc) then return nil end
-    
+
     local weapon = npc:GetActiveWeapon()
     if IsValid(weapon) then
         return weapon:GetClass()
     end
-    
+
     return nil
 end
 
 local clr_combine, clr_metrocop, clr_zombie = Color(0, 180, 180), Color(0, 100, 255), Color(100, 0, 0)
 local function PossessNPC(ply, npc)
     if not CanPossessNPC(ply, npc) then return false end
-    
+
     local npcPos = npc:GetPos()
     local npcAngles = npc:GetAngles()
     local npcWeapon = GetNPCWeapon(npc)
@@ -542,26 +541,26 @@ local function PossessNPC(ply, npc)
     local npcClass = npc:GetClass()
     local isCombine = combineNPCClasses[npcClass]
 	local isZombie = zombieNPCClasses[npcClass]
-    
+
     local currentMap = game.GetMap()
     local mapData = CurrentRound().Maps[currentMap] or {PlayerEqipment = "rebel"}
     local playerClass = mapData.PlayerEqipment
-    
+
     npc:Remove()
-    
+
     ply:Spawn()
     ply:SetPos(npcPos)
     ply:SetEyeAngles(Angle(0, npcAngles.y, 0))
     ply:SetHealth(math.max(npcHealth, 50))
-    
+
     ply.RTSUses = (ply.RTSUses or 0) + 1
-    
+
     timer.Simple(0, function()
         if not IsValid(ply) then return end
-        
+
         ply:SetSuppressPickupNotices(true)
         ply.noSound = true
-        
+
         local inv = ply:GetNetVar("Inventory")
         if inv then
             inv["Weapons"] = inv["Weapons"] or {}
@@ -569,7 +568,7 @@ local function PossessNPC(ply, npc)
             inv["Weapons"]["hg_flashlight"] = true
             ply:SetNetVar("Inventory", inv)
         end
-        
+
         if isCombine then --!! TODO: rewrite all of this elseif shit to beautiful table
             if npcClass == "npc_combine_s" then
                 ply:SetPlayerClass("Combine")
@@ -591,16 +590,16 @@ local function PossessNPC(ply, npc)
             ply:SetPlayerClass("Rebel")
             zb.GiveRole(ply, "Rebel", clr_rebel)
         end
-        
+
         ply:Give("weapon_hands_sh")
-        
+
         if npcWeapon then
             local wep = ply:Give(npcWeapon)
             if IsValid(wep) then
                 ply:SelectWeapon(npcWeapon)
             end
         end
-        
+
         timer.Simple(0.1, function()
             if IsValid(ply) then
                 ply.noSound = false
@@ -608,7 +607,7 @@ local function PossessNPC(ply, npc)
             end
         end)
     end)
-    
+
     return true
 end
 
@@ -618,19 +617,19 @@ hook.Add("PlayerButtonDown", "checks", function(ply, button)
     if not coop_rts:GetBool() then return end
     if ply:Alive() then return end
     if (ply.RTSUses or 0) >= zb_coop_maxpossesses:GetInt() and not ply:IsAdmin() then return end
-    
+
     local observeTarget = ply:GetObserverTarget()
     local searchPos
-    
+
     if IsValid(observeTarget) then
         searchPos = observeTarget:GetPos()
     else
         searchPos = ply:GetPos()
     end
-    
+
     local nearestNPC = nil
     local nearestDist = 300
-    
+
     for _, ent in ipairs(ents.FindInSphere(searchPos, nearestDist)) do
         if IsValid(ent) and ent:IsNPC() then
             local npcClass = ent:GetClass()
@@ -644,7 +643,7 @@ hook.Add("PlayerButtonDown", "checks", function(ply, button)
             end
         end
     end
-    
+
     if IsValid(nearestNPC) then
         PossessNPC(ply, nearestNPC)
     end
@@ -652,7 +651,7 @@ end)
 
 hook.Add("ZB_RoundStart", "RTSoff", function()
     if CurrentRound().name ~= "coop" then return end
-    
+
     for _, ply in player.Iterator() do
         ply.RTSUses = 0
     end
@@ -660,7 +659,7 @@ end)
 
 hook.Add("PostCleanupMap", "RTScleanup", function()
     if CurrentRound().name ~= "coop" then return end
-    
+
     for _, ply in player.Iterator() do
         ply.RTSUses = 0
     end
@@ -668,19 +667,19 @@ end)
 
 hook.Add("OnEntityCreated", "CoopAlyxWeapon", function(ent)
     if CurrentRound().name ~= "coop" then return end
-    
+
     timer.Simple(0, function()
         if not IsValid(ent) then return end
         if ent:GetClass() ~= "npc_alyx" then return end
-        
+
         timer.Simple(0.1, function()
             if not IsValid(ent) then return end
-            
+
             local currentWeapon = ent:GetActiveWeapon()
             if IsValid(currentWeapon) then
                 currentWeapon:Remove()
             end
-            
+
             ent:Give("weapon_pl15")
         end)
     end)

@@ -184,8 +184,6 @@ function SWEP:InitializePost()
 	self.AnimStart_Draw = 0
 end
 
-local ang1 = Angle(0, -10, 0)
-local ang2 = Angle(0, -10, 0)
 
 function SWEP:DrawPost()
 	local wep = self:GetWeaponEntity()
@@ -205,7 +203,7 @@ function SWEP:DrawPost()
 end
 
 local function cock(self,time)
-	
+
 	if SERVER then
 		self:Draw(true)
 	end
@@ -221,11 +219,10 @@ local function cock(self,time)
 	net.WriteBool(self.drawBullet)
 	net.WriteFloat(CurTime())
 	net.Broadcast()
-	
+
 	self.Primary.Next = CurTime() + self.AnimDraw + self.Primary.Wait
 	--self:PlaySnd(self.CockSound or "weapons/shotgun/shotgun_cock.wav",true,CHAN_AUTO)
 
-	local ply = self:GetOwner()
 
 	self.reloadCoolDown = CurTime() + time
 end
@@ -246,7 +243,7 @@ end
 
 local function reloadFunc(self)
 	if not SERVER then return end
-	
+
 	self:SetNetVar("shootgunReload",CurTime() + 1.1)
 
 	if self.MagIndex then
@@ -254,27 +251,27 @@ local function reloadFunc(self)
 	end
 	--self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 0.58)
 
-	self:PlayAnim(self.AnimList["insert"] or "sgreload_insert", 1, false, function() 
-		self:InsertAmmo(1) 
+	self:PlayAnim(self.AnimList["insert"] or "sgreload_insert", 1, false, function()
+		self:InsertAmmo(1)
 		if self.MagIndex then
 			self:GetWM():ManipulateBoneScale(self.MagIndex, vector_origin)
 		end
-		
+
 		local key = hg.KeyDown(self:GetOwner(), IN_RELOAD)
 		--print("reload",key)
-		
+
 		if key and self:CanReload() then
 			reloadFunc(self)
 			return
 		end
 
 		if !self.drawBullet then
-			
-			self:PlayAnim(self.AnimList["finish_empty"] or "sgreload_finish_empty", 1,false,function(self)  
-				self:SetNetVar("shootgunReload",0) 
+
+			self:PlayAnim(self.AnimList["finish_empty"] or "sgreload_finish_empty", 1,false,function(self)
+				self:SetNetVar("shootgunReload",0)
 				cock(self,1)
-				self:PlayAnim(self.AnimList["cycle"] or "cycle", 1,false,nil,false,true) 
-			end,false,true) 
+				self:PlayAnim(self.AnimList["cycle"] or "cycle", 1,false,nil,false,true)
+			end,false,true)
 		else
 			self:PlayAnim(self.AnimList["finish"] or "sgreload_finish", 1, false, function(self) self:SetNetVar("shootgunReload",0) end, false, true)
 		end
@@ -302,7 +299,7 @@ function SWEP:Reload(time)
 
 	if SERVER then
 		self:SetNetVar("shootgunReload",CurTime() + 1.1)
-		self:PlayAnim(self.AnimList["start"] or "sgreload_start",1,false,function() 
+		self:PlayAnim(self.AnimList["start"] or "sgreload_start",1,false,function()
 			reloadFunc(self)
 		end,
 		false,true)

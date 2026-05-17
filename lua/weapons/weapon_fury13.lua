@@ -119,14 +119,14 @@ function SWEP:NPCHeal(npc, mul, snd)
 			local index = npc:EntIndex()
 			npc:SetSquad("fury13" .. index)
 
-			for k, v in ipairs(ents.FindByClass("npc_*")) do
+			for _, v in ipairs(ents.FindByClass("npc_*")) do
 				if table.HasValue(rebels, v:GetClass()) or table.HasValue(combines, v:GetClass()) or table.HasValue(zombies, v:GetClass()) then
 					v:AddEntityRelationship(npc, D_HT, 99)
 					npc:AddEntityRelationship(v, D_HT, 99)
 				end
 			end
 
-			for k, v in player.Iterator() do
+			for _, v in player.Iterator() do
 				npc:AddEntityRelationship(v, D_HT, 99)
 			end
 

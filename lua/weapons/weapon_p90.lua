@@ -245,7 +245,6 @@ end
 
 function SWEP:UpdateMagazineBodygroup(overideClip)
 	if CLIENT and IsValid(self:GetWM()) then
-		local clipSize = self.Primary.ClipSize
 		local currentAmmo = overideClip or self:Clip1()
 
 		local bodygroup = math.SnapTo( currentAmmo / 5, 1 )
@@ -269,11 +268,6 @@ function SWEP:DrawPost()
 	end
 end
 
-local lfang2 = Angle(0, -15, -1)
-local lfang1 = Angle(-5, -5, -5)
-local lfang0 = Angle(-12, -16, 20)
-local vec_zero = Vector(0,0,0)
-local ang_zero = Angle(0,0,0)
 function SWEP:AnimHoldPost()
 
 end

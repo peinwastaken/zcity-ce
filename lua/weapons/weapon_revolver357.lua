@@ -42,7 +42,6 @@ function SWEP:RevolverPostInit()
 	function self:DrawPost()
 		local wep = self:GetWM()
 		self.vec = self.vec or Vector(0,0,0)
-		local vec = self.vec
 		if CLIENT and IsValid(wep) and not self:ShouldUseFakeModel() then
 			self.DrumAng = LerpFT(0.05,self.DrumAng or 0,self:GetNWInt("drumroll",0))
 			wep:ManipulateBoneAngles(43,Angle(0,-(360/6)*self.DrumAng,0))
@@ -109,17 +108,16 @@ if CLIENT then
 			for i = 45, 50 do
 				self:GetWM():ManipulateBoneScale(i, vector_full)
 			end
-			
+
 		end,
 
 		[0.56] = function( self, timeMul )
 			if CLIENT then
-				local owner = self:GetOwner()
 				local drum = self:GetDrum()
 				for i = 1, #drum do
 					if self.CustomShell and drum[i] == -1 then
 						local pos, ang = self:GetWM():GetBonePosition(45)
-						self:MakeShell(self.CustomShell, pos, ang, Vector(0,0,0)) 
+						self:MakeShell(self.CustomShell, pos, ang, Vector(0,0,0))
 					end
 				end
 			end
@@ -127,7 +125,7 @@ if CLIENT then
 				self:GetWM():ManipulateBoneScale(i, vector_origin)
 			end
 		end,
-		[0.75] = function( self ) 
+		[0.75] = function( self )
 			for i = 45, 50 do
 				self:GetWM():ManipulateBoneScale(i, vector_full)
 			end
@@ -135,9 +133,9 @@ if CLIENT then
 				self:GetWM():ManipulateBoneScale(i, vector_full)
 			end
 		end,
-		[0.9] = function( self ) 
+		[0.9] = function( self )
 		end,
-		[0.92] = function( self ) 
+		[0.92] = function( self )
 			for i = 52, 53 do
 				self:GetWM():ManipulateBoneScale(i, vector_origin)
 			end
@@ -246,13 +244,10 @@ SWEP.ReloadSoundes = {
 	"none"
 }
 
-local finger1 = Angle(-15,25,0)
-local finger2 = Angle(0,35,45)
 
 function SWEP:DrawPost()
 	local wep = self:GetWeaponEntity()
 	self.vec = self.vec or Vector(0,0,0)
-	local vec = self.vec
 	if CLIENT and IsValid(wep) then
 		self.DrumAng = LerpFT( 0.05, self.DrumAng or 0,self:GetNWInt("drumroll",0) )
 		wep:ManipulateBoneAngles(43,Angle(0,0,-(360/6)*(self.reload and 0 or self.DrumAng)))

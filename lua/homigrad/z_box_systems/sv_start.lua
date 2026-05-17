@@ -3,7 +3,7 @@ ZBox = ZBox or {}
 ZBox.Plugins = ZBox.Plugins or {}
 
 function ZBox.StartAll()
-    for k,plugin in pairs(ZBox.Plugins) do
+    for _,plugin in pairs(ZBox.Plugins) do
         for name, hok in pairs(plugin.Hooks) do
             --print(name,plugin.Name .. "_" .. name)
             hook.Add(name,plugin.Name .. "_" .. name, hok )
@@ -24,8 +24,8 @@ ZBox.Maps = {
 
 
 function ZBox.DisableAll()
-    for k,plugin in pairs(ZBox.Plugins) do
-        for name, hok in pairs(plugin.Hooks) do
+    for _,plugin in pairs(ZBox.Plugins) do
+        for name, _ in pairs(plugin.Hooks) do
             hook.Remove(name,plugin.Name .. "_" .. name )
         end
     end

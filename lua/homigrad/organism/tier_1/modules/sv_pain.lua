@@ -1,4 +1,4 @@
-local max, min, Clamp, Approach = math.max, math.min, math.Clamp, math.Approach
+local max, min, _, Approach = math.max, math.min, math.Clamp, math.Approach
 --local Organism = hg.organism
 hg.organism.module.pain = {}
 local module = hg.organism.module.pain
@@ -25,7 +25,7 @@ end
 
 function hg.organism.paincheck(org)
 	local analgesiaMul = (org.analgesia * 4 + 1)
-	local adrenalineMul = min(max(1 + org.adrenaline, 1), 1.2)
+	min(max(1 + org.adrenaline, 1), 1.2)
 
 	return (org.shock > org.shock_turn * 4 * analgesiaMul)
 end
@@ -44,13 +44,10 @@ module[2] = function(owner, org, timeValue)
 
 	org.pain_turn = org.otrub and adrenalineMul * 80 or adrenalineMul * 90
 
-	local owner = org.owner
-	
+
 	if !org.lasthit or org.lasthit + 1.5 < CurTime() then org.shock = max(org.shock - timeValue * 4 * (org.otrub and 1 or 0.5), 0) end
 	org.immobilization = max(org.immobilization - timeValue * 2 * adrenalineMul, 0)
 
-	local shouldPainAdd = not (org.otrub or org.spine2 >= hg.organism.fake_spine2 or org.spine3 >= hg.organism.fake_spine3)
-	
 	local add = math.min(timeValue * 20, org.painadd)
 	local sub = (add <= 0.2) and (timeValue * 2 * (org.otrub and 2 or 1) + timeValue * (org.painkiller * 2) + timeValue * (org.analgesia * 4)) or (0)
 
@@ -110,9 +107,9 @@ module[2] = function(owner, org, timeValue)
 	if hg.organism.paincheck(org) then
 		org.needotrub = true
 	end
-	
+
 	org.analgesia =  Approach(org.analgesia, 0, timeValue / 240 * (org.naloxone * 25 + 1))
-	
+
 	if org.analgesiaAdd > 0 then
 		org.analgesia =  Approach(org.analgesia, 4, timeValue / 15)
 		org.analgesiaAdd = Approach(org.analgesiaAdd, 0, timeValue / 15)
@@ -120,7 +117,7 @@ module[2] = function(owner, org, timeValue)
 
 	org.naloxone = Approach(org.naloxone, org.naloxoneadd > 0 and 4 or 0, org.naloxoneadd > 0 and timeValue / 30 or timeValue / 60)
 	org.naloxoneadd = Approach(org.naloxoneadd, 0, timeValue / 15)
-	
+
 	--if owner.suiciding and org.adrenaline < 1.5 then
 	--	org.adrenalineAdd = Approach(org.adrenalineAdd, 4, timeValue / 5)
 	--end
@@ -154,8 +151,8 @@ module[2] = function(owner, org, timeValue)
 	end
 
 	//local tempo = math.Clamp(5 - (org.temperature - 31), 0, 15)
-	
+
 	//org.shock = math.max(org.shock, tempo * 4)
-	
+
 	org.disorientation = math.Approach(org.disorientation, 0, timeValue / 5)
 end

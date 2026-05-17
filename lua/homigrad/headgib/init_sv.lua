@@ -1,7 +1,6 @@
 local net, hg, pairs, Vector, ents, IsValid, util = net, hg, pairs, Vector, ents, IsValid, util
 
 local vecZero = Vector(0,0,0)
-local vecInf = Vector(0,0,0) / 0
 
 local function removeBone(rag, bone, phys_bone, nohuys)
 	if !nohuys then rag:ManipulateBoneScale(bone, vecZero) end
@@ -19,7 +18,7 @@ local function removeBone(rag, bone, phys_bone, nohuys)
 end
 
 local function recursive_bone(rag, bone, list)
-	for i,bone in pairs(rag:GetChildBones(bone)) do
+	for _,bone in pairs(rag:GetChildBones(bone)) do
 		if bone == 0 then continue end
 
 		list[#list + 1] = bone
@@ -35,7 +34,7 @@ function Gib_RemoveBone(rag, bone, phys_bone, nohuys)
 
 	local list = {}
 	recursive_bone(rag, bone, list)
-	for i, bone in pairs(list) do
+	for _, bone in pairs(list) do
 		removeBone(rag, bone, rag:TranslateBoneToPhysBone(bone), nohuys)
 	end
 end
@@ -44,7 +43,6 @@ gib_ragdols = gib_ragdols or {}
 local gib_ragdols = gib_ragdols
 
 local VectorRand, ents_Create = VectorRand, ents.Create
-local vector_up = Vector(0,0,1)
 local function PhysCallback( ent, data )
 	--data.HitPos -- data.HitNormal
 	if data.DeltaTime < 0.2 then return end
@@ -78,14 +76,14 @@ local function PhysCallback( ent, data )
 	util.Decal("Normal.Blood24", data.HitPos - data.HitNormal * 1, data.HitPos + data.HitNormal * 1, ent)
 end
 
-local grub, mat, gamemod = Model("models/grub_nugget_small.mdl"), "models/flesh", engine.ActiveGamemode()
+local _, mat, gamemod = Model("models/grub_nugget_small.mdl"), "models/flesh", engine.ActiveGamemode()
 local meatModels = {
 	Model("models/props_junk/watermelon01_chunk02a.mdl"),
 }
 local gibRemoveTime = 60 --120
 function SpawnMeatGore(mainent, pos, count, force, scale)
 	force = force or Vector(0,0,0)
-	for i = 1, (count or math.random(8, 10)) do
+	for _ = 1, (count or math.random(8, 10)) do
 		local ent = ents_Create("prop_physics")
 		ent:SetModel(meatModels[math.random(#meatModels)])
 		ent:SetSubMaterial(0, mat)
@@ -132,7 +130,7 @@ for _, snd in ipairs(sounds) do
 end
 function Gib_Input(rag, bone, force)
 	if not IsValid(rag) then return end
-	
+
 	local gibRemove = rag.gibRemove
 
 	if not gibRemove then
@@ -144,7 +142,7 @@ function Gib_Input(rag, bone, force)
 
 	local phys_bone = rag:TranslateBoneToPhysBone(bone)
 	local phys_obj = rag:GetPhysicsObjectNum(phys_bone)
-	
+
 	if (not gibRemove[phys_bone]) and (bone == rag:LookupBone("ValveBiped.Bip01_Head1")) then
 		--sound.Emit(rag,"player/headshot" .. math.random(1, 2) .. ".wav")
 		--sound.Emit(rag,"physics/flesh/flesh_squishy_impact_hard" .. math.random(2, 4) .. ".wav")
@@ -153,7 +151,7 @@ function Gib_Input(rag, bone, force)
 		rag:EmitSound(sounds[math.random(#sounds)], 70, math.random(95, 105), 2)
 
 		Gib_RemoveBone(rag, bone, phys_bone)
-		
+
 		--rag:ManipulateBoneScale(rag:LookupBone("ValveBiped.Bip01_Neck1"),vecZero)
 		rag:ManipulateBonePosition(rag:LookupBone("ValveBiped.Bip01_Neck1"),Vector(-1,0,0))
 
@@ -175,7 +173,7 @@ function Gib_Input(rag, bone, force)
 			local ent = hg.DropArmorForce(rag, armors["head"])
 			ent:SetPos(phys_obj:GetPos())
 		end
-		
+
 		if armors["face"] and !hg.armor["face"][armors["face"]].nodrop then
 			local ent = hg.DropArmorForce(rag, armors["face"])
 			ent:SetPos(phys_obj:GetPos())

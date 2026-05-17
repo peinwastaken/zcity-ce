@@ -62,17 +62,17 @@ function SWEP:MakeShell(shell, pos, ang, vel)
 	if not shell or not pos or not ang then
 		return
 	end
-		
+
 	local t = Shells[shell]
-	
+
 	if not t then
 		return
 	end
-	
+
 	vel = vel or Vector(0, 0, -100)
 	vel = vel + VectorRand() * 5
 
-	local ent = ClientsideModel(t.m, RENDERGROUP_BOTH) 
+	local ent = ClientsideModel(t.m, RENDERGROUP_BOTH)
 	function ent:Draw()
 		if (LocalPlayer():EyePos() - self:GetPos()):LengthSqr() < 512^2 then
 			self:DrawModel()
@@ -85,18 +85,18 @@ function SWEP:MakeShell(shell, pos, ang, vel)
 	ent:SetAngles(ang)
 	ent:SetMoveType(MOVETYPE_VPHYSICS)
 	ent:SetModelScale(t.vCustomScale and t.vCustomScale or 1)
-	ent:SetSolid(SOLID_VPHYSICS) 
+	ent:SetSolid(SOLID_VPHYSICS)
 	ent:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
     hg_shelles[#hg_shelles+1] = ent
-	
+
 	local phys = ent:GetPhysicsObject()
 	phys:SetMaterial("gmod_silent")
 	phys:SetMass(10)
 	phys:SetVelocity(vel + (((IsValid(self) and IsValid(self:GetOwner())) and self:GetOwner():GetVelocity()/1.1) or vector_origin))
     phys:SetAngleVelocity(VectorRand() * 100 - ang:Forward() * math.random(1500,3500))
-	
+
 	hg_potatopc = hg_potatopc or hg.ConVars.potatopc
-	
+
 	if not hg_potatopc:GetBool() then
 		if #hg_trails < hg_maxsmoketrails:GetInt() then
 			local eff = ent:CreateParticleEffect("smoke_trail_wild",1,{PATTACH_ABSORIGIN_FOLLOW,ent,ent:GetPos()})
@@ -124,11 +124,11 @@ function SWEP:MakeShell(shell, pos, ang, vel)
 					fallmat = "water"
 				end
 				local Type = Types[fallmat] or "default"
-				ent:EmitSound(ShellsSND[t.s]..Type.."_"..math.random(5)..".mp3", 60, 100) 
+				ent:EmitSound(ShellsSND[t.s]..Type.."_"..math.random(5)..".mp3", 60, 100)
 			end
 
             if istable(t.s) then
-                ent:EmitSound(t.s[math.random(#t.s)], 60, 100)   
+                ent:EmitSound(t.s[math.random(#t.s)], 60, 100)
             end
         end
     end)
@@ -148,11 +148,11 @@ function hg.CreateMag( self, vel, bodygroups, bDontChangePhys )
 	if not IsValid(self:GetWM()) then return end
 	local owner = self:GetOwner()
 	if not IsValid(owner) then return end
-	
+
 	local bone = isnumber(self.FakeMagDropBone) and self.FakeMagDropBone or self:GetWM():LookupBone(self.FakeMagDropBone or "Magazine") or self:GetWM():LookupBone("ValveBiped.Bip01_L_Hand")
 	if not bone then return end
 	local matrix = self:GetWM():GetBoneMatrix(bone)
-	
+
 
 	if not matrix then return end
 	local lpos, lang = self.lmagpos or lpos, self.lmagang or lang
@@ -168,7 +168,6 @@ function hg.CreateMag( self, vel, bodygroups, bDontChangePhys )
 			if not bDontChangePhys then
 				local phys = self:GetPhysicsObject()
 				if IsValid(phys) then
-					local min, max = phys:GetAABB()
 					//debugoverlay.BoxAngles( self:GetPos(), min, max, self:GetAngles(), 1)
 					local pos, ang = LocalToWorld(lpos, lang, self:GetPos(), self:GetAngles())
 					self:SetRenderOrigin(pos)
@@ -202,8 +201,8 @@ function hg.CreateMag( self, vel, bodygroups, bDontChangePhys )
 	else
 		ent:PhysicsInit(SOLID_VPHYSICS)
 	end
-	ent:SetMoveType(MOVETYPE_VPHYSICS) 
-	ent:SetSolid(SOLID_VPHYSICS) 
+	ent:SetMoveType(MOVETYPE_VPHYSICS)
+	ent:SetSolid(SOLID_VPHYSICS)
 	ent:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 	if not bDontChangePhys then
 		ent:SetRenderBounds( -Vector(1,1,1), Vector(1,1,1), lpos2 )
@@ -216,7 +215,7 @@ function hg.CreateMag( self, vel, bodygroups, bDontChangePhys )
 
 		local vel = vel and -(-vel) or -(-vector_origin)
 		vel:Rotate(owner:EyeAngles())
-		
+
 
 		phys:SetVelocity(vel + (((IsValid(self) and IsValid(owner)) and owner:GetVelocity()*1.1) or Vector(0,0,0)))
 		phys:SetAngleVelocity(VectorRand() * 5)
@@ -224,11 +223,11 @@ function hg.CreateMag( self, vel, bodygroups, bDontChangePhys )
 
 	ent:AddCallback("PhysicsCollide",function(ent,data)
 		if data.Speed > 100 then
-			ent:EmitSound("physics/metal/weapon_impact_hard"..math.random(1,3)..".wav", 60, 110)   
+			ent:EmitSound("physics/metal/weapon_impact_hard"..math.random(1,3)..".wav", 60, 110)
 		end
 	end)
 
-	if not hg_shouldnt_autoremove:GetBool() and (zb.CROUND and zb.CROUND ~= "hmcd" or gamemod == "sandbox") then	
+	if not hg_shouldnt_autoremove:GetBool() and (zb.CROUND and zb.CROUND ~= "hmcd" or gamemod == "sandbox") then
 		ent:DrawShadow(false)
 		ent:SetModelScale(0, 10)
 		SafeRemoveEntityDelayed(ent, 10)
@@ -259,7 +258,7 @@ function hg.addBulletHoleEffect(pos)
 end
 
 hook.Add("PostCleanupMap","cleanupshells",function()
-    for k,v in ipairs(hg_shelles) do
+    for _, v in ipairs(hg_shelles) do
         --print("huy")
         v:Remove()
     end

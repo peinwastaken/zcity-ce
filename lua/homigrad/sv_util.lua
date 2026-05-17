@@ -3,7 +3,9 @@ local isBulletDamage = FindMetaTable( "CTakeDamageInfo" ).IsBulletDamage
 
 hg.ConVars = hg.ConVars or {}
 
-local hg_legacycam = ConVarExists("hg_legacycam") and GetConVar("hg_legacycam") or CreateConVar("hg_legacycam", 0, FCVAR_REPLICATED, "Toggle legacy first-person view camera", 0, 1)
+if not ConVarExists("hg_legacycam") then
+	CreateConVar("hg_legacycam", 0, FCVAR_REPLICATED, "Toggle legacy first-person view camera", 0, 1)
+end
 
 local host_timescale = game.GetTimeScale
 
@@ -42,7 +44,7 @@ local function playEffects( ent, data )
 
     local hitPos = data:GetDamagePosition()
     local inflictorEyepos = data:GetAttacker():EyePos()
-    local effectData = EffectData()
+    EffectData()
 
 
     local tempBloodPos = ( hitPos + ( ( inflictorEyepos - hitPos ):GetNormalized() * math_random( -25, -200 ) ) ) + Vector( math_random( -15, 15 ), math_random( -15, 15 ), 0 )
@@ -77,15 +79,15 @@ hook.Add( "OnEntityCreated", "SniperShit", function( ent )
 	timer.Simple( 0, function()
 		if not IsValid( ent ) then return end
 		if ent:GetClass() ~= "npc_sniper" then return end
-		
-		--;; Stupid flags 
-		ent:SetKeyValue( "misses", "0" )  
-		ent:SetKeyValue( "PaintInterval", "0.1" ) 
-		ent:SetKeyValue( "PaintIntervalVariance", "0" ) 
-		
-		local flags = 65536 + 1048576 + 2097152  
+
+		--;; Stupid flags
+		ent:SetKeyValue( "misses", "0" )
+		ent:SetKeyValue( "PaintInterval", "0.1" )
+		ent:SetKeyValue( "PaintIntervalVariance", "0" )
+
+		local flags = 65536 + 1048576 + 2097152
 		ent:SetKeyValue( "spawnflags", tostring(flags) )
-		
+
 		ent.LastSeenEnemy = nil
 		ent.LastSeenPos = nil
 		ent.LastSeenTime = 0
@@ -98,10 +100,10 @@ end )
 hook.Add( "OnEntityCreated", "HelicopterGunshipInit", function( ent )
 	timer.Simple( 0.1, function()
 		if not IsValid( ent ) then return end
-		
+
 		local class = ent:GetClass()
 		if class ~= "npc_helicopter" and class ~= "npc_combinegunship" then return end
-		
+
 		ent.IsCustomDamageSystem = true
 	end )
 end )
@@ -109,12 +111,12 @@ end )
 hook.Add( "Think", "Dumalkasniper", function()
 	for _, sniper in ipairs( ents.FindByClass( "npc_sniper" ) ) do
 		if not IsValid( sniper ) then continue end
-		
+
 		if (sniper.NextSuppressionCheck or 0) > CurTime() then continue end
 		sniper.NextSuppressionCheck = CurTime() + 0.1
-		
+
 		local enemy = sniper:GetEnemy()
-		
+
 		if IsValid( enemy ) then
 			local tr = util.TraceLine({
 				start = sniper:GetPos() + Vector(0, 0, 50),
@@ -122,16 +124,16 @@ hook.Add( "Think", "Dumalkasniper", function()
 				filter = {sniper, sniper.SuppressionTarget},
 				mask = MASK_SHOT
 			})
-			
+
 			local canSee = (tr.Entity == enemy or not tr.Hit)
-			
+
 			if canSee then
 				sniper.LastSeenEnemy = enemy
 				sniper.LastSeenPos = enemy:GetPos()
 				sniper.LastSeenVel = enemy:GetVelocity()
 				sniper.LastSeenTime = CurTime()
 				sniper.WasVisible = true
-				
+
 				if IsValid(sniper.SuppressionTarget) then
 					SafeRemoveEntity(sniper.SuppressionTarget)
 					sniper.SuppressionTarget = nil
@@ -139,11 +141,11 @@ hook.Add( "Think", "Dumalkasniper", function()
 			else
 				if sniper.WasVisible and sniper.LastSeenEnemy == enemy then
 					local timeSinceSeen = CurTime() - sniper.LastSeenTime
-					
+
 					if timeSinceSeen < 2 and sniper.SuppressionShots < 3 and not IsValid(sniper.SuppressionTarget) then
 						local vel = sniper.LastSeenVel or Vector(0, 0, 0)
 						local predictedPos = sniper.LastSeenPos + vel:GetNormalized() * 100
-						
+
 						local bullseye = ents.Create("npc_bullseye")
 						if IsValid(bullseye) then
 							bullseye:SetPos(predictedPos + Vector(0, 0, 50))
@@ -151,17 +153,17 @@ hook.Add( "Think", "Dumalkasniper", function()
 							bullseye:Activate()
 							bullseye:SetHealth(999999)
 							bullseye:SetKeyValue("spawnflags", "65536")
-							
+
 							sniper.SuppressionTarget = bullseye
 							sniper.SuppressionShots = sniper.SuppressionShots + 1
 							sniper.WasVisible = false
-							
+
 							timer.Simple(0.05, function()
 								if IsValid(sniper) and IsValid(bullseye) then
 									sniper:SetEnemy(bullseye)
 								end
 							end)
-							
+
 							timer.Simple(1.2, function()
 								if IsValid(bullseye) then
 									SafeRemoveEntity(bullseye)
@@ -170,7 +172,7 @@ hook.Add( "Think", "Dumalkasniper", function()
 									sniper.SuppressionTarget = nil
 								end
 							end)
-							
+
 						end
 					elseif timeSinceSeen >= 3 then
 						sniper.SuppressionShots = 0
@@ -194,14 +196,14 @@ end )
 
 hook.Add("EntityTakeDamage", "HL2Shit", function(target, dmginfo)
 	if not IsValid(target) then return end
-	
+
 	local class = target:GetClass()
 	if class ~= "npc_helicopter" and class ~= "npc_combinegunship" and class ~= "npc_strider" then return end
-	
+
 	if not target.AccumulatedDamage then
 		target.AccumulatedDamage = 0
 		target.IsDying = false
-		
+
 		if class == "npc_helicopter" then
 			target.DamageThreshold = 2000
 		elseif class == "npc_combinegunship" then
@@ -210,22 +212,20 @@ hook.Add("EntityTakeDamage", "HL2Shit", function(target, dmginfo)
 			target.DamageThreshold = 3000
 		end
 	end
-	
+
 
 	if target.IsDying then return true end
-	
+
 	local damage = dmginfo:GetDamage()
 	local dmgType = dmginfo:GetDamageType()
-	local attacker = dmginfo:GetAttacker()
-	local inflictor = dmginfo:GetInflictor()
-	
+
 
 	local function DestroyVehicle(reason)
 		if target.IsDying then return end
 		target.IsDying = true
-		
+
 		local pos = target:GetPos()
-		
+
 		local explosion = ents.Create("env_explosion")
 		if IsValid(explosion) then
 			explosion:SetPos(pos)
@@ -233,15 +233,15 @@ hook.Add("EntityTakeDamage", "HL2Shit", function(target, dmginfo)
 			explosion:Spawn()
 			explosion:Fire("Explode", "", 0)
 		end
-		
+
 		if class == "npc_helicopter" then
 			target:SetHealth(0)
 			target:Fire("SelfDestruct", "", 0)
 			dmginfo:SetDamage(999999)
-			
+
 			timer.Simple(0.1, function()
 				if IsValid(target) then
-					for i = 1, 3 do
+					for _ = 1, 3 do
 						local chunk = ents.Create("helicopter_chunk")
 						if IsValid(chunk) then
 							chunk:SetPos(pos + VectorRand() * 100)
@@ -326,7 +326,7 @@ hook.Add("OnEntityCreated", "PropMassFix", function(v)
 	end)
 end )
 
--- Looking Away 
+-- Looking Away
 local MaxLookX,MinLookX = 55,-55
 local MaxLookY,MinLookY = 45,-45
 
@@ -415,8 +415,8 @@ hook.Add("Player Think", "homigrad-dropholstered", function(ply)
 	local wep
 	for i = 1, #weps do
 		wep = weps[i]
-		
-		if wep.NoHolster and activewep ~= wep and wep.picked then 
+
+		if wep.NoHolster and activewep ~= wep and wep.picked then
 			ply:DropWeapon(wep)
 		end
 	end
@@ -468,7 +468,7 @@ hook.Add("PostEntityFireBullets","bulletsuppression",function(ent,bullet)
 	local dmg = bullet.Damage
 	if ent == Entity(0) then return end
 	if !IsValid(ent) then return end
-	for i,ply in player.Iterator() do--five pebbles
+	for _,ply in player.Iterator() do--five pebbles
 		if (IsValid(ent:GetOwner()) and ply == ent:GetOwner()) or ent == ply then continue end
 		if !ply:Alive() then continue end
 		local dist,pos = util.DistanceToLine(tr.StartPos,tr.HitPos,ply:EyePos())
@@ -653,7 +653,7 @@ concommand.Add("hg_dropsling",function(ply)
 	ply:SetNetVar("Inventory",inv)
 
 	local activewep = ply:GetActiveWeapon()
-	for i,wep in ipairs(ply:GetWeapons()) do
+	for _,wep in ipairs(ply:GetWeapons()) do
 		if not wep.bigNoDrop and wep.weaponInvCategory == 1 and activewep ~= wep then
 			ply:DropWeapon(wep)
 		end
@@ -700,7 +700,7 @@ function hgWreckBuildings(blaster, pos, power, range, ignoreVisChecks) -- taken 
 
 		local LastProcess = SysTime()
 
-		for k, prop in ipairs(allProps) do
+		for _, prop in ipairs(allProps) do
 			LastProcess = SysTime()
 			if not (table.HasValue(WreckBlacklist, prop:GetClass()) or hook.Run("hg_CanDestroyProp", prop, blaster, pos, power, range, ignore) == false or prop.ExplProof == true) then
 				local physObj = prop:GetPhysicsObject()
@@ -760,7 +760,7 @@ function hgIsDoor(ent)
 end
 
 function hgBlastDoors(blaster, pos, power, range, ignoreVisChecks) -- taken from JMod
-	for k, door in pairs(ents.FindInSphere(pos, 40 * power * (range or 1))) do
+	for _, door in pairs(ents.FindInSphere(pos, 40 * power * (range or 1))) do
 		if hgIsDoor(door) and hook.Run("hg_CanDestroyDoor", door, blaster, pos, power, range, ignore) ~= false then
 			local proceed = ignoreVisChecks
 
@@ -857,22 +857,22 @@ hook.Add( "OnEntityCreated", "VechicleChairs", function( ent )
 			end
 		end
 	end)
-	
+
 	timer.Simple(0, function()
 		if IsValid(ent) and ent:IsVehicle() and ent:GetModel() == "models/nova/airboat_seat.mdl" and not ent.shitass then
 				local isDriverSeat = IsValid(ent:GetParent()) and (
-				(ent:GetParent():GetModel() == "models/vehicles/7seatvan.mdl") or 
-				(ent:GetParent():GetModel() == "models/buggy.mdl") or 
-				(ent:GetParent():GetModel() == "models/vehicles/buggy_elite.mdl") or 
+				(ent:GetParent():GetModel() == "models/vehicles/7seatvan.mdl") or
+				(ent:GetParent():GetModel() == "models/buggy.mdl") or
+				(ent:GetParent():GetModel() == "models/vehicles/buggy_elite.mdl") or
 				(ent:GetParent():GetModel() == "models/vehicle.mdl")
 			) and ent:GetParent().DriverSeat == ent
-			
+
 			ent:SetModel("models/props_junk/PopCan01a.mdl")
 				ent:SetAngles(ent:LocalToWorldAngles(isDriverSeat and Angle(0, -1, 0) or Angle(0,90,0)))
 			ent:SetPos(ent:GetPos() + vector_up * 3 + ent:GetAngles():Forward() * 5)
 		end
 	end)
-	
+
 	if ent:GetClass() == "prop_vehicle_airboat" then
 		timer.Simple(0.1, function()
 			if !IsValid(ent) then return end
@@ -892,7 +892,7 @@ hook.Add( "OnEntityCreated", "VechicleChairs", function( ent )
 				chair:Spawn()
 				chair:SetVehicleEntryAnim(false)
 
-				local weld = constraint.Weld(chair, ent, 0, 0, 0, true, true)
+				constraint.Weld(chair, ent, 0, 0, 0, true, true)
 
 				local physobj = chair:GetPhysicsObject()
 				if physobj:IsValid() then
@@ -915,7 +915,7 @@ hook.Add( "OnEntityCreated", "VechicleChairs", function( ent )
 				chair:Spawn()
 				chair:SetVehicleEntryAnim(false)
 
-				local weld = constraint.Weld(chair, ent, 0, 0, 0, true, true)
+				constraint.Weld(chair, ent, 0, 0, 0, true, true)
 
 				local physobj = chair:GetPhysicsObject()
 				if physobj:IsValid() then
@@ -944,7 +944,7 @@ hook.Add( "OnEntityCreated", "VechicleChairs", function( ent )
 			chair:Spawn()
 			chair:SetVehicleEntryAnim(false)
 
-			local weld = constraint.Weld(chair, ent, 0, 0, 0, true, true)
+			constraint.Weld(chair, ent, 0, 0, 0, true, true)
 
 			local physobj = chair:GetPhysicsObject()
 			if physobj:IsValid() then
@@ -965,7 +965,7 @@ hook.Add( "OnEntityCreated", "VechicleChairs", function( ent )
 			chair:Spawn()
 			chair:SetVehicleEntryAnim(false)
 
-			local weld = constraint.Weld( chair, ent, 0, 0, 0, true, true )
+			constraint.Weld( chair, ent, 0, 0, 0, true, true )
 
 			local physobj = chair:GetPhysicsObject()
 			if physobj:IsValid() then
@@ -986,7 +986,7 @@ hook.Add( "OnEntityCreated", "VechicleChairs", function( ent )
 			chair:Spawn()
 			chair:SetVehicleEntryAnim(false)
 
-			local weld = constraint.Weld(chair, ent, 0, 0, 0, true, true)
+			constraint.Weld(chair, ent, 0, 0, 0, true, true)
 
 			local physobj = chair:GetPhysicsObject()
 			if physobj:IsValid() then
@@ -1007,7 +1007,7 @@ hook.Add( "OnEntityCreated", "VechicleChairs", function( ent )
 			chair:Spawn()
 			chair:SetVehicleEntryAnim(false)
 
-			local weld = constraint.Weld(chair, ent, 0, 0, 0, true, true)
+			constraint.Weld(chair, ent, 0, 0, 0, true, true)
 
 			local physobj = chair:GetPhysicsObject()
 			if physobj:IsValid() then
@@ -1052,7 +1052,7 @@ hook.Add( "Move", "hg_RagdollIntoWalls", function( ply, mv)
 					effectdata:SetNormal(tr.HitNormal)
 					util.Effect("zippy_impact_concrete", effectdata)
 				end)
-				for k,v in ipairs(ents.FindInSphere(tr.HitPos,vel:Length()/7)) do
+				for _,v in ipairs(ents.FindInSphere(tr.HitPos,vel:Length()/7)) do
 					local phys = v:GetPhysicsObject()
 					if v:IsPlayer() and v:IsOnGround() then
 						v:SetVelocity(tr.HitNormal*vel:Length() / 5)
@@ -1211,7 +1211,7 @@ end)
 hook.Add( "OnEntityCreated", "ReplaceEnt", function( ent )
 	hook.Run("ZB_OnEntCreated",ent)
 	if OverrideWeaponSpawn then return end
-	
+
 	timer.Simple(fuckingwait > CurTime() and 5 or 0,function()
 		if ( not IsValid(ent) or (not TrackedEnts[ ent:GetClass() ] and not TrackedEntsHalfLife[ ent:GetClass() ] and not TrackedModels[ent:GetModel()]) ) then return end
 		if TrackedModels[string.lower(ent:GetModel())] and not (string.find(ent:GetClass(),"prop_") and not (game.GetMap() == "ttt_clue_2022" and string.lower(ent:GetModel()) == "models/props_canal/mattpipe.mdl") and not ent.notprop) then
@@ -1371,23 +1371,23 @@ function entMeta:StealthOpenDoor(user)
 	self.oldsnd5 = self.oldsnd5 or self:GetInternalVariable("soundmoveoverride")
 	self.oldsnd6 = self.oldsnd6 or self:GetInternalVariable("soundopenoverride")
 	self.oldsnd7 = self.oldsnd7 or self:GetInternalVariable("soundunlockedoverride")
-	
+
 	self.firstOpen = 0--((self.firstOpen or -1) + 1)
 	--print(self.firstOpen)
 	local amt = 1 - math.min(math.abs(user:EyeAngles().p) / 60, 1)
-	
+
 	--local dist = self:GetInternalVariable("distance")
 	--self.distar = dist
-	
+
 	--[[if self.firstOpen and dist == 90 then
 		self:SetSaveValue( "distance", 10 )
 	else
 		self:SetSaveValue( "distance", self.distar )
 	end--]]
-	
+
 	--["m_angRotationOpenBack"]	   =	   0.000000 90.000000 0.000000
 	--["m_angRotationOpenForward"]	=	   0.000000 -90.000000 0.000000
-	
+
 	--["m_vecAngle1"] =	   0.000000 0.000000 0.000000
 	--["m_vecAngle2"] =	   0.000000 -90.000000 0.000000
 
@@ -1395,7 +1395,7 @@ function entMeta:StealthOpenDoor(user)
 	self.openang2 = self.openang2 or self:GetInternalVariable("m_angRotationOpenForward")
 	self.openang3 = self.openang3 or self:GetInternalVariable("m_vecAngle1")
 	self.openang4 = self.openang4 or self:GetInternalVariable("m_vecAngle2")
-	
+
 	if self.openang then
 		self:SetSaveValue("m_angRotationOpenBack", (self.firstOpen == 0) and self.openang * amt or self.openang)
 		self:SetSaveValue("m_angRotationOpenForward", (self.firstOpen == 0) and self.openang2 * amt or self.openang2)
@@ -1433,7 +1433,7 @@ function entMeta:NormalOpenDoor(user)
 	if self.oldspeed then
 		self:SetSaveValue( "Speed", self.oldspeed )
 	end
-	
+
 	self.firstOpen = -1
 
 	if self.openang then
@@ -1507,12 +1507,12 @@ hook.Add( "AcceptInput", "StealthOpenDoors", function( ent, inp, act, ply, val )
 		local func = ((ply:KeyDown( IN_SPEED ) and "FastOpenDoor") or ( ply:KeyDown( IN_WALK ) and "StealthOpenDoor") or "NormalOpenDoor")
 		ent[func](ent,ply)
 		if ent:GetInternalVariable( "slavename" ) then
-			for k,v in pairs( ents.FindByName( ent:GetInternalVariable( "slavename" ) ) ) do
+			for _,v in pairs( ents.FindByName( ent:GetInternalVariable( "slavename" ) ) ) do
 				v[func](v,ply)
 			end
 		end
 
-		for k,v in pairs( ents.FindByClass( ent:GetClass() ) ) do
+		for _,v in pairs( ents.FindByClass( ent:GetClass() ) ) do
 			if ent == v:GetInternalVariable( "m_hMaster" ) then
 				v[func](v,ply)
 			end
@@ -1537,7 +1537,7 @@ hook.Add("PlayerUse", "DoorClose", function(ply, ent)
 
 			return false
 		end
-	end	
+	end
 end)
 
 hook.Add( "KeyPress", "snowballs_pickup", function( ply, key )
@@ -1549,7 +1549,7 @@ hook.Add( "KeyPress", "snowballs_pickup", function( ply, key )
 		local tr = hg.eyeTrace(ply, 120)
 		if tr.MatType == MAT_SNOW then
 			ply:EmitSound("player/footsteps/snow1.wav",65,math.Rand(90,110))
-			ply.SnowBallPickupCD = CurTime() + 1 
+			ply.SnowBallPickupCD = CurTime() + 1
 			ply:Give("weapon_hg_snowball")
 		end
 	end
@@ -1609,7 +1609,6 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- rede
 	org.temperature = org.temperature or 36.7
 
 	local currentPulse = org.pulse or 70
-	local pulseHeat = 0
 	local temp = sf2_get_temp and sf2_get_temp() or hg.MapTemps[game.GetMap()] or 20
 
 	if currentPulse > 80 then
@@ -1619,7 +1618,7 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- rede
 
 	local warming = org.stamina.sub > 0 and 0.5 or 0
 	local ownerpos = owner:GetPos()
-	for i, ent in ipairs(ents.FindInSphere(ownerpos, 300)) do
+	for _, ent in ipairs(ents.FindInSphere(ownerpos, 300)) do
 		local warmingent = warmingEnts[ent:GetClass()]
 		if warmingent and !ent:GetNoDraw() then
 			--org.temperature = org.temperature + timeValue * (warmingEnts[ent:GetClass()] / 50 * (1 - ent:GetPos():Distance(owner:GetPos()) / 200))
@@ -1627,7 +1626,7 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- rede
 		end
 	end
 
-	for i, tbl in ipairs(hg.gasolinePath) do
+	for _, tbl in ipairs(hg.gasolinePath) do
 		--tbl[2] -> true = burned, number = still burning, false = unignited
 		if tbl[2] and isnumber(tbl[2]) and (ownerpos - tbl[1]):LengthSqr() < 200 * 200 then
 			warming = warming + 0.5
@@ -1637,9 +1636,8 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- rede
 	local changeRate = timeValue / 30 -- 1 degree every 1 minute
 
 	local temp = (IsVisibleSkyBox and temp or 20) + warming * 5
-	
+
 	local isFreezing = temp < 0
-	local isHeating = temp > 30
 
 	local MaxWarmMul = 1
 	local warmLoseMul = 1
@@ -1673,14 +1671,14 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- rede
 	-- When cold
 	if owner:Alive() and not org.otrub and org.temperature < 36 then
 		org.FreezeSndCD = org.FreezeSndCD or CurTime() + math.random(5, 15)
-		
+
 		if org.FreezeSndCD < CurTime() then
 			org.FreezeSndCD = CurTime() + math.random(10, 35)
 
 			ent:EmitSound("zcitysnd/"..(ThatPlyIsFemale(ent) and "fe" or "").."male/freezing_"..math.random(1,8)..".mp3",65)
 		end
 	end
-	
+
 	org.FreezeDMGCd = org.FreezeDMGCd or CurTime()
 	if org.temperature < 35 and org.FreezeDMGCd < CurTime() then
 		org.painadd = org.painadd + math.Rand(0, 1) * ((35 - org.temperature) / 35 * 4 + 1)
@@ -1690,11 +1688,11 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- rede
 	-- When hot
 	if owner:Alive() and org.temperature > 40 then
 		org.VomitCD = org.VomitCD or CurTime() + math.random(35, 75)
-		
+
 		if org.VomitCD < CurTime() then
 			org.VomitCD = CurTime() + math.random(35, 75)
 			owner:Notify(hg.get_phraselist(owner, "heatvomit"), 1, "phrase", 1, nil, Color(255, 85, 85, 255))
-			
+
 			timer.Simple(3, function()
 				hg.organism.Vomit(org.owner)
 			end)

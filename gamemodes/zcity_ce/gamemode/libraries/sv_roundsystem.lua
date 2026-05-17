@@ -34,7 +34,7 @@ function CurrentRound()
 	end
 
 	local round = zb.CROUND_MAIN
-	
+
 	return zb.modes[round], zb.CROUND
 end
 
@@ -75,7 +75,7 @@ function zb:EndRound()
 	zb.ROUND_STATE = 3
 	zb.Roundscount = (zb.Roundscount or 0) + 1
 
-	local mode, round = CurrentRound()
+	local mode, _ = CurrentRound()
 
 	net.Start("RoundInfo")
 		net.WriteString(mode.name or "hmcd")
@@ -137,7 +137,7 @@ function zb:EndRoundThink()
 				SetGlobalVar("coop_first_round_timer", zb.END_TIME)
 			end
 		end
-		
+
 		zb.SHOULD_FADE = zb.SHOULD_FADE != nil and zb.SHOULD_FADE or true
 
 		if zb.SHOULD_FADE and (zb.END_TIME < CurTime() + 1.5) then
@@ -161,7 +161,7 @@ function zb:EndRoundThink()
 
 			--PrintMessage(HUD_PRINTTALK, "Gamemode: " .. CurrentRound().PrintName or "None")
 
-			local mode, round = CurrentRound()
+			local mode, _ = CurrentRound()
 			net.Start("RoundInfo")
 				net.WriteString(mode.name or "hmcd")
 				net.WriteInt(zb.ROUND_STATE, 4)
@@ -188,7 +188,7 @@ end
 
 hook.Add("PlayerInitialSpawn", "zb_SendRoundInfo", function(ply)
 	if zb.CROUND then
-		local mode,round = CurrentRound()
+		local mode,_ = CurrentRound()
 		net.Start("RoundInfo")
 			net.WriteString(mode.name or "hmcd")
 			net.WriteInt(zb.ROUND_STATE, 4)
@@ -211,7 +211,7 @@ hook.Add("Think", "zb-think", function() zb:Think(CurTime()) end)
 
 function zb:KillPlayers()
 	local mode = CurrentRound()
-	for i, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 
 		ply:GiveExp(math.random(4,15))
@@ -222,7 +222,7 @@ function zb:KillPlayers()
 
 			continue
 		end
-		
+
 		if ply:FlashlightIsOn() then ply:Flashlight(false) end
 
 		ply:KillSilent()
@@ -237,7 +237,7 @@ local forcemode = zb.forcemode
 
 function zb.GetModes()
 	local newtbl = {}
-	for name,tbl in pairs(zb.modes) do
+	for name,_ in pairs(zb.modes) do
 		table.insert(newtbl,name)
 	end
 	return newtbl
@@ -289,7 +289,7 @@ function zb.GetAvailableModes()
 
 	local newtbl = {}
 
-	for i, name in pairs(zb.GetModes()) do
+	for _, name in pairs(zb.GetModes()) do
 
 		local tbl = zb.modes[name]
 		if (tbl.CanLaunch and tbl:CanLaunch()) and
@@ -298,7 +298,7 @@ function zb.GetAvailableModes()
 			( zb.GetWorldSize() > ZBATTLE_BIGMAP )
 		) then
 			if tbl.SubModes then
-				for i, name2 in pairs(tbl:SubModes()) do
+				for _, name2 in pairs(tbl:SubModes()) do
 					table.insert(newtbl, name2)
 				end
 			else
@@ -317,7 +317,7 @@ function zb.GetModesPlaytime()
 	local newtbl = {}
 	local count = 0
 
-	for i, name in ipairs(tbl) do
+	for _, name in ipairs(tbl) do
 		local amt = zb.ModesPlaytime[name] or 0
 		newtbl[name] = amt
 		count = count + amt
@@ -363,7 +363,7 @@ function zb.GetModesChances()
 	local tbl = zb.GetAvailableModes()
 	local newtbl = {}
 
-	for i, name in pairs(tbl) do
+	for _, name in pairs(tbl) do
 		newtbl[name] = zb.GetChance(name)
 	end
 
@@ -464,7 +464,7 @@ function zb.GetModesInfo()
 
 	for name, mode in pairs(zb.modes) do
 		if mode.Types then
-			for name2, mode2 in pairs(mode.Types) do
+			for name2 in pairs(mode.Types) do
 				table.insert(modesInfo, {
 					key = name2,
 					name = (mode.PrintName or mode.name or name).."/"..name2,
@@ -546,7 +546,6 @@ net.Receive("ZB_UpdateRoundList", function(len, ply)
 	if not IsValid(ply) or not ply:IsAdmin() then return end
 
 	local newList = net.ReadTable()
-	local forceUpdate = net.ReadBool()
 
 	zb.SetRoundList(newList)
 
@@ -593,7 +592,6 @@ function zb:RoundStart()
 
 	nextMode = table.remove(zb.RoundList, 1)
 
-	local currentMode = mode.Type or round
 
 	print("Next game mode is " .. nextMode)
 
@@ -722,7 +720,7 @@ function zb.NotifyQueueModified(ply, action)
 end
 
 function zb:Unfreeze()
-	for i, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if ply:Alive() then ply:Freeze(false) end
 	end
 end

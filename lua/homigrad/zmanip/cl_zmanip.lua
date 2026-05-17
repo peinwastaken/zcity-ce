@@ -1,4 +1,3 @@
-
 local lpos, lang = Vector(5, 2, -12), Angle(-90, -90, 90)
 local lpos2, lang2 = Vector(-5, 3, 6),Angle(0, 0, 0)
 
@@ -10,7 +9,7 @@ local drawfuncopendoor = function(ent, ply, vm, time)
 
 		local lh = vm:LookupBone("ValveBiped.Bip01_L_Hand")
 		local mat = vm:GetBoneMatrix(lh)
-		
+
 		local handle = door:LookupBone("handle")
 		if !handle then return end
 		local matdoor = door:GetBoneMatrix(handle)
@@ -19,8 +18,8 @@ local drawfuncopendoor = function(ent, ply, vm, time)
 		local dot = door:GetAngles():Forward():Dot(ply:EyeAngles():Forward())
 		local sign = dot > 0
 
-		local pos, ang = LocalToWorld(LerpVector(1 - (dot + 1) * 0.5, lpos, lpos2), sign and lang or lang2, matdoor:GetTranslation(), matdoor:GetAngles())
-		
+		local pos, _ = LocalToWorld(LerpVector(1 - (dot + 1) * 0.5, lpos, lpos2), sign and lang or lang2, matdoor:GetTranslation(), matdoor:GetAngles())
+
 		local distmul = 1 - math.min(1, pos:DistToSqr(mat:GetTranslation()) / (40 * 40))
 
 		mat:SetTranslation(LerpVector(math.Clamp((1 - time) * distmul, 0, 1), mat:GetTranslation(), pos))
@@ -41,13 +40,13 @@ local drawfuncinteract = function(ent, ply, vm, time)
 
 		local lh = vm:LookupBone("ValveBiped.Bip01_L_Hand")
 		local mat = vm:GetBoneMatrix(lh)
-		
+
 		--local handle = door:LookupBone("handle")
 		--local matdoor = door:GetBoneMatrix(handle)
 		local mat2 = ent:GetBoneMatrix(0)
 
-		local pos, ang = LocalToWorld(lpos3, lang3, mat2:GetTranslation(), mat2:GetAngles())
-		
+		local pos, _ = LocalToWorld(lpos3, lang3, mat2:GetTranslation(), mat2:GetAngles())
+
 		local distmul = 1 - math.min(1, pos:DistToSqr(mat:GetTranslation()) / (40 * 40))
 
 		mat:SetTranslation(LerpVector(math.Clamp((1 - time) * distmul, 0, 1), mat:GetTranslation(), pos))
@@ -62,7 +61,7 @@ local tbl = {
 		["interact"] = {
 			seq = "interact",
 			playTime = 1,
-			otherData = { 
+			otherData = {
 				angClamps = { {-75}, {65} }
 			},
 			drawFunc = drawfuncinteract,
@@ -136,7 +135,6 @@ for mdl, tbl2 in pairs(tbl) do
 end
 
 function hg.RunZManipAnim(ply, anim, revers, timeOveride, addtbl)
-	local ent = hg.GetCurrentCharacter(ply)
 	local zmdl = ply.zmodel
 
 	if !IsValid(zmdl) then return end
@@ -158,7 +156,7 @@ function hg.RunZManipAnim(ply, anim, revers, timeOveride, addtbl)
 		ply:EmitSound("player/clothes_generic_foley_0" .. math.random(5) .. ".wav", 55)
 		ply.NextFoley = CurTime() + (ply.zmaniptime or 1)
 	end
-	
+
 	zmdl:SetSequence(tbl.seq)
 end
 
@@ -168,7 +166,7 @@ net.Receive("RunZManipAnim", function()
 	local revers = net.ReadBool()
 	local timeOveride = net.ReadFloat()
 	local addtbl = net.ReadTable()
-	
+
 	hg.RunZManipAnim(ply, anim, revers, timeOveride != 0 and timeOveride or nil, addtbl)
 end)
 
@@ -180,9 +178,9 @@ function hg.DoZManip(ent, ply)
 	end
 
 	if not ply.zmanipstart or IsValid(ply:GetNetVar("carryent2")) or (ply.organism and ply.organism.larmamputated) then return end
-	
+
 	local time = (math.Clamp((CurTime() - ply.zmanipstart) / ply.zmaniptime, 0, 1))
-	
+
 	if time >= 1 then
 		ply.zmanipstart = nil
 		return
@@ -263,8 +261,6 @@ function hg.DoZManip(ent, ply)
 	local lhmat = ent:GetBoneMatrix(lh)
 	local wmlh = WorldModel:LookupBone("ValveBiped.Bip01_L_Hand")
 	local wmlhmat = WorldModel:GetBoneMatrix(wmlh)
-
-	local lpos, lang = WorldToLocal(lhmat:GetTranslation(), lhmat:GetAngles(), wmlhmat:GetTranslation(), angle_zero)
 
 	if ply.zmanipdrawFunc then
 		ply.zmanipdrawFunc(ent, ply, WorldModel, time)

@@ -24,7 +24,7 @@ function SWEP:PrimaryAttack()
 
 		local tr = hg.eyeTrace(ply)
 		local pos, ang = tr.StartPos, ply:EyeAngles()
-		local dist, point = util.DistanceToLine(pos, pos, ply:EyePos())
+		local _, point = util.DistanceToLine(pos, pos, ply:EyePos())
 		local bullet = {}
 		bullet.Pos = point
 		bullet.Dir = ang:Forward()

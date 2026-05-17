@@ -14,9 +14,9 @@ function EFFECT:Init(data)
 
     local emitter = ParticleEmitter(pos)
 
-    for i = 1,15*intensity do
+    for _ = 1,15*intensity do
         local smoke = emitter:Add(smoke_mats[math.random(#smoke_mats)], pos)
-        
+
         smoke:SetStartAlpha(math.Rand(12, 25))
         smoke:SetEndAlpha(0)
         smoke:SetColor(150,150,175)

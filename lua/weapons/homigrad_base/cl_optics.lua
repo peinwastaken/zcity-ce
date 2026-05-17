@@ -39,13 +39,9 @@ local rtmat = GetRenderTargetEx("huy-glass22",
 	0,
 	IMAGE_FORMAT_BGR888
 )
-local mat = Material("huy-glass")
 local mat2 = Material("huy-glass")
 SWEP.scopemat = Material("decals/scope.png")
 SWEP.perekrestie = Material("decals/perekrestie3.png")
-local limit = 1
-local vecVel = Vector(0, 0, 0)
-local angZero = Angle(0, 0, 0)
 local vecZero = Vector(0, 0, 0)
 SWEP.localScopePos = Vector(-21, 3.95, -0.2)
 SWEP.scope_blackout = 400
@@ -71,25 +67,6 @@ function surface.DrawTexturedRectRotatedPoint(x, y, w, h, rot, x0, y0)
 	surface.DrawTexturedRectRotated(x + newx, y + newy, w, h, rot)
 end
 
-local addmat_r = Material("CA/add_r")
-local addmat_g = Material("CA/add_g")
-local addmat_b = Material("CA/add_b")
-local vgbm = Material("vgui/black")
-local function DrawCA(rx, gx, bx, ry, gy, by, mater)
-	render.UpdateScreenEffectTexture()
-	addmat_r:SetTexture("$basetexture", mater)
-	addmat_g:SetTexture("$basetexture", mater)
-	addmat_b:SetTexture("$basetexture", mater)
-	local w, h = ScrW(), ScrH()
-	render.SetMaterial(vgbm)
-	render.DrawScreenQuad()
-	render.SetMaterial(addmat_r)
-	render.DrawScreenQuadEx(-rx / 2, -ry / 2, w + rx, h + ry)
-	render.SetMaterial(addmat_g)
-	render.DrawScreenQuadEx(-gx / 2, -gy / 2, w + gx, h + gy)
-	render.SetMaterial(addmat_b)
-	render.DrawScreenQuadEx(-bx / 2, -by / 2, w + bx, h + by)
-end
 
 lodset = false
 
@@ -100,57 +77,56 @@ local angaddhuy = Angle(0,0,0)
 local scrw, scrh = ScrW(), ScrH() --retarded
 function SWEP:DoRT()
 	LOW_RENDER = nil
-	
+
 	local gun = self:GetWeaponEntity()
 	local att = self:GetMuzzleAtt(gun, true)
 	local owner = self:GetOwner()
-	
+
 	if not att then return end
 	if not self.sizeperekrestie then return end
-	
+
 	self.isscoping = true
 
 	local pos, ang = self:GetTrace(true, nil, nil, true)
-	
+
 	local optic
-	local sight, foundatt = self:HasAttachment("sight", "optic")
-	
+	local _, foundatt = self:HasAttachment("sight", "optic")
+
 	if foundatt and self.modelAtt and IsValid(self.modelAtt.sight) then
 		pos = self.modelAtt.sight:GetPos()
 		optic = true
 	end
-	
+
 	local localPos = vecZero
 	localPos:Set(self.localScopePos)
 	localPos:Rotate(ang)
 	pos:Add(localPos)
 	--debugoverlay.Cross(pos,5,1)
 	local view = render.GetViewSetup(true)
-	local diff, point = util.DistanceToLine(view.origin, view.origin + ang:Forward() * 50, pos)
+	local _, point = util.DistanceToLine(view.origin, view.origin + ang:Forward() * 50, pos)
 	local scope_pos = WorldToLocal(point, angle_zero, pos, view.angles)
 	local mat = self.mat or mat2
-	
+
 	mat:SetTexture("$basetexture", rtmat)
-	
+
 	if hg_show_hitposmuzzle:GetBool() then
 		//cam.Start3D()
 			render.DrawLine(pos,point, Color( 255, 255, 255 ))
 		//cam.End3D()
 	end
 
-	local firstPerson = lply == GetViewEntity()
 
 	local localhuy = pos - view.origin
-	local anghuy = localhuy:Angle()
+	localhuy:Angle()
 	local dist = pos:Distance(view.origin)
 	--ang[3] = ang[3] - 90--lply:EyeAngles()[3] + self.AdditionalAng[3]
 	//ang[3] = ang//lply:EyeAngles()[3] //+ self.AdditionalAng[3]
 	--ang[3] = view.angles[3]
-	
+
 	local mul = 4 * self.ZoomFOV / 7 * (self.scopedef and 400 / self.scope_blackout or 1)
 	angaddhuy[1] = scope_pos[3] * mul
 	angaddhuy[2] = -scope_pos[2] * mul
-	
+
 	local ang2 = ang + angaddhuy
 	local pos2 = pos-- + ang2:Right() * -scope_pos[2] + ang2:Up() * scope_pos[3]
 
@@ -198,7 +174,7 @@ function SWEP:DoRT()
 			--render.DrawTextureToScreen(rtmat_spare)
     		--render.UpdateFullScreenDepthTexture()
 		end
-		
+
 		render.RenderView(rt)
 
 		cam.Start3D()
@@ -210,20 +186,19 @@ function SWEP:DoRT()
 				hitPos = self:GetTrace(true).HitPos:ToScreen()
 			end
 		cam.End3D()
-		
+
 		local cocking = self:GetNetVar("shootgunReload", 0) > CurTime()
-		
+
 		if cocking then
-			local val = (CurTime() - self:GetNetVar("shootgunReload", 0)) * 1024
 			--x = x + val
 			--diffa[1] = diffa[1] - val
 			--y = y - 0
 		end
 
 		local distMul = math.min(15, 1.2 * 2.5 * (15 / self.ZoomFOV))
-		
+
 		local dist = math.sqrt(((x - scrw / 2) * distMul)^2 + ((y - scrh / 2) * distMul)^2)
-		
+
 		if dist > 2048 then
 			render.Clear(0, 0, 0, 255)
 		end
@@ -274,14 +249,6 @@ function SWEP:ChangeFOV()
 end
 
 --
-local vecZero = Vector(0, 0, 0)
-local function WorldToScreen(vWorldPos, vPos, vScale, aRot, verticalScale)
-	local vWorldPos = vWorldPos - vPos
-	vWorldPos:Rotate(Angle(0, -aRot.y, 0))
-	vWorldPos:Rotate(Angle(-aRot.p, 0, 0))
-	vWorldPos:Rotate(Angle(0, 0, -aRot.r))
-	return vWorldPos.x / vScale, (-vWorldPos.y) / (vScale * verticalScale)
-end
 
 SWEP.size = 0.0007
 SWEP.holo_pos = Vector(-0.82, 3.48, 25)
@@ -294,13 +261,12 @@ local vechuy = Vector(0,0,0)
 
 local exampleRT = GetRenderTarget( "example_rt", 1024, 1024 )
 
-local customMaterial = CreateMaterial( "example_rt_mat", "UnlitGeneric", {
+CreateMaterial( "example_rt_mat", "UnlitGeneric", {
 	["$basetexture"] = exampleRT:GetName(), -- You can use "example_rt" as well
 	["$translucent"] = 1,
 		["$vertexcolor"] = 1
 } )
 
-local mat_Mul = Material("pp/mul")
 local mat_Add = Material("pp/add")
 mat_Add:SetTexture("$basetexture", exampleRT)
 mat_Add:SetVector("$color2", Vector(10, 10, 10))
@@ -354,11 +320,11 @@ hook.Add("PostDrawTranslucentRenderables","stencil-test-holo2",function()
 
 	local models = self.holomodels
 	if not models and not self.internalholo then return end
-	local tr, pos, ang = self:GetTrace()
+	local _, _, ang = self:GetTrace()
 	local view = render.GetViewSetup()
 	local eyePos = view.origin
 	local hitPos = eyePos + ang:Forward() * 2624
-	
+
 	if blured ~= self.holo then
 		// MY FRIEND WITH ONLY A CPU COULD NOT PLAY NORMALLY WITH HOLOGRAPHS!!!!
 		// TY OWHATN PLOKhOY!!! I NUYYYYY																							|\_/|
@@ -369,7 +335,7 @@ hook.Add("PostDrawTranslucentRenderables","stencil-test-holo2",function()
 			render.OverrideAlphaWriteEnable( true, true )
 
 			render.ClearDepth()
-			render.Clear( 0, 0, 0, 0 )	
+			render.Clear( 0, 0, 0, 0 )
 
 			DisableClipping(true)
 
@@ -379,7 +345,7 @@ hook.Add("PostDrawTranslucentRenderables","stencil-test-holo2",function()
 					surface.DrawTexturedRect(0, 0, 1024, 1024)
 					render.BlurRenderTarget(exampleRT, 1, 1, 6)
 
-					for i = 1, 2 do
+					for _ = 1, 2 do
 						render.SetMaterial(mat_Add)
 						render.DrawScreenQuad()
 					end--]]
@@ -402,7 +368,7 @@ hook.Add("PostDrawTranslucentRenderables","stencil-test-holo2",function()
 		render.SetStencilFailOperation( STENCIL_KEEP )
 		render.SetStencilZFailOperation( STENCIL_KEEP )
 		render.ClearStencil()
-		
+
 		-- Enable stencils
 		render.SetStencilEnable( true )
 		-- Set everything up everything draws to the stencil buffer instead of the screen
@@ -421,7 +387,7 @@ hook.Add("PostDrawTranslucentRenderables","stencil-test-holo2",function()
 		else
 			local zoom, anga = self:GetZoomPos(vector_origin, view, view.origin)
 			local sightpos, _ = LocalToWorld(self.internalholo, angle_zero, zoom, anga)
-			
+
 			render.SetColorMaterial()
 			render.DrawSphere(sightpos, self.internalholosize, 5, 5, invcolor)
 		end
@@ -451,7 +417,7 @@ hook.Add("PostDrawTranslucentRenderables","stencil-test-holo2",function()
 			--print(distToSight)
 			size = size * math.Remap(view.fov,0,100,1.8,1)
 			size = size * math.Remap(distToSight,6,14,1.2,0.9)
-			--size = size * 
+			--size = size *
 			--render.OverrideBlend( true,BLEND_DST_COLOR,BLEND_ONE,BLENDFUNC_ADD )
 			--	surface.SetDrawColor(255,255,255,15)
 			--	surface.SetMaterial(customMaterial)
@@ -494,14 +460,14 @@ hook.Add("RenderScreenspaceEffects","stencil-test-holo2",function()
 		render.SetStencilFailOperation( STENCIL_KEEP )
 		render.SetStencilZFailOperation( STENCIL_KEEP )
 		render.ClearStencil()
-		
+
 		-- Enable stencils
 		render.SetStencilEnable( true )
 		-- Set everything up everything draws to the stencil buffer instead of the screen
 		render.SetStencilReferenceValue( 1 )
 		render.SetStencilCompareFunction( STENCIL_NOTEQUAL )
 		render.SetStencilPassOperation( STENCIL_REPLACE )
-		
+
 		for model in pairs(models) do
 			if not IsValid(model) then continue end
 			model:DrawModel()
@@ -533,7 +499,7 @@ hook.Add("PostDrawOpaqueRenderables","stencil-test-holo",function()
 	render.SetStencilReferenceValue( 1 )
 	-- Always draw everything
 	render.SetStencilCompareFunction( STENCIL_ALWAYS )
-	
+
 	render.SetStencilZFailOperation( STENCIL_KEEP )
 	render.SetStencilPassOperation( STENCIL_REPLACE )
 
@@ -541,11 +507,11 @@ hook.Add("PostDrawOpaqueRenderables","stencil-test-holo",function()
 	for _, ent in player.Iterator() do
 		ent:DrawModel()
 	end
-	
+
 	-- Now, only draw things that have their pixels set to 1. This is the hidden parts of the stencil tests.
 	render.SetStencilCompareFunction( STENCIL_EQUAL )
 	-- Flush the screen. This will draw teal over all hidden sections of the stencil tests
-	
+
 	render.ClearBuffersObeyStencil( 0, 148, 133, 255, false )
 
 	-- Let everything render normally again

@@ -14,9 +14,9 @@ function EFFECT:Init(data)
 
     local emitter = ParticleEmitter(pos)
 
-    for i = 1,15*intensity do
+    for _ = 1,15*intensity do
         local smoke = emitter:Add(smoke_mats[math.random(#smoke_mats)], pos)
-        
+
         smoke:SetStartAlpha(math.Rand(12, 25))
         smoke:SetEndAlpha(0)
         smoke:SetColor(150,150,175)
@@ -31,7 +31,7 @@ function EFFECT:Init(data)
         smoke:SetVelocity((normal*math.Rand(40, 200)+VectorRand()*50)*intensity)
     end
 
-    for i = 1,15*intensity do
+    for _ = 1,15*intensity do
         local shard = emitter:Add("effects/fleck_glass" .. math.random(1, 3), pos+normal*8)
 
         shard:SetStartAlpha(255)

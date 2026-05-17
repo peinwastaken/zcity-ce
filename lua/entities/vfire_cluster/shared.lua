@@ -65,7 +65,7 @@ function ENT:AddFire(fire)
 	if self.parent.fireClusters then
 		self.parent.fireClusters[self] = GetRelPos(self)
 	end
-	
+
 	-- Increment count
 	self.cnt = self.cnt + 1
 
@@ -83,7 +83,7 @@ function ENT:AddFire(fire)
 	local closestFireBigger
 
 	self.distMem[fire] = {}
-	for k, fire2 in pairs(self.fires) do
+	for _, fire2 in pairs(self.fires) do
 		if !IsValid(fire2) then continue end
 		local dist = 0
 		if fire != fire2 then
@@ -146,13 +146,12 @@ function ENT:RemFire(fire)
 
 	-- Remove the fire from the distance memorization table
 	self.distMem[fire] = nil
-	for k, fire2 in pairs(self.fires) do
+	for _, fire2 in pairs(self.fires) do
 		self.distMem[fire2][fire] = nil
 	end
 end
 
 -- A function similar to think dedicated to checking wind flow via timers
-local windExposureCheckTime = 45
 function ENT:CalcWindExposure()
 	self.windExposure = 1
 end
@@ -160,7 +159,7 @@ end
 if SERVER then
 	local pvsLODCheckTime = 100
 	function ENT:CalcPVSLOD()
-		for k, ply in player.Iterator() do
+		for _, ply in player.Iterator() do
 			self.PVSLOD = self:TestPVS(ply:GetPos())
 			if self.PVSLOD then
 				-- One is enough
@@ -229,7 +228,7 @@ end
 if CLIENT then
 	function ENT:GetClusterMagnitude()
 		local maxState = 0
-		for k, fire in pairs(self.fires) do
+		for _, fire in pairs(self.fires) do
 			if IsValid(fire) then
 				local state = fire:GetFireState()
 				if state > maxState then

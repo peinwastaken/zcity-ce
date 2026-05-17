@@ -1,7 +1,7 @@
 if SERVER then AddCSLuaFile() end
 SWEP.Base = "weapon_tpik_base"
 SWEP.PrintName = "M67"
-SWEP.Instructions = 
+SWEP.Instructions =
 [[M67 fragmentation grenade is used by many countries around the world since 1968. It has a pyrotechnic delay of 4-5.5 seconds.
 
 LMB - High ready
@@ -86,7 +86,7 @@ SWEP.AnimList = {
 		if CLIENT then return end
 		--local tr = self:GetEyeTrace()
 		--self:Tie(tr)
-		
+
 		self:Throw(1200, self.SpoonTime or CurTime(),nil,Vector(2,4,0),Angle(-40,0,0))
 		self.InThrowing = false
 		self.ReadyToThrow = false
@@ -133,21 +133,21 @@ SWEP.AnimList = {
 			self:SetShowPin(true)
 		end)
 	end, 0.6 },
-	["pullbackhigh"] = {"pullbackhigh", 1.5, false, false, function(self) 
+	["pullbackhigh"] = {"pullbackhigh", 1.5, false, false, function(self)
 		self:SetShowPin(false)
 		--self:PlayAnim("attack")
 		self.ReadyToThrow = true
 	end,0.8},
-	["pullbacklow"] = {"pullbacklow", 1.5, false, false, function(self) 
+	["pullbacklow"] = {"pullbacklow", 1.5, false, false, function(self)
 		--self:PlayAnim("attack2")
 		self:SetShowPin(false)
 		self.IsLowThrow = true
 		self.ReadyToThrow = true
 	end,0.8},
-	["revers_pullbackhigh"] = {"pullbackhigh", 2, false, true, function(self) 
+	["revers_pullbackhigh"] = {"pullbackhigh", 2, false, true, function(self)
 		self:SetShowPin(true)
 	end,0.9},
-	["revers_pullbacklow"] = {"pullbacklow", 2, false, true, function(self) 
+	["revers_pullbacklow"] = {"pullbacklow", 2, false, true, function(self)
 		self:SetShowPin(true)
 	end,0.9},
 	["idle"] = {"draw", 1, false, false, function(self)
@@ -234,11 +234,11 @@ end
 function SWEP:PickupFunc(ply)
     local wep = ply:GetWeapon(self:GetClass())
     if IsValid(wep) and wep.count < 3 and wep != self then
-        
+
         wep.count = wep.count + self.count
 		self.count = 0
         self:Remove()
-        
+
         return true
     end
     return false
@@ -253,7 +253,7 @@ function SWEP:Throw(mul, time, nosound, throwPosAdjust, throwAngAdjust)
 	throwPosAdjust = throwPosAdjust or Vector(0,0,5)
 	throwAngAdjust = throwAngAdjust or Angle(0,0,0)
 	--throwPosAdjust[2] = throwPosAdjust[2] + 2
-	local _,_,headm = self:GetEyeTrace()
+	local _, _, headm = self:GetEyeTrace()
 	local eyepos = headm:GetTranslation() or false
 	local ang = IsValid(entOwner) and owner:EyeAngles() or self:GetAngles()
 	local hand = eyepos and eyepos + ang:Forward() * throwPosAdjust[1] + ang:Right() * (throwPosAdjust[2] + 2) + ang:Up() * throwPosAdjust[3] or self:GetPos()
@@ -261,7 +261,7 @@ function SWEP:Throw(mul, time, nosound, throwPosAdjust, throwAngAdjust)
 	if IsValid(entOwner) then
 		ent:SetOwner(entOwner or game.GetWorld())
 	end
-	
+
 	ent.team = owner:Team()
 	ent.steamid = owner:SteamID()
 
@@ -280,13 +280,13 @@ function SWEP:Throw(mul, time, nosound, throwPosAdjust, throwAngAdjust)
 						local randomPhrase = classPhrases[math.random(#classPhrases)]
 						local ent_char = hg.GetCurrentCharacter(owner)
 						local muffed = owner.armors and owner.armors["face"] == "mask2"
-						
+
 						if IsValid(ent_char) then
 							ent_char:EmitSound(randomPhrase, muffed and 75 or 85, owner.VoicePitch or 100, 1, CHAN_AUTO, 0, muffed and 14 or 0)
 						else
 							owner:EmitSound(randomPhrase, muffed and 75 or 85, owner.VoicePitch or 100, 1, CHAN_AUTO, 0, muffed and 14 or 0)
 						end
-						
+
 						owner.lastPhr = randomPhrase
 					end
 				end
@@ -312,9 +312,9 @@ function SWEP:Throw(mul, time, nosound, throwPosAdjust, throwAngAdjust)
 	angThrow:RotateAroundAxis(angThrow:Up(),throwAngAdjust[3])
 	ent:SetAngles(angThrow)
 	local phys = ent:GetPhysicsObject()
-	if phys then 
+	if phys then
 		real_ent = hg.GetCurrentCharacter(owner)
-		phys:SetVelocity(IsValid(real_ent) and (owner:GetAimVector() * mul/1.5) + real_ent:GetVelocity() or Vector(0,0,0)) 
+		phys:SetVelocity(IsValid(real_ent) and (owner:GetAimVector() * mul/1.5) + real_ent:GetVelocity() or Vector(0,0,0))
 	end
 	if owner:IsOnGround() then
 		owner:SetVelocity(owner:GetVelocity() - owner:GetVelocity()/2)
@@ -441,7 +441,7 @@ function SWEP:ThinkAdd()
 
 	if not self.timeToBoom then
 		local ent = scripted_ents.GetStored(self.ENT)--scripted_ents.Get("ent_"..string.sub(self:GetClass(),8))
-		
+
 		self.timeToBoom = ent.timeToBoom or 5
 	end
 
@@ -459,7 +459,7 @@ function SWEP:ThinkAdd()
 		end
 	end
 
-	if self.ReadyToThrow and 
+	if self.ReadyToThrow and
 		(self.NoSpoon or ( ( ( self.IsLowThrow and self:KeyDown(IN_ATTACK) ) or not self.IsLowThrow and self:KeyDown(IN_ATTACK2) ) ))
 		and not self.InThrowing and not self.SpoonTime then
 		self.SpoonTime = CurTime()
@@ -496,7 +496,7 @@ function SWEP:CreateSpoon(entownr)
 		entownr:EmitSound("weapons/m67/m67_spooneject.wav", 65)
 
 		if self.SpoonSounds then
-			for k,v in ipairs(self.SpoonSounds) do
+			for _,v in ipairs(self.SpoonSounds) do
 				self:GetOwner():EmitSound(v[1], v[2], v[3])
 
 				if v[4] then
@@ -521,7 +521,7 @@ function SWEP:CreateSpoon(entownr)
 		entasd:EmitSound("weapons/m67/m67_spooneject.wav",65)
 
 		if self.SpoonSounds then
-			for k,v in ipairs(self.SpoonSounds) do
+			for _,v in ipairs(self.SpoonSounds) do
 				self:GetOwner():EmitSound(v[1], v[2], v[3], v[5])
 
 				if v[4] then
@@ -586,7 +586,7 @@ end
 function SWEP:PlaceTrap()
 	if self.NoTrap then return end
 
-	local time = CurTime()
+	CurTime()
 	if CLIENT then return end
 
 	local ply = self:GetOwner()
@@ -596,7 +596,7 @@ function SWEP:PlaceTrap()
 	if IsValid(ply) then
 		entownr = hg.GetCurrentCharacter(ply)
 	end
-	
+
 	if ply:IsSprinting() then
 		self:ResetTrap()
 	return end
@@ -615,11 +615,11 @@ function SWEP:PlaceTrap()
 		ent.owner = self.lastOwner
 		ent.owner2 = self.lastOwner
 		ent:SetOwner(self.lastOwner)
-		
+
 		ent.cons2 = constraint.Weld(ent,tr.Entity,0,tr.PhysicsBone or 0, 200, true, false)
-		
+
 		self.Trap = ent
-		
+
 		self:SetNWBool("PlacedTrap", true)
 	elseif IsValid(self.Trap) then
 		local tr = hg.eyeTrace(ply)
@@ -631,7 +631,7 @@ function SWEP:PlaceTrap()
 		local trace = util.TraceLine(tr2)
 
 		if trace.Hit then return end
-		
+
 		local len = tr.HitPos:Distance(self.Trap:GetPos())
 		if len < 200 and len > 10 then
 			self.Trap.ent = tr.Entity
@@ -649,7 +649,7 @@ function SWEP:PlaceTrap()
 
 			local ent2 = ents.Create("prop_physics")
 			ent2:SetModel("models/hunter/plates/plate.mdl")
-			
+
 			ent2:SetMoveType(MOVETYPE_NONE)
 			ent2:SetSolid(SOLID_VPHYSICS)
 			ent2:Spawn()
@@ -665,7 +665,7 @@ function SWEP:PlaceTrap()
 				Vector( pos[1], pos[2], pos[3] + size ),
 				Vector( pos[1] + size, pos[2], pos[3] ),
 				Vector( pos[1] + size, pos[2], pos[3] + size ),
-			})			
+			})
 			ent2:EnableCustomCollisions(true)
 
 			local phys = ent2:GetPhysicsObject()

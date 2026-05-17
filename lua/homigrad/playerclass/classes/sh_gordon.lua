@@ -50,7 +50,7 @@ local function createhev(ply)
     ply.armors["torso"] = "gordon_armor"
     ply.armors["head"] = "gordon_helmet"
     ply:SyncArmor()
-    
+
     local Appearance = ply.CurAppearance or hg.Appearance.GetRandomAppearance()
     Appearance.AAttachments = ""
     Appearance.AColthes = ""
@@ -63,7 +63,7 @@ end
 function CLASS.On(self, data)
     if CLIENT then return end
     local equipment = data and data.equipment
-    local bRestored = data and data.bRestored 
+    local bRestored = data and data.bRestored
     ApplyAppearance(self,nil,nil,nil,true)
     local Appearance = self.CurAppearance or hg.Appearance.GetRandomAppearance()
     Appearance.AAttachments = ""
@@ -71,7 +71,7 @@ function CLASS.On(self, data)
 
     self:SetNetVar("Accessories", "")
     self.CurAppearance = Appearance
-    
+
     self:SetModel("models/humans/gordon/group01/gordoncitizen.mdl")--gordon without HEV
     self:SetNWString("PlayerName", "Gordon")
     self:SetPlayerColor(Color(246, 139, 0):ToVector())
@@ -91,7 +91,7 @@ function CLASS.On(self, data)
 
             local wep = self:Give("weapon_hg_hl2nade_tpik")
             wep.count = 3
-            
+
             self:Give("weapon_hg_slam")
             self:Give("weapon_walkie_talkie")
         elseif equipment == "refugee" then
@@ -108,7 +108,7 @@ function CLASS.On(self, data)
 
     if equipment != "citizen" and not bRestored then
         timer.Simple(1,function()
-            for i,ent in pairs(ents.FindByClass("item_suit")) do
+            for _,ent in pairs(ents.FindByClass("item_suit")) do
                 ent:Remove()
             end
         end)
@@ -133,7 +133,7 @@ function CLASS.On(self, data)
         self:SetModel(model)
         self:SetSubMaterial()
         self:SetBodygroup(2, 2)
-        
+
         self.armors = self.armors or {}
         if not self.armors["torso"] then
             self.armors["torso"] = "gordon_armor"
@@ -151,7 +151,7 @@ end
 if SERVER then
     hook.Add("PostCleanupMap","huyhuygordonspasjizn",function(ent)
         timer.Simple(1,function()
-            for i, ent in ents.Iterator() do
+            for _, ent in ents.Iterator() do
                 if ent:GetClass() == "item_suitcharger" then
                     local entnew = ents.Create("prop_physics")
                     entnew:SetModel(ent:GetModel())
@@ -160,17 +160,17 @@ if SERVER then
                     entnew.armorcharger = true
                     entnew.power = 100
                     entnew:Spawn()
-        
+
                     local phys = entnew:GetPhysicsObject()
                     if IsValid(phys) then
                         phys:EnableMotion(false)
                     end
-        
+
                     timer.Simple(0.1,function()
                         ent:Remove()
                     end)
                 end
-        
+
                 if ent:GetClass() == "item_healthcharger" then
                     local entnew = ents.Create("prop_physics")
                     entnew:SetModel(ent:GetModel())
@@ -179,12 +179,12 @@ if SERVER then
                     entnew.healthcharger = true
                     entnew.power = 100
                     entnew:Spawn()
-                    
+
                     local phys = entnew:GetPhysicsObject()
                     if IsValid(phys) then
                         phys:EnableMotion(false)
                     end
-        
+
                     timer.Simple(0.1,function()
                         ent:Remove()
                     end)
@@ -208,7 +208,7 @@ hook.Add("Player Think","health_armor_gordonthings",function(ply)
     end
 
     ent.ThinkCharge = CurTime() + 0.25
-    
+
     if ent.power > 0 then
         timer.Create("huasd"..ent:EntIndex(),1,1,function()
             if ent.snd then ent:StopLoopingSound(ent.snd) ent.snd = nil end
@@ -227,7 +227,7 @@ hook.Add("Player Think","health_armor_gordonthings",function(ply)
 
             if not ply.keypresseduse then
                 ent:EmitSound("items/suitchargeok1.wav")
-                
+
                 ent.snd = ent:StartLoopingSound("items/suitcharge1.wav")
             end
 
@@ -237,7 +237,7 @@ hook.Add("Player Think","health_armor_gordonthings",function(ply)
             ent.power = ent.power - 1
         else
             local noneedhealth = (ply:Health() == 100) and (ply.HEV.Medicine == maxMedicine) and (ply.HEV.Morphine == maxMorphine)
-            
+
             if noneedhealth then
                 if not ply.keypresseduse then
                     ent:EmitSound(ent.armorcharger and "items/suitchargeno1.wav" or "items/medshotno1.wav")
@@ -249,7 +249,7 @@ hook.Add("Player Think","health_armor_gordonthings",function(ply)
 
             if not ply.keypresseduse then
                 ent:EmitSound("items/medshot4.wav")
-                
+
                 ent.snd = ent:StartLoopingSound("items/medcharge4.wav")
             end
 
@@ -264,7 +264,7 @@ hook.Add("Player Think","health_armor_gordonthings",function(ply)
         end
         if ent.snd then ent:StopLoopingSound(ent.snd) ent.snd = nil end
     end
-    
+
     ply.keypresseduse = true
 end)
 
@@ -409,8 +409,7 @@ if CLIENT then
     local BloodTxt = 0
     local bloodlerp = 0
     local ammoTxt = 0
-    local ammolerp = 0 
-    local bloodOld = 5000
+    local ammolerp = 0
     local oldHpTxt = 0
     local oldArTxt = 0
     local oldAmmoTxt = 0
@@ -429,16 +428,16 @@ if CLIENT then
         draw.DrawText("000","HEVFontDefaultBG",pos[1]+size[1]*0.08 + 1,pos[2]+(size[2]/2) - txtSizeY/2 + 1,color_bg,TEXT_ALIGN_RIGHT)
 
         --draw.GlowingText(text, font, x, y, col, colglow, colglow2, align )
-        color_glow.a = math.Round( Lerp( FRT, color_glow.a, oldHpTxt ~= hpTxt and 255 or 0 ) ) 
+        color_glow.a = math.Round( Lerp( FRT, color_glow.a, oldHpTxt ~= hpTxt and 255 or 0 ) )
 
         local color_hp = color_hp1:Lerp(color_crit,(1-hpTxt/25)*math.abs(math.cos(CurTime()*2)))
-        
+
         draw.GlowingText( hpTxt, "HEVFontDefault", pos[1]+size[1]*0.08, pos[2]+(size[2]/2) - txtSizeY/2, color_hp, color_glow, nil, TEXT_ALIGN_RIGHT)
         oldHpTxt = hpTxt
 
         draw.DrawText("Medicine","HEVFontSmall",pos[1]+size[1]*0.085+1,pos[2]+(size[2]/1.8)+1,color_bg,TEXT_ALIGN_LEFT)
         draw.DrawText("Medicine","HEVFontSmall",pos[1]+size[1]*0.085,pos[2]+(size[2]/1.8),color_hp,TEXT_ALIGN_LEFT)
-        
+
         local armor = self:GetNetVar("HEVPower") or 0
         armorlerp = Lerp(FRT,armorlerp,armor > 1 and 1 or 0)
         local pos, size = drawBGPanel(0.17,0.98,125 * (armor > 1 and 1 or 0))
@@ -451,7 +450,7 @@ if CLIENT then
         draw.DrawText("000","HEVFontDefaultBG",pos[1]+size[1]*0.08 + 1,pos[2]+(size[2]/2) - txtSizeY/2 + 1,color_bg,TEXT_ALIGN_RIGHT)
 
         draw.DrawText(armorTxt,"HEVFontDefault",pos[1]+size[1]*0.08,pos[2]+(size[2]/2) - txtSizeY/2,color_ar,TEXT_ALIGN_RIGHT)
-        color_glow_ar.a = math.Round( Lerp( FRT, color_glow_ar.a, oldArTxt ~= armorTxt and 255 or 0 ) ) 
+        color_glow_ar.a = math.Round( Lerp( FRT, color_glow_ar.a, oldArTxt ~= armorTxt and 255 or 0 ) )
         draw.GlowingText( armorTxt, "HEVFontDefault", pos[1]+size[1]*0.08, pos[2]+(size[2]/2) - txtSizeY/2, color_ar, color_glow_ar, nil, TEXT_ALIGN_RIGHT)
         oldArTxt = armorTxt
         draw.DrawText("Armor","HEVFontSmall",pos[1]+size[1]*0.085+1,pos[2]+(size[2]/1.8)+1,color_bg,TEXT_ALIGN_LEFT)
@@ -489,7 +488,7 @@ if CLIENT then
             draw.DrawText( "000", "HEVFontDefaultBG",pos[1]+size[1]*0.08 + 1,pos[2]+(size[2]/2) - txtSizeY/2 + 1,color_bg,TEXT_ALIGN_RIGHT)
             --draw.DrawText( ammoTxt, "HEVFontDefault",pos[1]+size[1]*0.08,pos[2]+(size[2]/2) - txtSizeY/2,color_ar,TEXT_ALIGN_RIGHT)
 
-            color_glow_ammo.a = math.Round( Lerp( FRT, color_glow_ammo.a, oldAmmoTxt ~= ammoTxt and 255 or 0 ) ) 
+            color_glow_ammo.a = math.Round( Lerp( FRT, color_glow_ammo.a, oldAmmoTxt ~= ammoTxt and 255 or 0 ) )
             draw.GlowingText( ammoTxt, "HEVFontDefault", pos[1]+size[1]*0.08, pos[2]+(size[2]/2) - txtSizeY/2, color_ar, color_glow_ammo,nil, TEXT_ALIGN_RIGHT)
             oldAmmoTxt = ammoTxt
 
@@ -502,14 +501,12 @@ if CLIENT then
         if not self.organism or not self.organism.blood then return end
         bloodlerp = Lerp(FRT,bloodlerp,self.organism.blood > 4900 and 0 or 1)
         bloodOld = self.organism.blood
-        local _,txtSizeY = surface.GetTextSize(self.organism.blood)
-        --print(self.organism.blood)
         BloodTxt = math.Round(math.min(BloodTxt + 25, self.organism.blood))
 
         local color_bg = BGColor
         color_bg.a = 125*bloodlerp
         color_bld.a = 255*bloodlerp
-        
+
         draw.DrawText(BloodTxt,"HEVFontSmall",pos[1]+size[1]*-0.09,pos[2]+(size[2]/2),color_bg,TEXT_ALIGN_LEFT)
         draw.DrawText(BloodTxt,"HEVFontSmall",pos[1]+size[1]*-0.09,pos[2]+(size[2]/2),color_bld,TEXT_ALIGN_LEFT)
         draw.DrawText("Blood/Ml","HEVFontSmall",pos[1]+size[1]*0.085+1,pos[2]+(size[2]/2)+1,color_bg,TEXT_ALIGN_LEFT)
@@ -521,7 +518,7 @@ if CLIENT then
         if not lply:GetNetVar("HEVSuit") then return end
         local armors = lply.armors
         if armors["head"] ~= "gordon_helmet" then return end
-        if lply:Alive() and lply.PlayerClassName == "Gordon" then			
+        if lply:Alive() and lply.PlayerClassName == "Gordon" then
 			surface.SetDrawColor(255,132,0,200)
 			surface.SetMaterial(hevMat)
 			surface.DrawTexturedRectRotated((ScrW()/2) - 5, (ScrH()/2) - 5, ScrW()  + 10, ScrH() + 450,180)
@@ -537,7 +534,7 @@ end
 
 hook.Add("CanListenOthers", "GordonWeDontHearYou", function(talker)
     if talker:Alive() and talker.PlayerClassName == "Gordon" then
-        return false, false 
+        return false, false
     end
 end)
 
@@ -637,7 +634,7 @@ elseif SERVER then
                     net.Send(ply)
                 end, hev_color)
             end
-            
+
             local pain = org.pain + org.shock * 3
             if pain > 30 then
                 if (org.NextMorphineInject or 0) < CurTime() then
@@ -648,7 +645,7 @@ elseif SERVER then
                     org.analgesia = math.max(math.min(org.analgesia + need, pain / 80, 1), org.analgesia)
                     local administer = (org.analgesia - old)
                     ply.HEV.Morphine = ply.HEV.Morphine - administer
-                    
+
                     if administer > 0.1 then
                         ply:Notify("HEV suit has detected pain receptors almost reaching the threshold. Injecting morphine.", 10, "morphine_hev", 0.5,
                         function(ply)
@@ -685,9 +682,9 @@ elseif SERVER then
                 for _, v in ipairs(CheckBones) do
                     if org[v] > 0 then
                         local old = org[v]
-                        org[v] = math.max(org[v] - ply.HEV.Medicine, 0) 
-                        ply.HEV.Medicine = math.max(ply.HEV.Medicine - (old - org[v]) * 10, 0) 
-                        
+                        org[v] = math.max(org[v] - ply.HEV.Medicine, 0)
+                        ply.HEV.Medicine = math.max(ply.HEV.Medicine - (old - org[v]) * 10, 0)
+
                         if old == 1 then bonesfixed = true end
                     end
                 end
@@ -705,14 +702,14 @@ elseif SERVER then
                 if (org.BleedThink or 0) < CurTime() then
                     org.BleedThink = CurTime() + 1
 
-                    for i, wound in pairs(org.wounds) do
+                    for _, wound in pairs(org.wounds) do
                         local old = wound[1]
                         wound[1] = math.max(wound[1] - 5, 0)
                         ply.HEV.Medicine = math.max(ply.HEV.Medicine - (-wound[1] + old), 0)
                     end
                 end
             end
-            
+
             if ply.HEV.Medicine > 300 then
                 local regen = timeValue / 30
 
@@ -726,7 +723,7 @@ elseif SERVER then
                 org.spine2 = math.max(org.spine2 - regen, 0)
                 org.spine3 = math.max(org.spine3 - regen, 0)
                 org.skull = math.max(org.skull - regen, 0)
-            
+
                 org.liver = math.max(org.liver - regen, 0)
                 org.intestines = math.max(org.intestines - regen, 0)
                 org.heart = math.max(org.heart - regen, 0)
@@ -744,10 +741,10 @@ elseif SERVER then
                         net.WriteString("hl1/fvox/health_critical.wav")
                     net.Send(ply)
                 end, hev_color)
-                
+
                 if (org.BloodThink or 0) < CurTime() then
                     org.BloodThink = CurTime() + 4
-    
+
                     if org.blood < 4000 then
                         local needed = math.min(4000 - org.blood, 500, ply.HEV.Medicine / 6)
                         ply.HEV.Medicine = math.max( ply.HEV.Medicine - needed / 10, 0 )
@@ -756,10 +753,10 @@ elseif SERVER then
                         org.adrenalineAdd = 4
                     end
                 end
-                
+
                 if (org.CPRThink or 0) < CurTime() then
                     org.CPRThink = CurTime() + (1 / 120) * 60
-                    
+
                     if org.alive then
                         org.o2[1] = math.min(org.o2[1] + hg.organism.OxygenateBlood(org) * 2, org.o2.range)
                         org.pulse = math.min(org.pulse + 5,70)
@@ -777,7 +774,7 @@ elseif SERVER then
             timer.Simple(0, function()
                 timer.Create("HEV_CheckDMG",2,1,function()
                     if not IsValid(ply) or not ply:Alive() or ply.PlayerClassName ~= "Gordon" or ply.HEV.Medicine <= 0 then return end
-                    
+
                     if ply:Health() < 35 then
                         net.Start("HEV_DAMAGE")
                             net.WriteString("hl1/fvox/health_critical.wav")
@@ -788,7 +785,7 @@ elseif SERVER then
                 timer.Create("HEV_CheckHP",10,1,function()
                     if not IsValid(ply) or not ply:Alive() or ply.PlayerClassName ~= "Gordon" or ply.HEV.Medicine <= 0 then return end
                     if !entharm or entharm < 1 then return end
-                    
+
                     local org = ply.organism
 
                     net.Start("HEV_DAMAGE")
@@ -796,19 +793,18 @@ elseif SERVER then
                     net.Send(ply)
 
                     local oldMedicine = ply.HEV.Medicine
-                    
+
                     timer.Create("HEV_CheckHP",5,1,function()
-                        local ammoutNeeds = 0
 
                         for _,v in ipairs(CheckBones) do
                             if !istable(org[v]) and org[v] > 0 then
                                 local needed = ( 1 - org[v] ) * 10
-                                org[v] = math.max(org[v] - ply.HEV.Medicine, 0) 
-                                ply.HEV.Medicine = math.max( ply.HEV.Medicine - needed, 0 ) 
+                                org[v] = math.max(org[v] - ply.HEV.Medicine, 0)
+                                ply.HEV.Medicine = math.max( ply.HEV.Medicine - needed, 0 )
                             end
 
                             if istable(org[v]) then
-                                for k,w in pairs(org[v]) do
+                                for _, w in pairs(org[v]) do
                                     local needed = ( 1 - w ) * 10
                                     w = math.max(w - ply.HEV.Medicine, 0)
                                     ply.HEV.Medicine = math.max( ply.HEV.Medicine - needed, 0 )
@@ -839,15 +835,15 @@ elseif SERVER then
 
                     timer.Create("HEV_StopBleed", 5, 1, function()
                         if not IsValid(ply) or not ply:Alive() or ply.PlayerClassName ~= "Gordon" or ply.HEV.Medicine <= 0 then return end
-                        
+
                         local bleedneedRemove = ply.organism.bleed
                         local bleedInterNeedRemove = ply.organism.internalBleed
 
                         ply.organism.internalBleed = math.max(ply.organism.internalBleed - ply.HEV.Medicine,0)
-                        
+
                         ply.HEV.Medicine = math.max(ply.HEV.Medicine - bleedneedRemove, 0)
                         ply.HEV.Medicine = math.max(ply.HEV.Medicine - bleedInterNeedRemove, 0)
-                        
+
                         table.Empty(ply.organism.wounds)
 
                         ply.HEV.Medicine = ply.HEV.Medicine - #ply.organism.arterialwounds * 2.5
@@ -856,7 +852,7 @@ elseif SERVER then
                             snd = "hl1/fvox/torniquette_applied.wav"
                         end
                         --table.Empty(ply.organism.arterialwounds)
-                        for i, wound in pairs(ply.organism.arterialwounds) do
+                        for _, wound in pairs(ply.organism.arterialwounds) do
                             wound[1] = 0
                         end
 

@@ -11,8 +11,6 @@ MODE.randomSpawns = true
 MODE.ForBigMaps = false
 MODE.Chance = 0.04
 
-local radius = nil
-local mapsize = 7500
 -- MODE.MapSize = mapsize
 
 util.AddNetworkString("dm_start")
@@ -26,24 +24,24 @@ function MODE:Intermission()
 	game.CleanUpMap()
 
 	local poses = {}
-	for k, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then
 			continue
 		end
-		
+
 		ApplyAppearance(ply)
 		ply:SetupTeam(0)
 		table.insert(poses, ply:GetPos())
 	end
 
 	local centerpoint = Vector(0, 0, 0)
-	for i, pos in ipairs(poses) do
+	for _, pos in ipairs(poses) do
 		centerpoint:Add(pos)
 	end
 	centerpoint:Div(#poses)
 
 	local dist = 0
-	for i, pos in ipairs(poses) do
+	for _, pos in ipairs(poses) do
 		local dist2 = pos:Distance(centerpoint)
 		if dist < dist2 then
 			dist = dist2
@@ -52,7 +50,7 @@ function MODE:Intermission()
 
 	zonepoint = centerpoint
 	zonedistance = dist
-	
+
 	net.Start("dm_start")
 		net.WriteVector(zonepoint)
 		net.WriteFloat(zonedistance)
@@ -164,7 +162,7 @@ function MODE:RoundStart()
 		local inv = ply:GetNetVar("Inventory")
 		inv["Weapons"]["hg_sling"] = true
 		ply:SetNetVar("Inventory", inv)
-		
+
 		local gun = ply:Give(loadout.primary)
 		if IsValid(gun) then
 			ply:GiveAmmo(gun:GetMaxClip1() * loadout.ammo, gun:GetPrimaryAmmoType(), true)
@@ -195,11 +193,11 @@ function MODE:RoundStart()
 		end
 
 		if loadout.medicine then
-			for i = 1, (loadout.medicineCount or 1) do
+			for _ = 1, (loadout.medicineCount or 1) do
 				ply:Give(loadout.medicine[math.random(#loadout.medicine)])
 			end
 		elseif loadout.randomMedicine then
-			for i = 1, math.random(1, 2) do
+			for _ = 1, math.random(1, 2) do
 				ply:Give(randomMedicine[math.random(#randomMedicine)])
 			end
 		else
@@ -231,12 +229,12 @@ hook.Add("Think","bober",function(ply)
 	local pos = zonepoint
 	local radius = MODE.GetZoneRadius()
 	local radiussqr = radius * radius
-	
-	for i, ent in ents.Iterator() do
+
+	for _, ent in ents.Iterator() do
 		if pos:DistToSqr(ent:GetPos()) > radiussqr then
 			if ent:IsPlayer() then
 				hg.LightStunPlayer(ent)
-				
+
 				continue
 			end
 
@@ -247,7 +245,7 @@ hook.Add("Think","bober",function(ply)
 
 				continue
 			end
-			
+
 			if string.find(ent:GetClass(), "prop_") and !hg.expItems[ent:GetModel()] then
 				MakeDissolver(ent, ent:GetPos(), 0)
 			end
@@ -275,7 +273,7 @@ end
 
 function MODE:EndRound()
 	local playersharm = {}
-	for ply, tbl in pairs(zb.HarmDone) do
+	for _, tbl in pairs(zb.HarmDone) do
 		for attacker, harm in pairs(tbl) do
 			playersharm[attacker] = (playersharm[attacker] or 0) + harm
 		end
@@ -293,7 +291,7 @@ function MODE:EndRound()
 	timer.Simple(2,function()
 		net.Start("dm_end")
 		local ent = zb:CheckAlive(true)[1]
-		
+
 		if IsValid(ent) then
 			ent:GiveExp(math.random(150,200))
 			ent:GiveSkill(math.Rand(0.2,0.3))

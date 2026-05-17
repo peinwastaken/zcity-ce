@@ -319,9 +319,9 @@ if CLIENT then
 						--print(lply:GetPlayerClass())
 						if lply.PlayerClassName and lply:GetPlayerClass() and !lply:GetPlayerClass().CanUseDefaultPhrase then return end
 						local tbl = {}
-						for context, phrases in pairs(contextPhrases[1]) do
+						for context, _ in pairs(contextPhrases[1]) do
 							if lply.organism.pain > 30 and (context == "Satisfied" or context == "Cheer") then continue end
-							
+
 							tbl[#tbl + 1] = {
 								[1] = function()
 									RunConsoleCommand("hg_phrase_context", context)

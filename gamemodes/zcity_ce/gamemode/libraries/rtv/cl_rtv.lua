@@ -1,15 +1,12 @@
 -- Values
 local maps = {}
-local time = 0
 local votes = {}
 local winmap = ""
-local rtvStarted = false
-local rtvEnded = false
 
 local VoteCD = 0
 
 -- RTV CL Functions
-local BlurBackground = hg.BlurBackground
+local BlurBackground = hg.DrawBlur
 
 function zb.RTVMenu()
     system.FlashWindow()
@@ -29,12 +26,12 @@ function zb.RTVMenu()
     MAPSPanel:DockMargin(5, ScrH() * 0.04, 5, ScrH() * 0.01)
     function MAPSPanel.Paint() end
 
-    for k, v in ipairs(maps) do
+    for _, v in ipairs(maps) do
         local MapButton = vgui.Create("ZB_RTVButton", MAPSPanel)
         MapButton:Dock(TOP)
         MapButton:DockMargin(0, 5, 0, 0)
         MapButton:SetSize(0, ScrH() * 0.06)
-        
+
         if v == "random" then
             MapButton:SetText("Random Map")
             MapButton.Map = "random"
@@ -57,10 +54,10 @@ function zb.RTVMenu()
 
         function MapButton:Think()
             self.Votes = votes[self.Map] or 0
-            if self.Map ~= "random" and self.Map == winmap then 
-                self.Win = true 
-            else 
-                self.Win = false 
+            if self.Map ~= "random" and self.Map == winmap then
+                self.Win = true
+            else
+                self.Win = false
             end
         end
 

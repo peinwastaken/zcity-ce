@@ -208,21 +208,21 @@ function SKIN:PaintPanel(panel)
 		if(!panel.NoBlur)then
 			hg.DrawBlur(panel, 2, 0.2, 200)
 		end
-		
+
 		local width, height = panel:GetSize()
-		
+
 		if (panel.m_bgColor) then
 			surface.SetDrawColor(panel.m_bgColor)
 		else
 			surface.SetDrawColor(self.Colours.Background)
 		end
-		
+
 		surface.DrawRect(0, 0, width, height)
-		
+
 		if(panel.PostPaintPanel)then
 			panel:PostPaintPanel(width, height)
 		end
-		
+
 		surface.SetDrawColor(self.Colours.Outline)
 		surface.DrawOutlinedRect(0, 0, width, height, 1)
 	end
@@ -257,7 +257,8 @@ function SKIN:PaintCategoryPanel(panel, text, color)
 
 	surface.SetFont(self.fontCategoryBlur)
 
-	local textHeight = select(2, surface.GetTextSize(text)) + 6
+	local _, textHeight = surface.GetTextSize(text)
+	textHeight = textHeight + 6
 	local width, height = panel:GetSize()
 
 	surface.SetDrawColor(0, 0, 0, 100)
@@ -320,7 +321,7 @@ function SKIN:PaintTextEntry( panel, w, h )
 		else
 			surface.SetDrawColor(130, 130, 130, 100)
 		end
-		
+
 		surface.DrawRect(0, 0, w, h)
 		surface.SetDrawColor(0, 0, 0, 150)
 		surface.DrawOutlinedRect(0, 0, w, h)
@@ -334,27 +335,27 @@ function SKIN:PaintTextEntry( panel, w, h )
 			if(self.CharactersMin and self.CharactersMin > amt)then
 				met = false
 			end
-			
+
 			if(self.CharactersMax and self.CharactersMax < amt)then
 				met = false
 			end
-			
+
 			return met
 		end
-	
+
 		local add_text = ""
-		
+
 		if(panel.CharactersMax)then
 			add_text = " → " .. panel.CharactersMax
 		end
-		
+
 		local amt = utf8.len(panel:GetValue())
 		local color = color_white
-		
+
 		if(!panel:TextEntryConditionsMet(amt))then
 			color = color_red
 		end
-		
+
 		draw.DrawText(amt .. "/" .. panel.CharactersMin .. add_text, "ZCity_Tiny", w * 1.0, h * 0, color, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 	end
 
@@ -471,7 +472,7 @@ function SKIN:PaintScrollBarGrip(panel, width, height)
 	local downButtonHeight = parent.btnDown:GetTall()
 
 	DisableClipping(true)
-		if is3d2d then 
+		if is3d2d then
 			surface.SetDrawColor(255, 255, 255, 200)
 		else
 			surface.SetDrawColor(30, 30, 30, 200)
@@ -508,7 +509,6 @@ function SKIN:PaintPropertySheet( panel, width, height )
 	-- TODO: Tabs at bottom, left, right
 
 	local ActiveTab = panel:GetActiveTab()
-	local Offset = 0
 	if ( ActiveTab ) then Offset = ActiveTab:GetTall() - 8 end
 
 	--self.tex.Tab_Control( 0, Offset, w, h-Offset )

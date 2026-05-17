@@ -10,7 +10,7 @@ if SERVER then
         self:SetModel("models/props_junk/PropaneCanister001a.mdl")
         self:SetCollisionGroup(COLLISION_GROUP_VEHICLE_CLIP)
         self:SetNoDraw(true)
-        
+
         self.CreationTime = CurTime()
         self.Path = {}
         self.PathIndex = 1
@@ -18,11 +18,11 @@ if SERVER then
         self.TotalLen = 0
         self.TimePassed = 0
         self.Stuck = 0
-        
+
         if IsValid(self.Victim) then
             local ent = hg.GetCurrentCharacter(self.Victim)
             local owner = hg.RagdollOwner(ent) or ent
-            
+
             hg.StunPlayer(owner)
 
             self:SetPos(ent:GetPos() + vector_up * 32)
@@ -39,7 +39,7 @@ if SERVER then
     local function not_visible_to_players(vec, excluded_ent)
         local alive = zb:CheckAlive() -- I really gotta make that function cache values later.
 
-        for i, ply in ipairs(alive) do
+        for _, ply in ipairs(alive) do
             if (ply == excluded_ent) or (ply.FakeRagdoll == excluded_ent) then continue end
 
             if hg.isVisible(ply:EyePos(), vec, {ply, excluded_ent}, MASK_SOLID_BRUSHONLY) then
@@ -54,7 +54,7 @@ if SERVER then
         local alive = zb:CheckAlive()
 
         local pos = self:GetPos()
-        for i, ply in ipairs(alive) do
+        for _, ply in ipairs(alive) do
             pos:Add((pos - ply:GetPos()) * math.max(1, 100 - pos:Distance(ply:GetPos())))
         end
 
@@ -100,9 +100,9 @@ if SERVER then
 
             local path = paths[k]
 
-            for i = 1, 20 do
+            for _ = 1, 20 do
                 if found then break end
-                
+
                 local maxa = 8
                 for j = 1, maxa do
                     tr.start = path[#path]
@@ -110,7 +110,7 @@ if SERVER then
                     tr.endpos = tr.start + Vector(math.sin(ang) * 250, math.cos(ang) * 250, 0)
 
                     local trace = util.TraceHull(tr)
-        
+
                     local vec = trace.HitPos
 
                     if not_visible_to_players(vec, self.Victim) then
@@ -126,7 +126,7 @@ if SERVER then
                 tr.endpos = tr.start + LerpVector(math.Rand(0.25, 0.75), Vector(math.random(-5, 5) * 50, math.random(-5, 5) * 50, (k - 15)), general_direction * math.random(0, 5) * 50)
 
                 local trace = util.TraceHull(tr)
-                
+
                 --if !trace.Hit then
                     local vec = trace.HitPos
                     path[#path + 1] = vec
@@ -135,10 +135,9 @@ if SERVER then
         end
 
         local path = found and paths[found] or table.Random(paths)
-        
+
         -- simplify path
         self.Path = {}
-        local skip = 0
         for i = 1, #path do
             if !hg.isVisible(self.Path[#self.Path], path[i + 1], {self.Victim}, MASK_SOLID_BRUSHONLY) then
                 self.Path[#self.Path + 1] = path[i]
@@ -146,10 +145,10 @@ if SERVER then
         end
 
         self.OpenDoorIds = {}
-        
+
         for i = 1, #self.Path - 1 do
             local tr = util.QuickTrace(self.Path[i], self.Path[i + 1] - self.Path[i], {self, self.Victim})
-            
+
             if !IsValid(tr.Entity) or !hgIsDoor(tr.Entity) then
                 tr = util.QuickTrace(self.Path[i] + (self.Path[i + 1] - self.Path[i]) * 0.5, (self.Path[i + 1] - self.Path[i]):Angle():Right() * 1000, {self, self.Victim})
             end
@@ -163,14 +162,14 @@ if SERVER then
                 self.OpenDoorIds[i] = tr.Entity
             end
         end
-        
-        for i = 1, #self.Path - 1 do
+
+        for _ = 1, #self.Path - 1 do
             --debugoverlay.Line(self.Path[i], self.Path[i + 1], 5, color_white, true)
         end
-        
+
         if #self.Path <= 2 then
             self.Stuck = self.Stuck + 1
-            
+
             if self.Stuck > 5 then
                 self:Remove()
             else
@@ -195,11 +194,11 @@ if SERVER then
         local len = #self.Path
 
         if len == 0 then return end
-        
+
         if self.PathIndex > len then
             return self.Path[len]
         end
-        
+
         local i = self.PathIndex
         local p1, p2 = self.Path[i], self.Path[math.min(i + 1, #self.Path)]
         return LerpVector(self:GetAnimpos(), p1, p2)
@@ -211,7 +210,7 @@ if SERVER then
         if !self.HidingSpot then
             self:FindHidingSpot()
         end
-                
+
         local i = self.PathIndex
 
         local door = self.OpenDoorIds[i - 1]
@@ -222,7 +221,7 @@ if SERVER then
         end
 
         local p1, p2 = self.Path[i], self.Path[math.min(i + 1, #self.Path)]
-        
+
         if !p1 or !p2 then return end
 
         if self:GetAnimpos() >= 1 then
@@ -248,10 +247,10 @@ if SERVER then
 
             if (self.NextTryKill or 0) < CurTime() then
                 self.NextTryKill = CurTime() + 1
-        
+
                 local not_visible = not_visible_to_players(ent:GetBoneMatrix(ent:LookupBone("ValveBiped.Bip01_Head1")):GetTranslation(), ent)
                 --local not_visible = not_visible_to_players(self:GetPos(), ent)
-                
+
                 -- head should be the last visible part since we're dragging
                 -- the body by head
 
@@ -298,7 +297,7 @@ if SERVER then
                 hg.ShadowControl(ent, 12, 0.01, Angle(0, 0, 0), 0, 0, pos, 150000, 150)
                 --hg.ShadowControl(ent, 14, 0.01, Angle(0, 0, 0), 0, 0, pos, 150000, 150)
                 --hg.ShadowControl(ent, 9, 0.01, Angle(0, 0, 0), 0, 0, pos, 150000, 150)
-                
+
                 --hg.ShadowControl(ent, 1, 0.01, Angle(0, 0, 0), 0, 0, ent:GetPhysicsObjectNum(0):GetPos() + vector_up * 1, 150, 150)
                 --hg.ShadowControl(ent, 0, 0.01, Angle(0, 0, 0), 0, 0, ent:GetPhysicsObjectNum(0):GetPos() + vector_up * 1, 150, 150)
             end

@@ -62,7 +62,7 @@ local function InitMode()
 	if MODE.base then
 		table.Inherit(MODE, zb.modes[MODE.base])
 
-		for i, tbl in pairs(MODE) do
+		for i in pairs(MODE) do
 			if istable(MODE[i]) and istable(zb.modes[MODE.base][i]) then
 				tbl2 = {}
 

@@ -1,4 +1,3 @@
-
 function MODE:AddHudPaint()
     local w, h = ScreenScale(60), ScreenScale(10)
     

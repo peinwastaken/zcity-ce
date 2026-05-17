@@ -246,9 +246,8 @@ local function cock(self,time)
 	net.Broadcast()
 
 	self.Primary.Next = CurTime() + self.AnimDraw + self.Primary.Wait
-	
 
-	local ply = self:GetOwner()
+
 
 	self.reloadCoolDown = CurTime() + time
 end
@@ -268,8 +267,8 @@ local function reloadFunc(self)
 		self:GetWM():ManipulateBoneScale(self.MagIndex, vector_full)
 	end
 
-	self:PlayAnim(self.AnimList["insert"] or "reload_insert", 1, false, function() 
-		self:InsertAmmo(1) 
+	self:PlayAnim(self.AnimList["insert"] or "reload_insert", 1, false, function()
+		self:InsertAmmo(1)
 		if self.MagIndex then
 			self:GetWM():ManipulateBoneScale(self.MagIndex, vector_origin)
 		end
@@ -284,9 +283,9 @@ local function reloadFunc(self)
 
 		if !self.drawBullet then
 			cock(self,1)
-			self:PlayAnim(self.AnimList["finish_empty"] or "bolt_close_0", 1, false, function(self) self:SetNetVar("shootgunReload", 0) end, false, true) 
+			self:PlayAnim(self.AnimList["finish_empty"] or "bolt_close_0", 1, false, function(self) self:SetNetVar("shootgunReload", 0) end, false, true)
 		else
-			self:PlayAnim(self.AnimList["finish"] or "bolt_close_0", 1, false, function(self) self:SetNetVar("shootgunReload", 0) end, false, true) 
+			self:PlayAnim(self.AnimList["finish"] or "bolt_close_0", 1, false, function(self) self:SetNetVar("shootgunReload", 0) end, false, true)
 		end
 	end, false, true)
 end

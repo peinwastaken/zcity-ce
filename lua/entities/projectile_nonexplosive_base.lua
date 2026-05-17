@@ -17,11 +17,11 @@ ENT.Force = 0.2
 
 function hg.BestArrowToTake(ent)
 	local org = ent.organism
-	
+
 	if !IsValid(ent) or !org or !org.LodgedEntities or #org.LodgedEntities == 0 then return end
-	
+
 	local i = #org.LodgedEntities
-	
+
 	if org.LodgedEntities[i].CrossbowBolt then
 		while i > 0 do
 			i = i - 1
@@ -33,7 +33,7 @@ function hg.BestArrowToTake(ent)
 
 		if i == 0 then return end
 	end
-	
+
 	return i
 end
 
@@ -59,7 +59,7 @@ if SERVER then
 		local rag = IsValid(ply) and (IsValid(ply:GetNWEntity("RagdollDeath", ply.FakeRagdoll)) and ply:GetNWEntity("RagdollDeath", ply.FakeRagdoll)) or ent:IsRagdoll() and ent or IsValid(ent.FakeRagdoll) and ent.FakeRagdoll
 		local org = rag and rag.organism or ent.organism
 		rag = rag or ent
-		
+
 		if !org then
 			self:SetPos(hit_pos)
 			self:SetAngles((normal):Angle())
@@ -69,11 +69,11 @@ if SERVER then
 		local mat = ent:GetBoneMatrix(ent:TranslatePhysBoneToBone(phys_bone_id))
 		local offset_pos = Vector()
 		local offset_ang = Angle()
-		
+
 		if(mat)then
 			offset_pos, offset_ang = WorldToLocal(hit_pos, (normal):Angle(), mat:GetTranslation(), mat:GetAngles())
 		end
-		
+
 		local phys = ent:GetPhysicsObjectNum(phys_bone_id or 0)
 		if IsValid(phys) then
 			phys:ApplyForceOffset(-normal * self.Damage * 200, hit_pos)
@@ -94,11 +94,11 @@ if SERVER then
 			}
 
 			net.Start("organism_send")
-	
+
 			local tbl = {}
 			tbl.LodgedEntities = org.LodgedEntities
 			tbl.owner = org.owner
-		
+
 			net.WriteTable(tbl)
 			net.WriteBool(true)
 			net.WriteBool(false)
@@ -117,11 +117,10 @@ if SERVER then
             local dir = data.HitPos - (data.HitPos + self:GetAngles():Forward() * -5)
             --print(dir:GetNormalized())
             local hitNormal = data.HitNormal
-            local ApproachAngle = math.deg(math.asin(hitNormal:DotProduct(dir:GetNormalized())))
-	        local MaxRicAngle = 10
+            math.deg(math.asin(hitNormal:DotProduct(dir:GetNormalized())))
             --print(ApproachAngle)
 
-            --if ApproachAngle < MaxRicAngle * 1 then 
+            --if ApproachAngle < MaxRicAngle * 1 then
             --        --[[local effectpoint = self:GetPos()
             --        timer.Simple(.1,function()
             --            local effectdata = EffectData()
@@ -136,7 +135,7 @@ if SERVER then
             --        NewVec = NewVec:Forward()
             --        self:SetVelocity(self:GetAngles():Forward() * -1000)]]--
 --
-            --    return 
+            --    return
             --end
 
             timer.Simple(.1,function()
@@ -148,8 +147,8 @@ if SERVER then
                 util.Effect( "Sparks", effectdata )
             end)
 			self:Hit(data.HitEntity, data.HitPos, 0, data.OurOldVelocity:GetNormalized())
-            self:DamagePly(data.HitEntity, data.HitObject:GetMaterial(), data.HitPos) 
-            return 
+            self:DamagePly(data.HitEntity, data.HitObject:GetMaterial(), data.HitPos)
+            return
 		end
 	end
 
@@ -157,17 +156,17 @@ if SERVER then
 		if(constraint.HasConstraints(ent))then
 			return
 		end
-		
+
 		if ent:IsPlayerHolding() then return end
 		local Phys = ent:GetPhysicsObject()
 		if not IsValid(Phys) then return end
 		local Vel = Phys:GetVelocity()
 		local Spd = Vel:Length()
-	
+
 		if not spdReq then
 			spdReq = 300
 		end
-	
+
 		if Spd < spdReq then return end
 		mult = mult or 1
 		local Pos, Mass = Phys:LocalToWorld(Phys:GetMassCenter()), Phys:GetMass()
@@ -176,7 +175,6 @@ if SERVER then
 		Phys:AddAngleVelocity(-Phys:GetAngleVelocity() * Mass / 1000)
 	end
 
-    local vecSmoke = Vector(255,255,255)
     function ENT:Think()
 		AeroDrag(self, self:GetAngles():Forward(), .6)
         self:NextThink(CurTime() + 0.1)
@@ -194,7 +192,7 @@ if SERVER then
 	function ENT:DamagePly(ent,mat,hitpos)
 		if self.Exploded then return end
 		self.Exploded = true
-		local SelfPos, Owner = self:LocalToWorld(self:OBBCenter()), self
+		local SelfPos, _ = self:LocalToWorld(self:OBBCenter()), self
         local DmgInfo = DamageInfo()
         DmgInfo:SetDamage(self.Damage)
         DmgInfo:SetDamageForce(self:GetAngles():Forward() * self.Force)
@@ -211,21 +209,20 @@ if SERVER then
 
 	function hg.TakeArrow(ent, ply)
 		local org = ent.organism
-		
+
 		if !IsValid(ent) or !org or !org.LodgedEntities or #org.LodgedEntities == 0 then return end
-		
+
 		local i = hg.BestArrowToTake(ent)
-		
+
 		if !i or i == 0 then return end
 
 		local tbl = table.remove(org.LodgedEntities, i)
 
 		local mat = ent:GetBoneMatrix(ent:TranslatePhysBoneToBone(org.LodgedEntities.PhysBoneID or 0))
-		
+
 		if mat then
-			local lpos, lang = org.LodgedEntities.OffsetPos, org.LodgedEntities.OffsetAng
-			
-			for i = 1, 5 do
+
+			for _ = 1, 5 do
 				hg.organism.AddWoundManual(org.owner, 50, vector_origin, AngleRand(-180, 180), ent:GetBoneName(ent:TranslatePhysBoneToBone(org.LodgedEntities.PhysBoneID or 0)), CurTime() + math.Rand(0, 2))
 			end
 		end
@@ -241,7 +238,7 @@ if SERVER then
 			end
 		else
 			ply:GiveAmmo(1, "Arrow", true)
-			ply:EmitSound("weapons/bow_deerhunter/arrow_load_0"..math.random(3)..".wav", 55)	
+			ply:EmitSound("weapons/bow_deerhunter/arrow_load_0"..math.random(3)..".wav", 55)
 		end
 
 		net.Start("organism_send")
@@ -249,7 +246,7 @@ if SERVER then
 		local tbl = {}
 		tbl.LodgedEntities = org.LodgedEntities
 		tbl.owner = org.owner
-	
+
 		net.WriteTable(tbl)
 		net.WriteBool(true)
 		net.WriteBool(false)
@@ -278,7 +275,7 @@ if SERVER then
 elseif CLIENT then
 	hook.Add("radialOptions", "takearrow", function()
 		local ply = LocalPlayer()
-		
+
 		if ply.organism and ply.organism.canmove and ply.organism.LodgedEntities and #ply.organism.LodgedEntities > 0 then
 			local i = hg.BestArrowToTake(ply)
 
@@ -307,23 +304,23 @@ elseif CLIENT then
 		end
 
 		if ent.organism and ent.organism.LodgedEntities then
-			for i, settings in ipairs(ent.organism.LodgedEntities) do				
+			for _, settings in ipairs(ent.organism.LodgedEntities) do
 				local arrow = hg.lodgedmodels[settings.model] or arrowasdasd
-				
+
 				if settings.model then
 					if !IsValid(hg.lodgedmodels[settings.model]) then
 						local model = ClientsideModel(settings.model)
 						model:SetNoDraw(true)
-						
+
 						hg.lodgedmodels[settings.model] = model
 					end
-					
+
 					arrow = hg.lodgedmodels[settings.model]
 				end
 
 				local mat = ent:GetBoneMatrix(ent:TranslatePhysBoneToBone(settings.PhysBoneID))
 				local pos, ang = LocalToWorld(settings.OffsetPos, settings.OffsetAng, mat:GetTranslation(), mat:GetAngles())
-	
+
 				arrow:SetPos(pos)
 				arrow:SetAngles(ang)
 
@@ -336,7 +333,7 @@ elseif CLIENT then
 
 	function ENT:Draw()
 		self:DrawModel()
-		
+
 		if(self.PostDraw)then
 			self:PostDraw()
 		end

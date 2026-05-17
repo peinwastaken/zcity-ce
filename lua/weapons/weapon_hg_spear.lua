@@ -100,7 +100,7 @@ if SERVER then
 
         local ply = self:GetOwner()
 
-        ent:SetPos(select(1, hg.eye(ply,60,hg.GetCurrentCharacter(ply))) - ply:GetAimVector() * 2)
+        ent:SetPos(hg.eye(ply,60,hg.GetCurrentCharacter(ply)) - ply:GetAimVector() * 2)
         ent:SetAngles(ply:EyeAngles())
         ent:SetOwner(self:GetOwner())
         ent:Spawn()

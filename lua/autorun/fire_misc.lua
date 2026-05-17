@@ -77,7 +77,7 @@ end
 function vFireIsVFireEnt(ent)
 	if !IsValid(ent) then return false end
 	if ent.vFireIsVFireEnt != nil then return ent.vFireIsVFireEnt end
-	
+
 	local c = ent:GetClass()
 	local isVFireEnt = c == "vfire" or c == "vfire_ball" or c == "vfire_cluster"
 	ent.vFireIsVFireEnt = isVFireEnt
@@ -93,7 +93,7 @@ function vFireGetFires(ent)
 	local fires = {}
 	local firesTable = ent.fires
 	if firesTable then
-		for fire, lPos in pairs(firesTable) do 
+		for fire in pairs(firesTable) do
 			table.insert(fires, fire)
 		end
 	end
@@ -126,7 +126,7 @@ hook.Add("vFireCreated", "vFiresCountIncrement", function(fire)
 
 	-- Update whatever else we need to update
 	vFireUpdateThinkThrottle()
-	
+
 	if SERVER then
 		vFireUpdateLifeThrottle()
 	end
@@ -138,7 +138,7 @@ hook.Add("vFireRemoved", "vFiresCountDecrement", function(fire)
 
 	-- Update whatever else we need to update
 	vFireUpdateThinkThrottle()
-	
+
 	if SERVER then
 		vFireUpdateLifeThrottle()
 	end
@@ -152,7 +152,7 @@ if CLIENT then
 	vFireClusterThinkTickRate = 5
 	vFireParticlesThinkTickRate = 1.15
 	vFireAnimationThinkTickRate = 15
-	
+
 	vFireThrottleMultiplier = 0.01
 	vFireThinkThrottle = 0
 	function vFireUpdateThinkThrottle()
@@ -202,7 +202,6 @@ if CLIENT or SERVER then
 	end
 
 	-- Used to calcualte the wind flow of a given position
-	local windExposureCheckDist = 10000
 	function vFireCalcWindExposure(pos, filter)
 		return 1
 	end
@@ -227,7 +226,7 @@ if CLIENT then
 		vFireLODs = math.Clamp(vFireLODsConVar:GetInt(), 0, 2)
 	end)
 
-	
+
 	--[[-------------------------------------------------------------------------
 	Toggle fire glows
 	---------------------------------------------------------------------------]]
@@ -293,7 +292,7 @@ if SERVER then
 		vFireEnableDamage = vFireEnableDamageConVar:GetBool()
 	end)
 
-	
+
 	--[[-------------------------------------------------------------------------
 	Toggle fire damage for players in vehicles
 	---------------------------------------------------------------------------]]
@@ -411,7 +410,7 @@ if SERVER then
 
 		if IsValid(ply) and !ply:IsAdmin() then return end
 
-		for k, fire in pairs(ents.FindByClass("vfire")) do
+		for _, fire in pairs(ents.FindByClass("vfire")) do
 			fire:Remove()
 		end
 	end)
@@ -437,7 +436,7 @@ if SERVER then
 		vFireDecayRateConVar:SetFloat(vFireDecayRateConVar:GetDefault())
 		vFireEnableNPCBehaviorConVar:SetBool(vFireEnableNPCBehaviorConVar:GetDefault())
 		vFireClusterFeedConVar:SetFloat(vFireClusterFeedConVar:GetDefault())
-		
+
 		vFireMessage("vFire settings reset to default!")
 	end)
 end
@@ -505,7 +504,7 @@ if SERVER then
 		wood_solid = 0.5,
 		tile = 0.2
 	}
-	
+
 	local matTypesFuelRate = {}
 		matTypesFuelRate[MAT_ANTLION] = 0.8
 		matTypesFuelRate[MAT_BLOODYFLESH] = 0.4
@@ -530,7 +529,7 @@ if SERVER then
 	---------------------------------------------------------------------------]]
 	local matTypesFeed = {}
 		matTypesFeed[MAT_ANTLION] = 100
-		matTypesFeed[MAT_BLOODYFLESH] = 40 
+		matTypesFeed[MAT_BLOODYFLESH] = 40
 		matTypesFeed[MAT_DIRT] = 165
 		matTypesFeed[MAT_FLESH] = 200
 		matTypesFeed[MAT_ALIENFLESH] = 200
@@ -587,7 +586,7 @@ if SERVER then
 
 	--[[-------------------------------------------------------------------------
 
-	
+
 	Main fuel taking function
 
 
@@ -603,7 +602,7 @@ if SERVER then
 			ent.vFireFuelAmount = ent.vFireFuelAmount - take
 			return take
 		end
-		
+
 
 
 		-- We don't have a fuel factor cached, initialize it
@@ -626,7 +625,7 @@ if SERVER then
 
 		elseif ent:GetClass() == "vfire_cluster" then
 
-			
+
 			local parent = ent.parent
 
 			local feedMul -- Main purpose is to avoid feed cycles when clusters transition from entities that lost their fuel
@@ -639,7 +638,7 @@ if SERVER then
 
 			-- Find out what feed we should be giving to the cluster
 			local matFeed = vFireMatToFeed(ent.matType)
-			
+
 			-- Randomize the matFeed, multiply by our feed multiplier to avoid endless fuels, and add our cluster feed ConVar
 			ent.vFireFuelAmount = matFeed * math.Rand(0.5, 1) * feedMul + vFireClusterFeed
 
@@ -1021,7 +1020,7 @@ if CLIENT then
 
 				-- -- Form the link
 				-- mat:SetTexture("$modelmaterial", modelMatName)
-				
+
 				-- Finalize the edit
 				mat:Recompute()
 				-- modelMat:Recompute()
@@ -1082,7 +1081,7 @@ Create a refract material -- Unused for performance reasons
 -- 		if k == "$flags" or k == "$flags2" or k == "$flags_defined" or k == "$flags_defined2" then keyVals[k] = nil end
 -- 	end
 -- 	vFireRefractMat = CreateMaterial(newName, waterMat:GetShader(), {})
-	
+
 -- 	-- Edit the material
 -- 	vFireRefractMat:SetFloat("$bluramount", 0)
 -- 	vFireRefractMat:SetFloat("$refractamount", 0.025)
@@ -1159,15 +1158,15 @@ Specifics & External Support
 
 			local CATEGORY = "vFire"
 
-			
+
 			--[[-------------------------------------------------------------------------
 			Remove all fires the player is looking at
 			---------------------------------------------------------------------------]]
 			function ulx.vextinguish(ply)
-				
+
 				local lookedAt = ents.FindInCone(ply:EyePos(), ply:EyeAngles():Forward(), 30000, 0.9)
 				local removeCount = 0
-				for k, v in pairs(lookedAt) do
+				for _, v in pairs(lookedAt) do
 					local class = v:GetClass()
 					if class == "vfire" or class == "vfire_ball" then
 						v:Remove()
@@ -1182,13 +1181,13 @@ Specifics & External Support
 			vextinguish:defaultAccess(ULib.ACCESS_ADMIN)
 			vextinguish:help("Extinguish fires you're looking at.")
 
-			
+
 			--[[-------------------------------------------------------------------------
 			Remove all fires
 			---------------------------------------------------------------------------]]
 			function ulx.vextinguishall(ply)
 				local removeCount = 0
-				for k, v in pairs(ents.FindByClass("vfire")) do
+				for _, v in pairs(ents.FindByClass("vfire")) do
 					v:Remove()
 					removeCount = removeCount + 1
 				end

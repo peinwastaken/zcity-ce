@@ -12,8 +12,6 @@ end
 
 zb.ROUND_STATE = 0
 --0 = players can join, 1 = round is active, 2 = endround
-local vecZero = Vector(0.2, 0.2, 0.2)
-local vecFull = Vector(1, 1, 1)
 spect,prevspect,viewmode = nil,nil,1
 local hullscale = Vector(0,0,0)
 net.Receive("ZB_SpectatePlayer", function(len)
@@ -47,7 +45,6 @@ net.Receive("updtime",function()
 end)
 
 local blur = Material("pp/blurscreen")
-local blur2 = Material("effects/shaders/zb_blur" )
 local blursettings = {}
 local hg_potatopc
 hg = hg or {}
@@ -107,11 +104,11 @@ hook.Add("HUDPaint","FUCKINGSAMENAMEUSEDINHOOKFUCKME",function()
 	local spect = LocalPlayer():GetNWEntity("spect")
 	if not IsValid(spect) then return end
 	if viewmode == 3 then return end
-	
+
 	surface.SetFont("HomigradFont")
 	surface.SetTextColor(255, 255, 255, 255)
 	local txt = "Spectating player: "..spect:Name()
-	local w, h = surface.GetTextSize(txt)
+	local w, _ = surface.GetTextSize(txt)
 	surface.SetTextPos(ScrW() / 2 - w / 2, ScrH() / 8 * 7)
 	surface.DrawText(txt)
 	local txt = "In-game name: "..spect:GetPlayerName()
@@ -159,7 +156,7 @@ hook.Add("HG_CalcView", "ZCityDeathSpectateView", function(ply, pos, angles, fov
 		if not IsValid(spect) then return end
 
 		local viewmode = lply:GetNWInt("viewmode",viewmode)
-		
+
 		if viewmode == 3 then
 			if lply:GetMoveType()!=MOVETYPE_NOCLIP then
 				lply:SetMoveType(MOVETYPE_NOCLIP)
@@ -169,14 +166,14 @@ hook.Add("HG_CalcView", "ZCityDeathSpectateView", function(ply, pos, angles, fov
 		else
 			lply:SetPos(spect:GetPos())
 		end
-		
+
 		local ent = hg.GetCurrentCharacter(spect)
 		if not IsValid(ent) then return end
-		
+
 		local headBone = ent:LookupBone("ValveBiped.Bip01_Head1") or ent:LookupBone("ValveBiped.Bip01_Spine1") or 1
 		local bon = ent:GetBoneMatrix(headBone)
-		
-		if not bon then 
+
+		if not bon then
 			local eyePos = ent:EyePos()
 			if eyePos and eyePos ~= vector_origin then
 				pos = eyePos
@@ -190,7 +187,7 @@ hook.Add("HG_CalcView", "ZCityDeathSpectateView", function(ply, pos, angles, fov
 		end
 
 		local eyePos, eyeAng = lply:EyePos(), lply:EyeAngles()
-		
+
 		local tr = {}
 		tr.start = pos
 		tr.endpos = pos + eyeAng:Forward() * -120
@@ -218,9 +215,9 @@ hook.Add("HG_CalcView", "ZCityDeathSpectateView", function(ply, pos, angles, fov
 			pos = eyePos
 			ang = eyeAng
 		end
-		
+
 		ang[3] = 0
-		
+
 		local view
 		local hg_newspectate = GetConVar("hg_newspectate")
 		if hg_newspectate and hg_newspectate:GetBool() then
@@ -228,7 +225,7 @@ hook.Add("HG_CalcView", "ZCityDeathSpectateView", function(ply, pos, angles, fov
 				lply.spectLastPos = pos
 				lply.spectLastAng = ang
 			end
-			
+
 			local lerpFactor = FrameTime() * 10
 			lply.spectLastPos = LerpVector(lerpFactor, lply.spectLastPos, pos)
 			lply.spectLastAng = LerpAngle(lerpFactor, lply.spectLastAng, ang)
@@ -268,7 +265,7 @@ end)
 zb.ROUND_STATE = 0
 net.Receive("RoundInfo", function()
 	local rnd = net.ReadString()
-	
+
 	hook.Run("RoundInfoCalled", rnd)
 
 	if zb.CROUND ~= rnd then
@@ -280,7 +277,7 @@ net.Receive("RoundInfo", function()
 	zb.CROUND = rnd
 
 	zb.ROUND_STATE = net.ReadInt(4)
-	
+
 	if zb.ROUND_STATE == 0 then
 		zb.fade = 7
 	end
@@ -403,7 +400,7 @@ hook.Add("InitPostEntity", "ZCityLoadMutedPlayers", function()
 		end
 
 		if hg.playerInfo then
-			for i, ply in player.Iterator() do
+			for _, ply in player.Iterator() do
 				if not istable(hg.playerInfo[ply:SteamID()]) then
 					local muted = hg.playerInfo[ply:SteamID()]
 					hg.playerInfo[ply:SteamID()] = {}
@@ -415,12 +412,11 @@ hook.Add("InitPostEntity", "ZCityLoadMutedPlayers", function()
 					ply:SetMuted(hg.playerInfo[ply:SteamID()][1])
 					ply:SetVoiceVolumeScale(hg.playerInfo[ply:SteamID()][2])
 				end
-			end	
+			end
 		end
 	end
 end)
 
-local colGray = Color(122,122,122,255)
 local colBlue = Color(130,10,10)
 local colBlueUp = Color(160,30,30)
 local col = Color(255,255,255,255)
@@ -428,20 +424,18 @@ local col = Color(255,255,255,255)
 local colSpect1 = Color(75,75,75,255)
 local colSpect2 = Color(85,85,85,255)
 
-local colorBG = Color(55,55,55,255)
-local colorBGBlacky = Color(40,40,40,255)
 
 hg.muteall = false
 hg.mutespect = false
 
 local function OpenPlayerSoundSettings(selfa, ply)
 	local Menu = DermaMenu()
-	
+
 	if not hg.playerInfo[ply:SteamID()] or not istable(hg.playerInfo[ply:SteamID()]) then addToPlayerInfo(ply, false, 1) end
 
 	local mute = Menu:AddOption( "Mute", function(self)
 		if hg.muteall || hg.mutespect then return end
-		
+
 		self:SetChecked(not ply:IsMuted())
 		ply:SetMuted( not ply:IsMuted() )
 		selfa:SetImage(not ply:IsMuted() && "icon16/sound.png" || "icon16/sound_mute.png")
@@ -453,7 +447,7 @@ local function OpenPlayerSoundSettings(selfa, ply)
 	local volumeSlider = vgui.Create("DSlider", Menu)
 	volumeSlider:SetLockY( 0.5 )
 	volumeSlider:SetTrapInside( true )
-	volumeSlider:SetSlideX(hg.playerInfo[ply:SteamID()][2]) 
+	volumeSlider:SetSlideX(hg.playerInfo[ply:SteamID()][2])
 	volumeSlider.OnValueChanged = function(self, x, y)
 		if not IsValid(ply) then return end
 		if hg.muteall or (hg.mutespect && !ply:Alive()) then return end
@@ -526,7 +520,7 @@ function GM:ScoreboardShow()
 	muteallbut:SetPos(scoreBoardMenu:GetWide()-w*2.3,scoreBoardMenu:GetTall() - h * 1.5)
 	muteallbut:SetSize(w, h)
 	muteallbut:SetText("Mute all")
-	
+
 	muteallbut.Paint = function(self,w,h)
 		surface.SetDrawColor( not hg.muteall and 255 or 0, hg.muteall and 255 or 0, 0, 128)
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
@@ -534,8 +528,8 @@ function GM:ScoreboardShow()
 
 	muteallbut.DoClick = function(self,w,h)
 		hg.muteall = not hg.muteall
-		
-		for i,ply in player.Iterator() do
+
+		for _,ply in player.Iterator() do
 			if hg.muteall then
 				//ply.oldmutedspect = ply:IsMuted()
 
@@ -551,7 +545,7 @@ function GM:ScoreboardShow()
 				//end
 				//ply.oldmuted = nil
 			end
-		end 
+		end
 	end
 
 	local mutespectbut = vgui.Create("DButton", scoreBoardMenu)
@@ -559,7 +553,7 @@ function GM:ScoreboardShow()
 	mutespectbut:SetPos(scoreBoardMenu:GetWide()-w*1.2,scoreBoardMenu:GetTall() - h * 1.5)
 	mutespectbut:SetSize(w, h)
 	mutespectbut:SetText("Mute spectators")
-	
+
 	mutespectbut.Paint = function(self,w,h)
 		surface.SetDrawColor( not hg.mutespect and 255 or 0, hg.mutespect and 255 or 0, 0, 128)
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
@@ -567,8 +561,8 @@ function GM:ScoreboardShow()
 
 	mutespectbut.DoClick = function(self,w,h)
 		hg.mutespect = not hg.mutespect
-		
-		for i,ply in player.Iterator() do
+
+		for _,ply in player.Iterator() do
 			if ply:Alive() then continue end
 
 			if hg.mutespect then
@@ -587,7 +581,7 @@ function GM:ScoreboardShow()
 				//end
 				//ply.oldmutedspect = nil
 			end
-		end 
+		end
 	end
 
 	local ServerName = GetHostName() or "ZCity | Developer Server | #01"
@@ -598,31 +592,31 @@ function GM:ScoreboardShow()
 
 		surface.SetFont( "ZB_InterfaceLarge" )
 		surface.SetTextColor(col.r,col.g,col.b,col.a)
-		local lengthX, lengthY = surface.GetTextSize(ServerName)
+		local lengthX, _ = surface.GetTextSize(ServerName)
 		surface.SetTextPos(w / 2 - lengthX/2,10)
 		surface.DrawText(ServerName)
 
 		surface.SetFont( "ZB_InterfaceSmall" )
 		surface.SetTextColor(col.r,col.g,col.b,col.a*0.1)
 		local txt = "ZC Version: "..hg.Version
-		local lengthX, lengthY = surface.GetTextSize(txt)
+		local _, lengthY = surface.GetTextSize(txt)
 		surface.SetTextPos(w*0.01,h - lengthY - h*0.01)
 		surface.DrawText(txt)
 
 		surface.SetFont( "ZB_InterfaceMediumLarge" )
 		surface.SetTextColor(col.r,col.g,col.b,col.a)
-		local lengthX, lengthY = surface.GetTextSize("Players:")
+		local lengthX, _ = surface.GetTextSize("Players:")
 		surface.SetTextPos(w / 4 - lengthX/2,ScreenScale(25))
 		surface.DrawText("Players:")
 
 		surface.SetFont( "ZB_InterfaceMediumLarge" )
 		surface.SetTextColor(col.r,col.g,col.b,col.a)
-		local lengthX, lengthY = surface.GetTextSize("Spectators:")
+		local lengthX, _ = surface.GetTextSize("Spectators:")
 		surface.SetTextPos(w * 0.75 - lengthX/2,ScreenScale(25))
 		surface.DrawText("Spectators:")
 		tick = math.Round(1 / engine.ServerFrameTime())
 		local txt = "SV Tick: " .. tick
-		local lengthX, lengthY = surface.GetTextSize(txt)
+		local lengthX, _ = surface.GetTextSize(txt)
 		surface.SetTextPos(w * 0.5 - lengthX/2,ScreenScale(25))
 		surface.DrawText(txt)
 	end
@@ -632,7 +626,7 @@ function GM:ScoreboardShow()
 		SPECTATE:SetPos(sizeX * 0.925,sizeY * 0.095)
 		SPECTATE:SetSize(ScrW() / 20,ScrH() / 30)
 		SPECTATE:SetText("")
-		
+
 		SPECTATE.DoClick = function()
 			net.Start("ZB_SpecMode")
 				net.WriteBool(true)
@@ -646,7 +640,7 @@ function GM:ScoreboardShow()
 			surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 			surface.SetFont( "ZB_InterfaceMedium" )
 			surface.SetTextColor(col.r,col.g,col.b,col.a)
-			local lengthX, lengthY = surface.GetTextSize("Join")
+			local lengthX, _ = surface.GetTextSize("Join")
 			surface.SetTextPos( lengthX - lengthX/2, 2)
 			surface.DrawText("Join")
 		end
@@ -657,7 +651,7 @@ function GM:ScoreboardShow()
 		PLAYING:SetPos(sizeX * 0.010,sizeY * 0.095)
 		PLAYING:SetSize(ScrW() / 20,ScrH() / 30)
 		PLAYING:SetText("")
-		
+
 		PLAYING.DoClick = function()
 			net.Start("ZB_SpecMode")
 				net.WriteBool(false)
@@ -671,7 +665,7 @@ function GM:ScoreboardShow()
 			surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 			surface.SetFont( "ZB_InterfaceMedium" )
 			surface.SetTextColor(col.r,col.g,col.b,col.a)
-			local lengthX, lengthY = surface.GetTextSize("Join")
+			local lengthX, _ = surface.GetTextSize("Join")
 			surface.SetTextPos( lengthX - lengthX/2, 2)
 			surface.DrawText("Join")
 		end
@@ -693,7 +687,7 @@ function GM:ScoreboardShow()
 	end
 
 	local disappearance = lply:GetNetVar("disappearance", nil)
-	for i, ply in player.Iterator() do -- need to redo this shit.
+	for _, ply in player.Iterator() do -- need to redo this shit.
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		if CurrentRound().name == "fear" and !ply:Alive() then continue end
 		if disappearance and ply != lply then continue end
@@ -703,31 +697,31 @@ function GM:ScoreboardShow()
 		but:Dock(TOP)
 		but:DockMargin(8, 6, 8, -1)
 		but:SetText("")
-		
+
 		local soundButton = vgui.Create("DImageButton", but)
 		soundButton:Dock(RIGHT)
 		soundButton:SetSize( 30, 0 )
 		soundButton:DockMargin(5,10,45,10)
-		
-		soundButton:SetImage(not ply:IsMuted() && "icon16/sound.png" || "icon16/sound_mute.png") 
+
+		soundButton:SetImage(not ply:IsMuted() && "icon16/sound.png" || "icon16/sound_mute.png")
 		soundButton.DoClick = function(self)
-			OpenPlayerSoundSettings(self, ply) 
+			OpenPlayerSoundSettings(self, ply)
 		end
 		ply.soundButton = soundButton
-	
+
 		but.Paint = function(self, w, h)
 			if not IsValid(ply) then return end
 			surface.SetDrawColor(colBlueUp.r, colBlueUp.g, colBlueUp.b, colBlueUp.a)
 			surface.DrawRect(0, 0, w, h)
 			surface.SetDrawColor(colBlue.r, colBlue.g, colBlue.b, colBlue.a)
 			surface.DrawRect(0, h / 2, w, h / 2)
-	
+
 			surface.SetFont("ZB_InterfaceMediumLarge")
 			surface.SetTextColor(col.r, col.g, col.b, col.a)
-			local lengthX, lengthY = surface.GetTextSize(ply:Name() or "He quited...")
+			local _, lengthY = surface.GetTextSize(ply:Name() or "He quited...")
 			surface.SetTextPos(15, h / 2 - lengthY / 2)
 			surface.DrawText(ply:Name() or "He quited...")
-	
+
 			surface.SetFont("ZB_InterfaceMediumLarge")
 			surface.SetTextColor(col.r, col.g, col.b, col.a)
 			local lengthX, lengthY = surface.GetTextSize(ply:Ping() or "He quited...")
@@ -752,7 +746,7 @@ function GM:ScoreboardShow()
 
 			Menu:Open()
 		end
-	
+
 		DScrollPanel:AddItem(but)
 	end
 	-- SPECTATORS
@@ -769,7 +763,7 @@ function GM:ScoreboardShow()
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 	end
 
-	for i, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if ply:Team() ~= TEAM_SPECTATOR then continue end
 		if CurrentRound().name == "fear" and !ply:Alive() then continue end
 		if disappearance and ply != lply then continue end
@@ -784,8 +778,8 @@ function GM:ScoreboardShow()
 		soundButton:Dock(RIGHT)
 		soundButton:SetSize( 30, 0 )
 		soundButton:DockMargin(5,10,45,10)
-		
-		soundButton:SetImage(not ply:IsMuted() && "icon16/sound.png" || "icon16/sound_mute.png") 
+
+		soundButton:SetImage(not ply:IsMuted() && "icon16/sound.png" || "icon16/sound_mute.png")
 		soundButton.DoClick = function(self)
 			OpenPlayerSoundSettings(self, ply)
 		end
@@ -800,7 +794,7 @@ function GM:ScoreboardShow()
 
 			surface.SetFont( "ZB_InterfaceMediumLarge" )
 			surface.SetTextColor(col.r,col.g,col.b,col.a)
-			local lengthX, lengthY = surface.GetTextSize( ply:Name() or "He quited..." )
+			local _, lengthY = surface.GetTextSize( ply:Name() or "He quited..." )
 			surface.SetTextPos(15,h/2 - lengthY/2)
 			surface.DrawText(ply:Name() or "He quited...")
 
@@ -825,12 +819,12 @@ function GM:ScoreboardShow()
 			Menu:AddOption( "Copy SteamID", function(self)
 				SetClipboardText(ply:SteamID())
 			end)
-			--Menu:AddOption( "Medal", function(self) 
+			--Menu:AddOption( "Medal", function(self)
 			--	zb.Experience.OpenMenu(ply)
 			--	timer.Simple( .1, function()
 			--		zb.Experience.Menu(ply)
 			--	end)
-			--end) 
+			--end)
 
 			Menu:Open()
 		end
@@ -876,41 +870,6 @@ if CLIENT then
 	end)
 end
 
-/*  -- by the way, why is there net here; this could have been done entirely client-side...
-	if CLIENT then
-		net.Receive("PluvCommand", function()
-			local specialSteamID = "STEAM_0:1:81850653" 
-			local playerSteamID = LocalPlayer():SteamID() 
-
-			local imageURLs = {"https://sadsalat.github.io/salatis/music/boof.gif", "https://i.ibb.co/drt1Lks/KtvCLSs.webp", "https://media.tenor.com/kG4PmVvJuRIAAAAC/rain-world-rain-world-saint.gif"} 
-			local soundURLs = {"https://sadsalat.github.io/salatis/music/sus-rock.mp3", "https://sadsalat.github.io/salatis/music/tiktok-raaaah-scream.mp3", "https://sadsalat.github.io/salatis/music/sus-rock.mp3"} 
-
-			local chosenImage = imageURLs[math.random(#imageURLs)]
-			local chosenSound = soundURLs[math.random(#soundURLs)]
-
-			sound.PlayURL(chosenSound, "", function(station)
-				if IsValid(station) then
-					station:Play()
-				else
-					print("Unable to play the sound.")
-				end
-			end)
-
-			local html = vgui.Create("HTML")
-			html:OpenURL(chosenImage)
-			html:SetSize(ScrW(), ScrH())
-			html:Center()
-			html:MakePopup()
-
-			timer.Simple(3, function()
-				if IsValid(html) then
-					html:Remove()
-				end
-			end)
-		end)
-	end
-*/
-
 local lightningMaterial = Material("sprites/lgtning")
 
 net.Receive("AnotherLightningEffect", function()
@@ -954,55 +913,55 @@ concommand.Add("zb_snake", function() -- like here!
     frame:SetSize(400, 400)
     frame:Center()
     frame:MakePopup()
-    frame:SetDeleteOnClose(true)  
-    snakeGameOpen = true  
+    frame:SetDeleteOnClose(true)
+    snakeGameOpen = true
 
     local gridSize = 20
-    local gridWidth = 19  
-    local gridHeight = 19  
+    local gridWidth = 19
+    local gridHeight = 19
     local snakePanel = vgui.Create("DPanel", frame)
     snakePanel:SetSize(380, 380)
     snakePanel:SetPos(10, 10)
 
-    
+
     frame:SetDraggable(true)
     frame:ShowCloseButton(true)
 
     local snake = {
         {x = 10, y = 10},
     }
-	
+
     local snakeDirection = "RIGHT"
     local food = nil
     local score = 0
     local gameRunning = true
 
-  
+
     local function spawnFood()
         local validPosition = false
         while not validPosition do
             local newFood = {
-                x = math.random(0, gridWidth - 1), 
+                x = math.random(0, gridWidth - 1),
                 y = math.random(0, gridHeight - 1)
             }
             validPosition = true
 
-        
+
             for _, segment in ipairs(snake) do
                 if segment.x == newFood.x and segment.y == newFood.y then
-                    validPosition = false  
+                    validPosition = false
                     break
                 end
             end
 
-            
+
             if validPosition then
                 food = newFood
             end
         end
     end
 
-    
+
     local function drawSnake()
         surface.SetDrawColor(0, 255, 0, 255)
         for _, segment in ipairs(snake) do
@@ -1010,7 +969,7 @@ concommand.Add("zb_snake", function() -- like here!
         end
     end
 
-  
+
     local function drawFood()
         if food then
             surface.SetDrawColor(255, 0, 0, 255)
@@ -1018,7 +977,7 @@ concommand.Add("zb_snake", function() -- like here!
         end
     end
 
-   
+
     local function moveSnake()
         if not gameRunning then return end
 
@@ -1034,27 +993,27 @@ concommand.Add("zb_snake", function() -- like here!
             head.x = head.x + 1
         end
 
-        
+
         if head.x < 0 or head.x >= gridWidth or head.y < 0 or head.y >= gridHeight then
             gameRunning = false
         end
 
-       
+
         for _, segment in ipairs(snake) do
             if segment.x == head.x and segment.y == head.y then
                 gameRunning = false
             end
         end
 
-       
+
         table.insert(snake, 1, head)
 
 
         if food and head.x == food.x and head.y == food.y then
             score = score + 1
-            spawnFood()  
+            spawnFood()
         else
-            
+
             table.remove(snake)
         end
     end
@@ -1065,7 +1024,7 @@ concommand.Add("zb_snake", function() -- like here!
         snakeDirection = "RIGHT"
         score = 0
         gameRunning = true
-        spawnFood()  
+        spawnFood()
     end
 
 
@@ -1109,7 +1068,7 @@ concommand.Add("zb_snake", function() -- like here!
 
     frame.OnClose = function()
         timer.Remove("SnakeGameTimer")
-        snakeGameOpen = false  
+        snakeGameOpen = false
         print("[Snake Game] Game closed.") -- DOES NOT WORK
     end
 

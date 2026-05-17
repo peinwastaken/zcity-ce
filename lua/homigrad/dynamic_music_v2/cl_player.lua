@@ -69,9 +69,9 @@ hg.DynamicMusicV2.Player.GetTrack = GetTrack
 function hg.DynamicMusicV2.Player.SetupLayers()
     if !IsValid(lply) then return end
     local Track = GetTrack()
-    
+
     if !Track then return end
-    
+
     hg.DynamicMusicV2.Player.Stop(true)
     local amount = table.Count(Track.Layers)
     for k,v in pairs(Track.Layers) do
@@ -88,7 +88,7 @@ end
 function hg.DynamicMusicV2.Player.Stop(overide)
     if !IsValid(lply) then return end
 
-    for k,v in ipairs(layers) do
+    for _,v in ipairs(layers) do
         if !IsValid(v[2]) then continue end
         v[2]:Stop()
     end

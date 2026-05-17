@@ -19,12 +19,12 @@ local cloudmat = Material("effects/smoke_b")
 --[[for i = 4, 6 do
 	mats[i-3] = Material("homigrad/decals/bld" .. i)
 end]]
-local countmats = #mats
 hg.bloodparticles1 = hg.bloodparticles1 or {}
 hg.bloodparticles2 = hg.bloodparticles2 or {}
 local vecZero = Vector(0, 0, 0)
-local lastplaced = SysTime()
-local hg_blood_fps = ConVarExists("hg_blood_fps") and GetConVar("hg_blood_fps") or CreateClientConVar("hg_blood_fps", 24, true, nil, "fps to draw blood", 12, 165)
+if not ConVarExists("hg_blood_fps") then
+	CreateClientConVar("hg_blood_fps", 24, true, nil, "fps to draw blood", 12, 165)
+end
 local function addBloodPart(pos, vel, mat, w, h, artery, kishki, owner)
 	--local fps = 1 / hg_blood_fps:GetInt() * 1
 	--if lastplaced + fps > SysTime() then return end
@@ -38,7 +38,7 @@ local function addBloodPart(pos, vel, mat, w, h, artery, kishki, owner)
 	pos2:Set(pos)
 
 	if #hg.bloodparticles1 > 200 then table.remove(hg.bloodparticles1, 1) end
-	
+
 	hg.bloodparticles1[#hg.bloodparticles1 + 1] = {pos, pos2, vel, mat or mat_huy, w or 2, h or 2, CurTime(), artery = artery, kishki = kishki, owner = owner, start_velocity = IsValid(owner) and owner:GetVelocity() or vector_origin}
 end
 
@@ -52,7 +52,7 @@ local function addBloodPart2(pos, vel, mat, w, h, time, water, owner)
 
 	local pos2 = Vector()
 	pos2:Set(pos)
-	
+
 	if #hg.bloodparticles2 > 200 then table.remove(hg.bloodparticles2, 1) end
 	--if water and math.random(2) == 1 then return end
 	--if water and math.random(3) > 1 then return end
@@ -71,7 +71,7 @@ local function impact(pos,vel,mul)
 	local max = math.min(mul,8)
 	local iters = math.ceil(math.random(1, max) * 2.5)
 	local velnorm = -vel:GetNormalized() * 5
-	
+
 	if hg_bloodimpacts:GetBool() then
 		addBloodPart2(pos + velnorm, -vel + Vector(Rand(-10, 10), Rand(-10, 10), Rand(-10, 10)) * 5, nil, 25, 25, 0.3)
 		addBloodPart2(pos + velnorm, -vel / 2 + Vector(Rand(-10, 10), Rand(-10, 10), Rand(-10, 10)) * 5, nil, 25, 25, 0.3)
@@ -91,7 +91,7 @@ net.Receive("hg_bloodimpact", function()
 	local amt = net.ReadInt(8)
 	amt = math.Clamp(amt,0,32)
 	//debugoverlay.Line(pos, vel, 5, color_white)
-	for i = 1, amt do impact(pos,vel,mul) end
+	for _ = 1, amt do impact(pos,vel,mul) end
 end)
 
 local function explode(pos, size, force)
@@ -101,7 +101,7 @@ local function explode(pos, size, force)
 	for x = 1, xx * size do
 		for y = 1, yy * size do
 			addBloodPart2(pos + VectorRand(-10,10), VectorRand(-100,100) * size, cloudmat, 25, 25, 1)
-			
+
 			local dir = Vector(0, 0, -1)
 			dir:Rotate(Angle(h * y * Rand(0.9, 1.1), w * x * Rand(0.9, 1.1), 0))
 			dir[3] = dir[3] + Rand(0.5, 1.5)
@@ -121,7 +121,7 @@ local limbs = {
 hook.Add("HG_OrganismChanged", "explodelegs", function(oldorg, org)
 	local ply = org.owner
 	local ent = hg.GetCurrentCharacter(ply)
-	
+
 	for ind, nam in pairs(limbs) do
 		if !oldorg[ind.."amputated"] and org[ind.."amputated"] then
 			local bone = ent:LookupBone(nam)
@@ -148,7 +148,7 @@ hg.explode = explode
 net.Receive("addfountain",function()
 	local ent = net.ReadEntity()
 	local force = net.ReadVector()
-	
+
 	--local bone = net.ReadInt(8)
 	--local lpos = net.ReadVector()
 	--local lang = net.ReadAngle()
@@ -166,7 +166,7 @@ end)
 
 net.Receive("bloodsquirt", function()
 	local ent = net.ReadEntity()
-	
+
 	if not IsValid(ent) then return end
 
 	local bone = net.ReadString()
@@ -210,7 +210,7 @@ end)]]
 
 net.Receive("bloodsquirt2", function()
 	local ent = net.ReadEntity()
-	
+
 	if not IsValid(ent) then return end
 
 	local bone = net.ReadString()
@@ -233,7 +233,6 @@ net.Receive("bloodsquirt2", function()
 	local name = "squirtblood2"..ent:EntIndex()//..dir[1]
 	local i = 50
 	local maxI = i
-	local vechuy = Vector(0,0,0)
 	timer.Create(name, 0.01 * game.GetTimeScale(), i + 10, function()
 		if not IsValid(ent) then timer.Remove(name) return end
 		local ent = IsValid(ent.FakeRagdoll) and ent.FakeRagdoll or ent
@@ -249,7 +248,7 @@ net.Receive("bloodsquirt2", function()
 		--ent:SetFlexWeight(ent:GetFlexIDByName("jaw_drop"), 1)
 
 		local pos, dir = LocalToWorld(localPos, localDir, mat:GetTranslation(), mat:GetAngles())
-		
+
 		if lply == ply then
 			dir = lply:EyeAngles()
 		end

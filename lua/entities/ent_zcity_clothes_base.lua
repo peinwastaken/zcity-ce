@@ -131,7 +131,7 @@ end
         local fem = ThatPlyIsFemale(entUser)
         local data = fem and self.FeMale or self.Male
         if !bDontChangeMaterials then
-            for k,v in ipairs(data.HideSubMaterails) do
+            for _,v in ipairs(data.HideSubMaterails) do
                 local mat = entUser:GetSubMaterialIdByName(v)
                 if !mat then continue end
                 self.OldSubMaterials = self.OldSubMaterials or {}
@@ -226,7 +226,6 @@ end
 --//
 
 --\\ Render clothes
-    local vec = Vector(1,1,1)
     function ENT:RenderOnBody(entDrawOn)
         local fem = ThatPlyIsFemale(entDrawOn)
 
@@ -350,7 +349,7 @@ end
                 for i = 1, #Clothes do
                     local Cloth = Entity(Clothes[i])
 
-                    for slot, _ in pairs(Cloth.SlotOccupation) do
+                    for _, _ in pairs(Cloth.SlotOccupation) do
                         commands[i] = {
                             [1] = function()
                                 local id = next(Cloth.SlotOccupation)

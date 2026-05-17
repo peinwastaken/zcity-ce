@@ -1,4 +1,3 @@
-
 local atlas_list = "zcity/neurotrauma/AfflictionIcons.png"
 local atlas_list2 = "zcity/neurotrauma/AfflictionIcons2.png"
 local atlas_list3 = "zcity/neurotrauma/MainIconsAtlas.png"

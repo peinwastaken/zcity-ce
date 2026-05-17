@@ -31,7 +31,7 @@ function hg.DrawBlur(panel, amount, passes, alpha)
 		for i = -(passes or 0.2), 1, 0.2 do
 			blur:SetFloat("$blur", i * amount)
 			blur:Recompute()
-			
+
 			render.UpdateScreenEffectTexture()
 			surface.DrawTexturedRect(x * -1, y * -1, ScrW(), ScrH())
 		end
@@ -45,7 +45,7 @@ local PANEL = {}
 local color_blacky = Color(15,15,15,254)
 local color_reddy = Color(155,0,0,100)
 local gradientUp = surface.GetTextureID("vgui/gradient-d")
-local gradient_r = surface.GetTextureID("vgui/gradient-r")
+surface.GetTextureID("vgui/gradient-r")
 
 local function createButton(k,ent,size,Pan,mainpan)
     local but = vgui.Create( "DModelPanel", Pan )
@@ -105,8 +105,8 @@ local function createButton(k,ent,size,Pan,mainpan)
                 mainpan:Close()
             return end
             if self.InWait then return end
-            if LocalPlayer():PS_HasItem(ent.ID) then 
-                self:SetText( LocalPlayer():PS_HasItem(ent.ID) and "SOLD" or "Buy: "..(ent.ISDONATE and "DONATE" or ent.PRICE.." ZP")  ) 
+            if LocalPlayer():PS_HasItem(ent.ID) then
+                self:SetText( LocalPlayer():PS_HasItem(ent.ID) and "SOLD" or "Buy: "..(ent.ISDONATE and "DONATE" or ent.PRICE.." ZP")  )
             return end
             self:SetText( "Wait..." )
             self.InWait = true
@@ -130,7 +130,7 @@ local function createButton(k,ent,size,Pan,mainpan)
 
         surface.SetDrawColor( color_reddy )
         surface.DrawOutlinedRect(0,0,w,h,1)
-       
+
         if ( !IsValid( self.Entity ) ) then return end
         local x, y = self:LocalToScreen( 0, 0 )
         self:LayoutEntity( self.Entity )
@@ -180,7 +180,7 @@ function PANEL:Init()
         lbl:SetText( "Z-City Appearance Shop" )
         lbl:SetFont( "HomigradFontGigantoNormous" )
         lbl:SetContentAlignment(9)
-        
+
         lbl:Dock( LEFT )
         lbl:DockMargin( UPan:GetWide()*0.04, 0, 0, 0 )
         lbl:SizeToContents()
@@ -189,7 +189,7 @@ function PANEL:Init()
         lbl:SetText( "Buy points" )
         lbl:SetFont( "HomigradFontLarge" )
         lbl:SetContentAlignment(5)
-        
+
         lbl:Dock( RIGHT )
         lbl:DockMargin( 0, 5, UPan:GetWide()*0.07, 25 )
         lbl:SizeToContents()
@@ -224,7 +224,7 @@ function PANEL:Init()
         moneyTxt:SetContentAlignment(6)
         moneyTxt:SetText( " | ZP" )
         moneyTxt:SetFont( "HomigradFontLarge" )
-        
+
         moneyTxt:DockMargin( 0, 0, 25, 0 )
         moneyTxt:SizeToContents()
         moneyTxt:Dock( TOP )

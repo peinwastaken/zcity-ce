@@ -33,12 +33,12 @@ function MODE:HUDPaint()
 		surface.SetFont("ZB_HomicideMediumLarge")
 
 		local w, h = surface.GetTextSize("Awaiting players: ")
-		local w2, h2 = surface.GetTextSize("00:00")
+		local w2, _ = surface.GetTextSize("00:00")
 
 		surface.SetTextPos(sw * 0.5 - (w + w2) * 0.5, sh * 0.1 - h * 0.5)
 		surface.SetTextColor(Color(0,162,255, 255))
 		surface.DrawText("Awaiting players: ")
-		
+
 		surface.SetTextPos(sw * 0.5 + (w - w2) * 0.5, sh * 0.1 - h * 0.5)
 		surface.DrawText(string.FormattedTime(startTimer - CurTime(), "%02i:%02i"))
 	end
@@ -48,7 +48,7 @@ function MODE:HUDPaint()
 	if not lply:Alive() then return end
 	zb.RemoveFade()
     local fade = math.Clamp(zb.ROUND_START + 8 - CurTime(),0,1)
-	local team_ = lply:Team()
+	lply:Team()
     draw.SimpleText("Homicide | CO-OP", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     local Rolename = (lply.role and lply.role.name) or "Unknown"
     local ColorRole = teams[0].color1
@@ -71,18 +71,12 @@ local colGray = Color(85,85,85,255)
 local colRed = Color(130,10,10)
 local colRedUp = Color(160,30,30)
 
-local colBlue = Color(10,10,160)
-local colBlueUp = Color(40,40,160)
 local col = Color(255,255,255,255)
 
 local colSpect1 = Color(75,75,75,255)
 local colSpect2 = Color(255,255,255)
 
-local colorBG = Color(55,55,55,255)
-local colorBGBlacky = Color(40,40,40,255)
 
-local blurMat = Material("pp/blurscreen")
-local Dynamic = 0
 
 BlurBackground = BlurBackground or hg.DrawBlur
 
@@ -115,7 +109,7 @@ CreateEndMenu = function()
 	closebutton:SetPos(5,5)
 	closebutton:SetSize(ScrW() / 20,ScrH() / 30)
 	closebutton:SetText("")
-	
+
 	closebutton.DoClick = function()
 		if IsValid(hmcdEndMenu) then
 			hmcdEndMenu:Close()
@@ -128,7 +122,7 @@ CreateEndMenu = function()
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 		surface.SetFont( "ZB_InterfaceMedium" )
 		surface.SetTextColor(col.r,col.g,col.b,col.a)
-		local lengthX, lengthY = surface.GetTextSize("Close")
+		local lengthX, _ = surface.GetTextSize("Close")
 		surface.SetTextPos( lengthX - lengthX/1.1, 4)
 		surface.DrawText("Close")
 	end
@@ -137,7 +131,7 @@ CreateEndMenu = function()
 
 		surface.SetFont( "ZB_InterfaceMediumLarge" )
 		surface.SetTextColor(col.r,col.g,col.b,col.a)
-		local lengthX, lengthY = surface.GetTextSize("Players:")
+		local lengthX, _ = surface.GetTextSize("Players:")
 		surface.SetTextPos(w / 2 - lengthX/2,20)
 		surface.DrawText("Players:")
 
@@ -152,7 +146,7 @@ CreateEndMenu = function()
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 	end
 
-	for i, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		local but = vgui.Create("DButton",DScrollPanel)
 		but:SetSize(100,50)
@@ -170,8 +164,8 @@ CreateEndMenu = function()
 
             local col = ply:GetPlayerColor():ToColor()
 			surface.SetFont( "ZB_InterfaceMediumLarge" )
-			local lengthX, lengthY = surface.GetTextSize( ply:GetPlayerName() or "He quited..." )
-			
+			local _, lengthY = surface.GetTextSize( ply:GetPlayerName() or "He quited..." )
+
 			surface.SetTextColor(0,0,0,255)
 			surface.SetTextPos(w / 2 + 1,h/2 - lengthY/2 + 1)
 			surface.DrawText(ply:GetPlayerName() or "He quited...")
@@ -180,11 +174,11 @@ CreateEndMenu = function()
 			surface.SetTextPos(w / 2,h/2 - lengthY/2)
 			surface.DrawText(ply:GetPlayerName() or "He quited...")
 
-            
+
 			local col = colSpect2
 			surface.SetFont( "ZB_InterfaceMediumLarge" )
 			surface.SetTextColor(col.r,col.g,col.b,col.a)
-			local lengthX, lengthY = surface.GetTextSize( ply:GetPlayerName() or "He quited..." )
+			local _, lengthY = surface.GetTextSize( ply:GetPlayerName() or "He quited..." )
 			surface.SetTextPos(15,h/2 - lengthY/2)
 			surface.DrawText((ply:Name() .. (not ply:Alive() and " - died" or "")) or "He quited...")
 

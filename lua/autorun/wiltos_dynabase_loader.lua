@@ -1,4 +1,3 @@
-
 --[[-------------------------------------------------------------------
 	Dynamic Base:
 		Bringing the power everyone. Developer, server owner, and player.

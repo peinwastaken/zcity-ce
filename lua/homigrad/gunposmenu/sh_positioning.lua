@@ -1,7 +1,3 @@
-local originx = GetConVar("hg_gunorigin_x") or CreateClientConVar("hg_gunorigin_x", "0", true, true, "-4 - 4, gun origin x", -4, 4)
-local originy = GetConVar("hg_gunorigin_y") or CreateClientConVar("hg_gunorigin_y", "0", true, true, "-4 - 4, gun origin y", -4, 4)
-local originz = GetConVar("hg_gunorigin_z") or CreateClientConVar("hg_gunorigin_z", "0", true, true, "-4 - 4, gun origin z", -4, 4)
-
 if CLIENT then
     hg.GunPositions = hg.GunPositions or {}
     hg.GunPositions[LocalPlayer()] = hg.GunPositions[LocalPlayer()] or {}
@@ -21,7 +17,6 @@ if SERVER then
     local time = 0
     hg.GunPositions = hg.GunPositions or {}
 
-    local HasSeenGunPos = HasSeenGunPos or {}
 
     util.AddNetworkString("send_positioning")
     hook.Add("Think","gunposchange",function()
@@ -29,18 +24,18 @@ if SERVER then
         time = CurTime() + 1
         local NetworkingTable = {}
 
-        for i, ply in player.Iterator() do
+        for _, ply in player.Iterator() do
             local v1 = math.Clamp(ply:GetInfoNum("hg_gunorigin_x",0),-4,4)
             local v2 = math.Clamp(ply:GetInfoNum("hg_gunorigin_y",0),-4,4)
             local v3 = math.Clamp(ply:GetInfoNum("hg_gunorigin_z",0),-4,4)
             local changedtable = hg.GunPositions[ply].ChangedTable or {}
             local gunpostable = {v1,v2,v3,ChangedTable = changedtable}
             hg.GunPositions[ply] = gunpostable
-            
+
             local val1 = hg.IsChanged(v1,1,hg.GunPositions[ply])
             local val2 = hg.IsChanged(v2,2,hg.GunPositions[ply])
             local val3 = hg.IsChanged(v3,3,hg.GunPositions[ply])
-            
+
             if val1 or val2 or val3 then
                 NetworkingTable[ply] = hg.GunPositions[ply]
             end

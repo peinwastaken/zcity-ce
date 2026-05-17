@@ -50,7 +50,7 @@ SWEP.FakeEmptyReloadSounds = {
 	[0.8] = "zcitysnd/sound/weapons/m9/handling/m9_maghit.wav",
 	[1] = "weapons/tfa_ins2/usp_match/usp_match_boltrelease.wav",
 }
-SWEP.MagModel = "models/weapons/upgrades/w_magazine_m45_8.mdl" 
+SWEP.MagModel = "models/weapons/upgrades/w_magazine_m45_8.mdl"
 
 SWEP.lmagpos = Vector(2.,0,0)
 SWEP.lmagang = Angle(-10,0,0)
@@ -61,7 +61,7 @@ if CLIENT then
 	local vector_full = Vector(1, 1, 1)
 
 	SWEP.FakeReloadEvents = {
-		[0.35] = function( self ) 
+		[0.35] = function( self )
 			if self:Clip1() < 1 then
 				hg.CreateMag( self, Vector(0,0,-50) )
 				self:GetWM():ManipulateBoneScale(49, vector_origin)
@@ -104,11 +104,11 @@ if CLIENT then
 				self:GetOwner():PullLHTowards("ValveBiped.Bip01_L_Thigh", 1*timeMul)
 			end
 		end,
-		[0.9] = function( self ) 
+		[0.9] = function( self )
 			self:GetWM():ManipulateBoneScale(53, vector_origin)
 		end,
 
-		[1.2] = function( self ) 
+		[1.2] = function( self )
 			if self:Clip1() >= 1 then
 				//self:PlayAnim("idle",1,false)
 			end
@@ -208,12 +208,6 @@ SWEP.RHAng = Angle(0,-5,90)
 SWEP.LHPos = Vector(-1.2,-1.4,-2.8)
 SWEP.LHAng = Angle(5,9,-100)
 
-local finger1 = Angle(-25,10,25)
-local finger2 = Angle(0,25,0)
-local finger3 = Angle(31,1,-25)
-local finger4 = Angle(-10,-5,-5)
-local finger5 = Angle(0,-65,-15)
-local finger6 = Angle(15,-5,-15)
 
 function SWEP:AnimHoldPost()
 	--self:BoneSet("r_finger0", vector_zero, finger6)

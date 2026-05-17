@@ -67,7 +67,6 @@ function ENT:Think()
 end
 
 function ENT:Use(ply)
-	local wep = ply:GetActiveWeapon()
 	ply:PickupObject(self)
 end
 
@@ -96,7 +95,6 @@ function ENT:Detonate()
 		net.WriteString(self.Sound)
 		net.WriteString(self.SoundFar)
 		net.WriteVector(SelfPos)
-		net.WriteEntity(self)
 		net.WriteBool(self:WaterLevel() > 0)
 		net.WriteString(self.SoundWater)
 	net.Broadcast()
@@ -120,12 +118,12 @@ function ENT:Detonate()
 		effectdata:SetNormal(-self:GetAngles():Forward())
 		util.Effect("eff_jack_genericboom", effectdata)
 	end
-	
+
 	hg.ExplosionEffect(SelfPos, self.BlastDis / 0.2, 80)
 
 	timer.Simple(.01, function()
 		if not IsValid(self) then return end
-		for i = 0, 10 do
+		for _ = 0, 10 do
 			local Tr = util.QuickTrace(SelfPos, -vector_up, {self})
 			if Tr.Hit then
 				util.Decal("Scorch", Tr.HitPos + Tr.HitNormal, Tr.HitPos - Tr.HitNormal)
@@ -135,9 +133,9 @@ function ENT:Detonate()
 
 	timer.Simple(0, function()
 		if not IsValid(self) then return end
-		if self.Oskole then 
+		if self.Oskole then
 			local vecCone = Vector(5, 5, 0)
-			
+
 			for i = 1, self.Fragmentation do
 				local bullet = {}
 				bullet.Src = SelfPos

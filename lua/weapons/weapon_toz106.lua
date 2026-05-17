@@ -83,7 +83,7 @@ if CLIENT then
 				hg.CreateMag( self, Vector(0,0,-50), "111111")
 				self:GetWM():ManipulateBoneScale(67, vecPochtiZero)
 
-			end 
+			end
 		end,
 		[0.6] = function( self, timeMul )
 			if self:Clip1() < 1 then
@@ -253,7 +253,6 @@ local function cock(self,time)
 
 	self.Primary.Next = CurTime() + self.AnimDraw + self.Primary.Wait
 
-	local ply = self:GetOwner()
 
 	self.reloadCoolDown = CurTime() + time
 end
@@ -267,7 +266,6 @@ SWEP.FakeEjectBrassATT = "4"
 function SWEP:Reload(time)
 	--PrintTable(self:GetWM():GetAttachments())
 	--print(self:GetNetVar("shootgunReload",0))
-	local ply = self:GetOwner()
 	--if ply.organism and (ply.organism.larmamputated or ply.organism.rarmamputated) then return end
 	if self.AnimStart_Draw > CurTime() - 0.5 then return end
 	if not self:CanUse() then return end

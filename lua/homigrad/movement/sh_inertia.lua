@@ -1,4 +1,4 @@
-local Angle, Vector, AngleRand, VectorRand, math, hook, util, game = Angle, Vector, AngleRand, VectorRand, math, hook, util, game
+local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 --\\ Inertia & stuff
 	--\\ Antibhop accelerate (not used anyway)
 		--[[hook.Add("OnPlayerHitGround", "Movement", function(ply, inWater, onFloater, speed)
@@ -36,9 +36,6 @@ local Angle, Vector, AngleRand, VectorRand, math, hook, util, game = Angle, Vect
 			return Vector(math.Approach(vector_from.x, vector_to.x, change), math.Approach(vector_from.y, vector_to.y, change), math.Approach(vector_from.z, vector_to.z, change))
 		end
 
-		local function approach_vector_smooth(vector_from, vector_to, lerp)
-			return Vector(Lerp(lerp, vector_from.x, vector_to.x), Lerp(lerp, vector_from.y, vector_to.y), Lerp(lerp, vector_from.z, vector_to.z))
-		end
 
 		hg.approach_vector = approach_vector
 	--//
@@ -351,7 +348,7 @@ local Angle, Vector, AngleRand, VectorRand, math, hook, util, game = Angle, Vect
 			//local new_inertia = approach_vector(ply.MovementInertia, inertia_to, 1000)//SERVER and delta_time * ply.InertiaBlend * ply:Ping() / 100 or delta_time * ply.InertiaBlend)
 			//local new_inertia = approach_vector_smooth(ply.MovementInertia, inertia_to, hg.lerpFrameTime2(0.075, delta_time))
 			if !ply:OnGround() then
-				ply.MovementInertia = ply.LastVelocity	
+				ply.MovementInertia = ply.LastVelocity
 			end
 
 			local new_inertia = approach_vector(ply.MovementInertia, inertia_to, delta_time * ply.InertiaBlend)
@@ -509,7 +506,7 @@ local Angle, Vector, AngleRand, VectorRand, math, hook, util, game = Angle, Vect
 		if org.noradrenaline and org.noradrenaline > 0 and inertia_len > 0 then
 			inertia_len = inertia_len + 200 * math.Round(org.noradrenaline, 1)
 		end
-		
+
 		mv:SetMaxSpeed(inertia_len)
 		mv:SetMaxClientSpeed(inertia_len)
 		ply:SetMaxSpeed(math.max(100, inertia_len))

@@ -19,7 +19,6 @@ SWEP.AutoSwitchFrom = false
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
 SWEP.WorldModel = "models/mmod/weapons/w_bugbait.mdl"
-local av,aa,av2,aa2 = Vector(0,0,0),Angle(0,0,0),Vector(0,0,0),Angle(0,0,0)
 SWEP.AnimList = {
 	["deploy"] = { "draw", 0.6, false, false },
     ["attack"] = { "throw", 0.6, false, false, function(self)

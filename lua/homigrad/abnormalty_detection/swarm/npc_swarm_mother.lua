@@ -82,7 +82,7 @@ end
 
 function ENT:OrderWeightCreationFunc()
 	local totalamt = 0
-	for npc,amt in pairs(self.CreatedNpcsAmt)do
+	for _,amt in pairs(self.CreatedNpcsAmt)do
 		totalamt = totalamt + amt
 	end
 	for npc,amt in pairs(self.CreatedNpcsAmt)do
@@ -113,16 +113,16 @@ function ENT:Initialize()
 		self:SetModel("models/barnacle.mdl")
 		self:SetColor(Color(220,255,220))
 		--self:SetModelScale(0.5,0)
-		
+
 		self:SetAngles(Angle(0,0,180))
-		
+
 		self:SetHullType( HULL_MEDIUM )
-		self:SetHullSizeNormal() 
+		self:SetHullSizeNormal()
 		self:SetSolid( SOLID_BBOX )
 		self:SetMoveType( MOVETYPE_NONE )
 		self:CapabilitiesAdd( bit.bor( CAP_MOVE_GROUND, CAP_SQUAD ) )
 		self:CapabilitiesRemove( bit.bor( CAP_OPEN_DOORS, CAP_AUTO_DOORS ) )
-		
+
 		self:SetHealth( 100*self:GetHealthMul(10) )
 		self:SetMaxHealth(1000)
 
@@ -135,12 +135,12 @@ function ENT:Initialize()
 		--self:ManipulateBoneAngles(0,Angle(0,0,180))
 		--self:ManipulateBonePosition(0,Vector(0,0,8))
 
-		
+
 		self:DropToFloor()
 		self._DropToFloor = true
 		--self:SetPos(self:GetPos()+vector_up*10)
 
-		
+
 		self.Bullseye = ents.Create('npc_swarm_bullseye')
 		self.Bullseye:SetHealth(1000)
 		self.Bullseye:SetMoveType( MOVETYPE_NONE )
@@ -150,7 +150,7 @@ function ENT:Initialize()
 		self.Bullseye.m_iClass=self.m_iClass
 		AccessorFunc(self.Bullseye, "m_iClass", "NPCClass")
 		self.Bullseye:SetNPCClass(self.m_iClass)
-		
+
 		self.CreatedNpcsAmt = self.CreatedNpcsAmt or {}
 		self.CreatedNpcs = self.CreatedNpcs or {}
 	end
@@ -186,7 +186,7 @@ function ENT:OnTakeDamage( dmginfo )	--Taking damage...
 		--print("TRIGGERED BY",dude)
 		self:SetEnemy( dude, true )
 		self:UpdateEnemyMemory( dude, dude:GetPos() )
-		for npc,time in pairs(self.CreatedNpcs)do
+		for npc,_ in pairs(self.CreatedNpcs)do
 			if(IsValid(npc))then
 				if(!npc.CantMove)then
 					npc:SetEnemy( dude, true )
@@ -243,7 +243,7 @@ function ENT:Coronation()
 		hel:MutateGenes(nil,5)
 		hel.Hiding = CurTime()+5
 		hel.Hostiles = self.Hostiles
-		self:EmitSound('NPC_HeadCrab.Gib',35)	
+		self:EmitSound('NPC_HeadCrab.Gib',35)
 		self:Remove()
 	end
 end
@@ -262,13 +262,13 @@ function ENT:Think()
 		parent.SwarmPerc=(parent.SwarmPerc or 0)+FrameTime()*2
 		parent.Swm=true
 	end
-	
-	if(self.NextPoint<=CurTime())then	
-		self.NextPoint=CurTime()+self.PointCD			
+
+	if(self.NextPoint<=CurTime())then
+		self.NextPoint=CurTime()+self.PointCD
 		self.Points=self.Points+1*SWARM_CV_MOTHER_PointsMul:GetFloat()
 		self.ReservePoints = self.ReservePoints + 1*SWARM_CV_MOTHER_ReservePointsMul:GetFloat()
-	end	
-	
+	end
+
 	if(self.SpawnAmt)then
 		self.SpawnAmt=self.SpawnAmt+FrameTime()*self.Spawnplus
 		if(self.SpawnAmt>=100)then
@@ -287,12 +287,12 @@ function ENT:Think()
 			self:NpcOrderDone( )
 		end
 	end
-	
-	
+
+
 	if(IsValid(self.Bullseye))then
 		self.Bullseye:SetPos(self:GetPos()+Vector(0,0,10))
 	end
-	
+
 	self:SetAngles(Angle(0,0,180))
 end
 
@@ -302,7 +302,7 @@ function ENT:NpcOrder( class, time )
 	self.Points=self.Points-(self.NpcCost[class] or 0)
 	self.NpcOrderClass=class
 	self.NpcOrderTime=CurTime()+time
-	
+
 	self.NpcOrdersList[class] = (self.NpcOrdersList[class] or 0)+1
 	local ordersamount = 0
 	local mostorders = 0
@@ -333,12 +333,12 @@ function ENT:NpcOrderDone( )
 	hel:MoveJumpStart(VectorRand()*400)
 	self.NpcOrderTime=nil
 	self.NpcOrderPreDoneTime=nil
-	
+
 	self.CreatedNpcs[hel]=CurTime()
 	self.CreatedNpcsAmt[self.NpcOrderClass] = (self.CreatedNpcsAmt[self.NpcOrderClass] or 0)+1
 	hel.SWARM_Mother = self
 	hel.HadMother = true
-	
+
 	hel.GeneticData = self:CopyGenetics(self.GeneticData)
 	hel:MutateGenes()
 end
@@ -360,7 +360,7 @@ function ENT:GetRelationship( entity )
 	if(entity.Classify)then
 		class=entity:Classify()
 	end
-		
+
 	if(class and class==CLASS_PLAYER)then
 		return D_HT
 	elseif(entity:GetClass()=="player")then
@@ -374,13 +374,13 @@ end]]
 function ENT:TaskStart_FindEnemy( data )
 	local et = ents.FindInSphere( self:GetPos(), 300 )
 
-	for k, v in pairs( et ) do
+	for _, v in pairs( et ) do
 		if ( v:IsValid() && (v:GetClass()~=self:GetClass()) && v.Points && v.Points>0 and v:GetPos():DistToSqr(self:GetPos())<10000 ) then
 			self.Points=self.Points+v.Points
 			v.Points=0
 		end
 		if( v:IsValid() && v != self && (self:Disposition(v)==D_HT or self:Disposition(v)==D_FR) and (!v.Alive or (v:Alive() and !ignoreplayers:GetBool())) and self:IsEntityPossibleEnemy(v,-1) )then
-			for npc,time in pairs(self.CreatedNpcs)do
+			for npc,_ in pairs(self.CreatedNpcs)do
 				if(IsValid(npc))then
 					if(!npc.CantMove and !IsValid(npc:GetEnemy()))then
 						npc:SetEnemy( v, true )
@@ -394,11 +394,11 @@ function ENT:TaskStart_FindEnemy( data )
 	end
 end
 
-function ENT:TaskStart_BringNpcs( data )	
+function ENT:TaskStart_BringNpcs( data )
 
 	local et = ents.FindInSphere( self:GetPos(), 2048 )
 
-	for k, v in pairs( et ) do
+	for _, v in pairs( et ) do
 
 		if ( v:IsValid() and (v:GetClass()~=self:GetClass()) and v.Points and v.Points>0 and v.MoveTo and v:IsNPC() ) then
 			v:MoveTo(self:GetPos(),10)
@@ -410,7 +410,7 @@ function ENT:TaskStart_BringNpcs( data )
 end
 
 function ENT:SelectSchedule( iNPCState )
-	
+
 	if(self.JustSpawned)then
 		self:SetSchedule( SCHED_SLEEP )
 	else
@@ -421,7 +421,7 @@ function ENT:SelectSchedule( iNPCState )
 			self:SetSchedule( SCHED_SLEEP )
 		end
 	end
-	
+
 end
 
 
@@ -445,7 +445,7 @@ function ENT:RunAI( strExp )
 --[[
 	local lastenem = self:GetEnemy()
 	if( IsValid(lastenem) and (!lastenem.Alive or lastenem:Alive()) )then
-		if(lastenem:GetPos():Distance(self:GetPos())<600)then	
+		if(lastenem:GetPos():Distance(self:GetPos())<600)then
 			local traceinfo = {
 				start = self:GetPos(),
 				endpos = lastenem:GetShootPos(),
@@ -453,19 +453,19 @@ function ENT:RunAI( strExp )
 			}
 			local trace = util.TraceLine(traceinfo)
 			if(trace.Entity==lastenem)then
-				if(self.NextShoot<=CurTime())then	
-					self.NextShoot=CurTime()+self.ShootCD			
+				if(self.NextShoot<=CurTime())then
+					self.NextShoot=CurTime()+self.ShootCD
 					--self:Shoot( ( (lastenem:GetShootPos()+lastenem:GetVelocity()/6)-self:GetPos() ):GetNormalized()*1950 )
 				end
 			end
 		end
 	end]]
-	
+
 	if(!self.NextOrder or self.NextOrder<=CurTime())then
 		local _,npc =  next(table.SortByKey( self.NpcOrdersList ))
 		if(!npc)then
 			_,npc = next(self.Npcs)
-			times = 0 
+			times = 0
 		end
 		self.NextOrder = CurTime() + self.NpcOrderCD[npc]*(self.NpcOrdersList[npc] or 0)
 		--table.Random(self.Npcs)
@@ -474,7 +474,7 @@ function ENT:RunAI( strExp )
 		self:NpcOrder(SWARM:WeightedRandomSelect(tbl),0.2)
 	end
 	--print(self.Points)
-	if(self.NextEnemyFind<=CurTime())then	
+	if(self.NextEnemyFind<=CurTime())then
 		self.NextEnemyFind=CurTime()+self.EnemyFindCD
 		self:TaskStart_BringNpcs()
 		self:TaskStart_FindEnemy()
@@ -497,7 +497,7 @@ function ENT:RunAI( strExp )
 	end
 
 	self:MaintainActivity()
-	
+
 end
 
 scripted_ents.Register(ENT,"npc_swarm_mother")

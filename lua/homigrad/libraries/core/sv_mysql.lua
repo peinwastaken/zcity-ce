@@ -133,7 +133,7 @@ function QUERY_CLASS:WhereIn(key, value)
 	local values = ""
 	local bFirst = true
 
-	for k, v in pairs(value) do
+	for _, v in pairs(value) do
 		values = values .. (bFirst and "" or ", ") .. "'" .. self:Escape(v) .. "'"
 		bFirst = false
 	end

@@ -13,15 +13,13 @@ end
 
 net.Receive("flashbang",function()
 	local pos = net.ReadVector()
-	 
-
 	local time = math.Clamp(5200-(lply:GetPos():Distance(pos)), 1, 5)
 
 	lply:AddTinnitus(time,true)
 
 	local IsLookingFlash = IsLookingAt(lply, pos)
 	local viewsetup = render.GetViewSetup(true)
-	
+
 	if IsLookingFlash < -0.5 then
 		hg.AddFlash(viewsetup.origin,IsLookingFlash,pos,time*5,50000)
 	end
@@ -30,7 +28,6 @@ net.Receive("flashbang",function()
 			hook.Remove("RenderScreenspaceEffects", "Flashed")
 			return
 		end
-		local flash = math.Clamp(lply.tinnitus - CurTime(), 0, 1)
 		--lply:SetDSP(32) -- 36
 	end)
 end)

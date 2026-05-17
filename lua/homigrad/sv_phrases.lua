@@ -231,7 +231,7 @@ local f_laugh = {
 	"zbattle/laugh/f_laugh6.ogg",
 }
 
-local file, math, table, CurTime, timer, string = file, math, table, CurTime, timer, string
+local _, math, table, CurTime, timer, string = file, math, table, CurTime, timer, string
 
 local function GetPlayerClassPhrases(ply, phraseType)
 	local playerClass = ply.PlayerClassName
@@ -289,12 +289,12 @@ end)
 util.AddNetworkString("hg_phrase")
 net.Receive("hg_phrase", function(len, ply)
 	if (ply.phrCld or 0) > CurTime() then return end
-	local result = hook.Run("HG_CanDoPhrase", ply, cmd, args) // return here true to reject phrase 
+	local result = hook.Run("HG_CanDoPhrase", ply, cmd, args) // return here true to reject phrase
 	if result then return end
 
 	local playerClass = ply.PlayerClassName
 
-	if playerClass == "terrorist" or playerClass == "nationalguard" or 
+	if playerClass == "terrorist" or playerClass == "nationalguard" or
 	   playerClass == "commanderforces" or playerClass == "swat" then
 		PlayClassPhrase(ply, "normal")
 		return
@@ -318,10 +318,10 @@ net.Receive("hg_phrase", function(len, ply)
 			phrases2 = painPhrases
 		end
 	end
-	
+
 	local phr = phrases2[math.Round(mClamp(gender, 1, 2))]
 	phr = phr[math.Round(mClamp(i, 1, #phr))]
-	
+
 	if !phr then return end
 
 	local random = math.Round(mClamp(num, phr[3], phr[4]))
@@ -400,7 +400,7 @@ local clr = Color(204,48,0)
 hook.Add("PreHomigradDamage","BurnScream", function( ent, dmgInfo )
 	local ply = ent:IsRagdoll() and hg.RagdollOwner(ent) or ent
 
-	if dmgInfo:IsDamageType(DMG_BURN) and IsValid(ply) and ply:IsPlayer() 
+	if dmgInfo:IsDamageType(DMG_BURN) and IsValid(ply) and ply:IsPlayer()
 	and ply.organism and !ply.organism.otrub and ply:Alive() then
 		local phrase = "zcitysnd/"..(ThatPlyIsFemale(ply) and "fe" or "").."male/burn/death_burn"..mRandom(1,ThatPlyIsFemale(ply) and femaleCount or maleCount)..".mp3"
 
@@ -410,7 +410,7 @@ hook.Add("PreHomigradDamage","BurnScream", function( ent, dmgInfo )
 			ply, phrase = override_ply, override_phrase
 		end
 
-		ply:Notify(hg.sharp_pain[math.random(#hg.sharp_pain)], 
+		ply:Notify(hg.sharp_pain[math.random(#hg.sharp_pain)],
 		SoundDuration(phrase), "ply_burn", 0.5, function(ply)
 			if hg.GetCurrentCharacter(ply):IsOnFire() then
 				hg.GetCurrentCharacter(ply):EmitSound(phrase)
@@ -449,10 +449,10 @@ end)
 // Context Phrases
 concommand.Add("hg_phrase_context",function(ply, cmd, args)
 	if !IsValid(ply) then return end
-	local result = hook.Run("HG_CanDoPhrase", ply, cmd, args) // return here true to reject phrase 
+	local result = hook.Run("HG_CanDoPhrase", ply, cmd, args) // return here true to reject phrase
 	if result then return end
 
-	result = hook.Run("HG_Phrase_Context", ply, cmd, args) // return here true to reject phrase 
+	result = hook.Run("HG_Phrase_Context", ply, cmd, args) // return here true to reject phrase
 	if result then return end
 
 	local phrase = contextPhrases[ThatPlyIsFemale(ply) and 2 or 1][args[1]]
@@ -498,11 +498,11 @@ hook.Add("HarmDone", "killmazafaka", function(attacker, victim, amt)
 	if !IsValid(attacker) or !attacker:IsPlayer() then return end
 	if !IsValid(victim) or !victim:IsPlayer() then return end
 	if attacker == victim then return end
-	
+
 	if amt < 0.8 then return end
-	
+
 	local playerClass = attacker.PlayerClassName
-	if playerClass == "terrorist" or playerClass == "nationalguard" or 
+	if playerClass == "terrorist" or playerClass == "nationalguard" or
 	   playerClass == "commanderforces" or playerClass == "swat" then
 		timer.Simple(0.5, function()
 			if IsValid(attacker) and IsValid(victim) and !victim:Alive() then
@@ -514,11 +514,11 @@ end)
 
 hook.Add("HarmDone", "MateDead", function(attacker, victim, amt)
 	if !IsValid(victim) or !victim:IsPlayer() then return end
-	
+
 	local victimClass = victim.PlayerClassName
-	if !(victimClass == "terrorist" or victimClass == "nationalguard" or 
+	if !(victimClass == "terrorist" or victimClass == "nationalguard" or
 			victimClass == "commanderforces" or victimClass == "swat") then return end
-	
+
 	for _, ply in player.Iterator() do
 		if IsValid(ply) and ply:Alive() and ply ~= victim and ply.PlayerClassName == victimClass then
 			local distance = ply:GetPos():Distance(victim:GetPos())
@@ -529,7 +529,7 @@ hook.Add("HarmDone", "MateDead", function(attacker, victim, amt)
 					filter = ply,
 					mask = MASK_OPAQUE
 				})
-				
+
 				if !tr.Hit or tr.Entity == victim then
 					timer.Simple(math.Rand(0.5, 2), function()
 						if IsValid(ply) and ply:Alive() then
@@ -547,15 +547,15 @@ hook.Add("HGReloading", "Perezaryad", function(wep)
 	if CLIENT then return end
 	local ply = wep:GetOwner()
 	if !IsValid(ply) then return end
-	
+
 	local playerClass = ply.PlayerClassName
 	if !(playerClass == "terrorist" or playerClass == "nationalguard" or playerClass == "swat") then return end
-	
+
 	ply.ClassReloadSND_CD = ply.ClassReloadSND_CD or 0
 	if ply.ClassReloadSND_CD > CurTime() then return end
-	
+
 	if ply:Alive() and !ply.organism.otrub and mRandom(1, 100) <= 25 then
 		PlayClassPhrase(ply, "reload")
-		ply.ClassReloadSND_CD = CurTime() + 3 
+		ply.ClassReloadSND_CD = CurTime() + 3
 	end
 end)

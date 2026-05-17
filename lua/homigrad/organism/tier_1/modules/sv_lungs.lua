@@ -1,4 +1,4 @@
-local max, min, Round, Lerp, halfValue2 = math.max, math.min, math.Round, Lerp, util.halfValue2
+local max, min, _, Lerp, halfValue2 = math.max, math.min, math.Round, Lerp, util.halfValue2
 --local Organism = hg.organism
 hg.organism.module.lungs = {}
 local module = hg.organism.module.lungs
@@ -22,7 +22,7 @@ module[1] = function(org)
 	org.lungsfunction = true
 
 	org.o2.curregen = org.o2.regen
-	
+
 	org.o2[1] = org.o2.range
 	org.CO = 0
 	org.COregen = 0
@@ -41,7 +41,7 @@ end
 
 local function insta_send_holdingbreath(org)
 	net.Start("organism_send") // send only disorientation (to avoid overloading net), and immediately
-	
+
 	local tbl = {}
 	tbl.holdingbreath = org.holdingbreath
 	tbl.owner = org.owner
@@ -55,13 +55,12 @@ local function insta_send_holdingbreath(org)
 end
 
 local function togglebreath(ply, toggle)
-	local org = ply.organism
-	
+
 	if isbool(toggle) then
 		if toggle then
 			if not ply.organism.holdingbreath then
 				ply.organism.holdingbreath = true
-				ply:EmitSound(ThatPlyIsFemale(ply) and "breathing/inhale/female/inhale_0"..math.random(5)..".wav" or "breathing/inhale/male/inhale_0"..math.random(4)..".wav",65)	
+				ply:EmitSound(ThatPlyIsFemale(ply) and "breathing/inhale/female/inhale_0"..math.random(5)..".wav" or "breathing/inhale/male/inhale_0"..math.random(4)..".wav",65)
 				insta_send_holdingbreath(ply.organism)
 			end
 		else
@@ -80,7 +79,7 @@ local function togglebreath(ply, toggle)
 			insta_send_holdingbreath(ply.organism)
 		else
 			ply.organism.holdingbreath = true
-			ply:EmitSound(ThatPlyIsFemale(ply) and "breathing/inhale/female/inhale_0"..math.random(5)..".wav" or "breathing/inhale/male/inhale_0"..math.random(4)..".wav",65)	
+			ply:EmitSound(ThatPlyIsFemale(ply) and "breathing/inhale/female/inhale_0"..math.random(5)..".wav" or "breathing/inhale/male/inhale_0"..math.random(4)..".wav",65)
 			insta_send_holdingbreath(ply.organism)
 		end
 	end
@@ -174,7 +173,7 @@ module[2] = function(owner, org, timeValue)
 	if (not bone) or (bone < 0) then bone = 6 end
 
 	local head = ent:GetBonePosition(bone)
-	
+
 	if not head then
 		head = ent:GetBonePosition(0)
 	end
@@ -188,7 +187,7 @@ module[2] = function(owner, org, timeValue)
 		if org.stamina[1] < 90 or org.o2[1] <= 10 then
 			togglebreath(owner, false)
 		end
-		
+
 		if owner.releasebreathe and owner.releasebreathe < CurTime() then
 			togglebreath(owner, false)
 			owner.releasebreathe = nil
@@ -196,7 +195,7 @@ module[2] = function(owner, org, timeValue)
 	end
 
 	if not head then head = owner:GetPos() end
-	
+
 	local inwater = bit_band(util_PointContents(head),CONTENTS_WATER) == CONTENTS_WATER
 	-- test
 	local success = owner:IsBerserk() or (not org.heartstop and org.alive and not (org.brain >= 0.4 and math.random(10 - (org.brain * 10)) < 4) and org.lungsfunction)
@@ -205,11 +204,11 @@ module[2] = function(owner, org, timeValue)
 	if success and org.vomitInThroat then success = false end
 	org.choking = false
 	local pneumothorax = (org.lungsR[2] == 1 or org.lungsL[2] == 1) and org.needle == 0
-	
+
 	org.needle = math.Approach(org.needle, 0, timeValue / 1200)
 
 	org.pneumothorax = pneumothorax and min(org.pneumothorax + timeValue / 180 * (org.lungsL[2] + org.lungsR[2]), (org.lungsL[2] + org.lungsR[2]) / 2) or max(org.pneumothorax - timeValue / 10, 0)
-	
+
 	if org.lastCOBreathe and org.lastCOBreathe + 1 > CurTime() then
 		org.COregen = math.Approach(org.COregen, 30, timeValue * 1)
 	else
@@ -247,7 +246,7 @@ module[2] = function(owner, org, timeValue)
 	if owner:IsBerserk() then
 		o2[1] = math.max(5, o2[1])
 	end
-	
+
 	if org.isPly and not org.otrub and o2.curregen < losing_oxy and org.analgesia <= 1.5 and !org.heartstop then
 		if mask_blevota then
 			if o2[1] < 15 then
@@ -263,7 +262,7 @@ module[2] = function(owner, org, timeValue)
 
 		if o2[1] < 12 then
 			org.owner:Notify(lowoxy[math.random(#lowoxy)], 30, "lowoxy", 0, nil, color_red3)
-	
+
 			if o2[1] < 6 then
 				org.owner:Notify("Oxygen... please...", 30, "lowoxy2", 0, nil, color_red)
 			end
@@ -297,7 +296,7 @@ module[2] = function(owner, org, timeValue)
 	--[[if (pneumothorax or org.trachea >= 0.6 or org.lungsR[1] >= 0.6 or org.lungsL[1] >= 0.6) and org.alive and o2[1] > 0 then
 		local timeSub = org.pneumothorax + org.trachea + org.lungsR[1] + org.lungsL[1]
 		org.nextCough = org.nextCough and org.nextCough or (CurTime() + 5)
-		
+
 		if org.nextCough < CurTime() then
 			org.nextCough = CurTime() + math.random(15,30 - timeSub + math.max(10 - o2[1],0))
 			owner:EmitSound("homigrad/player/male/male_cough"..math.random(5)..".wav",50 + Round(timeSub * 2.5))
@@ -391,13 +390,13 @@ module[2] = function(owner, org, timeValue)
 		if org.brain > 0.1 and org.brain < 0.3 then
 			org.owner:Notify(math.random(2) == 1 and "My head hurts..." or "Where am I?", true, "brain", 5)
 		else
-			org.owner:ResetNotification("brain") 
+			org.owner:ResetNotification("brain")
 		end
 	end
 
 	org.brain = max(org.brain - timeValue / 400 * ((org.mannitol > 0 and org.brain < 0.6) and 1 or (org.brain > 0.1 and 0.1 or 0)), 0)
 	org.mannitol = math.Approach(org.mannitol, 0, timeValue / 200)
-	
+
 	if k < 0.25 then
 		if not org.alive and owner:IsPlayer() and death_from_braindamage and org.o2[1] == 0 then
 			hg.achievements.AddPlayerAchievement(owner,"brain",1)
@@ -405,7 +404,7 @@ module[2] = function(owner, org, timeValue)
 				hg.achievements.AddPlayerAchievement(owner,"drugs",1)
 			end
 		end
-		
+
 		org.brain = min(org.brain + timeValue / (org.brain < 0.3 and 300 or 120) * math.min(((org.o2[1] < 0.25 and 1 or 0) + org.skull), 1), 1)
 	end --~120 seconds to fully die (0.3 of 300 and 0.4 of 60 seconds after)
 end

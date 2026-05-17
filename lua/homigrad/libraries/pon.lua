@@ -50,7 +50,6 @@ do
 
 	local encode = {};
 
-	local tryCache ;
 
 	local cacheSize = 0;
 
@@ -67,7 +66,6 @@ do
 
     local first = next(tbl, nil)
     local predictedNumeric = 1
-    local lastKey = nil
     -- starts with a numeric dealio
     if first == 1 then
       output[#output + 1] = '{'
@@ -196,7 +194,7 @@ do
 	end
 
 	do
-		local empty, concat = table.Empty, table.concat ;
+		local _, concat = table.Empty, table.concat ;
 		function pon.encode( tbl )
 			local output = {};
 			cacheSize = 0;

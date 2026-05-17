@@ -158,7 +158,7 @@ function SWEP:Think()
 		self.NextThinkTime = Time + .025
 		local State = self:GetCurrentState()
 		if not (State == "Nothing") then
-			local Sprintin = owner:KeyDown(IN_SPEED)
+			owner:KeyDown(IN_SPEED)
 			local HiddenAmt = self:GetHidden()
 			local BackAmt = self:GetBack()
 			if State == "Idling" then

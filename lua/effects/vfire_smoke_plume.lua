@@ -7,7 +7,6 @@ function EFFECT:Init(data)
 	local ent = data:GetEntity()
 
 	-- Should we LOD ourselves?
-	local LOD
 	if IsValid(ent) and ent.LOD != nil then
 		LOD = ent.LOD
 	else
@@ -25,7 +24,7 @@ function EFFECT:Init(data)
 
 				p:SetLifeTime(0)
 				p:SetDieTime(3)
-			
+
 				p:SetStartSize(0)
 				p:SetEndSize(10 * pull)
 
@@ -35,7 +34,7 @@ function EFFECT:Init(data)
 				local d = math.random(0, 200)
 				p:SetColor(255-d, 255-d, math.random(235, 250)-d)
 				p:SetLighting(true)
-				
+
 				local upAdd = math.Rand(0.5, 1.5)
 				local newDir = Vector(dir.x, dir.y, dir.z + upAdd)
 				p:SetVelocity(newDir * 50)

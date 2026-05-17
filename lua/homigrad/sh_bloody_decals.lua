@@ -1,4 +1,3 @@
-
 if SERVER then
     util.AddNetworkString("bloody_decal_1")
 
@@ -9,56 +8,48 @@ end
 function ClearDecalToEnt(ent)
 	if ent.decalshuy then
 		ent:SetSubMaterial()
-		
+
 		ent.decalshuy = nil
 	end
 end
 
 local matRepl = Material("decals/decalsplash")
-local curmat
-local curmat2
 function AddDecalToEnt(ent, id, --[[optional]] entIndex, tex, clear, x, y, rot, size, alpha)
 	local subm = ent:GetSubMaterial(id - 1) != "" and ent:GetSubMaterial(id - 1) or ent:GetMaterials()[id]
 	if !subm then
 		print("Invalid submaterial entered for weapon "..tostring(Entity(entIndex)).."; change SWEP.bloodID to something else or remove it completely if you don't wanna bother.")
-			
+
 		return
 	end
 
 	local mata = Material(subm)
 	if !IsValid(ent) then return end
 	if !mata then return end
-	
+
 	ent.decalshuy = ent.decalshuy or {}
 	local firstime = !ent.decalshuy[id]
 
-	local tabla = mata:GetKeyValues()
-	
+
 	-- you should set up entIndex for CSModels since their entIndex is -1
 	local mat = CreateMaterial(mata:GetName()..(entIndex or ent:EntIndex()).."228", mata:GetShader(), {})
-	
+
 	--[[for i, val in pairs(tabla) do
 		if type(val) == "ITexture" then
 			mat:SetTexture(i, val)
 		end
 	end--]]
-	
+
 	local basetexture = mata:GetTexture("$basetexture")
 	if !basetexture then return end
 
-	local oldbasetex = basetexture:GetName()
-	
+
 	mat:SetTexture("$basetexture", basetexture)
 
 	local name = mat:GetName()
-	local olddetail = mata:GetTexture("$detail")
-	local sizew = basetexture:Width()
-	local sizeh = basetexture:Height()
 	local size = size or 512
-	local scale = 1
 
 	local tex = tex or matRepl
-	
+
 	local rt = GetRenderTargetEx("vms_rt_"..util.CRC(name), size, size, RT_SIZE_OFFSCREEN, MATERIAL_RT_DEPTH_SHARED, 0, CREATERENDERTARGETFLAGS_HDR, IMAGE_FORMAT_ARGB8888)
 
 	render.PushRenderTarget(rt)
@@ -71,7 +62,7 @@ function AddDecalToEnt(ent, id, --[[optional]] entIndex, tex, clear, x, y, rot, 
 
 	local x, y = x or math.random(0, size), y or math.random(0, size)
 	local rot = rot or math.Rand(-180, 180)
-	
+
 	cam.Start2D()
 		--if (clear or firstime) and olddetail:GetName() != "error" then
 			--[[render.SuppressEngineLighting(true)
@@ -106,7 +97,7 @@ function AddDecalToEnt(ent, id, --[[optional]] entIndex, tex, clear, x, y, rot, 
 end
 
 function AddDecalToEnt2(ent, entIndex, tex, clear, x, y, rot, size, alpha) -- adds to all submats
-	for id, val in ipairs(ent:GetMaterials()) do
+	for id in ipairs(ent:GetMaterials()) do
 		AddDecalToEnt(ent, id, entIndex, tex, clear, x, y, rot, size, alpha)
 	end
 end
@@ -120,7 +111,7 @@ net.Receive("bloody_decal_1", function()
 		mdl = IsValid(mdl) and mdl or self.worldModel
 		mdl = IsValid(mdl) and mdl or self.NPCworldModel
 		mdl = IsValid(mdl) and mdl or self
-		
+
 		if self.bloodID then
 			AddDecalToEnt(mdl, self.bloodID, self:EntIndex(), matBlood, false, nil, nil, nil, nil, self.DamageType != DMG_SLASH and 100)
 		else

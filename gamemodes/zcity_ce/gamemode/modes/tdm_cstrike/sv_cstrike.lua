@@ -57,7 +57,7 @@ end
 
 function MODE:Intermission()
 	game.CleanUpMap()
-    
+
     zb.RoundsLeft = zb.RoundsLeft or self.Rounds
     zb.Winners = zb.Winners or {}
 
@@ -72,14 +72,14 @@ function MODE:Intermission()
         zb.bomb = nil
         --zb.rtype = zb.nextcsround or (math.random(2) == 1 and "bomb" or "hostage")
         zb.rtype = (
-            (#zb.GetMapPoints( "BOMB_ZONE_A" ) > 0 or #zb.GetMapPoints( "BOMB_ZONE_B" ) > 0) and  "bomb") or 
+            (#zb.GetMapPoints( "BOMB_ZONE_A" ) > 0 or #zb.GetMapPoints( "BOMB_ZONE_B" ) > 0) and  "bomb") or
             (zb.hostagepoints and #zb.hostagepoints > 0 and "hostage")
         zb.nextcsround = nil
     end
 
     if !zb.rtype then
         zb.rtype = (
-            (#zb.GetMapPoints( "BOMB_ZONE_A" ) > 0 or #zb.GetMapPoints( "BOMB_ZONE_B" ) > 0) and  "bomb") or 
+            (#zb.GetMapPoints( "BOMB_ZONE_A" ) > 0 or #zb.GetMapPoints( "BOMB_ZONE_B" ) > 0) and  "bomb") or
             (zb.hostagepoints and #zb.hostagepoints > 0 and "hostage")
     end
 
@@ -92,9 +92,9 @@ function MODE:Intermission()
 	table.CopyFromTo( zb.GetMapPoints( "HMCD_TDM_T" ), self.TPoints)
 	table.CopyFromTo( zb.GetMapPoints( "HMCD_TDM_CT" ), self.CTPoints)
 
-	for i, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		ply:SetupTeam(ply:Team())
-        
+
         if self.GameStarted then
             ply:SetNWInt( "TDM_Money", self.StartMoney )
         end
@@ -108,7 +108,7 @@ function MODE:Intermission()
         timer.Simple(3,function()
             local team_t = team.GetPlayers(0)
             local ply = team_t[math.random(#team_t)]
-            
+
             local ent = ents.Create("bomb")
             ent:SetPos(ply:EyePos())
             ent:Spawn()
@@ -143,7 +143,7 @@ function MODE:Intermission()
 	net.Start("tdm_start")
         net.WriteString(zb.rtype or "bomb")
         net.Broadcast()
-    
+
     self.GameStarted = nil
 end
 
@@ -218,22 +218,22 @@ function MODE:EndRound()
     elseif zb.rtype == "hostage" then
         if not IsValid(zb.hostage) then
             winner = 3
-            
+
             if IsValid(zb.hostageLastTouched) then
                 winner = zb.hostageLastTouched:Team() == 0 and 1 or 0
             end
         end
-        
+
         if IsValid(zb.hostage) and not zb.hostage.organism.alive then
             local max, maxTeam = 0
             if zb.HarmDoneDetailed[zb.hostage:EntIndex()] then
-                for steamid, tbl in pairs(zb.HarmDoneDetailed[zb.hostage:EntIndex()]) do
+                for _, tbl in pairs(zb.HarmDoneDetailed[zb.hostage:EntIndex()]) do
                     if tbl.harm > max then
                         max = tbl.harm
                         maxTeam = tbl.teamAttacker
                     end
                 end
-                
+
                 winner = maxTeam == 0 and 1 or 0
                 PrintMessage(HUD_PRINTTALK, (maxTeam == 0 and "Terrorists" or "Counter-Terrorists") .. " have killed the hostage")
             else
@@ -256,10 +256,10 @@ function MODE:EndRound()
     end
 
     local winnerprt = (winner == 1 and "Counter-Terrorists") or (winner == 0 and "Terrorists") or "Nobody"
-    
+
     PrintMessage(HUD_PRINTTALK, winnerprt.." have won the round.")
 
-	for k,ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if ply:Team() == winner then
 			ply:GiveExp(math.random(15,30))
 			ply:GiveSkill(math.Rand(0.1,0.15))
@@ -267,7 +267,7 @@ function MODE:EndRound()
             ply:SetNWInt( "TDM_Money", math.max(ply:GetNWInt( "TDM_Money" ) + 2500, 0) )
 		else
 			ply:GiveSkill(-math.Rand(0.05,0.1))
-            
+
             ply:SetNWInt( "TDM_Money", math.max(ply:GetNWInt( "TDM_Money" ) + 1750, 0) )
 		end
 	end
@@ -286,7 +286,7 @@ function MODE:EndRound()
 		end
 	end
 
-    
+
     if zb.nextround != self.name then
         zb.Winners = {}
         zb.bombexploded = nil
@@ -300,7 +300,7 @@ function MODE:EndRound()
 
     if zb.RoundsLeft > 0 then
         zb.RoundsLeft = zb.RoundsLeft - 1
-        
+
         zb.Winners[winner] = (zb.Winners[winner] or 0) + 1
     else
         local winner
@@ -314,7 +314,7 @@ function MODE:EndRound()
 
         if winner then
             local winnerprt = (winner == 1 and "Counter-Terrorists") or (winner == 0 and "Terrorists") or "Nobody"
-            
+
             PrintMessage(HUD_PRINTTALK, winnerprt.." have won the game.")
         end
 
@@ -343,7 +343,7 @@ function HostageInZone(pos)
 		vec4 = -(-pts[4].pos)
 		vec4[3] = vec4[3] + 256
     end
-    
+
 	return (#pts >= 2 and pos:WithinAABox(vec1,vec2)) or (#pts >= 4 and pos:WithinAABox(vec3,vec4))
 end
 
@@ -351,12 +351,12 @@ function MODE:ShouldRoundEnd()
     if zb.ROUND_START + 5 > CurTime() then return false end
 
 	local tbl = zb:CheckAliveTeams(true)
-    
+
     if zb.rtype == "bomb" then
         if zb.bombexploded then
             return true
         end
-        
+
         if not IsValid(zb.bomb) then
             return true
         end
@@ -372,7 +372,7 @@ function MODE:ShouldRoundEnd()
         if #tbl[1] == 0 and #tbl[0] == 0 and zb.bomb.active then
             return true
         end
-        
+
         if #tbl[0] == 0 and #tbl[1] == 0 and not zb.bomb.active then
             return true
         end
@@ -384,7 +384,7 @@ function MODE:ShouldRoundEnd()
         if #tbl[0] == 0 or #tbl[1] == 0 or not zb.hostage.organism.alive then
             return true
         end
-        
+
         if zb.hostage.organism.alive and HostageInZone(zb.hostage:GetPos()) then
             return true
         end
@@ -394,13 +394,13 @@ end
 function MODE:RoundThink()
 end
 
-hook.Add("HarmDone", "MoneyGive", function(ply, victim, amt) 
+hook.Add("HarmDone", "MoneyGive", function(ply, victim, amt)
     if not CurrentRound().KillMoney then return end
     if not victim:IsPlayer() then return end
     if ply == victim then return end
-    
+
     local add = amt * MODE.KillMoney * (ply:Team() == victim:Team() and -1 or 1)
-    
+
     add = math.Round(add,0)
 
     --print(add,ply,ply:GetNWInt("TDM_Money"),victim)

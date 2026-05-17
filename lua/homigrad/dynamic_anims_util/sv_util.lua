@@ -4,8 +4,9 @@ util.AddNetworkString("DynamicAnims_SendGesture")
 
 local PLAYER = FindMetaTable("Player")
 function PLAYER:PlayCustomAnims(anim, autoStop, speed, needForceLook, autostopAdjust, tSvCallbacks)
+	local _, animDelay = self:LookupSequence(anim)
 	self:SetNWString("hg_CustomAnim", anim)
-	self:SetNWFloat("hg_CustomAnimDelay", speed or select(2, self:LookupSequence(anim)))
+	self:SetNWFloat("hg_CustomAnimDelay", speed or animDelay)
 	self:SetNWFloat("hg_CustomAnimStartTime", CurTime())
 	self:SetNWBool("hg_NeedAutoStop", autoStop)
 	self:SetNWFloat("hg_AutoStopAdjust", autostopAdjust or 0)
@@ -20,7 +21,7 @@ function PLAYER:PlayCustomAnims(anim, autoStop, speed, needForceLook, autostopAd
         self:SetVelocity(ang:Forward() * 15)
     end
 
-	return select(2, self:LookupSequence(anim))
+	return animDelay
 end
 
 hook.Add("PlayerDeath", "StopWhenDieCustomAnim", function(ply)

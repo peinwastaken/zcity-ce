@@ -87,9 +87,8 @@ function SWEP:Shoot(override)
 	primary.Next = CurTime() + primary.Wait
 	self:SetLastShootTime(CurTime())
 	primary.Automatic = weapons.Get(self:GetClass()).Primary.Automatic
-	
-    local gun = self:GetWeaponEntity()
-	local tr, pos, ang = self:GetTrace(true)
+
+	local _, pos, ang = self:GetTrace(true)
 	--self:GetOwner():Kick("lol")
 	self:TakePrimaryAmmo(1)
 
@@ -115,7 +114,7 @@ function SWEP:Shoot(override)
 				end
 			end)
 		end
-		for i,ent in pairs(ents.FindInCone(pos, -ang:Forward(), 128, 0.8)) do
+		for _, ent in pairs(ents.FindInCone(pos, -ang:Forward(), 128, 0.8)) do
 			if not ent:IsPlayer() then continue end
 			if ent == hg.GetCurrentCharacter(owner) then return end
 			local d = DamageInfo()
@@ -161,7 +160,7 @@ if CLIENT then
 
 	function SWEP:Unload()
 		if SERVER then return end
-		
+
 		self:GetWeaponEntity():SetBodygroup(1,1)
 		self:SetBodygroup(1,1)
 	end

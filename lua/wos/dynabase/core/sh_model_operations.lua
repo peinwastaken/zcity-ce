@@ -14,7 +14,7 @@ local function FIX_MODEL_ACTIVITIES( path )
 
 	local str = ""
 	local sanitary_str = ""
-	for i=0, mdl_file:Size() do
+	for _=0, mdl_file:Size() do
 		local byte = mdl_file:ReadByte()
 		if not byte then continue end
 		str = str .. string.char( byte )
@@ -27,7 +27,7 @@ local function FIX_MODEL_ACTIVITIES( path )
 	local _start, _end = string.find( sanitary_str, "ACT_" )
 	while _start do
 		local act_name = "WDB_"
-		for i=0, 3 do 
+		for i=0, 3 do
 			str = string.SetChar( str, _start + i, act_name[i + 1] )
 		end
 		_start, _end = string.find( sanitary_str, "ACT_", _end )
@@ -36,7 +36,7 @@ local function FIX_MODEL_ACTIVITIES( path )
 
 	local dt = string.Explode("/", new_path)
 	dt = dt[#dt]
-	
+
 	local file_path = string.Left( path, #path - #dt - 1 )
 
 	file.CreateDir( file_path )
@@ -47,7 +47,7 @@ end
 
 function wOS.DynaBase:FixActivities( data )
     if not data then return end
-    
+
     if data.Shared and ( not self.PreservedModels[ data.Shared ] or wOS.DynaBase.ReloadFixedModels ) then
         local path = FIX_MODEL_ACTIVITIES( data.Shared )
         if path then
@@ -59,14 +59,14 @@ function wOS.DynaBase:FixActivities( data )
         local path = FIX_MODEL_ACTIVITIES( data.Male )
         if path then
             self.PreservedModels[ data.Male ] = path
-        end    
+        end
     end
 
     if data.Female and ( not self.PreservedModels[ data.Female ] or wOS.DynaBase.ReloadFixedModels ) then
         local path = FIX_MODEL_ACTIVITIES( data.Female )
         if path then
             self.PreservedModels[ data.Female ] = path
-        end    
+        end
     end
 
     if data.Zombie and ( not self.PreservedModels[ data.Zombie ] or wOS.DynaBase.ReloadFixedModels ) then
@@ -80,9 +80,9 @@ end
 
 concommand.Add( "wos_dynabase_debug_reloadfixedmodels", function()
 	wOS.DynaBase.ReloadFixedModels = true
-    for name, data in pairs( wOS.DynaBase:GetAllSources() ) do
+    for _, data in pairs( wOS.DynaBase:GetAllSources() ) do
         if not data.PreventActivities then continue end
-        wOS.DynaBase:FixActivities( data )      
+        wOS.DynaBase:FixActivities( data )
     end
 	wOS.DynaBase.ReloadFixedModels = false
 end )

@@ -1,4 +1,3 @@
-
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "ai_translations.lua" )
 AddCSLuaFile( "sh_anim.lua" )

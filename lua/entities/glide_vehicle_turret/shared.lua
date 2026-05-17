@@ -72,8 +72,6 @@ function ENT:UpdateTurret( parent, body, t )
     if IsValid( user ) then
         self:SetIsFiring( user:KeyDown( 1 ) and CanUseWeaponry( user ) ) -- IN_ATTACK
 
-        local fromPos = body:GetPos() + body:GetUp() * self:GetBulletOffset()[3]
-        local aimPos = SERVER and user:GlideGetAimPos() or Glide.GetCameraAimPos()
         local dir = user:GetAimVector()//aimPos - fromPos
         dir:Normalize()
 

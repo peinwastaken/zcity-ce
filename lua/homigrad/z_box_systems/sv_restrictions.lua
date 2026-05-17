@@ -14,7 +14,7 @@ local DisableHookSpawns = {
     "PlayerSpawnNPC",
     "PlayerSpawnEffect"
 }
-for k,v in pairs(DisableHookSpawns) do
+for _, v in pairs(DisableHookSpawns) do
     Hook[v] = function(ply)
         --if ply:IsAdmin() then
             --return true
@@ -26,12 +26,6 @@ end
 
 
 -- Shit delivery!
-local RandomPrashe = {
-"WHAT THE HELL ARE YOU BUILDING?",
-"You realize you're not the only builder out there, right? Let us deliver to others",
-"We don't have that much means of delivery mate!",
-"*away from the microphone* Why do we even give them everything for free? Because it's a expe... *in microphone* Oh. You here yet. We're not ready to deliver your \"PROPS\""
-}
 
 function Hook.PlayerSpawnProp(ply, model)
     --if ply:IsAdmin() and (ply:GetActiveWeapon():GetClass() == "gmod_tool" or ply:GetActiveWeapon():GetClass() == "weapon_physgun") then
@@ -69,17 +63,6 @@ function Hook.PlayerSpawnProp(ply, model)
 end
 
 --Weapon restriction...
-local weaponRestrict = {
-    ["gmod_camera"] = true,["weapon_fists"] = true, ["weapon_flechettegun"] = true, ["manhack_welder"] = true,
-    ["weapon_medkit"] = true,["gmod_tool"] = true, ["weapon_physgun"] = true, ["weapon_physcannon"] = true,
-    ["weapon_357"] = true, ["weapon_pistol"] = true, ["weapon_bugbait"] = true, ["weapon_crossbow"] = true,
-    ["weapon_crowbar"] = true, ["weapon_frag"] = true, ["weapon_ar2"] = true, ["weapon_rpg"] = true,
-    ["weapon_shotgun"] = true, ["weapon_slam"] = true, ["weapon_shotgun"] = true, ["weapon_smg1"] = true,
-    ["weapon_stunstick"] = true, ["weapon_simremote"] = true, ["weapon_simrepair"] = true, ["weapon_hands_sh"] = true,
-    ["wep_hmcd_mansion_broomstick"] = true, ["wep_hmcd_mansion_knife"] = true, ["wep_hmcd_mansion_cuestick"] = true, ["wep_hmcd_mansion_poker"] = true,
-    ["wep_zac_hmcd_heroin"] = true, ["wep_hmcd_mansion_pencils"] = true, ["weapon_shield"] = true, ["weapon_matches"] = true,
-    ["weapon_traitor_poison3"] = true, ["weapon_hg_rpg"] = true,
-}
 function Hook.PlayerSpawnSWEP(ply, class)
     --if ply:IsAdmin() and (class == "gmod_tool" or class == "weapon_physgun") then
     --    return
@@ -147,20 +130,6 @@ function Hook.PlayerGiveSWEP(ply,class)
     --end
 end
 
-local entsRestrict = {
-    ["sent_ball"] = true, ["edit_fog"] = true, ["ba2_airwaste"] = true, ["ba2_barrel"] = true,
-    ["ba2_virus_cloud"] = true, ["ba2_gasmask"] = true, ["ba2_gasmask_filter"] = true, ["ba2_hordespawner"] = true,
-    ["ba2_pointspawner"] = true, ["ba2_virus_sample"] = true, ["item_ammo_357"] = true, ["item_ammo_357_large"] = true,
-    ["item_ammo_ar2"] = true, ["item_ammo_ar2_large"] = true, ["item_ammo_ar2_altfire"] = true, ["combine_mine"] = true,
-    ["item_ammo_crossbow"] = true, ["item_healthcharger"] = true, ["item_healthkit"] = true, ["grenade_helicopter"] = true,
-    ["item_suit"] = true, ["weapon_striderbuster"] = true, ["item_ammo_pistol"] = true, ["item_ammo_pistol_large"] = true,
-    ["item_rpg_round"] = true, ["item_box_buckshot"] = true, ["item_ammo_smg1"] = true, ["item_ammo_smg1_large"] = true,
-    ["item_ammo_smg1_grenade"] = true, ["item_battery"] = true, ["item_suitcharger"] = true, ["prop_thumper"] = true,
-    ["npc_grenade_frag"] = true, ["bomb"] = true, ["ent_zac_whiskas"] = true, ["ent_hg_catfire"] = true,
-    ["ent_hg_cyanide_plotnypih"] = true, ["crossbow_projectile"] = true, ["ent_hg_fire"] = true, ["ent_hg_firesmall"] = true, 
-    ["ent_hg_molotov"] = true, ["projectile_base"] = true, ["projectile_nonexplosive_base"] = true, ["ent_hg_snowball"] = true, 
-    ["rpg_projectile"] = true
-}
 
 function Hook.PlayerSpawnSENT(ply,class)
     if not ply:IsAdmin() then return false end
@@ -194,9 +163,9 @@ end
 
 function Hook.PlayerNoClip(ply, desiredState)
     if ply:IsAdmin() then
-        return true 
+        return true
     else
-        return false 
+        return false
     end
 end
 

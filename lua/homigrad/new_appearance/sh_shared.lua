@@ -171,11 +171,11 @@ AppAddModel("Female 06", "models/zcity/f/female_06.mdl", true, {
 
 hg.Appearance.PlayerModels = PlayerModels
 hg.Appearance.FuckYouModels = {{}, {}}
-for name, tbl in pairs(hg.Appearance.PlayerModels[1]) do
+for _, tbl in pairs(hg.Appearance.PlayerModels[1]) do
 	hg.Appearance.FuckYouModels[1][tbl.mdl] = tbl
 end
 
-for name, tbl in pairs(hg.Appearance.PlayerModels[2]) do
+for _, tbl in pairs(hg.Appearance.PlayerModels[2]) do
 	hg.Appearance.FuckYouModels[2][tbl.mdl] = tbl
 end
 
@@ -450,7 +450,7 @@ function hg.Appearance.GetRandomAppearance()
 	randomAppearance.AColor = ColorRand(false)
 	for i = 1, 1 do
 		local data, k = table.Random(hg.Accessories)
-		for ii, name in ipairs(randomAppearance.AAttachments) do
+		for _, name in ipairs(randomAppearance.AAttachments) do
 			if hg.Accessories[name].placement == data.placement then k = "none" end
 		end
 
@@ -555,7 +555,7 @@ function plymeta:GetSubMaterialSlots()
 	local mats = self:GetMaterials()
 	local slots = {}
 	if istable(tMdl) then
-		for k, v in pairs(tMdl.submatSlots) do
+		for _, v in pairs(tMdl.submatSlots) do
 			local slot = 1
 			for i = 1, #mats do
 				if mats[i] == v then

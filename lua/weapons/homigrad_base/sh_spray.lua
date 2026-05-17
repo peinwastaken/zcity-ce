@@ -20,7 +20,7 @@ SWEP.addSprayMul = 1
 
 SWEP.RecoilMul = 0.8
 
-local cos, sin, math_max, math_min = math.cos, math.sin, math.max, math.min
+local math_max = math.max
 function SWEP:GetPrimaryMul()
 	local owner = self:GetOwner()
 	local mul = ((0.5) + math_max(self.Primary.Force / 110 - 1, 0)) * (owner.Crouching and owner:Crouching() and self.CrouchMul or 1) * (self.attachments and self.attachments.barrel and self.attachments.barrel[1] ~= "empty" and 0.75 or 1)
@@ -39,7 +39,7 @@ function SWEP:PrimarySpread()
 	self.Primary.Force2 = (hg.ammotypeshuy[self.Primary.Ammo] and hg.ammotypeshuy[self.Primary.Ammo].BulletSettings and hg.ammotypeshuy[self.Primary.Ammo].BulletSettings.Force) or self.Primary.Force
 	self:SetLastShootTime(CurTime())
 	self.lastShoot = RealTime()--SysTime()
-	
+
 	local owner = self:GetOwner()
 
 	if not IsValid(owner) then return end
@@ -49,7 +49,7 @@ function SWEP:PrimarySpread()
 	self.dmgStack = self.dmgStack + self.Primary.Damage
 	self.dmgStack2 = math.min(self.dmgStack2 + 0.2, 60)
 	local sprayI = self.SprayI
-	
+
 	if SERVER then
 		if owner:IsNPC() then return end
 		local org = owner.organism
@@ -60,7 +60,7 @@ function SWEP:PrimarySpread()
 
 	if CLIENT and (owner == LocalPlayer() or (not LocalPlayer():Alive() and owner == LocalPlayer():GetNWEntity("spect"))) and !self.norecoil then
 		local organism = owner.organism or {}
-		
+
 		local force = self.Primary.Damage / 100 * self.addSprayMul * (self.NumBullet or 1) * math.min(sprayI / 30,0.6)--(self.Primary.Automatic and math.min(sprayI / 30,1) or 1)
 		mul = mul * (((organism.larm or 0) + (organism.rarm or 0) + 2) / 1 + ((organism.larmamputated and 5 or 0) + (organism.rarmamputated and 5 or 0)))
 		mul = mul * ((owner.posture == 7 or owner.posture == 8 or owner.holdingWeapon) and 2 or 1)
@@ -80,13 +80,13 @@ function SWEP:PrimarySpread()
 		else
 			spray = self.Spray[sprayI] or Angle(0.01, 0)
 		end
-		
+
 		local angranda = AngleRand(self.SprayRand[1], self.SprayRand[2])
 		angranda[3] = 0
 		spray = spray + angranda * self.addSprayMul * mul * (self.randmul or 1)
 
 		local angrand2 = AngleRand(-force, force)
-		
+
 		local angrand3 = -(-angrand2)
 		angrand3[3] = 0
 		if not self.SprayRandOnly then
@@ -95,21 +95,16 @@ function SWEP:PrimarySpread()
 			angrand2[3] = -angrand2[2] * 1
 			local mulhuy = GetGlobalBool("FullRealismMode",false) and 10 or 1
 			mul = mul * (self.attachments and self.attachments.grip and not table.IsEmpty(self.attachments.grip) and hg.attachments.grip[self.attachments.grip[1]].recoilReduction or 1)
-			
+
 			local huyang = angrand2 * mul / 2 * mulhuy
 			huyang[3] = 0
 			ViewPunch2(huyang * (owner.posture == 1 and not self:IsZoom() and 3 or 1) * 0.25)-- ^ ((not self.Primary.Automatic and 0.5 or 1)))
-			
+
 			local angpopa = angrand2 * mul
 			angpopa[3] = 0
 			ViewPunch(angpopa * (hg_coolcamera:GetBool() and 3 or 1))-- ^ ((not self.Primary.Automatic and 0.5 or 1)))
 			spray = spray + angRand * 2 * (self.randmul or 1)
 		end
-
-		local prank3 = math.Rand(-self.Primary.Force2,self.Primary.Force2) / (self.Primary.Force2 != 0 and self.Primary.Force2 or 1) * 2
-		local angleprikol = Angle(0,0,prank3)
-
-		//ViewPunch2(angleprikol)
 
 		local mul = mul * self.Primary.Force2 / 100 * (self:IsPistolHoldType() and 2 or 1) * (self.NumBullet and self.NumBullet * 3 or 1)
 		ViewPunch2(Angle(-1 * math.Rand(1,2),-1 * math.Rand(-1,1),0) * mul)
@@ -125,25 +120,24 @@ function SWEP:PrimarySpread()
 		sprayAng.roll = 0
 
 		owner:SetEyeAngles(eyeang + sprayAng * 3 * (organism.recoilmul or 1) * (owner.posture == 1 and not self:IsZoom() and 0.1 or 1) * 0.25)
-		
+
 		local rnd1, rnd2 = math.Rand(1,2), math.Rand(-1,1)
 		ViewPunch2(Angle(2 * rnd1,2 * rnd2,0) * mul * 0.5)
 		ViewPunch(Angle(-2 * rnd1,-2 *rnd2,0) * mul)
 
 		local max_clip1 = self:GetMaxClip1()
-		
+
 		if(max_clip1 == 0)then
 			max_clip1 = 1
 		end
-		
+
 		local sprayvel = spray * mul * math.max(sprayI / max_clip1, 0.5) * self.addSprayMul * (self.cameraShakeMul or 1) * 10 * 1.2//(self.Primary.Automatic and 1 or 1)
-		
+
 		--self.weaponSway = self.weaponSway + sprayvel
 
 		self.sprayAngles[3] = self.sprayAngles[3] + math.max(self.Primary.Damage / 100,1) * self.addSprayMul * (self.cameraShakeMul or 1) * ((((self.NumBullet or 1) - 1) / 2) + 1) * (((self.podkid or 1) - 1) / 3 + 1) / 40
 
 		self:ApplyEyeSprayVel(sprayvel * 1)
-		--self:AnimApply_RecoilCameraZoom()
 	end
 end
 
@@ -155,7 +149,7 @@ function SWEP:ApplyForce(mul)
 		if SERVER then
 			local ent = ply.FakeRagdoll
 			local phys = ent:GetPhysicsObjectNum(ent:TranslateBoneToPhysBone(ent:LookupBone("ValveBiped.Bip01_R_Hand")))
-			local tr, pos, ang = self:GetTrace(nil, nil, nil, true)
+				local _, _, ang = self:GetTrace(nil, nil, nil, true)
 			local dir = ang:Forward()
 			phys:ApplyForceCenter(-dir * self.Primary.Force * 5)
 		end
@@ -186,7 +180,7 @@ end
 
 function SWEP:Step_Spray(time,dtime)
 	if self.Primary.Next + 0.3 < time then self.SprayI = 0 end
-	
+
 	if SERVER then return end
 
 	local eyeSpray = self.EyeSpray

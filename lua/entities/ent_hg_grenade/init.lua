@@ -53,7 +53,7 @@ function ENT:Think()
 	if not self.timer then
 		if IsValid(self.ent) or self.ent == Entity(0) then
 			local ent,lpos,origlen = self.ent,self.lpos,self.origlen
-			
+
 			local wpos = ent:LocalToWorld(lpos)
 
 			if wpos:Distance(self:GetPos()) > origlen + 20 then
@@ -77,7 +77,7 @@ function ENT:Think()
 
 	if (CurTime() - self.timer) < self.timeToBoom then hg.EmitAISound(self:GetPos(), 256, 2, 8) end
 	if (CurTime() - self.timer) > self.timeToBoom and not self.Exploded then self:Explode() end
-	
+
 	return true
 end
 
@@ -102,7 +102,6 @@ local function createSpoon(self)
 end
 
 function ENT:Arm(time,vel)
-	local vel = vel or Vector(0,0,0)
 	time = time or CurTime()
 	if not self.NotSpoon then
 		createSpoon(self)
@@ -110,7 +109,7 @@ function ENT:Arm(time,vel)
 	self.timer = time
 	if self.lpos then
 		local wpos = self.ent:LocalToWorld(self.lpos)
-		
+
 		if IsValid(self.cons2) then
 			self.cons2:Remove()
 		end
@@ -145,7 +144,7 @@ function ENT:Explode()
 		return
 	end
 	hg.EmitAISound(self:GetPos(), 512, 16, 1)
-	
+
 	self.owner = self.owner or Entity(0)
 
 	local selfPos = self:GetPos() + self:OBBCenter()
@@ -153,50 +152,43 @@ function ENT:Explode()
 	self.Exploded = true
 
 	local indoors = false
-	
+
 
 	local hits = 0
-	local total = 4 
-	
+	local total = 4
+
 	local traceUp = util.TraceLine({
 		start = selfPos,
 		endpos = selfPos + Vector(0, 0, 1000),
 		mask = MASK_SOLID,
 		filter = self
 	})
-	
+
 	if traceUp.Hit and not traceUp.HitSky then
 		hits = hits + 1
 	end
-	
 
-	for i = 1, 3 do
+
+	for _ = 1, 3 do
 		local dir = VectorRand()
-		dir.z = math.abs(dir.z) * 1.5 
+		dir.z = math.abs(dir.z) * 1.5
 		dir:Normalize()
-		
+
 		local traceAngled = util.TraceLine({
 			start = selfPos,
 			endpos = selfPos + dir * 700,
 			mask = MASK_SOLID_BRUSHONLY,
 			filter = self
 		})
-		
+
 		if traceAngled.Hit and not traceAngled.HitSky then
 			hits = hits + 1
 		end
 	end
-	
-	indoors = hits / total >= 0.5 
+
+	indoors = hits / total >= 0.5
 
 	if self:WaterLevel() == 0 then
-		local line = util.TraceLine(
-			{
-				start = self:GetPos(),
-				endpos = self:GetPos() - vector_up * 25,
-				mask = MASK_SHOT,
-				filter = self
-			})
 		--if line.Hit then
 		--	ParticleEffect("pcf_jack_groundsplode_small3",selfPos,-vector_up:Angle())
 		--else
@@ -214,7 +206,6 @@ function ENT:Explode()
 		net.WriteString(self.Sound[math.random(#self.Sound)])
 		net.WriteString(self.SoundFar[math.random(#self.SoundFar)])
 		net.WriteVector(self:GetPos())
-		net.WriteEntity(self)
 		net.WriteBool(self:WaterLevel() > 0)
 		net.WriteString(self.SoundWater[math.random(#self.SoundWater)])
 	net.Broadcast()
@@ -225,16 +216,16 @@ function ENT:Explode()
 	else
 		self:EmitSound(self.Sound[math.random(#self.Sound)], 145, 85, 1, CHAN_WEAPON)
 		self:EmitSound(self.SoundFar[math.random(#self.SoundFar)], 140, 85, 0.9, CHAN_WEAPON)
-		
-		timer.Simple(0.05, function() 
+
+		timer.Simple(0.05, function()
 			if IsValid(self) then
-				self:EmitSound(self.SoundBass[math.random(#self.SoundBass)], 150, 70, 0.95, CHAN_AUTO) 
+				self:EmitSound(self.SoundBass[math.random(#self.SoundBass)], 150, 70, 0.95, CHAN_AUTO)
 			end
 		end)
 
-		timer.Simple(0.1, function() 
+		timer.Simple(0.1, function()
 			if IsValid(self) then
-				self:EmitSound(self.SoundBass[math.random(#self.SoundBass)], 155, 60, 0.9, CHAN_BODY) 
+				self:EmitSound(self.SoundBass[math.random(#self.SoundBass)], 155, 60, 0.9, CHAN_BODY)
 			end
 		end)
 	end
@@ -261,7 +252,7 @@ function ENT:Explode()
 				end)
 			end
 		end
-		
+
 		EmitSound(self.DebrisSounds[math.random(#self.DebrisSounds)], self:GetPos(), self:EntIndex(), CHAN_AUTO, 1, 80)
 	end
 
@@ -269,23 +260,23 @@ function ENT:Explode()
 
 	--;; I will tell you a secret: our tracing was done terribly
 	local dis = self.BlastDis / 0.01905
-	local disorientation_dis = 6 / 0.01905  
+	local disorientation_dis = 6 / 0.01905
 	local entsCount = 0
-	for i, enta in ipairs(ents.FindInSphere(selfPos, disorientation_dis)) do
+	for _, enta in ipairs(ents.FindInSphere(selfPos, disorientation_dis)) do
 		local tracePos = enta:IsPlayer() and (enta:GetPos() + enta:OBBCenter()) or enta:GetPos()
 		local tr = hg.ExplosionTrace(selfPos, tracePos, {self})
 		local phys = enta:GetPhysicsObject()
 		if IsValid(phys) then
 			entsCount = entsCount + 1
 		end
-		
+
 		local phys = enta:GetPhysicsObject()
 		local force = (enta:GetPos() - selfPos)
 		local len = force:Length()
 		force:Div(len)
-		local frac = math.Clamp((disorientation_dis - len) / disorientation_dis, 0.1, 1)  
-		local physics_frac = math.Clamp((dis - len) / dis, 0.5, 1)  
-		local forceadd = force * physics_frac * 50000  
+		local frac = math.Clamp((disorientation_dis - len) / disorientation_dis, 0.1, 1)
+		local physics_frac = math.Clamp((dis - len) / dis, 0.5, 1)
+		local forceadd = force * physics_frac * 50000
 
 		if enta.organism then
 			local behindwall = tr.Entity != enta and tr.MatType != MAT_GLASS
@@ -322,7 +313,7 @@ function ENT:Explode()
 
 		EmitSound(self.DebrisSounds[math.random(#self.DebrisSounds)], self:GetPos(), self:EntIndex(), CHAN_AUTO, 1, 80)
 	end
-	
+
 	local Poof=EffectData()
 	Poof:SetOrigin(selfPos)
 	Poof:SetScale(1.2)
@@ -338,7 +329,7 @@ function ENT:Explode()
 
 			local LastShrapnel = SysTime()
 
-			for i = 1, self.Fragmentation do
+			for _ = 1, self.Fragmentation do
 					LastShrapnel = SysTime()
 
 					local dir = VectorRand(-1,1):GetNormalized()--vector_up
@@ -411,9 +402,9 @@ end
 local vec10 = Vector(0, 0, 10)
 function ENT:PlaySndExplosion(snd, server, chan, vol, pitch, entity, tripleaffirmative)
 	if SERVER and not server then return end
-	
-	vol = vol or 1.2 
-	pitch = pitch or 85 
+
+	vol = vol or 1.2
+	pitch = pitch or 85
 	chan = chan or CHAN_WEAPON
 	local rand = math.random(-5, 5)
 
@@ -442,14 +433,14 @@ end
 -- Deka, what is this
 --[[function ENT:PlaySndExplosion(snd, server, chan, vol, pitch, entity, tripleaffirmative)
 	if SERVER and not server then return end
-	
+
 	vol = vol or 1
 	pitch = pitch or 100
 	chan = chan or CHAN_WEAPON
 	local rand = math.random(-5, 5)
-	
+
 	EmitSound(snd, self:GetPos(), (entity or self:EntIndex()), chan, vol, 75, nil, pitch + rand)
-	
+
 	if tripleaffirmative then
 		EmitSound(snd, self:GetPos() - Vector(0, 0, 10), (entity or self:EntIndex()) + 1, chan, vol, 75, nil, pitch + rand - 2)
 		EmitSound(snd, self:GetPos() + Vector(0, 0, 10), (entity or self:EntIndex()) + 2, chan, vol * 0.9, 75, nil, pitch + rand + 2)
@@ -461,7 +452,7 @@ function ENT:PlaySndDebris(snd, vol, pitch)
 	pitch = pitch or 100
 
 	local indoors = not util.TraceLine({start = self:GetPos(), endpos = self:GetPos() + Vector(0,0,500), filter = self}).HitSky
-	
+
 	if indoors then
 		self:EmitSound(snd, 75, pitch, vol)
 		EmitSound(snd, self:GetPos(), self:EntIndex(), CHAN_AUTO, vol, 80, nil, pitch)

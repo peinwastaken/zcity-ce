@@ -36,7 +36,7 @@ local path = CreateClientConVar("berserk_path", "sound/zbattle/pharmacia.mp3", t
 
 hook.Add("RenderScreenspaceEffects", "berserkEffect", function()
 	local organism = lply:Alive() and lply.organism
-	
+
 	if !organism then
 		hg.underberserk = false
 		hg.underberserk2 = false
@@ -175,7 +175,7 @@ hook.Add("Post Post Processing", "berserkEffect", function()
 	if hg.underberserk2 and hg.berserkClamped then
 		render.UpdateScreenEffectTexture()
 		render.UpdateFullScreenDepthTexture()
-		
+
 		grainMat:SetFloat("$c0_x", CurTime()) -- time
 		grainMat:SetFloat("$c0_y", 0.5) -- gate
 		grainMat:SetFloat("$c0_z", 2) -- Pixelize
@@ -186,7 +186,7 @@ hook.Add("Post Post Processing", "berserkEffect", function()
 		grainMat:SetFloat("$c2_y", 0) -- g
 		grainMat:SetFloat("$c2_z", 0) -- b
 		grainMat:SetFloat("$c3_x", 0) -- ImageIntensity
-	
+
 		render.SetMaterial(grainMat)
 		render.DrawScreenQuad()
 	end
@@ -221,15 +221,15 @@ local HM_sky_material = CreateMaterial("g_sky_HMFrf", "g_Sky", {
 	["$bottomcolor"]   = "[0 0 1]",
 	["$fadebias"]      = "1.0",
 	["$hdrscale"]      = "0.25",
-	
+
 	["$duskcolor"]     = "[1 0.3 0.25]",
 	["$duskscale"]     = "0.5",
 	["$duskintensity"] = "5.0",
-	
+
 	["$sunnormal"]     = "[0 1 1]",
 	["$suncolor"]      = "[0 1 1]",
 	["$sunsize"]       = "5",
-	
+
 	["$startexture"]   = "skybox/starfield",
 	["$starfade"]      = "0",
 	["$starscale"]     = "1",
@@ -237,13 +237,10 @@ local HM_sky_material = CreateMaterial("g_sky_HMFrf", "g_Sky", {
 	["$starlayers"]    = "4",
 })
 
-local maxs = Vector(64, 64, 64)
-local mins = -maxs
 --local alphacolor = Color(255,255,255,255)
 
 local matGlow = Material("Sprites/light_glow02_add_noz")
 local red = Color(255, 58, 84)
-local blue = Color(47, 0, 255)
 
 hook.Add("PostDrawTranslucentRenderables", "berserkSky", function(depth, drawsky, sky3d)
 	if !hg.underberserk2 then return end

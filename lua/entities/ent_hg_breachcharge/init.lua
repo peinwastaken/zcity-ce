@@ -63,7 +63,7 @@ function ENT:Detonate()
 	local Foom = EffectData()
 	Foom:SetOrigin(Pos)
 
-	for key, ent in pairs(ents.FindInSphere(Pos, 75)) do
+	for _, ent in pairs(ents.FindInSphere(Pos, 75)) do
 		if (ent ~= self) and (ent:GetClass() == "func_breakable") then
 			ent:Fire("break", "", 0)
 		elseif (ent ~= self) and (ent:GetClass() == "func_physbox") then
@@ -85,7 +85,7 @@ function ENT:Detonate()
 		self:EmitSound("m67/m67_detonate_far_dist_0" .. math.random(1, 3) .. ".wav", 140, 100)
 		self:EmitSound("snd_jack_hmcd_debris.mp3", 85, math.random(90, 110))
 
-		for i = 0, 10 do
+		for _ = 0, 10 do
 			local Tr = util.QuickTrace(Pos, VectorRand() * math.random(10, 150), {self})
 
 			if Tr.Hit then
@@ -146,9 +146,9 @@ function ENT:Detonate()
 
 	timer.Simple(.1, function()
 		if not IsValid(self) then return end
-		for key, rag in pairs(ents.FindInSphere(Pos, 750)) do
+		for _, rag in pairs(ents.FindInSphere(Pos, 750)) do
 			if (rag:GetClass() == "prop_ragdoll") or rag:IsPlayer() then
-				for i = 1, 20 do
+				for _ = 1, 20 do
 					local Tr = util.TraceLine({
 						start = Pos,
 						endpos = rag:GetPos() + VectorRand() * 50

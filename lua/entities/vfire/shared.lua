@@ -30,7 +30,7 @@ if SERVER or CLIENT then
 	function ENT:Initialize()
 		if not IsValid(self) then return end
 		--fucking gingers
-		
+
 		self:SetFireState(1)
 
 		-- Make sure the fire is not directly interactable or seen
@@ -44,7 +44,7 @@ if SERVER or CLIENT then
 		if !IsValid(parent) then
 			parent = game.GetWorld()
 		end
-		
+
 
 		-- Store the parent
 		self.parent = parent
@@ -52,7 +52,7 @@ if SERVER or CLIENT then
 
 		if not isvector(self:GetPos()) then return end
 		--FUCK YOU WHOEVER THOUGHT THIS WAS A GOOD IDEA TO REMOVE ENTITY ON ITS INITIALIZATION
-		
+
 		parent.fires[self] = parent:WorldToLocal(self.GetPos and self:GetPos() or parent:GetPos())
 
 		if SERVER then
@@ -66,7 +66,7 @@ if SERVER or CLIENT then
 
 			-- Used to catch touching entities so we can burn them
 			self:SetTrigger(true)
-			
+
 			-- A table holding whatever entity we're burning
 			self.burning = {}
 
@@ -97,7 +97,7 @@ if SERVER or CLIENT then
 			-- Start out without LOD
 			self.LOD = false
 			self.visLOD = false
-			
+
 			-- Initialize think timings
 			self.nextClusterThink = 0
 			self.nextParticlesThink = 0
@@ -106,7 +106,7 @@ if SERVER or CLIENT then
 			-- Start working
 			self:RedoParticles(1)
 		end
-		
+
 		-- Prioritize the new fire for responsiveness
 		self:Prioritize(5)
 
@@ -162,7 +162,7 @@ if SERVER or CLIENT then
 		if priority <= 0 then self:UnPrioritize() return end
 
 		self.prioritized = true
-		
+
 		timer.Simple(priority, function()
 			if IsValid(self) then
 				self:UnPrioritize()
@@ -209,12 +209,12 @@ if SERVER or CLIENT then
 		if IsValid(self.closestFire) then
 			return self.closestFire
 		end
-		
+
 		-- The previous closest fire is invalid, find a new one
 		local minDist = math.huge
 		local cluster = self.cluster
-		for k, fire2 in pairs(cluster.fires) do
-			
+		for _, fire2 in pairs(cluster.fires) do
+
 			-- Return nil if there is no closest fire
 			if self == fire2 then continue end
 
@@ -253,12 +253,12 @@ if SERVER or CLIENT then
 				return self.closestSmallerFire
 			end
 		end
-		
+
 		-- The previous closest fire is invalid, find a new one
 		local minDist = math.huge
 		local cluster = self.cluster
-		for k, fire2 in pairs(cluster.fires) do
-			
+		for _, fire2 in pairs(cluster.fires) do
+
 			-- Return nil if there is no closest fire
 			if self == fire2 then continue end
 
@@ -287,12 +287,12 @@ if SERVER or CLIENT then
 				return self.closestBiggerFire
 			end
 		end
-		
+
 		-- The previous closest fire is invalid, find a new one
 		local minDist = math.huge
 		local cluster = self.cluster
-		for k, fire2 in pairs(cluster.fires) do
-			
+		for _, fire2 in pairs(cluster.fires) do
+
 			-- Return nil if there is no closest fire
 			if self == fire2 then continue end
 
@@ -387,7 +387,7 @@ if SERVER then
 		local minDist = math.huge
 
 		local closeEnts = ents.FindInSphere(self:GetPos(), vFireClusterSize)
-		for k, cluster in pairs(closeEnts) do
+		for _, cluster in pairs(closeEnts) do
 			-- We only care about fire clusters
 			if cluster:GetClass() != "vfire_cluster" then continue end
 			-- We have to be on the same parent
@@ -461,7 +461,7 @@ if SERVER then
 	function ENT:ImprovePlacement(targetState, parent)
 
 		if !parent then parent = self.parent end
-		
+
 		local forward = self:GetForward()
 		local pos = self:GetPos()
 
@@ -478,7 +478,7 @@ if SERVER then
 		local traceLen = 16.5
 		local traceOffset = vFireBaseRadius(targetState) * 0.4
 		local traceDir = forward * -traceLen
-		
+
 		local up = self:GetUp()
 		local down = -up
 		local right = self:GetRight()
@@ -579,7 +579,7 @@ if SERVER then
 		else
 			return false
 		end
-		
+
 	end
 
 	function ENT:UpdateCollisionBounds(state)
@@ -593,11 +593,11 @@ if SERVER then
 	Thinking tasks
 	---------------------------------------------------------------------------]]
 	function ENT:Think()
-		
+
 		-- Don't think at all if we don't have a parent
 		if !IsValid(self.parent) and !self.parent:IsWorld() then self:Remove() return end
-		
-		
+
+
 		local curTime = CurTime()
 		-- Don't throttle prioritized fires
 		local throttleAdd
@@ -692,7 +692,7 @@ if SERVER then
 				self.feed = self.feed + fuel
 			end
 		end
-		
+
 	end
 
 	function ENT:LifeThink()
@@ -702,7 +702,7 @@ if SERVER then
 			self:Remove()
 			return
 		else
-			
+
 			-- We're alive, feed ourselves
 			local feedSave = 5
 			-- We want feed to be used faster on characters
@@ -726,7 +726,7 @@ if SERVER then
 		-- Change the state, network it only if it changes
 		local oldState = self:GetFireState()
 		local state = vFireLifeToState(self.life)
-		
+
 		if state != oldState then -- We've changed states
 
 			-- Relax our state limiters
@@ -735,7 +735,7 @@ if SERVER then
 				if state > self.stateUp then -- We need to check if we can grow
 
 					local canGrow, newPos
-					
+
 					while !canGrow do
 
 						if state <= self.stateUp then break end
@@ -797,12 +797,12 @@ if SERVER then
 
 		-- How much damage are we doing this burn cycle?
 		local amount = self.life * math.Rand(0.01, 0.08) * vFireDamageMultiplier
-		
+
 
 
 		-- Loop through whatever we're burning
 		for _, ent in pairs(self.burning) do
-			
+
 			if IsValid(ent) then
 
 				-- Don't burn players that are in vehicles
@@ -819,7 +819,7 @@ if SERVER then
 						end
 
 						if !ent.vFireDamageData then continue end
-						
+
 						dmg:SetDamage(amount * ent.vFireDamageData.dmgMul)
 						dmg:SetDamageType(ent.vFireDamageData.dmgType)
 						dmg:SetDamageForce(VectorRand(-0.1,0.1))
@@ -833,7 +833,7 @@ if SERVER then
 					ent:TakeDamageInfo(dmg)
 
 				end
-				
+
 
 				-- If we're burning a character, use the oppurtunity to spread to it
 				if vFireIsCharacter(ent) and vFireEnableSpread then
@@ -847,7 +847,7 @@ if SERVER then
 				end
 
 			else
-				
+
 				-- The entity isn't valid, use the loop's oppurtunity to remove it
 				self.burning[k] = nil
 
@@ -860,7 +860,7 @@ if SERVER then
 		local parent = self.parent
 
 		if damageEnabled and !parent:IsWorld() then
-			
+
 			local dmg = DamageInfo()
 
 				-- Decide what this entity's best damage case should be... and cache it
@@ -937,7 +937,7 @@ if SERVER then
 		if vFireEnableSpread then
 
 			if !self:IsPotentiallyVisible() then return end
-			
+
 			-- We only spread if our random variable is below 1000 - the more throttle there is, the higher the probability of ran being >= 1000
 			-- and as a result, fire spreading is throttled
 
@@ -951,15 +951,15 @@ if SERVER then
 				self.NextParticle = CurTime() + 2
 				if (self.gasparticles < self.totalparticles) then
 					table.insert(hg.particles, {self:GetPos(), VectorRand(-15, 15), CurTime() + 120})
-					
+
 					self.gasparticles = self.gasparticles + 1
 				end
-		
+
 				if (self.gasparticles == self.totalparticles) then
 					return
 				end
 			end
-			
+
 			if ran < 1000 then
 
 				local forward = self:GetForward()
@@ -985,11 +985,11 @@ if SERVER then
 					local mul = (vFireBaseRadius(self:GetFireState() or 1) or 1) * math.Rand(0.775, 1)
 					local dir = forward * -mul
 					local ang = self:GetAngles()
-					
+
 					-- We use a constant spread angle to give fire spreading a sort of 'momentum'
 					-- This value gets passed on to children fires with a slight offset
 					if !self.spreadAng then self.spreadAng = math.Rand(0, 360) end
-					
+
 					ang:RotateAroundAxis(forward, self.spreadAng)
 					local offset = ang:Right() * mul + forward * 2
 
@@ -1005,7 +1005,7 @@ if SERVER then
 						if newFeed > 0 then
 							newFire = CreateVFire(ent, tr.HitPos, tr.HitNormal, newFeed, self)
 						end
-						
+
 						if IsValid(newFire) then
 
 							if self.spreadAng then
@@ -1027,7 +1027,7 @@ if SERVER then
 						self.spreadAng = nil
 					end
 				end
-				
+
 			end
 		end
 	end
@@ -1050,12 +1050,12 @@ if CLIENT then
 		local size = vFireStateToSize(state)
 
 		if self.base then
-			if self.base:IsValid() then 
+			if self.base:IsValid() then
 				self.base:StopEmission()
 			end
 		end
 		if self.flames then
-			if self.flames:IsValid() then 
+			if self.flames:IsValid() then
 				self.flames:StopEmission()
 			end
 		end
@@ -1148,7 +1148,7 @@ if CLIENT then
 	function ENT:FlameSetDirection(dir, strength)
 		if IsValid(self.flames) then
 			if dir and strength then
-				
+
 				dir:Normalize()
 				dir = dir * (stateMul[self.visState or self:GetFireState()] or 1)
 				local pos
@@ -1266,7 +1266,7 @@ if CLIENT then
 	-- only set our material once?
 	hook.Add("PostDrawTranslucentRenderables", "_vFireLightCallbacks", function()
 		render.SetMaterial(lightmat)
-		for key, glowData in pairs(glowCalls) do
+		for _, glowData in pairs(glowCalls) do
 			render.DrawSprite(
 				glowData.pos, -- Position
 				glowData.glowSize, -- Width
@@ -1346,7 +1346,7 @@ if CLIENT then
 		end
 
 
-		
+
 		-- Our next think will always be the minimal of our next think tasks' timings
 		local nextThink = math.Min(
 			self.nextClusterThink,
@@ -1403,7 +1403,7 @@ if CLIENT then
 					)
 				end
 			end
-			
+
 			-- Make sure we'll always draw ourselves
 			local renderSize = state * 25
 			self:SetRenderBounds(Vector(0, 0, 0), Vector(0, 0, 0), Vector(renderSize, renderSize, renderSize))
@@ -1440,7 +1440,7 @@ if CLIENT then
 			local windProd = windVec:Dot(forward)
 			local prodMul = 1 - math.abs(math.Clamp(windProd, -1, 1))
 			local windMul = prodMul * windExposure
-			
+
 			pullDir = windVec * windMul
 			pullStrength = windMul
 		end
@@ -1452,7 +1452,7 @@ if CLIENT then
 			pullDir = pullDir + forward * upSideDownMul
 			pullStrength = pullStrength + upSideDownMul
 		end
-		
+
 		-- Vector zero will cause fire to collapse on itself
 		if pullDir and pullDir != Vector(0, 0, 0) and pullStrength != 0 then
 			self.lastFlameDir = pullDir

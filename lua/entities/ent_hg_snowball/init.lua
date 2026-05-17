@@ -48,10 +48,10 @@ function ENT:Think()
 end
 
 function ENT:Detonate(data)
-	local SelfPos, Owner = self:LocalToWorld(self:OBBCenter()), self:GetOwner() or self
+	local SelfPos, _ = self:LocalToWorld(self:OBBCenter()), self:GetOwner() or self
 	timer.Simple(.01, function()
 		if not IsValid(self) then return end
-		for i = 0, 1 do
+		for _ = 0, 1 do
 			if data then
 				local effData = EffectData()
 				effData:SetOrigin(SelfPos)
@@ -60,7 +60,7 @@ function ENT:Detonate(data)
 				util.Decal("Splash.Large", data.HitPos + data.HitNormal, data.HitPos - data.HitNormal)
 			end
 		end
-		for k, ent in ipairs(ents.FindInSphere(self:GetPos(),5)) do
+		for _, ent in ipairs(ents.FindInSphere(self:GetPos(),5)) do
 			if ent:GetClass() == "vfire" then
 				ent.life = (ent.life or 0 ) - 5
 				if ent.life < 2 then

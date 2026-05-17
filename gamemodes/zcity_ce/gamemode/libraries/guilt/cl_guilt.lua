@@ -43,31 +43,17 @@ local OpenMenu
 
 net.Receive("open_guilt_menu", function()
     local tbl = net.ReadTable()
-    
+
     OpenMenu(tbl)
 end)
 
-local colGray = Color(122,122,122,255)
-local BlurBackground = hg.BlurBackground
+local BlurBackground = hg.DrawBlur
 
-local function harmdone(harm)
-    if harm >= 9 then
-        return "killed you."
-    elseif harm >= 5 then
-        return "basically killed you."
-    elseif harm >= 2 then
-        return "seriously injured you."
-    elseif harm >= 1 then
-        return "mildly injured you."
-    else
-        return "damaged you a bit."
-    end
-end
 
 local showstuff = CurTime() + 5
 hook.Add("Player_Death","karmacheck",function(ply)
     if ply != LocalPlayer() then return end
-    
+
     showstuff = CurTime() + 5
 end)
 
@@ -102,7 +88,7 @@ OpenMenu = function(tbl)
 		guiltMenu:Remove()
 		guiltMenu = nil
 	end
-    
+
 	local sizeX,sizeY = ScrW() / 2 ,ScrH() / 3
 	local posX,posY = ScrW() / 2 - sizeX / 2,ScrH() / 2 - sizeY / 2
 
@@ -171,7 +157,7 @@ OpenMenu = function(tbl)
             local x, y = 0, h / 2
             surface.SetFont("HomigradFont")
             surface.SetTextColor(clr,255,clr,255)
-            local w, h = surface.GetTextSize(txt)
+            local _, h = surface.GetTextSize(txt)
             surface.SetTextPos(x + ScreenScale(5), y - h / 2)
             surface.DrawText(txt)
 		end

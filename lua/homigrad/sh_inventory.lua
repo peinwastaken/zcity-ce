@@ -26,11 +26,6 @@ if CLIENT then
 		OpenInv(ent)
 	end)
 
-	local colRed = Color(255, 0, 0, 255)
-	local colBlack2 = Color(100, 100, 100)
-	local colBlack3 = Color(50, 50, 50, 120)
-	local colBlue = Color(150, 150, 150)
-	local buttons = {}
 	local function nameThings(i, thing)
 		local weps = weapons.Get(i)
 		local entss = scripted_ents.Get(i)
@@ -92,7 +87,7 @@ if CLIENT then
 
 	local functions = {
 		["Weapons"] = function(ply, ent, wep)
-			local weapon = weapons.Get(wep)
+			weapons.Get(wep)
 			if (ent:IsPlayer() and IsValid(ent:GetActiveWeapon()) and ent:GetActiveWeapon() == wep) then return end
 			--if not hg.weaponInv.CanInsert(ply, weapon) or ply:HasWeapon(wep) then return false end
 			return true
@@ -127,17 +122,10 @@ if CLIENT then
 	end
 
 	local plyMenu
-	local chosen
-	local chooseButton
-	local chooseButtonHuy
-	local blurMat = Material("pp/blurscreen")
-	local Dynamic = 0
 	BlurBackground = BlurBackground or hg.DrawBlur
 
 	hook.Add("OnNetVarSet","inventory_netvar",function(index,key,var)
 		if key == "Inventory" then
-			local ent = Entity(index)
-
 			if IsValid(plyMenu) and plyMenu.entindex == index then
 				timer.Simple(0,function()
 					--OpenInv(ent)
@@ -152,7 +140,7 @@ if CLIENT then
 			plyMenu:Remove()
 			plyMenu = nil
 		end
-		
+
 		cooldown = CurTime() + 0
 
 		if not IsValid(ent) then return end
@@ -187,7 +175,7 @@ if CLIENT then
 		plyMenu:ShowCloseButton(true)
 		plyMenu:SetVisible(true)
 		plyMenu.Created = CurTime()
-		--plyMenu.OldPaint = 
+		--plyMenu.OldPaint =
 		plyMenu.PaintOver = function(self, w, h)
 			draw.DrawText(name, "HomigradFontSmall", w / 2, 10, color_white, TEXT_ALIGN_CENTER)
 
@@ -242,9 +230,9 @@ if CLIENT then
 		grid:SetColWide(sizeX / 5 - sizeX / 16 / 9)
 		grid:SetRowHeight(sizeY / 6.5 + sizeY / 32)
 		local count = 0
-		for tab, things in pairs(inv) do
+		for _, things in pairs(inv) do
 			if not istable(things) then continue end
-			for i, thing in pairs(things) do
+			for i, _ in pairs(things) do
 				ent.foundloot = ent.foundloot or {}
 				count = count + ((ent:IsPlayer() or ent:IsRagdoll()) and ((hg.TraitorLoot[i] and ent:IsPlayer()) and 2 or 0.5) or 1) * (not ent.foundloot[i] and 1 or 0)
 			end
@@ -253,7 +241,7 @@ if CLIENT then
 		function DScrollPanel:Paint(w, h)
 			txt = "Searching"
 			if time > 0 then
-				for i = 1, 3 - math.Round(time-CurTime(),0) do
+				for _ = 1, 3 - math.Round(time-CurTime(),0) do
 					txt = txt .. "."
 				end
 				if time < CurTime() then
@@ -263,17 +251,16 @@ if CLIENT then
 			draw.DrawText((plyMenu.Created + count + 3) < CurTime() and "" or txt, "ZCity_Small", w / 2, h / 2.8, Color(255,255,255,15), TEXT_ALIGN_CENTER)
 		end
 		local count2 = 0
-		
+
 		for tab, things in pairs(inv) do
 			if not istable(things) then continue end
 			local keys = table.GetKeys(things)
 			table.sort(keys,function(a,b)
-				local atbl = weapons.Get(a)
-				local wep = atbl and atbl.holsteredBone and not atbl.shouldntDrawHolstered
+				weapons.Get(a)
 				return (ent.foundloot[a] and 1 or 0) > (ent.foundloot[b] and 1 or 0)//(hg.TraitorLoot[a] or 0) < (hg.TraitorLoot[b] or (wep and 1 or 0) or 0)
 			end)
-			
-			for k, i in ipairs(keys) do
+
+			for _, i in ipairs(keys) do
 				local thing = things[i]
 				local thing1 = istable(thing) and thing or {thing}
 
@@ -301,14 +288,14 @@ if CLIENT then
 						self.Created = nil
 					end
 				end
-				
+
 				button.DoClick = function()
 					if cooldown > CurTime() then return end
 
 					cooldown = CurTime() + 0.5
-					
+
 					if not functions[tab](ply, ent, i, unpack(thing1)) then
-						local OptionsMenu = DermaMenu() 
+						local OptionsMenu = DermaMenu()
 							OptionsMenu:AddOption( "You have item like this", function() end )
 						OptionsMenu:Open()
 						return
@@ -316,7 +303,7 @@ if CLIENT then
 					if istable(thing) then
 						thing["render"] = {}
 					end
-					
+
 					surface.PlaySound("arc9_eft_shared/generic_mag_pouch_in" .. math.random(7) .. ".ogg")
 					grid.SoundKD = CurTime() + 0.2
 					button:Remove()
@@ -331,9 +318,9 @@ if CLIENT then
 
 					cooldown = CurTime() + 0.5
 
-					
+
 					if not functions[tab](ply, ent, i, unpack(thing1)) then
-						local OptionsMenu = DermaMenu() 
+						local OptionsMenu = DermaMenu()
 							OptionsMenu:AddOption( "You have item like this", function() end )
 						OptionsMenu:Open()
 						return
@@ -341,11 +328,11 @@ if CLIENT then
 					if istable(thing) then
 						thing["render"] = {}
 					end
-					
+
 					surface.PlaySound("arc9_eft_shared/generic_mag_pouch_in" .. math.random(7) .. ".ogg")
 					grid.SoundKD = CurTime() + 0.2
 					--button:Remove()
-					local OptionsMenu = DermaMenu() 
+					local OptionsMenu = DermaMenu()
 						OptionsMenu:AddOption( "Take", function() button:Remove() TakeItem(tab, i, thing, ent) end )
 					OptionsMenu:Open()
 					--timer.Simple(0.5 * math.max(ply:Ping() / 50,1),function()

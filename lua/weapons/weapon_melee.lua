@@ -1,4 +1,4 @@
-﻿if SERVER then AddCSLuaFile() end
+if SERVER then AddCSLuaFile() end
 SWEP.PrintName = "Combat Knife"
 SWEP.Instructions = "A military grade combat knife designed to neutralize the enemy during combat operations and special operations."
 SWEP.Category = "Weapons - Melee"
@@ -130,10 +130,10 @@ function SWEP:InUse()
 	local ply = self:GetOwner()
 
     if !IsValid(ply) then return false end
-    
+
     local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
 	local org = ply.organism
-    
+
 	local power = ply:GetNWFloat("power", 1)
 
 	if power < 0.4 and ent != ply then
@@ -179,12 +179,12 @@ if CLIENT then
         if not IsValid(ent) then
             self:DrawWorldModel2()
         end
-        
+
         if ent:IsNPC() then
 			local RHand = ent:LookupBone("ValveBiped.Bip01_R_Hand")
 			if not RHand then return end
 			local matrixR = ent:GetBoneMatrix(RHand) or ent:GetBoneMatrix(ent:LookupBone("ValveBiped.Bip01_R_Forearm"))
-			if not matrixR then 
+			if not matrixR then
 				//matrixR = Matrix()
 				//local att = ent:GetAttachment(ent:LookupAttachment("anim_attachment_RH"))
 				//matrixR:SetTranslation(att.Pos)
@@ -220,18 +220,18 @@ if CLIENT then
 
 	function SWEP:DrawWorldModel2()
 		local owner = self:GetOwner()
-        
+
         if not IsValid(self.worldModel) then
             self.worldModel = self:GetWM()
         end
-        
+
         self.worldModel:SetNoDraw(true)
-        
+
         if IsValid(owner) and (not owner.shouldTransmit or owner.NotSeen) then return end
         if not IsValid(owner) and (not self.shouldTransmit or self.NotSeen) then return end
 
 		local WorldModel = self.worldModel
-        
+
         self.worldModel:SetModelScale(self.modelscale2)
         local ent = hg.GetCurrentCharacter(owner)
 
@@ -241,7 +241,7 @@ if CLIENT then
             if not self.cycling then
                 local dtime = SysTime() - (self.lasthuyhuy or SysTime())
                 self.lasthuyhuy = SysTime()
-                
+
                 if self.stopanim and self.stopanim > 0 then
                     self.animtime = self.animtime + dtime * game.GetTimeScale()
                     self.stopanim = self.stopanim - dtime * game.GetTimeScale()
@@ -252,10 +252,10 @@ if CLIENT then
                 local timing = (1 - math.Clamp((self.animtime - CurTime()) / self.animspeed, 0, 1))
                 timing = self.reverseanim and (1 - timing) or timing
 				timing = self.CustomTiming and self:CustomTiming() or timing
-                
+
                 WorldModel:SetCycle(timing)
                 --PrintTable( WorldModel:GetSequenceList() )
-                
+
                 if self.callback and timing == ((not self.reverseanim) and 1 or 0) then
                     self.callback(self)
                     self.callback = nil
@@ -266,7 +266,7 @@ if CLIENT then
             end
 
             if WorldModel:GetModel() ~= self.WorldModelReal then WorldModel:SetModel(self.WorldModelReal) end
-            
+
             local pos, ang = self:ModelAnim(WorldModel)
 
 			WorldModel:SetRenderOrigin(pos)
@@ -275,7 +275,7 @@ if CLIENT then
             WorldModel:SetAngles(ang)
 		else
             if WorldModel:GetModel() ~= self.WorldModel then WorldModel:SetModel(self.WorldModel) end
-			
+
             WorldModel:SetRenderOrigin(self:GetPos())
 			WorldModel:SetRenderAngles(self:GetAngles())
             WorldModel:SetPos(self:GetPos())
@@ -283,7 +283,7 @@ if CLIENT then
 		end
 
         WorldModel:SetupBones()
-        
+
         if IsValid(owner) and !inuse then
             local bon = ent:LookupBone("ValveBiped.Bip01_R_Hand")
             if not bon then return end
@@ -294,12 +294,12 @@ if CLIENT then
             //local oldpos, oldang = WorldModel:GetPos(), WorldModel:GetAngles()
 
             //self.Current = LerpFT(0.1, self.Current,  and 1 or 0)
-            
+
             //local pos = Lerp(self.Current, oldpos, pos)
             //local ang = Lerp(self.Current, oldang, ang)
 
             WorldModel:SetRenderOrigin(pos)
-			WorldModel:SetRenderAngles(ang) 
+			WorldModel:SetRenderAngles(ang)
             WorldModel:SetPos(pos)
             WorldModel:SetAngles(ang)
 
@@ -341,7 +341,7 @@ if CLIENT then
 
             local pos,ang = self.worldModel:GetPos(),self.worldModel:GetAngles()
             local huy = self.worldModel:GetModel() == self.WorldModelReal
-            
+
             if (IsValid(self:GetOwner()) or self.DontChangeDropped) then
                 local mat = self.worldModel:GetBoneMatrix(self.basebone or 1)
                 pos,ang = LocalToWorld(self.weaponPos,self.weaponAng,huy and mat and mat:GetTranslation() or self.worldModel:GetPos(),huy and mat and mat:GetAngles() or self.worldModel:GetAngles())
@@ -355,7 +355,7 @@ if CLIENT then
             self.worldModel2:SetupBones()
             self.worldModel2:DrawModel()
         end
-		
+
 		if(self.DrawPostWorldModel)then
 			self:DrawPostWorldModel()
 		end
@@ -369,7 +369,6 @@ end
 local addAng = Angle()
 local addPos = Vector()
 
-local vechuy = Vector()
 
 local addPosLerp = Vector()
 local addAngLerp = Angle()
@@ -406,11 +405,11 @@ function SWEP:ModelAnim(model, pos, ang)
 
     self.walkLerped = LerpFT(0.1, self.walkLerped or 0, (owner:InVehicle()) and 0 or vellenlerp * 200)
 	self.walkTime = self.walkTime or 0
-    
+
 	local walk = math.Clamp(self.walkLerped / 200, 0, 1)
-	
+
 	self.walkTime = self.walkTime + walk * dtime * 7 * game.GetTimeScale() * (owner:OnGround() and 1 or 0)
-    
+
     self.velocityAdd = self.velocityAdd or Vector()
     self.velocityAddVel = self.velocityAddVel or Vector()
 
@@ -421,9 +420,9 @@ function SWEP:ModelAnim(model, pos, ang)
     self.velocityAdd = LerpFT(0.03, self.velocityAdd, self.velocityAddVel)
 
 	local huy = self.walkTime
-	
+
 	local x, y = math.cos(huy) * math.sin(huy) * walk + math.cos(CurTime() * 5) * walk * math.sin(CurTime() * 2) * 0.5, math.sin(huy) * walk * 1 + math.sin(CurTime() * 5) * walk * math.cos(CurTime() * 4) * 0.5
-    
+
     addPos:Zero()
     addAng:Zero()
     addPosLerp:Zero()
@@ -455,7 +454,7 @@ function SWEP:ModelAnim(model, pos, ang)
     if self:IsLocal() then
         addPos.z = x * 2 * vellenlerp * 0.3 - vellenlerp * 1
         addPos.y = y * 2 * vellenlerp * 0.3
-    
+
         addAng.z = -x * 2// * vellenlerp * 0.3
         addAng.y = -y * 2// * vellenlerp * 0.3
 
@@ -471,7 +470,7 @@ function SWEP:ModelAnim(model, pos, ang)
         addPos.x = addPos.x + eyeAng[1] * 0.05
 
         local veldot = self.velocityAdd:Dot(eyeAng:Right())
-        
+
         addAng.r = addAng.r - veldot * 5 + math.cos(CurTime() * 5) * walk * 2 - angle_difference.y * 2
 
         //addAng.p = addAng.p + math.cos(CurTime() * 2) * 1
@@ -487,11 +486,11 @@ function SWEP:ModelAnim(model, pos, ang)
 
     local hpos = self.HoldPos
     local hang = self.HoldAng
-    
+
     if self.SuicideStart and self.SuicideStart + self.SuicideTime > CurTime() then
         local animpos = (1 - math.Clamp((self.SuicideStart + self.SuicideTime - CurTime()) / self.SuicideTime, 0, 1))
         animpos = math.ease.OutElastic(animpos)
-        
+
         addPos:Add(self.SuicideCutVec * animpos)
         addAng:Add(self.SuicideCutAng * animpos)
     end
@@ -530,7 +529,6 @@ function hg.RenderMelees(ent, ply, wep)
 end
 --end)
 
-local host_timescale = game.GetTimeScale
 
 function SWEP:Camera(eyePos, eyeAng, view, vellen)
     //self:SetHandPos()
@@ -541,7 +539,7 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen)
     if not IsValid(WorldModel) then return end
 
     local camBone = (WorldModel:LookupBone(self.FakeViewBobBone) or (self.FakeVPShouldUseHand and WorldModel:LookupBone("ValveBiped.Bip01_R_Hand") or WorldModel:LookupBone("Weapon"))) or WorldModel:LookupBone("ValveBiped.Bip01_R_Hand")
-    
+
     if camBone then
         local matrix = WorldModel:GetBoneMatrix(camBone)
 
@@ -550,12 +548,12 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen)
             local _,gAngles = WorldToLocal(vector_origin, gAngles, eyePos, eyeAng)
             self.OldAngPunch = self.OldAngPunch or gAngles
             local punch = ( self.OldAngPunch - gAngles ) / (self.ViewPunchDiv or 120)
-            
+
             self.punch = punch
 
             //ViewPunch2( -punch )
             ViewPunch( punch )
-            
+
             self.OldAngPunch = gAngles
         end
     end
@@ -565,11 +563,10 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen)
 
     view.origin = eyePos - (angle_difference_localvec * 150) - (position_difference * 0.5)
     view.angles = eyeAng
-    
-    local lpos = self.lastAddPos or vector_origin
+
     //view.angles[1] = view.angles[1] + lpos.z * 1
     //view.angles[2] = view.angles[2] + lpos.y * 1
-    
+
     return view
 end
 
@@ -580,7 +577,7 @@ function SWEP:SetHandPos(noset)
 
     self.rhandik = false
 	self.lhandik = false
-    
+
     if not IsValid(ply) or not IsValid(self.worldModel) then return end
     if not ply.shouldTransmit or ply.NotSeen then return end
 
@@ -612,7 +609,7 @@ function SWEP:SetHandPos(noset)
 			if !wm_boneindex then continue end
 			local wm_bonematrix = wm:GetBoneMatrix(wm_boneindex)
 			if !wm_bonematrix then continue end
-			
+
 			local ply_boneindex = ent:LookupBone(bone)
 			if !ply_boneindex then continue end
 			local ply_bonematrix = ent:GetBoneMatrix(ply_boneindex)
@@ -627,7 +624,7 @@ function SWEP:SetHandPos(noset)
 
 			ply_bonematrix:SetTranslation(bonepos)
 			ply_bonematrix:SetAngles(boneang)
-			
+
             --if bone == "ValveBiped.Bip01_L_Hand" then lhmat = ply_bonematrix end
 			ent:SetBoneMatrix(ply_boneindex, ply_bonematrix)
 			--ent:SetBonePosition(ply_boneindex, bonepos, boneang)
@@ -660,7 +657,7 @@ function SWEP:SetHandPos(noset)
 			if !wm_boneindex then continue end
 			local wm_bonematrix = wm:GetBoneMatrix(wm_boneindex)
 			if !wm_bonematrix then continue end
-			
+
 			local ply_boneindex = ent:LookupBone(bone)
 			if !ply_boneindex then continue end
 			local ply_bonematrix = ent:GetBoneMatrix(ply_boneindex)
@@ -719,7 +716,7 @@ function SWEP:Deploy()
     self.Initialzed = true
     self:PlayAnim("deploy", 1, false, nil, false)
     self:SetHold(self.HoldType)
-	
+
 	return true
 end
 
@@ -760,7 +757,7 @@ if CLIENT then
 
         sensitivity = math.min(sensitivity, mul)
         sensitivity = LerpFT(0.02, sensitivity, mul)
-        
+
         return IsValid(ent) and ent:IsPlayer() and sensitivity
     end
 
@@ -785,8 +782,8 @@ end
 
 function SWEP:Attack(owner, ent, vellen, attacktype, inattackLength)
     //if SERVER then owner:SetNetVar("slowDown", owner:GetNetVar("slowDown", 0) + (attacktype and self.DamageSecondary or self.DamagePrimary)) end
-    
-    if not self.FirstAttackTick then 
+
+    if not self.FirstAttackTick then
         if CLIENT then
             if owner == lply and self.viewpunch then
                 ViewPunch(self.ViewPunch1)
@@ -795,9 +792,9 @@ function SWEP:Attack(owner, ent, vellen, attacktype, inattackLength)
         else
             self.Penetration = attacktype and self.PenetrationSecondary or self.PenetrationPrimary
             self.PenetrationSize = attacktype and self.PenetrationSizeSecondary or self.PenetrationSizePrimary
-            
+
             owner:EmitSound(self.AttackSwing or "weapons/slam/throw.wav",50,math.random(95,105))
-            
+
             if owner.organism then
                 owner.organism.stamina.subadd = owner.organism.stamina.subadd + (attacktype and self.StaminaSecondary or self.StaminaPrimary) * 0.5 * math.Clamp(vellen / 200, 1, 1.25)
             end
@@ -817,9 +814,9 @@ function SWEP:Attack(owner, ent, vellen, attacktype, inattackLength)
             end
         end
     end
-    
+
     self.HitEnts = self.HitEnts or {owner, ent}
-    
+
     local vellen = math.min(owner:GetVelocity():Length() * 0.05, 40)
     local eyetr = hg.eyeTrace(owner, (self:GetAttackLength() + vellen), ent, owner:GetAimVector())
     //debugoverlay.Line(eyetr.StartPos, eyetr.StartPos + eyetr.Normal * (self:GetAttackLength() + vellen), 3, color_white)
@@ -830,7 +827,7 @@ function SWEP:Attack(owner, ent, vellen, attacktype, inattackLength)
     //ent:SetMoveType(MOVETYPE_NONE)
     //ent:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
     --if self:IsEntSoft(eyetr.Entity) then return eyetr end
-    
+
     local trace
 
     local amt = 6
@@ -841,7 +838,7 @@ function SWEP:Attack(owner, ent, vellen, attacktype, inattackLength)
         normal:RotateAroundAxis(normal:Forward(), (attacktype and self.SwingAng2 or self.SwingAng) or -90)
         normal:RotateAroundAxis(normal:Up(), ((0.5 - inattackLength) * ((attacktype and self.AttackRads2 or self.AttackRads) or 65)))
         normal:RotateAroundAxis(normal:Up(), (i - amt * 0.5) * 1)
-        
+
         --debugoverlay.Line(eyetr.StartPos, eyetr.StartPos + normal:Forward() * (self:GetAttackLength() + vellen), 3, color_white)
 
         local tr = {}
@@ -884,7 +881,7 @@ end
 
 function SWEP:PlayEffects(trace, attacktype)
     local owner = self:GetOwner()
-    
+
     if self:IsEntSoft(trace.Entity) then
         owner:EmitSound(attacktype and self.Attack2HitFlesh or self.AttackHitFlesh, 50)
 
@@ -908,11 +905,11 @@ function SWEP:BreakGlass(ent)
 	if not IsValid(ent) then return end
     if string.find(ent:GetClass(),"break") and ent:GetBrushSurfaces()[1] and string.find(ent:GetBrushSurfaces()[1]:GetMaterial():GetName(),"glass") then
         //ent:EmitSound("physics/glass/glass_sheet_impact_hard"..math.random(3)..".wav")
-        
+
         if math.random(1, 4) == 4 and ent:Health() < 250 then
             //ent:Fire("Break")
         end
-        
+
         return true
     else
         return false
@@ -926,7 +923,7 @@ function SWEP:BehindAttack(ent)
 end
 
 function SWEP:PunchPlayer(ent, attacktype, trnormal, dmg)
-    if ent:IsPlayer() or ent:IsRagdoll() then 
+    if ent:IsPlayer() or ent:IsRagdoll() then
         local ply = hg.RagdollOwner(ent) or ent
 
         if ply:IsPlayer() then
@@ -935,8 +932,8 @@ function SWEP:PunchPlayer(ent, attacktype, trnormal, dmg)
             normal:RotateAroundAxis(normal:Up(),-((attacktype and self.AttackRads2 or self.AttackRads) or 65))
 
             local dot = ply:GetAimVector():Dot(trnormal)
-            
-            local angrand = AngleRand(-5, 5)
+
+            AngleRand(-5, 5)
 
             ply:ViewPunch((normal * -dot) * dmg / 30)
 			if ply:OnGround() or ply.organism.superfighter then
@@ -959,44 +956,38 @@ function SWEP:AlreadyHit(ent, trace, dmg)
 end
 
 function SWEP:BlockingLogic(ent, mul, attacktype, trace)
-    local ent = hg.RagdollOwner(ent) or ent
-	local owner = self:GetOwner()
+    ent = hg.RagdollOwner(ent) or ent
+    local owner = self:GetOwner()
 
-	if ent:IsPlayer() and ((istable(self.HitEnts) and !table.HasValue(self.HitEnts, ent)) or owner:IsNPC()) then
+    if ent:IsPlayer() and ((istable(self.HitEnts) and !table.HasValue(self.HitEnts, ent)) or owner:IsNPC()) then
         local wep = ent:GetActiveWeapon()
-
         local pos, aimvec = hg.eye(ent)
-        local pos2, aimvec2 = hg.eye(owner)
+        local _, aimvec2 = hg.eye(owner)
 
-		if owner:IsNPC() then
-			pos, aimvec, aimvec2 = owner:EyePos(), owner:GetAimVector(), owner:GetAimVector()
-		end
+        if owner:IsNPC() then
+            pos, aimvec, aimvec2 = owner:EyePos(), owner:GetAimVector(), owner:GetAimVector()
+        end
 
         if not aimvec or not aimvec2 then return 1 end
 
-        local dist, posHit, distLine = util.DistanceToLine(pos + aimvec * 100, pos, trace.HitPos)
-
-        //print(dist, distLine)
-
+        local dist = util.DistanceToLine(pos + aimvec * 100, pos, trace.HitPos)
         local dmg = wep.DamagePrimary
         local selfdmg = self.DamagePrimary * 0.2
 
         if wep.GetBlocking and wep:GetBlocking() and wep.SetStartedBlocking and dist < 10 then
             local perfectblock = CurTime() - wep:GetStartedBlocking() < 0.5
-            
+
             ent.organism.stamina.subadd = ent.organism.stamina.subadd + mul * math.Clamp(selfdmg / dmg, 0.1, 1) * selfdmg * (perfectblock and 0 or 1)
 
-            //viewpunch the attacker maybe?
-			if not owner:IsNPC() then
-            	self:PunchPlayer(owner, attacktype, -owner:GetAimVector(), selfdmg / 2)
-			end
+            if not owner:IsNPC() then
+                self:PunchPlayer(owner, attacktype, -owner:GetAimVector(), selfdmg / 2)
+            end
+
             self:PunchPlayer(ent, attacktype, owner:GetAimVector(), selfdmg / 2)
-            
+
             if perfectblock then
                 ent:EmitSound("tasty/empty.wav")
             end
-            
-            //ent:EmitSound("physics/metal/metal_computer_impact_bullet3.wav") -- parry sound
 
             if wep.SetLastBlocked then
                 wep:SetLastBlocked(CurTime())
@@ -1009,7 +1000,6 @@ function SWEP:BlockingLogic(ent, mul, attacktype, trace)
     return 1
 end
 
-local matBlood = Material("zbattle/blood")
 SWEP.blockSound = nil
 SWEP.ShouldAttackOnce = true
 
@@ -1035,7 +1025,7 @@ function SWEP:CustomThink()
 
 	if SERVER and not owner:IsNPC() and owner.organism and (not owner.organism.canmove or ((owner.organism.stun - CurTime()) > 0) or (owner.organism.larm == 1 and owner.organism.rarm == 1)) and IsValid(actwep) and self == actwep then
 		self:RemoveFake()
-		
+
 		hg.drop(owner)
 
 		return
@@ -1053,12 +1043,12 @@ function SWEP:CustomThink()
 
                 local org = owner.organism
                 local ent = hg.GetCurrentCharacter(owner)
-                
+
                 local ang = ent:GetBoneMatrix(ent:LookupBone("ValveBiped.Bip01_Neck1")):GetAngles()
                 local _, ang = LocalToWorld(vector_origin, Angle(0, -60, 0), vector_origin, ang)
-                
+
                 hg.organism.input_list["arteria"](org, 0, 5, dmgInfo, nil, -ang:Forward())
-                
+
                 for i = 1, 5 do
                     hg.organism.AddWoundManual(owner, 50, VectorRand(-2, 2), ang, "ValveBiped.Bip01_Neck1", CurTime() + math.Rand(0, 2))
                 end
@@ -1071,7 +1061,7 @@ function SWEP:CustomThink()
                 --end)
                 hook.Run("HomigradDamage", owner, dmgInfo, HITGROUP_HEAD, hg.GetCurrentCharacter(org.owner), 15)
                 owner:EmitSound(self.SuicideSound or self.Attack2HitFlesh, 50)
-                
+
                 --timer.Simple(0.05, function()
                 --    owner:ViewPunch(self.SuicidePunchAng or Angle(5, 10, 0))
                 --end)
@@ -1089,7 +1079,7 @@ function SWEP:CustomThink()
 
     if SERVER and owner.organism and owner.organism.rarmamputated then
         self:RemoveFake()
-		
+
 		hg.drop(owner)
 
         return
@@ -1098,7 +1088,7 @@ function SWEP:CustomThink()
     if owner.organism and owner.organism.larmamputated and self.TwoHanded then return end
 
     self:ThinkAdd()
-    
+
     if CLIENT and owner ~= lply then return end
 
     //if SERVER then
@@ -1106,7 +1096,7 @@ function SWEP:CustomThink()
         local blocking = ((CurTime() - self:GetStartedBlocking()) > 1 or oldblocking) and owner.organism and owner.organism.stamina[1] > 90 and !self:GetInAttack() and (self:GetAttackTime() - CurTime() - 0) < 0 and ((self:GetLastBlocked() + 3) < CurTime()) and self:CanBlock() and hg.KeyDown(owner, IN_ATTACK2)
         --if self:CutDuct() then return end
         self:SetBlocking(blocking)
-        
+
         if self:GetBlocking() and !oldblocking then
             self:SetStartedBlocking(CurTime())
         end
@@ -1130,15 +1120,15 @@ function SWEP:CustomThink()
 
         local inattackL1 = math.max(self:GetAttackTime() - CurTime(), 0) / self.AttackTimeLength
         local inattackL2 = math.max(self:GetAttackTime() - CurTime(), 0) / self.Attack2TimeLength
-        
+
         local ent = hg.GetCurrentCharacter(owner)
         local vellen = ent:GetVelocity():Length()
 
         local mul = self:MultiplyDMG(owner, ent, vellen, 1)
-        
+
         if self:GetAttackType() == 1 and inattack1 == 0 then
             owner:LagCompensation(true)
-            
+
             local trace = self:Attack(owner, ent, vellen, false, inattackL1)
 
             owner:LagCompensation(false)
@@ -1169,18 +1159,18 @@ function SWEP:CustomThink()
             end
 
 			if CLIENT and IsFirstTimePredicted() and self.weight > 0.4 and (!self.stopanim or (!soft and !self.HitWorld)) and !hg_nomeleestop:GetBool() then
-				if !soft or self.AnimAlwaysBack or self.HitWorld then   
+				if !soft or self.AnimAlwaysBack or self.HitWorld then
                     local mul = 5
                     self.animspeed = self.animspeed * mul
 
                     self.animtime = CurTime() - (self.animtime - CurTime()) * mul + self.animspeed - 0.1
-                    
+
                     timer.Simple(0.4, function()
                         if !IsValid(self) then return end
 
                         local timing = (1 - math.Clamp((self.animtime - CurTime()) / self.animspeed, 0, 1))
                         local mul = 0.25
-                        
+
                         self.animtime = CurTime() - timing * self.animspeed * mul + self.animspeed * mul
                         self.animspeed = self.animspeed * mul
                     end)
@@ -1193,16 +1183,16 @@ function SWEP:CustomThink()
 				else
                     local timing = (1 - math.Clamp((self.animtime - CurTime()) / self.animspeed, 0, 1))
                     local mul = 5
-                    
+
                     self.animtime = CurTime() - timing * self.animspeed * mul + self.animspeed * mul
                     self.animspeed = self.animspeed * mul
-                    
+
                     timer.Simple(0.1, function()
                         if !IsValid(self) then return end
 
                         local timing = (1 - math.Clamp((self.animtime - CurTime()) / self.animspeed, 0, 1))
                         local mul = 0.3
-                        
+
                         self.animtime = CurTime() - timing * self.animspeed * mul + self.animspeed * mul
                         self.animspeed = self.animspeed * mul
                     end)
@@ -1226,11 +1216,11 @@ function SWEP:CustomThink()
             if self:AlreadyHit(ent, trace) then
                 goto meleeskip1
             end
-            
+
             if self.HitEnts[#self.HitEnts] ~= ent then
                 self:PlayEffects(trace, false)
             end
-            
+
             if self.MultiDmg1 or (self.HitEnts[#self.HitEnts] ~= ent) then
                 //if self:BreakGlass(ent) then
                     //goto meleeskip1
@@ -1241,7 +1231,7 @@ function SWEP:CustomThink()
                 else
                     dmg = dmg / 1.5
                 end
-                                
+
                 local dmginfo = DamageInfo()
 
                 dmginfo:SetAttacker(owner)
@@ -1250,12 +1240,12 @@ function SWEP:CustomThink()
                 dmginfo:SetDamageForce(trace.Normal * dmg)
                 dmginfo:SetDamageType(ent:GetClass() == "func_breakable_surf" and DMG_SLASH or self.DamageType)
                 dmginfo:SetDamagePosition(trace.HitPos)
-                
+
                 self.slash = self.MultiDmg1
                 ent:TakeDamageInfo(dmginfo)
                 self.attackedOnce = true
                 self.slash = nil
-                
+
                 hg.AddForceRag(ent, trace.PhysicsBone or 0, trace.Normal * math.min(dmg, 25) * 400, 0.5)
 
                 self:PunchPlayer(ent, false, trace.Normal, dmg)
@@ -1270,7 +1260,7 @@ function SWEP:CustomThink()
             end
 
             ::meleeskip1::
-            
+
             if not ent:IsWorld() and self:IsEntSoft(ent) then
                 self.HitEnts[#self.HitEnts + 1] = ent
             end
@@ -1285,7 +1275,7 @@ function SWEP:CustomThink()
             end
         elseif self:GetAttackType() == 2 and inattack2 == 0 then
             owner:LagCompensation(true)
-            
+
             local trace = self:Attack(owner, ent, vellen, true, inattackL2)
 
             owner:LagCompensation(false)
@@ -1313,7 +1303,7 @@ function SWEP:CustomThink()
             if SERVER then -- runboost for superfighters and (ent:OnGround() or ent.organism and ent.organism.superfighter)
                 local vec = trace.Normal * math.min(self.DamageSecondary  * 0.5, 20)
                 vec[3] = 0
-                
+
                 ent:SetVelocity(vec)
             end
 
@@ -1412,7 +1402,7 @@ function SWEP:PrimaryAttack()
 
     if ply.organism and ply.organism.larmamputated and self.TwoHanded then return end
     if !hg.KeyDown(self:GetOwner(), IN_ATTACK2) and not self:CanPrimaryAttack() then return end
-    
+
     if self:GetLastBlocked() + 1 > CurTime() then
         //return
     end
@@ -1422,7 +1412,7 @@ function SWEP:PrimaryAttack()
 
         return
     end
-    
+
     local ply = self:GetOwner()
     local ent = hg.GetCurrentCharacter(ply)
 
@@ -1432,7 +1422,7 @@ function SWEP:PrimaryAttack()
 
     local mul = 1 / math.Clamp((180 - self:GetOwner().organism.stamina[1]) / 90, 1, 2)
 
-    
+
     self.HitEnts = nil
     self.FirstAttackTick = false
     self.AttackHitPlayed = false
@@ -1455,13 +1445,13 @@ end
 
 function SWEP:CutDuct()
     if self.DamageType ~= DMG_SLASH or CLIENT then return end
-    
+
     local ent = hg.eyeTrace(self:GetOwner()).Entity
-    
+
     if IsValid(ent) then
         if hgIsDoor(ent) and ent.LockedDoor then
             ent.LockedDoor = ent.LockedDoor - FrameTime() * 10
-            
+
             if (ent.SoundTime or 0) < CurTime() then
                 ent.SoundTime = CurTime() + 5
 
@@ -1473,7 +1463,7 @@ function SWEP:CutDuct()
                 if !ent.LockedDoorNail and !ent.LockedDoorMap then ent:Fire("unlock", "", 0) end
                 ent.LockedDoor = nil
             end
-            
+
             return true
         end
 
@@ -1484,18 +1474,18 @@ function SWEP:CutDuct()
                 self:GetOwner():EmitSound("tapetear.mp3",65)
                 self:PlayAnim("duct_cut",5)
             end
-            
+
             local key = next(ent.DuctTape)
             local duct = ent.DuctTape[key]
-            
+
             duct[2] = duct[2] - FrameTime()
-            
+
             if duct[2] <= 0 then
                 if IsValid(duct[1]) then
                     duct[1]:Remove()
                     duct[1] = nil
                 end
-                
+
                 ent.DuctTape[key] = nil
             end
 
@@ -1517,7 +1507,7 @@ function SWEP:SecondaryAttack(override)
     end
 
     if self:CanBlock() and not override then
-        return 
+        return
     end
 
     if self:GetLastBlocked() + 1 > CurTime() then
@@ -1525,10 +1515,10 @@ function SWEP:SecondaryAttack(override)
     end
 
     if not self:CanSecondaryAttack() then
-        
+
         return
     end
-    
+
     if not game.SinglePlayer() and not IsFirstTimePredicted() then return end
 
     local ent = hg.GetCurrentCharacter(ply)
@@ -1539,7 +1529,7 @@ function SWEP:SecondaryAttack(override)
     if self.lastattack and (self.lastattack + self.attackwait) > CurTime() then return end
 
     local mul = 1 / math.Clamp((180 - ply.organism.stamina[1]) / 90, 1, 2)
-    
+
     self.HitEnts = nil
     self.FirstAttackTick = false
     self.AttackHitPlayed = false
@@ -1607,7 +1597,7 @@ function SWEP:Initialize()
             addPosLerp.y = addPosLerp.y + (self:GetBlocking() and -18 or 0)
             addAngLerp.r = addAngLerp.r + (self:GetBlocking() and 20 or 0)
             addAngLerp.y = addAngLerp.y + (self:GetBlocking() and 60 or 0)
-            
+
             return true
         end
 
@@ -1622,7 +1612,7 @@ function SWEP:Initialize()
                 return false
             end
         end
-        
+
         function self:CanSecondaryAttack()
             return self.allowsec and true or false
         end
@@ -1635,7 +1625,7 @@ function SWEP:Initialize()
         self:Activate()
     end
     self:SetHold(self.HoldType)
-    
+
     util.PrecacheSound(self.AttackSwing)
     util.PrecacheSound(self.AttackHit)
     util.PrecacheSound(self.Attack2Hit)
@@ -1664,7 +1654,7 @@ elseif CLIENT then
         if ent.IsLocal and !ent:IsLocal() then
             if IsValid(ent) and ent.PlayAnim then
                 ent:PlayAnim(tbl.anim,tbl.time,tbl.cycling,tbl.callback,tbl.reverse)
-                
+
                 if (tbl.anim == "attack" or tbl.anim == "attack2") and ent:GetOwner().AnimRestartGesture and IsValid(ent:GetOwner()) and not ent:GetOwner():IsWorld() then
                     ent:GetOwner():AnimRestartGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_HL2MP_GESTURE_RANGE_ATTACK_SLAM, true)
                 end
@@ -1684,7 +1674,7 @@ function SWEP:PlayAnim(anim, time, cycling, callback, reverse, sendtoclient)
                 callback = callback,
                 reverse = reverse
             }
-            net.WriteTable(netTbl) 
+            net.WriteTable(netTbl)
             net.WriteEntity(self)
             net.WriteBool(sendtoclient)
         net.SendPVS(self:GetPos())
@@ -1702,7 +1692,7 @@ function SWEP:PlayAnim(anim, time, cycling, callback, reverse, sendtoclient)
     self.tries = 10
 
     if self:GetWM():GetModel() ~= self.WorldModelReal then self:GetWM():SetModel(self.WorldModelReal) end
-    
+
     self:GetWM():SetSequence(self.AnimList[anim] or anim)
     self.animtime = CurTime() + time
     self.animspeed = time
@@ -1760,17 +1750,17 @@ function SWEP:NPCThink()
     if not IsValid(npc) or not npc:IsNPC() then return end
 
     self:SetWeaponHoldType("melee")
-    
+
     if npc:GetClass() == "npc_metropolice" then
         self:SetWeaponHoldType("smg")
     end
-    
+
     --npc:Fire( "GagEnable" )
-    
+
     if npc:GetClass() == "npc_citizen" then
         --npc:Fire( "DisableWeaponPickup" )
     end
-    
+
     local enemy = npc:GetEnemy()
     if not IsValid(enemy) then return end
 
@@ -1785,7 +1775,7 @@ function SWEP:NPCThink()
 		if timer.Exists(timerId) then return end
 
         local dmg = math.random(self.DamagePrimary - 3, self.DamagePrimary + 3)
-        
+
         local tr = {}
         tr.start = npc:EyePos()
         tr.endpos = enemy.EyePos and enemy:EyePos() or enemy:GetPos()
@@ -1821,9 +1811,9 @@ function SWEP:NPCThink()
 						hg.AddForceRag(trEnt, trace.PhysicsBone or 0, trace.Normal * math.min(dmg, 25) * 400, 0.5)
 
 						self:PunchPlayer(trEnt, false, trace.Normal, dmg)
-		
+
 						local phys = trEnt:GetPhysicsObjectNum(trace.PhysicsBone or 0)
-		
+
 						if IsValid(phys) then
 							phys:ApplyForceOffset(trace.Normal * math.min(dmg, 25) * 400, trace.HitPos)
 						end
@@ -1860,10 +1850,10 @@ function SWEP:SetupWeaponHoldTypeForAI( t )
 		self.ActivityTranslateAI [ ACT_MELEE_ATTACK1 ]              = ACT_HL2MP_GESTURE_RANGE_ATTACK_KNIFE
 		self.ActivityTranslateAI [ ACT_MELEE_ATTACK2 ]              = ACT_HL2MP_GESTURE_RANGE_ATTACK_KNIFE
 		self.ActivityTranslateAI [ ACT_SPECIAL_ATTACK1 ] 			= ACT_HL2MP_GESTURE_RANGE_ATTACK_KNIFE
-		
+
 		self.ActivityTranslateAI [ ACT_RANGE_AIM_LOW ]              = ACT_HL2MP_IDLE_KNIFE
 		self.ActivityTranslateAI [ ACT_COVER_LOW ] 					= ACT_HL2MP_IDLE_KNIFE
-		
+
 		self.ActivityTranslateAI [ ACT_WALK ] 						= ACT_HL2MP_WALK_KNIFE
 		self.ActivityTranslateAI[ ACT_WALK_AIM ]				= ACT_HL2MP_WALK_KNIFE
 		self.ActivityTranslateAI[ ACT_WALK_AIM_RELAXED ]		= ACT_HL2MP_WALK_KNIFE
@@ -1872,7 +1862,7 @@ function SWEP:SetupWeaponHoldTypeForAI( t )
 		self.ActivityTranslateAI [ ACT_WALK_RELAXED ] 				= ACT_HL2MP_WALK_KNIFE
 		self.ActivityTranslateAI [ ACT_WALK_STIMULATED ] 			= ACT_HL2MP_WALK_KNIFE
 		self.ActivityTranslateAI [ ACT_WALK_AGITATED ] 				= ACT_HL2MP_WALK_KNIFE
-		
+
 		self.ActivityTranslateAI[ ACT_RUN_RELAXED ]			= ACT_HL2MP_RUN_KNIFE
 		self.ActivityTranslateAI[ ACT_RUN_STIMULATED ]		= ACT_HL2MP_RUN_KNIFE
 		self.ActivityTranslateAI[ ACT_RUN_AGITATED ]		= ACT_HL2MP_RUN_KNIFE
@@ -1886,12 +1876,12 @@ function SWEP:SetupWeaponHoldTypeForAI( t )
 		self.ActivityTranslateAI [ ACT_MP_RUN ] 					= ACT_HL2MP_RUN_KNIFE
 		self.ActivityTranslateAI [ ACT_SMALL_FLINCH ] 				= ACT_RANGE_ATTACK_PISTOL
 		self.ActivityTranslateAI [ ACT_BIG_FLINCH ] 				= ACT_RANGE_ATTACK_PISTOL
-		
+
 		return
 	end
-	
+
 	if ( t == "smg" ) then
-	
+
 		self.ActivityTranslateAI [ ACT_IDLE ] 						= ACT_HL2MP_IDLE_KNIFE
 		self.ActivityTranslateAI [ ACT_IDLE_ANGRY ] 				= ACT_HL2MP_IDLE_KNIFE
 		self.ActivityTranslateAI [ ACT_IDLE_RELAXED ] 				= ACT_HL2MP_IDLE_KNIFE
@@ -1921,12 +1911,12 @@ function SWEP:SetupWeaponHoldTypeForAI( t )
 		self.ActivityTranslateAI [ ACT_SPECIAL_ATTACK1 ] 			= ACT_RANGE_ATTACK_THROW
 		self.ActivityTranslateAI [ ACT_SMALL_FLINCH ] 				= ACT_RANGE_ATTACK_PISTOL
 		self.ActivityTranslateAI [ ACT_BIG_FLINCH ] 				= ACT_RANGE_ATTACK_PISTOL
-		
+
 		return
 	end
-	
+
 	if ( t == "shotgun" ) then
-		
+
 		self.ActivityTranslateAI [ ACT_IDLE ] 						= ACT_HL2MP_IDLE_KNIFE
 		self.ActivityTranslateAI [ ACT_IDLE_ANGRY ] 				= ACT_HL2MP_IDLE_KNIFE
 		self.ActivityTranslateAI [ ACT_IDLE_RELAXED ] 				= ACT_HL2MP_IDLE_KNIFE
@@ -1940,10 +1930,10 @@ function SWEP:SetupWeaponHoldTypeForAI( t )
 		self.ActivityTranslateAI [ ACT_MELEE_ATTACK1 ]              = ACT_HL2MP_GESTURE_RANGE_ATTACK_KNIFE
 		self.ActivityTranslateAI [ ACT_MELEE_ATTACK2 ]              = ACT_HL2MP_GESTURE_RANGE_ATTACK_KNIFE
 		self.ActivityTranslateAI [ ACT_SPECIAL_ATTACK1 ] 			= ACT_HL2MP_GESTURE_RANGE_ATTACK_KNIFE
-		
+
 		self.ActivityTranslateAI [ ACT_RANGE_AIM_LOW ]              = ACT_HL2MP_IDLE_KNIFE
 		self.ActivityTranslateAI [ ACT_COVER_LOW ] 					= ACT_HL2MP_IDLE_KNIFE
-		
+
 		self.ActivityTranslateAI [ ACT_WALK ] 						= ACT_HL2MP_WALK_KNIFE
 		self.ActivityTranslateAI[ ACT_WALK_AIM ]				= ACT_HL2MP_WALK_KNIFE
 		self.ActivityTranslateAI[ ACT_WALK_AIM_RELAXED ]		= ACT_HL2MP_WALK_KNIFE
@@ -1952,7 +1942,7 @@ function SWEP:SetupWeaponHoldTypeForAI( t )
 		self.ActivityTranslateAI [ ACT_WALK_RELAXED ] 				= ACT_HL2MP_WALK_KNIFE
 		self.ActivityTranslateAI [ ACT_WALK_STIMULATED ] 			= ACT_HL2MP_WALK_KNIFE
 		self.ActivityTranslateAI [ ACT_WALK_AGITATED ] 				= ACT_HL2MP_WALK_KNIFE
-		
+
 		self.ActivityTranslateAI[ ACT_RUN_RELAXED ]			= ACT_HL2MP_RUN_KNIFE
 		self.ActivityTranslateAI[ ACT_RUN_STIMULATED ]		= ACT_HL2MP_RUN_KNIFE
 		self.ActivityTranslateAI[ ACT_RUN_AGITATED ]		= ACT_HL2MP_RUN_KNIFE
@@ -1966,11 +1956,11 @@ function SWEP:SetupWeaponHoldTypeForAI( t )
 		self.ActivityTranslateAI [ ACT_MP_RUN ] 					= ACT_HL2MP_RUN_KNIFE
 		self.ActivityTranslateAI [ ACT_SMALL_FLINCH ] 				= ACT_RANGE_ATTACK_PISTOL
 		self.ActivityTranslateAI [ ACT_BIG_FLINCH ] 				= ACT_RANGE_ATTACK_PISTOL
-		
+
 		return
 	end
-	
-	if ( t == "pistol") then 
+
+	if ( t == "pistol") then
 		self.ActivityTranslateAI [ ACT_IDLE ] 						= ACT_HL2MP_IDLE_KNIFE
 		self.ActivityTranslateAI [ ACT_IDLE_ANGRY ] 				= ACT_HL2MP_IDLE_KNIFE
 		self.ActivityTranslateAI [ ACT_IDLE_RELAXED ] 				= ACT_HL2MP_IDLE_KNIFE
@@ -1984,10 +1974,10 @@ function SWEP:SetupWeaponHoldTypeForAI( t )
 		self.ActivityTranslateAI [ ACT_MELEE_ATTACK1 ]              = ACT_HL2MP_GESTURE_RANGE_ATTACK_KNIFE
 		self.ActivityTranslateAI [ ACT_MELEE_ATTACK2 ]              = ACT_HL2MP_GESTURE_RANGE_ATTACK_KNIFE
 		self.ActivityTranslateAI [ ACT_SPECIAL_ATTACK1 ] 			= ACT_HL2MP_GESTURE_RANGE_ATTACK_KNIFE
-		
+
 		self.ActivityTranslateAI [ ACT_RANGE_AIM_LOW ]              = ACT_IDLE_SHOTGUN
 		self.ActivityTranslateAI [ ACT_COVER_LOW ] 					= ACT_IDLE_SHOTGUN
-		
+
 		self.ActivityTranslateAI [ ACT_WALK ] 						= ACT_HL2MP_WALK_KNIFE
 		self.ActivityTranslateAI[ ACT_WALK_AIM ]				= ACT_HL2MP_WALK_KNIFE
 		self.ActivityTranslateAI[ ACT_WALK_AIM_RELAXED ]		= ACT_HL2MP_WALK_KNIFE
@@ -1996,7 +1986,7 @@ function SWEP:SetupWeaponHoldTypeForAI( t )
 		self.ActivityTranslateAI [ ACT_WALK_RELAXED ] 				= ACT_HL2MP_WALK_KNIFE
 		self.ActivityTranslateAI [ ACT_WALK_STIMULATED ] 			= ACT_HL2MP_WALK_KNIFE
 		self.ActivityTranslateAI [ ACT_WALK_AGITATED ] 				= ACT_HL2MP_WALK_KNIFE
-		
+
 		self.ActivityTranslateAI[ ACT_RUN_RELAXED ]			= ACT_HL2MP_RUN_KNIFE
 		self.ActivityTranslateAI[ ACT_RUN_STIMULATED ]		= ACT_HL2MP_RUN_KNIFE
 		self.ActivityTranslateAI[ ACT_RUN_AGITATED ]		= ACT_HL2MP_RUN_KNIFE
@@ -2008,7 +1998,7 @@ function SWEP:SetupWeaponHoldTypeForAI( t )
 		self.ActivityTranslateAI [ ACT_RUN_AIM_AGITATED ] 			= ACT_HL2MP_RUN_KNIFE
 		self.ActivityTranslateAI [ ACT_RUN_AIM ] 					= ACT_HL2MP_RUN_KNIFE
 		self.ActivityTranslateAI [ ACT_MP_RUN ] 					= ACT_HL2MP_RUN_KNIFE
-		
+
 		return
 	end
 end
@@ -2023,7 +2013,7 @@ end
 
     local ply = self:GetOwner()
 
-    ent:SetPos(select(1, hg.eye(ply,60,hg.GetCurrentCharacter(ply))) - ply:GetAimVector() * 2)
+    ent:SetPos(hg.eye(ply,60,hg.GetCurrentCharacter(ply)) - ply:GetAimVector() * 2)
     ent:SetAngles(ply:EyeAngles())
     ent:SetOwner(self:GetOwner())
     ent:Spawn()

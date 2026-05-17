@@ -14,9 +14,9 @@ function EFFECT:Init(data)
 
     local emitter = ParticleEmitter(pos)
 
-    for i = 1,15*intensity do
+    for _ = 1,15*intensity do
         local smoke = emitter:Add(smoke_mats[math.random(#smoke_mats)], pos)
-        
+
         smoke:SetStartAlpha(math.Rand(12, 25))
         smoke:SetEndAlpha(0)
         smoke:SetColor(255,200,155)
@@ -31,7 +31,7 @@ function EFFECT:Init(data)
         smoke:SetVelocity((normal*math.Rand(40, 200)+VectorRand()*50)*intensity)
     end
 
-    for i = 1,10*intensity do
+    for _ = 1,10*intensity do
         local splinter = emitter:Add("effects/fleck_antlion" .. math.random(1, 2), pos+normal*8)
 
         splinter:SetStartAlpha(255)

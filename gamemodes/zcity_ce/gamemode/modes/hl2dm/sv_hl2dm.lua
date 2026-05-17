@@ -21,7 +21,7 @@ util.AddNetworkString("hl2dm_start")
 function MODE:Intermission()
 	game.CleanUpMap()
 
-	for i, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		ply:SetupTeam(ply:Team())
 	end
 
@@ -34,7 +34,7 @@ function MODE:CheckAlivePlayers()
 end
 
 function MODE:ShouldRoundEnd()
-	local endround, winner = zb:CheckWinner(self:CheckAlivePlayers())
+	local endround, _ = zb:CheckWinner(self:CheckAlivePlayers())
 	--print("ShouldRoundEnd", endround, winner)
 	return endround
 end
@@ -108,7 +108,7 @@ function MODE:GiveEquipment()
 					end
 				end
 			end
-			
+
 			local inv = ply:GetNetVar("Inventory",{})
 			inv["Weapons"]["hg_sling"] = true
 			ply:SetNetVar("Inventory",inv)
@@ -136,24 +136,6 @@ end
 
 util.AddNetworkString("hl2dm_roundend")
 function MODE:EndRound()
-	local team0, team1, winnerteam = 0, 0, 0
-	for _, ply in player.Iterator() do
-		if ply:Alive() and ply:Team() == 0 then
-			team0 = team0 + 1
-		elseif ply:Alive() and ply:Team() == 1 then
-			team1 = team1 + 1
-		end
-	end
-	if team0 > team1 then
-		winnerteam = 0 -- rebel wins
-	elseif team1 > team0 then
-		winnerteam = 1 -- combine winds
-	elseif team0 == team1 then
-		winnerteam = 2 -- draw
-	elseif team0 == 0 and team1 == 0 then
-		winnerteam = 3 -- everybody died
-	end
-	--print("Endround winnerteam ", winnerteam)
 	self:ClearPlayerRoles()
 	timer.Simple(2,function()
 		net.Start("hl2dm_roundend")
@@ -176,13 +158,13 @@ end
 
 util.AddNetworkString("ZB_RequestAirStrike")
 
-local ACD_NextAirstrikeTime = 0 
-local ACD_MaxStrikes = 2 
-local ACD_StrikesLeft = {} 
+local ACD_NextAirstrikeTime = 0
+local ACD_MaxStrikes = 2
+local ACD_StrikesLeft = {}
 
 
 local function FindAccessibleAngle(pos)
-    for i = 1, 50 do
+    for _ = 1, 50 do
         local ang = AngleRand()
         local trace = util.QuickTrace(pos, ang:Forward() * 10000)
         if trace.HitSky then
@@ -196,7 +178,7 @@ end
 local function FindCanisterPos(pos, normal, dist)
     local offsetPos = pos + normal * 10
     local trace = util.QuickTrace(offsetPos, -normal * dist * 2)
-    
+
     if trace.Hit and util.PointContents(offsetPos) ~= CONTENTS_SOLID then
         local ang = FindAccessibleAngle(trace.HitPos + normal * 7)
         if ang then
@@ -211,9 +193,9 @@ end
 
 
 local function AirStrike(pos, normal, ply)
-    if CurTime() < ACD_NextAirstrikeTime then return end 
+    if CurTime() < ACD_NextAirstrikeTime then return end
     local canisterData = FindCanisterPos(pos, normal, 1000)
-    
+
     if canisterData then
         local ent = ents.Create("env_headcrabcanister")
         ent:SetPos(canisterData.Pos)
@@ -253,8 +235,7 @@ net.Receive("ZB_RequestAirStrike", function(len, ply)
 end)
 
 hook.Add("PostCleanupMap", "ACD_ResetAirstrikes", function()
-    ACD_StrikesLeft = {} 
-    ACD_NextAirstrikeTime = 0 
+    ACD_StrikesLeft = {}
+    ACD_NextAirstrikeTime = 0
 end)
-
 

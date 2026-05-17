@@ -2,9 +2,8 @@ include("shared.lua")
 
 hook.Add("NetworkEntityCreated", "Radiohuy", function(ent)
     if playingents[ent:EntIndex()] then
-        local tbl = 
-        playingents[ent:EntIndex()]
-        
+        local tbl = playingents[ent:EntIndex()]
+
         timer.Simple(0.2,function()
             if ent.PlayURL then
                 ent:PlayURL(tbl[2],CurTime()-tbl[1])
@@ -30,7 +29,7 @@ end)
 net.Receive("RadioChangeVolume", function(len, ply)
 	local val = net.ReadFloat()
 	local index = net.ReadInt(32)
-	
+
 	if playingents[index] then
 		if IsValid(playingents[index][3]) then
 			--playingents[index][3]:SetVolume(val)
@@ -42,7 +41,7 @@ end)
 net.Receive("RadioPause", function(len, ply)
 	local val = net.ReadBool()
 	local index = net.ReadInt(32)
-	
+
 	if playingents[index] then
 		if IsValid(playingents[index][3]) then
 			if val then
@@ -56,7 +55,7 @@ end)
 
 net.Receive("RadioStop", function(len, ply)
 	local index = net.ReadInt(32)
-	
+
 	if playingents[index] then
 		if IsValid(playingents[index][3]) then
 			playingents[index][3]:Stop()
@@ -68,7 +67,7 @@ end)
 net.Receive("RadioLooping", function(len, ply)
 	local val = net.ReadBool()
 	local index = net.ReadInt(32)
-	
+
 	if playingents[index] then
 		if IsValid(playingents[index][3]) then
 			playingents[index][3]:EnableLooping(val)
@@ -78,23 +77,20 @@ end)
 
 local frame
 
-local gradient_d = Material("vgui/gradient-d")
-local blurMat = Material("pp/blurscreen")
-local Dynamic = 0
 local red = Color(150,0,0)
 
 BlurBackground = BlurBackground or hg.DrawBlur
 
 net.Receive("RadioURLInput", function()
-	if IsValid(frame) then return end 
+	if IsValid(frame) then return end
 	local ent = net.ReadEntity()
 	frame = vgui.Create("ZFrame")
-	frame:SetSize(400, 350) 
+	frame:SetSize(400, 350)
 	frame:SetPos(ScrW() / 2 - frame:GetWide() / 2,ScrH() + 500)
 	frame:SetTitle(playingents[ent:EntIndex()] and ("Radio: In playing...") or "Radio")
 	frame:MakePopup()
 	frame:SetAlpha(0)
-	frame.OnClose = function() frame = nil end 
+	frame.OnClose = function() frame = nil end
 	--function frame:Paint( w, h )
 	--    draw.RoundedBox( 0, 2.5, 2.5, w-5, h-5, Color( 0, 0, 0, 140) )
 	--    surface.DrawTexturedRect( 0, 0, w, h )
@@ -119,20 +115,20 @@ net.Receive("RadioURLInput", function()
 	local tEntryBG1 = vgui.Create("DPanel", frame)
 	tEntryBG1:Dock(TOP)
 	tEntryBG1:SetBackgroundColor(color_white)
-	tEntryBG1:DockMargin(5,5,5,2.5)	
-	tEntryBG1:SetSize(50,45)	
+	tEntryBG1:DockMargin(5,5,5,2.5)
+	tEntryBG1:SetSize(50,45)
 	function tEntryBG1:Paint( w, h )
 		self.a = Lerp(0.1,self.a or 100,self:IsHovered() and 255 or 150)
 		draw.RoundedBox(0, 0, 0, w, h, Color(red.r,red.g,red.b,self.a))
 		surface.SetDrawColor( color_black )
 		surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 	end
-	
+
 
 	local urlEntry = vgui.Create("DTextEntry", tEntryBG1)
 	urlEntry:Dock( FILL )
-	--urlEntry:DockMargin(10,5,150,2.5)	
-	--urlEntry:SetSize(50,45)	
+	--urlEntry:DockMargin(10,5,150,2.5)
+	--urlEntry:SetSize(50,45)
 	urlEntry:SetTextColor(Color(255,255,255))
 	urlEntry:SetPlaceholderText( "Enter URL here" )
 	urlEntry:SetPaintBackground(false)
@@ -156,8 +152,8 @@ net.Receive("RadioURLInput", function()
 	local playButton = vgui.Create("DButton", controlsPanel)
 	playButton:SetText("Play")
 	playButton:Dock( LEFT )
-	playButton:DockMargin(1,2,1,2)		
-	playButton:SetSize(370/4,45)	
+	playButton:DockMargin(1,2,1,2)
+	playButton:SetSize(370/4,45)
 	--playButton:SetFont("HomigradFont")
 	playButton:SetTextColor(Color(255,255,255))
 	playButton.DoClick = function()
@@ -178,8 +174,8 @@ net.Receive("RadioURLInput", function()
 	local stopButton = vgui.Create("DButton", controlsPanel)
 	stopButton:SetText("Stop")
 	stopButton:Dock( RIGHT )
-	stopButton:DockMargin(1,2,1,2)			
-	stopButton:SetSize(370/4,45)	
+	stopButton:DockMargin(1,2,1,2)
+	stopButton:SetSize(370/4,45)
 	--playButton:SetFont("HomigradFont")
 	stopButton:SetTextColor(Color(255,255,255))
 	stopButton.DoClick = function()
@@ -199,8 +195,8 @@ net.Receive("RadioURLInput", function()
 	local stopButton = vgui.Create("DButton", controlsPanel)
 	stopButton:SetText("Looping")
 	stopButton:Dock( RIGHT )
-	stopButton:DockMargin(1,2,1,2)			
-	stopButton:SetSize(370/4,45)	
+	stopButton:DockMargin(1,2,1,2)
+	stopButton:SetSize(370/4,45)
 	--playButton:SetFont("HomigradFont")
 	stopButton:SetTextColor(Color(255,255,255))
 	stopButton.DoClick = function()
@@ -222,8 +218,8 @@ net.Receive("RadioURLInput", function()
 	local pauseButton = vgui.Create("DButton", controlsPanel)
 	pauseButton:SetText("Pause")
 	pauseButton:Dock( FILL )
-	pauseButton:DockMargin(1,2,1,2)		
-	pauseButton:SetSize(370/4,45)	
+	pauseButton:DockMargin(1,2,1,2)
+	pauseButton:SetSize(370/4,45)
 	--playButton:SetFont("HomigradFont")
 	pauseButton:SetTextColor(Color(255,255,255))
 	pauseButton.DoClick = function()
@@ -246,20 +242,20 @@ net.Receive("RadioURLInput", function()
 	if playingents[ent:EntIndex()] and IsValid(playingents[ent:EntIndex()][3]) then
 		local lbl = vgui.Create( "DLabelURL", frame )
 		lbl:Dock( TOP )
-		lbl:DockMargin(10,5,5,2.5)	
-		lbl:SetSize(50,45)	
-		lbl:SetColor( Color( 255, 255, 255, 255 ) ) 
-		lbl:SetText( ("Currently playing \n"..playingents[ent:EntIndex()][2]) ) 
+		lbl:DockMargin(10,5,5,2.5)
+		lbl:SetSize(50,45)
+		lbl:SetColor( Color( 255, 255, 255, 255 ) )
+		lbl:SetText( ("Currently playing \n"..playingents[ent:EntIndex()][2]) )
 		lbl:SetURL( playingents[ent:EntIndex()][2] )
 	end
 
 	if playingents[ent:EntIndex()] and IsValid(playingents[ent:EntIndex()][3]) then
 		local DermaNumSlider = vgui.Create( "DNumSlider", frame )
 		DermaNumSlider:Dock( TOP )
-		DermaNumSlider:DockMargin(10,0,5,0)	
-		DermaNumSlider:SetSize(50,45)	
+		DermaNumSlider:DockMargin(10,0,5,0)
+		DermaNumSlider:SetSize(50,45)
 		DermaNumSlider:SetText( "Time slider" )
-		DermaNumSlider:SetMin( 0 )			
+		DermaNumSlider:SetMin( 0 )
 		DermaNumSlider:SetMax( playingents[ent:EntIndex()][3]:GetLength() )
 		DermaNumSlider:SetDecimals( 2 )
 		DermaNumSlider:SizeToContents()
@@ -287,10 +283,10 @@ net.Receive("RadioURLInput", function()
 	if playingents[ent:EntIndex()] and IsValid(playingents[ent:EntIndex()][3]) then
 		local DermaNumSlider = vgui.Create( "DNumSlider", frame )
 		DermaNumSlider:Dock( TOP )
-		DermaNumSlider:DockMargin(10,0,5,0)	
-		DermaNumSlider:SetSize(50,45)	
+		DermaNumSlider:DockMargin(10,0,5,0)
+		DermaNumSlider:SetSize(50,45)
 		DermaNumSlider:SetText( "Volume slider" )
-		DermaNumSlider:SetMin( 0 )			
+		DermaNumSlider:SetMin( 0 )
 		DermaNumSlider:SetMax( 200 )
 		DermaNumSlider:SetDecimals( 0 )
 		DermaNumSlider:SizeToContents()
@@ -353,7 +349,7 @@ net.Receive("PlayRadioSound", function()
 	local url = net.ReadString()
 	local index = net.ReadInt(32)
 	local ent = Entity(index)
-	
+
 	playingents[index] = {[1] = CurTime(),[2] = url, [5] = 1}
 
 	if IsValid(ent) then

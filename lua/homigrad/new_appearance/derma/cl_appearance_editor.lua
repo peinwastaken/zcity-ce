@@ -56,7 +56,7 @@ local modelsPrecached = false
 local function PrecacheAccessoryModels()
     if modelsPrecached then return end
     modelsPrecached = true
-    
+
     timer.Simple(0.1, function()
         if APmodule.PlayerModels then
             for _, sexModels in SortedPairs(APmodule.PlayerModels) do
@@ -67,7 +67,7 @@ local function PrecacheAccessoryModels()
                 end
             end
         end
-        
+
         if hg.Accessories then
             for _, accessory in SortedPairs(hg.Accessories) do
                 if accessory.model then
@@ -88,24 +88,24 @@ hg.Appearance.PrecacheModels = PrecacheAccessoryModels
 
 local function CreateStyledScrollPanel(parent)
     local scroll = vgui.Create("DScrollPanel", parent)
-    
+
     local sbar = scroll:GetVBar()
     sbar:SetWide(ScreenScale(4))
     sbar:SetHideButtons(true)
-    
+
     function sbar:Paint(w, h)
         draw.RoundedBox(4, 0, 0, w, h, colors.scrollbarBG)
         surface.SetDrawColor(colors.scrollbarBorder)
         surface.DrawOutlinedRect(0, 0, w, h, 1)
     end
-    
+
     function sbar.btnGrip:Paint(w, h)
         local col = self:IsHovered() and colors.scrollbarGripHover or colors.scrollbarGrip
         draw.RoundedBox(4, 2, 2, w - 4, h - 4, col)
         surface.SetDrawColor(colors.scrollbarBorder)
         surface.DrawOutlinedRect(2, 2, w - 4, h - 4, 1)
     end
-    
+
     return scroll
 end
 
@@ -119,9 +119,9 @@ local function CreateStyledAccessoryMenu(parent, title)
     menu:MakePopup()
     menu:SetDraggable(false)
     menu:ShowCloseButton(false)
-    
-    menu.CurrentPreviewIcon = nil  
-    
+
+    menu.CurrentPreviewIcon = nil
+
     function menu:Paint(w, h)
         draw.RoundedBox(8, 0, 0, w, h, clr_menu)
         surface.SetDrawColor(colors.scrollbarBorder)
@@ -184,7 +184,7 @@ local function CreateStyledAccessoryMenu(parent, title)
             surface.PlaySound("player/clothes_generic_foley_0"..math.random(5)..".wav")
             menu:Close()
         end
-        
+
         function spawnIcon:Think()
             if onRightClick and self:IsHovered() then
                 ico.IsPreviewing = true
@@ -209,32 +209,32 @@ local function CreateStyledAccessoryMenu(parent, title)
 
         return ico
     end
-    
+
     function menu:AddNoneOption(onSelect)
         local ico = vgui.Create("DPanel", self.IconLayout)
         local icoSize = ScreenScale(36)
         ico:SetSize(icoSize, icoSize)
         ico.Accessor = "none"
         ico.bIsHovered = false
-        
+
         function ico:Paint(w, h)
             local borderCol = self.bIsHovered and colors.scrollbarGripHover or colors.scrollbarBorder
             draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 40, 255))
             surface.SetDrawColor(borderCol)
             surface.DrawOutlinedRect(0, 0, w, h, 1)
-            
+
             surface.SetDrawColor(colors.highlightText)
             local margin = ScreenScale(8)
             surface.DrawLine(margin, margin, w - margin, h - margin)
             surface.DrawLine(w - margin, margin, margin, h - margin)
-            
+
             draw.SimpleText("None", "DermaDefault", w/2, h - ScreenScale(4), colors.mainText, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
         end
-        
+
         function ico:Think()
             self.bIsHovered = vgui.GetHoveredPanel() == self
         end
-        
+
         function ico:OnMousePressed(mc)
             if mc == MOUSE_LEFT then
                 if onSelect then onSelect("none") end
@@ -242,14 +242,14 @@ local function CreateStyledAccessoryMenu(parent, title)
                 menu:Close()
             end
         end
-        
+
         function ico:OnCursorEntered()
             self:SetCursor("hand")
         end
-        
+
         return ico
     end
-    
+
     return menu
 end
 
@@ -276,13 +276,8 @@ local sizeX, sizeY = ScrW() * 1, ScrH() * 1
 local xbars = 17
 local ybars = 30
 
-local xbars2 = 0
-local ybars2 = 0
 
-local gradient_d = Material("vgui/gradient-d")
-local gradient_u = Material("vgui/gradient-u")
 local gradient_l = Material("vgui/gradient-l")
-local gradient_r = Material("vgui/gradient-r")
 
 local sw, sh = ScrW(), ScrH()
 
@@ -413,7 +408,7 @@ function PANEL:PostInit()
     function viewer:PostDrawModel(Entity)
         local tbl = main.AppearanceTable
 
-        for k,attach in ipairs(tbl.AAttachments) do
+        for _,attach in ipairs(tbl.AAttachments) do
             DrawAccesories(Entity, Entity, attach, hg.Accessories[attach],false,true)
         end
         Entity:SetupBones()
@@ -444,11 +439,11 @@ function PANEL:PostInit()
         main.AppearanceTable.AModel = str
     end
 
-    for k, v in SortedPairs(APmodule.PlayerModels[1]) do
+    for k, _ in SortedPairs(APmodule.PlayerModels[1]) do
         modelSelector:AddChoice(k)
     end
 
-    for k, v in SortedPairs(APmodule.PlayerModels[2]) do
+    for k, _ in SortedPairs(APmodule.PlayerModels[2]) do
         modelSelector:AddChoice(k)
     end
 
@@ -547,9 +542,9 @@ function PANEL:PostInit()
             notification.AddLegacy("Enter a preset name (min 2 chars)", NOTIFY_ERROR, 3)
             return
         end
-        
+
         presetName = string.gsub(presetName, "[^%w%s_-]", "")
-        
+
         SavePreset(presetName, main.AppearanceTable)
         surface.PlaySound("buttons/button14.wav")
         notification.AddLegacy("Preset '" .. presetName .. "' saved!", NOTIFY_GENERIC, 3)
@@ -575,25 +570,25 @@ function PANEL:PostInit()
             notification.AddLegacy("No presets saved yet!", NOTIFY_ERROR, 3)
             return
         end
-        
+
         local presetMenu = vgui.Create("DFrame")
         presetMenu:SetTitle("Load Preset")
         presetMenu:SetSize(ScreenScale(120), ScreenScale(100))
         presetMenu:Center()
         presetMenu:MakePopup()
         presetMenu:SetDraggable(false)
-        
+
         function presetMenu:Paint(w, h)
             draw.RoundedBox(8, 0, 0, w, h, Color(20, 20, 28, 250))
             surface.SetDrawColor(colors.presetBorder)
             surface.DrawOutlinedRect(0, 0, w, h, 2)
             draw.RoundedBoxEx(8, 0, 0, w, ScreenScale(12), colors.secondary, true, true, false, false)
         end
-        
+
         local scroll = CreateStyledScrollPanel(presetMenu)
         scroll:Dock(FILL)
         scroll:DockMargin(ScreenScale(2), ScreenScale(2), ScreenScale(2), ScreenScale(2))
-        
+
         for _, presetName in SortedPairs(presetList) do
             local presetBtn = vgui.Create("DButton", scroll)
             presetBtn:Dock(TOP)
@@ -602,14 +597,14 @@ function PANEL:PostInit()
             presetBtn:SetFont("ZCity_Tiny")
             presetBtn:SetText(presetName)
             presetBtn:SetTextColor(colors.mainText)
-            
+
             function presetBtn:Paint(w, h)
                 local bgCol = self:IsHovered() and colors.presetHover or colors.presetBG
                 draw.RoundedBox(4, 0, 0, w, h, bgCol)
                 surface.SetDrawColor(colors.scrollbarBorder)
                 surface.DrawOutlinedRect(0, 0, w, h, 1)
             end
-            
+
             function presetBtn:DoClick()
                 local loadedPreset = LoadPreset(presetName)
                 if loadedPreset then
@@ -625,7 +620,7 @@ function PANEL:PostInit()
                 end
                 presetMenu:Close()
             end
-            
+
             function presetBtn:DoRightClick()
                 local confirmMenu = DermaMenu()
                 confirmMenu:AddOption("Delete '" .. presetName .. "'", function()
@@ -658,7 +653,7 @@ function PANEL:PostInit()
             notification.AddLegacy("Enter preset name to delete", NOTIFY_ERROR, 3)
             return
         end
-        
+
         if DeletePreset(presetName) then
             surface.PlaySound("buttons/button15.wav")
             notification.AddLegacy("Preset '" .. presetName .. "' deleted!", NOTIFY_HINT, 3)
@@ -709,21 +704,21 @@ function PANEL:PostInit()
         surface.SetDrawColor(colors.scrollbarBorder)
         surface.DrawOutlinedRect(0,0,w,h,1)
     end
-    
+
     function hatSelector:DoClick()
         main.modelPosID = "Head"
         CloseAllAccessoryMenus()
-        
+
         originalAccessory[1] = main.AppearanceTable.AAttachments[1]
-        
+
         hatSelectMenu = CreateStyledAccessoryMenu(nil, "Select Hat")
         table.insert(accessoryMenus, hatSelectMenu)
-        
+
         for k, v in SortedPairs(hg.Accessories) do
             if v.placement != "head" and v.placement != "ears" then continue end
             if not lply:PS_HasItem(k) and v.bPointShop and !hg.Appearance.GetAccessToAll(lply) then continue end
-            
-            hatSelectMenu:AddAccessoryIcon(v.model, k, v, 
+
+            hatSelectMenu:AddAccessoryIcon(v.model, k, v,
                 function(accessorKey)
                     main.AppearanceTable.AAttachments[1] = accessorKey
                     previewAccessory[1] = nil
@@ -739,12 +734,12 @@ function PANEL:PostInit()
                 end
             )
         end
-        
+
         hatSelectMenu:AddNoneOption(function()
             main.AppearanceTable.AAttachments[1] = "none"
             previewAccessory[1] = nil
         end)
-        
+
         function hatSelectMenu:OnClose()
             if previewAccessory[1] then
                 main.AppearanceTable.AAttachments[1] = originalAccessory[1]
@@ -772,20 +767,20 @@ function PANEL:PostInit()
         surface.SetDrawColor(colors.scrollbarBorder)
         surface.DrawOutlinedRect(0,0,w,h,1)
     end
-    
+
     function faceSelector:DoClick()
         main.modelPosID = "Face"
         CloseAllAccessoryMenus()
-        
+
         originalAccessory[2] = main.AppearanceTable.AAttachments[2]
-        
+
         faceSelectorMenu = CreateStyledAccessoryMenu(nil, "Select Face Accessory")
         table.insert(accessoryMenus, faceSelectorMenu)
-        
+
         for k, v in SortedPairs(hg.Accessories) do
             if v.placement != "face" then continue end
             if not lply:PS_HasItem(k) and v.bPointShop and !hg.Appearance.GetAccessToAll(lply) then continue end
-            
+
             faceSelectorMenu:AddAccessoryIcon(v.model, k, v,
                 function(accessorKey)
                     main.AppearanceTable.AAttachments[2] = accessorKey
@@ -802,12 +797,12 @@ function PANEL:PostInit()
                 end
             )
         end
-        
+
         faceSelectorMenu:AddNoneOption(function()
             main.AppearanceTable.AAttachments[2] = "none"
             previewAccessory[2] = nil
         end)
-        
+
         function faceSelectorMenu:OnClose()
             if previewAccessory[2] then
                 main.AppearanceTable.AAttachments[2] = originalAccessory[2]
@@ -836,20 +831,20 @@ function PANEL:PostInit()
         surface.DrawOutlinedRect(0,0,w,h,1)
     end
     bodySelector:SetPos(sizeX * 0.1, sizeY * 0.5)
-    
+
     function bodySelector:DoClick()
         main.modelPosID = "Torso"
         CloseAllAccessoryMenus()
-        
+
         originalAccessory[3] = main.AppearanceTable.AAttachments[3]
-        
+
         bodySelectorMenu = CreateStyledAccessoryMenu(nil, "Select Body Accessory")
         table.insert(accessoryMenus, bodySelectorMenu)
-        
+
         for k, v in SortedPairs(hg.Accessories) do
             if v.placement != "torso" and v.placement != "spine" then continue end
             if not lply:PS_HasItem(k) and v.bPointShop and !hg.Appearance.GetAccessToAll(lply) then continue end
-            
+
             bodySelectorMenu:AddAccessoryIcon(v.model, k, v,
                 function(accessorKey)
                     main.AppearanceTable.AAttachments[3] = accessorKey
@@ -866,12 +861,12 @@ function PANEL:PostInit()
                 end
             )
         end
-        
+
         bodySelectorMenu:AddNoneOption(function()
             main.AppearanceTable.AAttachments[3] = "none"
             previewAccessory[3] = nil
         end)
-        
+
         function bodySelectorMenu:OnClose()
             if previewAccessory[3] then
                 main.AppearanceTable.AAttachments[3] = originalAccessory[3]
@@ -904,7 +899,7 @@ function PANEL:PostInit()
     function bodyMatSelector:DoClick()
         main.modelPosID = "Torso"
         bodyMatSelectorMenu = DermaMenu()
-        for k, v in SortedPairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
+        for k, _ in SortedPairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
             local mater = bodyMatSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
                 main.AppearanceTable.AClothes.main = k
@@ -948,7 +943,7 @@ function PANEL:PostInit()
     function legsMatSelector:DoClick()
         main.modelPosID = "Legs"
         legsMatSelectorMenu = DermaMenu()
-        for k, v in SortedPairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
+        for k, _ in SortedPairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
             local mater = legsMatSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
                 main.AppearanceTable.AClothes.pants = k
@@ -986,7 +981,7 @@ function PANEL:PostInit()
     function bootsMatSelector:DoClick()
         main.modelPosID = "Boots"
         bootsMatSelectorMenu = DermaMenu()
-        for k, v in SortedPairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
+        for k, _ in SortedPairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
             local mater = bootsMatSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
                 main.AppearanceTable.AClothes.boots = k
@@ -1056,8 +1051,8 @@ function PANEL:PostInit()
     function faceMatSelector:DoClick()
         main.modelPosID = "Face"
         faceMatSelectorMenu = DermaMenu()
-        for k, v in SortedPairs(hg.Appearance.FacemapsSlots[hg.Appearance.FacemapsModels[tMdl.mdl]]) do
-            local mater = faceMatSelectorMenu:AddOption(k,function()
+        for k, _ in SortedPairs(hg.Appearance.FacemapsSlots[hg.Appearance.FacemapsModels[tMdl.mdl]]) do
+            faceMatSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
                 main.AppearanceTable.AFacemap = k
             end)
@@ -1096,5 +1091,5 @@ function hg.CreateApperanceMenu(ParentPanel)
         zpan:SetSize(ParentPanel:GetWide(),ParentPanel:GetTall())
         zpan:SetPos(0,0)
     end)
-    
+
 end

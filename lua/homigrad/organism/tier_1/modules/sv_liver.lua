@@ -1,4 +1,3 @@
-local max, halfValue = math.max, util.halfValue
 --local Organism = hg.organism
 hg.organism.module.liver = {}
 local module = hg.organism.module.liver

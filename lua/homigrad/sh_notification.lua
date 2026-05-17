@@ -1,5 +1,7 @@
 if CLIENT then
-	local hg_old_notificate = ConVarExists("hg_old_notificate") and GetConVar("hg_old_notificate") or CreateConVar("hg_old_notificate",0,{FCVAR_USERINFO,FCVAR_ARCHIVE},"Toggle old notifications (chatprints)",0,1)
+	if not ConVarExists("hg_old_notificate") then
+		CreateConVar("hg_old_notificate",0,{FCVAR_USERINFO,FCVAR_ARCHIVE},"Toggle old notifications (chatprints)",0,1)
+	end
 
 	surface.CreateFont("BerserkFont", {
 		font = "Who asks Satan",
@@ -113,7 +115,6 @@ if CLIENT then
 
 	hg.CreateNotification = CreateNotification
 	hg.CreateNotificationBerserk = CreateNotificationBerserk
-	local colred = Color(255,0,0)
 
 	local time_spent = CurTime()
 	local coloruse = Color(255,255,255,255)
@@ -144,8 +145,6 @@ if CLIENT then
 	end
 
 	local colBrown = Color(40,40,40)
-	local ColorNotification = Color(48,4,4,0)
-	local maxtimefade = 1
 	local oldclick = 0
 
 	sound.Add({
@@ -162,7 +161,6 @@ if CLIENT then
 
 	local vector_one = Vector( 1, 1, 0)
 
-	local bluewhite = Color(187, 187, 255)
 
 	local function NotificationsDraw()
 		time_spent = CurTime()
@@ -219,7 +217,7 @@ if CLIENT then
 				local font = hg.notificationFont
 
 				surface.SetFont(font)
-				local txtw, txth = surface.GetTextSize(last_message or txt)
+				local txtw, _ = surface.GetTextSize(last_message or txt)
 
 				local col = coloruse
 				col.a = 255 * (last_time and (last_time + 2 - time_spent) or part2)

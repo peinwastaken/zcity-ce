@@ -50,30 +50,29 @@ end
 
 hg.bone.matrixManual_Name = tbl
 
-local matrix, matrixSet
 
 local vecZero, angZero, vecFull = Vector(0, 0, 0), Angle(0, 0, 0), Vector(1, 1, 1)
-local layer, name, boneName, boneID
+local boneName, boneID
 
 local function reset(ply)
 	ply.manipulated = ply.manipulated or {}
 	ply.unmanipulated = {}
 	ply.manipulate = {}
 	ply.matrixes = {}
-	
+
 	for bone = 0, ply:GetBoneCount() do
 		ply:ManipulateBonePosition(bone, vecZero, true)
 		ply:ManipulateBoneAngles(bone, angZero, true)
 		ply:ManipulateBoneScale(bone, vecFull, true)
 	end
-	
+
 	ply.manipulated = {}
 end
 
 local function createLayer(ply, layer, lookup_name)
 	boneName = hg.bone.matrixManual_Name[lookup_name]
 	boneID = isnumber(lookup_name) and lookup_name or ply:LookupBone(boneName)
-	
+
 	if not boneID then return end
 
 	ply.manipulated = ply.manipulated or {}
@@ -87,13 +86,6 @@ end
 hook.Add("Player Getup", "homigrad-bones", function(ply) reset(ply) end)
 
 local CurTime, LerpVector, LerpAngle = CurTime, LerpVector, LerpAngle
-local m, mSet, mAngle, mPos
-local vecZero, angZero = Vector(0, 0, 0), Angle(0, 0, 0)
-local tickInterval = engine.TickInterval
-local FrameTime = FrameTime
-local math_min = math.min
-local mul = 1
-local timeHuy = CurTime()
 local hook_Run = hook.Run
 local angle = FindMetaTable("Angle")
 
@@ -116,7 +108,9 @@ function angle:AngIsEqualTo(otherAng, huy)
 	return self:IsEqualTol(otherAng, huy)
 end
 
-local hg_anims_draw_distance = ConVarExists("hg_anims_draw_distance") and GetConVar("hg_anims_draw_distance") or CreateClientConVar("hg_anims_draw_distance", 1024, true, nil, "Modify draw anims distance in hammer units (0 = infinite)", 0, 4096)
+if not ConVarExists("hg_anims_draw_distance") then
+	CreateClientConVar("hg_anims_draw_distance", 1024, true, nil, "Modify draw anims distance in hammer units (0 = infinite)", 0, 4096)
+end
 local hg_anim_fps = ConVarExists("hg_anim_fps") and GetConVar("hg_anim_fps") or CreateClientConVar("hg_anim_fps", 66, true, nil, "Modify bone manipulate frames amount (not tpik) (0 = maximum fps available)", 0, 250)
 
 local function recursive_bones(ply, bone)
@@ -131,10 +125,8 @@ local function recursive_bones(ply, bone)
 		local new_matrix = ply.matrixes[bone]
 		--print(new_matrix:GetAngles())
 		local old_matrix = ply.unmanipulated[bone]
-		
+
 		local lmat = old_matrix:GetInverse() * new_matrix
-		local ang = lmat:GetAngles()
-		local vec, _ = WorldToLocal(new_matrix:GetTranslation(), angle_zero, old_matrix:GetTranslation(), matp:GetAngles())
 		--print(old_matrix:GetTranslation())
 		--ply.manipulate[bone] = {vec, ang}
 
@@ -160,23 +152,21 @@ function hg.HomigradBones(ply, dtime)
 	--if !IsValid(ply) or !ply:IsPlayer() or !ply:Alive() or IsValid(ply.FakeRagdoll) then return end
 	if !IsValid(ply) or !ply:IsPlayer() or !ply:Alive() then return end
 
-	local dist = CLIENT and LocalPlayer():GetPos():Distance(ply:GetPos()) or 0
-	local drawdistance = CLIENT and hg_anims_draw_distance:GetInt() or 0
 	local time = CurTime()
-	
+
 	if CLIENT and (!ply.shouldTransmit or ply.NotSeen) then return end
 
 	local dtime2 = SysTime() - (ply.timeFrameasd or (SysTime() - 1))
 	local fps = CLIENT and (hg_anim_fps:GetInt() != 0 and hg_anim_fps:GetInt() or 99999) or 15
-	
+
 	if CLIENT and (dtime2 < 1 / fps) then return end
 	if SERVER and dtime2 < 0.2 then return end
-	
+
 	//dtime = dtime2
 	ply.timeFrameasd = SysTime()
 
 	hook_Run("Bones", ply, dtime2)
-	
+
 	--[[for bonename, tbl in pairs(ply.manipulated) do
 		boneName = hg.bone.matrixManual_Name[bonename]
 		boneID = ply:LookupBone(boneName)
@@ -194,7 +184,7 @@ function hg.HomigradBones(ply, dtime)
 	if blink and ent:GetFlexWeight(blink) != set then
 		ent:SetFlexWeight(blink, set)
 	end--]]
-	
+
 	if ply.organism and ply.IsBerserk and ply:IsBerserk() and !IsValid(ply.FakeRagdoll) and ply.organism.llegamputated and ply.organism.rlegamputated then
 		hg.bone.Set(ply, 0, -vector_up * 15, angle_zero, "berserk", 0.01, dtime2)
 	end
@@ -204,7 +194,7 @@ function hg.HomigradBones(ply, dtime)
 	if IsValid(ply.FakeRagdoll) then return end
 
 	if not ply.manipulated then reset(ply) return end
-	
+
 	for bone, tbl in pairs(ply.manipulated) do
 		for layer, tbl in pairs(tbl.layers) do
 			if (tbl.lastset != time) then
@@ -249,7 +239,7 @@ function hg.HomigradBones(ply, dtime)
 	mat:SetAngles(ang2)
 
 	print(mat:GetTranslation(), mat:GetAngles(), 1)
-	
+
 	local ang2 = mat:GetAngles()
 	local mat = ply:GetBoneMatrix(10)
 
@@ -293,7 +283,7 @@ function hg.HomigradBones(ply, dtime)
 	mat:SetAngles(ang2)
 
 	print(mat:GetTranslation(), mat:GetAngles(), 1)
-	
+
 	local mat2 = ply:GetBoneMatrix(10)
 
 	local mats = mat * (ply:GetBoneMatrix(1):GetInverse() * mat2)
@@ -313,7 +303,7 @@ function hg.HomigradBones(ply, dtime)
 	--print(ply.unmanipulated[ply:LookupBone("ValveBiped.Bip01_R_Hand")]:GetTranslation())
 	--reset(ply)
 
-	
+
 	local arm = ply:LookupBone("ValveBiped.Bip01_R_Forearm")
 	local uparm = ply:LookupBone("ValveBiped.Bip01_R_UpperArm")
 	local mat = ply:GetBoneMatrix(arm)
@@ -334,7 +324,7 @@ function hg.HomigradBones(ply, dtime)
 	--ply:ManipulateBonePosition(arm, vec)
 	--ply:ManipulateBoneAngles(arm, lmat:GetAngles())
 	--]]
-	
+
 	--recursive_bones(ply, 0)
 
 	--[[for i = 0, ply:GetBoneCount() - 1 do
@@ -376,7 +366,7 @@ function hg.get_unmanipulated_bones(ply, bone, matmodify)--set bone to 0 for the
 	local children = ply:GetChildBones(bone)
 
 	local modify = mat * ply:GetBoneMatrix(bone):GetInverse()
-	
+
 	for i = 1, #children do
 		local bonec = children[i]
 
@@ -394,17 +384,17 @@ function hg.bone.Set(ply, lookup_name, vec, ang, layer, lerp, dtime2)
 	boneID = isnumber(lookup_name) and lookup_name or ply:LookupBone(boneName ~= nil and boneName or lookup_name)
 
 	if not boneID then return end
-	
+
 	layer = layer or "unspecified"
 
 	if layer and layer != "all" then
 		createLayer(ply, layer, boneID)
-		
+
 		if lerp then
 			vec = LerpVector(hg.lerpFrameTime(lerp, dtime), ply.manipulated[boneID].layers[layer].Pos, vec)
 			ang = LerpAngle(hg.lerpFrameTime(lerp, dtime), ply.manipulated[boneID].layers[layer].Ang, ang)
 		end
-		
+
 		local oldpos, oldang = hg.bone.Get(ply, boneID)
 		--print(oldang)
 		local setPos = oldpos - ply.manipulated[boneID].layers[layer].Pos + vec
@@ -426,7 +416,7 @@ function hg.bone.SetRaw(ply, boneID, vec, ang)
 
 	ply.manipulated[boneID].Pos = vec
 	ply.manipulated[boneID].Ang = ang
-	
+
 	ply:ManipulateBonePosition(boneID, vec, false)
 	ply:ManipulateBoneAngles(boneID, ang, false)
 end

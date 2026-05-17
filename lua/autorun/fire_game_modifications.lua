@@ -56,9 +56,9 @@ if SERVER then
 			-- Some addons actually try to ignite the world...
 			if not IsValid(ent) then return end
 			if ent:IsWorld() then return end
-			
+
 			local igniteSuccessful = false
-			
+
 			if igniteThrottle < igniteLimit then
 
 				local count = 5
@@ -69,7 +69,7 @@ if SERVER then
 
 					if vFireIsCharacter(ent) then
 
-						for i = 1, count do
+						for _ = 1, count do
 							CreateVFire(ent, ent:GetPos(), VectorRand(), 70)
 						end
 						igniteSuccessful = true
@@ -113,7 +113,7 @@ if SERVER then
 	---------------------------------------------------------------------------]]
 	local oldExtinguish = entMeta.Extinguish
 	entMeta.Extinguish = function(ent)
-		
+
 		if vFireIsVFireEnt(ent) then
 			if ent:GetClass() == "vfire" then
 				ent:ChangeLife(0)
@@ -126,7 +126,7 @@ if SERVER then
 
 
 		if ent.fires then
-			for fire, lPos in pairs(ent.fires) do
+			for fire in pairs(ent.fires) do
 				if IsValid(fire) then
 					fire:Remove()
 				end
@@ -161,14 +161,14 @@ if SERVER then
 
 
 	--[[-------------------------------------------------------------------------
-	
+
 	Hooks to suppress default ignites as much as possible
-	
+
 	---------------------------------------------------------------------------]]
 	hook.Add("EntityEmitSound", "vFireSuppressDefaultIngiteSound", function(data)
 		-- If we're not overriding, then do nothing (current disabled because default fire sounds have weird activations)
 		-- if !vFireGetIgniteOverride() then return end
-		
+
 		local ent = data.Entity
 		if IsValid(ent) then
 			if ent:GetClass() == "entityflame" then return false end
@@ -194,7 +194,7 @@ if SERVER then
 	---------------------------------------------------------------------------]]
 	hook.Add("PlayerDeath", "vFireDropFiresFromPlayer", function(ply)
 		if ply.fires then
-			for fire, pos in pairs(ply.fires) do
+			for fire, _ in pairs(ply.fires) do
 				if IsValid(fire) then
 					local fireBall = fire:Drop()
 					if !IsValid(fireBall) then
@@ -210,7 +210,7 @@ if SERVER then
 	---------------------------------------------------------------------------]]
 	hook.Add("PlayerSpawn", "vFireRemoveFiresFromPlayer", function(ply)
 		if ply.fires then
-			for fire, pos in pairs(ply.fires) do
+			for fire, _ in pairs(ply.fires) do
 				fire:Remove()
 			end
 		end
@@ -221,7 +221,7 @@ if SERVER then
 	---------------------------------------------------------------------------]]
 	hook.Add("OnNPCKilled", "vFireDropFiresFromNPC", function(npc, attacker, inflictor)
 		if npc.fires then
-			for fire, pos in pairs(npc.fires) do
+			for fire, _ in pairs(npc.fires) do
 				if IsValid(fire) then
 					local fireBall = fire:Drop()
 					if IsValid(fireBall) then
@@ -239,11 +239,11 @@ if SERVER then
 	---------------------------------------------------------------------------]]
 	hook.Add("PropBreak", "vFireDropFiresFromProp", function(attacker, prop)
 		if prop.fires then
-			for fire, pos in pairs(prop.fires) do
+			for fire, _ in pairs(prop.fires) do
 				if IsValid(fire) then
 					-- We'd like to 'reward' the fire's life for breaking the prop
 					fire:ChangeLife(fire.life * 1.15)
-					
+
 					fire:Drop()
 				end
 			end
@@ -299,7 +299,7 @@ if SERVER then
 
 			local pos = explosion:GetPos()
 
-			for i = 1, count do
+			for _ = 1, count do
 				local life = math.Rand(10, 50)
 				local feed = life / 200
 				if math.random(1, 10) == 1 then
@@ -336,10 +336,10 @@ if SERVER then
 
 
 	--[[-------------------------------------------------------------------------
-	
+
 
 	NPC Behaviors
-	
+
 
 	---------------------------------------------------------------------------]]
 
@@ -422,7 +422,7 @@ if SERVER then
 
 		local nextCall = 3.5
 
-		
+
 		if behavior == 1 then
 
 			--[[-------------------------------------------------------------------------
@@ -436,7 +436,7 @@ if SERVER then
 				-- Have the NPC walk backwards in a retarded manner
 				npc:SetEnemy(npc)
 			end
-			
+
 			-- Play a death sound
 			if math.random(1, 3) == 1 then
 				npc:SetSchedule(SCHED_DIE_RAGDOLL)
@@ -455,7 +455,7 @@ if SERVER then
 			--[[-------------------------------------------------------------------------
 			Utilize default ignition behavior
 			---------------------------------------------------------------------------]]
-			
+
 			if !npc.lastSound or math.random(1, 10) == 1 then -- The NPC is silent, play a dying sound every once in a while
 				npc:SetSchedule(SCHED_DIE_RAGDOLL)
 			end
@@ -467,7 +467,7 @@ if SERVER then
 				vFireIgniteOverride(false)
 					npc:Ignite(defaultFireRemoveTime)
 				vFireIgniteOverride(true)
-				
+
 			end)
 
 			nextCall = math.Rand(3, 14)
@@ -492,7 +492,7 @@ if SERVER then
 				-- Every class will have its own subset of availabe fire acts, find them and use them
 				if !NPCClassAvailableFireActs[class] then
 					local availableFireActs = {}
-					for k, actID in pairs(NPCOnFireActs) do
+					for _, actID in pairs(NPCOnFireActs) do
 						local seqID = npc:SelectWeightedSequence(actID)
 						if seqID != -1 then
 							availableFireActs[#availableFireActs + 1] = {actID, seqID}
@@ -576,9 +576,9 @@ if SERVER then
 		if !IsValid(npc) then return false end
 		if npc.vFireCustomBehavior != nil then return npc.vFireCustomBehavior end
 		local class = npc:GetClass()
-		
+
 		npc.vFireCustomBehavior = defaultNPCs[class] or false
-		
+
 		return npc.vFireCustomBehavior
 	end
 
@@ -592,14 +592,14 @@ if SERVER then
 		npc.isBurning = false
 		StopNPCBurningBehavior(npc)
 	end)
-	
+
 	hook.Add("vFireEntityStartedBurning", "vFireStartNPCBurningBehavior", function(npc)
 		if !IsValid(npc) then return end
 		if !npc:IsNPC() then return end
 		if !vFireEnableDamage then return end
 		if !vFireEnableNPCBehavior then return end
 		if !shouldDoBehavior(npc) then return end
-		
+
 		npc.isBurning = true
 
 		-- Choose a random behavior and start behavior loop

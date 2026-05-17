@@ -1,4 +1,4 @@
-﻿if SERVER then AddCSLuaFile() end
+if SERVER then AddCSLuaFile() end
 SWEP.PrintName = "Shuriken"
 SWEP.Category = "ZCity Other"
 SWEP.Instructions = "Shuriken, also called throwing stars, or ninja stars, are a Japanese concealed weapon used by samurai or ninja or in martial arts as a hidden dagger to distract or misdirect."
@@ -89,7 +89,7 @@ function SWEP:DrawWorldModel()
 			WorldModel:SetAngles(self:GetAngles())
 			WorldModel:DrawModel()
 		end
-	
+
 		if IsValid(owner.FakeRagdoll) or not IsValid(owner) or (IsValid(owner:GetActiveWeapon()) and owner:GetActiveWeapon() ~= self) then return end
 		WorldModel:DrawModel()
 	end
@@ -102,11 +102,10 @@ function SWEP:Initialize()
 		self.HoldType = "melee"
 		self:SetHold(self.HoldType)
 	end
-	
+
 	self.count = 1
 end
 
-local bone, name
 function SWEP:BoneSet(layerID, lookup_name, vec, ang)
 	hg.bone.Set(self:GetOwner(), layerID, lookup_name, vec, ang)
 end
@@ -125,7 +124,7 @@ function SWEP:Animation()
 
 	if self.startedattack then
 		local animpos = math.max((self.startedattack + 0.5) - CurTime(),0) * 2
-		
+
 		self:BoneSet("l_upperarm", Vector(0,0,0), Angle(-90 * animpos,-60 * animpos,0))
 		self:BoneSet("r_upperarm", Vector(0,0,0), Angle(-20 * animpos,-40 * animpos,0))
 	end
@@ -148,12 +147,11 @@ local veczero = Vector(0, 0, 0)
 function SWEP:PrimaryAttack()
 	if CLIENT then return end
 	if self.cooldowndeploy and self.cooldowndeploy > CurTime() then return end
-	local time = CurTime()
 	local ent = ents.Create("ent_throwable")
 
 	local ply = self:GetOwner()
 	if not ply:IsNPC() then
-		ent:SetPos(select(1, hg.eye(ply,60,hg.GetCurrentCharacter(ply))) - ply:GetAimVector() * 2)
+		ent:SetPos(hg.eye(ply,60,hg.GetCurrentCharacter(ply)) - ply:GetAimVector() * 2)
 	else
 		ent:SetPos(ply:EyePos() + ply:EyeAngles():Forward() * 2)
 	end
@@ -164,7 +162,7 @@ function SWEP:PrimaryAttack()
 	ent.owner = ply
 	ent.localshit = veczero
 	ent.poisoned2 = self.poisoned2
-	
+
 	if self.bombowner then
 		ent.bombowner = self.bombowner
 		ent.bombowner.HaveTheBomb = ent

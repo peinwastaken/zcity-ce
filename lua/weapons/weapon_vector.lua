@@ -43,7 +43,7 @@ SWEP.FakeEmptyReloadSounds = {
 	[0.95] = "weapons/tfa_ins2/krissv/krisschargerelease.wav"
 }
 
-SWEP.MagModel = "models/weapons/zcity/glock/a_magazine_glock_extended.mdl" 
+SWEP.MagModel = "models/weapons/zcity/glock/a_magazine_glock_extended.mdl"
 SWEP.lmagpos = Vector(-21,4.3,4)
 SWEP.lmagang = Angle(-15,0,0)
 SWEP.lmagpos2 = Vector(4,18.5,10)
@@ -79,7 +79,7 @@ if CLIENT then
 			--end
 			self:GetWM():ManipulateBoneScale(71, vector_origin)
 				self:GetWM():ManipulateBoneScale(70, vector_origin)
-				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.2 * timeMul,nil,nil,function() 
+				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1.2 * timeMul,nil,nil,function()
 					self:GetWM():ManipulateBoneScale(70, vector_full)
 					self:GetWM():ManipulateBoneScale(71, vector_full)
 					--self:GetWM():ManipulateBoneScale(44, vector_full)
@@ -92,7 +92,7 @@ if CLIENT then
 			if self:Clip1() > 0 then
 				self:GetWM():ManipulateBoneScale(71, vector_origin)
 				self:GetWM():ManipulateBoneScale(70, vector_origin)
-				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1 * timeMul,nil,nil,function() 
+				self:GetOwner():PullLHTowards("ValveBiped.Bip01_Spine2", 1 * timeMul,nil,nil,function()
 					self:GetWM():ManipulateBoneScale(70, vector_full)
 					self:GetWM():ManipulateBoneScale(71, vector_full)
 					--self:GetWM():ManipulateBoneScale(44, vector_full)
@@ -190,8 +190,6 @@ end
 SWEP.Ergonomics = 1.1
 SWEP.ShootAnimMul = 2
 
-local ang1 = Angle(25, 0, 0)
-local ang2 = Angle(0, 60, 0)
 
 function SWEP:AnimHoldPost(model)
 	--self:BoneSet("l_finger0", vector_origin, ang1)

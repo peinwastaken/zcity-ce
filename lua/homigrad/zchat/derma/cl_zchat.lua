@@ -141,7 +141,6 @@ function PANEL:Think()
 	end
 end
 
-local gradient_l = Material("vgui/gradient-l")
 
 function PANEL:Paint(w, h)
 	surface.SetDrawColor(43, 31, 31, 100)
@@ -197,7 +196,7 @@ function PANEL:OnValueChange(text)
 			local droppedText = string.utf8sub(prevText, self:GetCaretPos() + 1, self:GetCaretPos() + (len1 - len2))
 
 			local droppedChars = string.Explode(utf8.charpattern, droppedText)
-			for k, v in ipairs(droppedChars) do
+			for _, v in ipairs(droppedChars) do
 				local data = {}
 				data.text = v
 

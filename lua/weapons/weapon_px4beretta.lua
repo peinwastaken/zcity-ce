@@ -45,22 +45,22 @@ SWEP.FakeMagDropBone = 2
 local vector_full = Vector(1,1,1)
 
 SWEP.FakeReloadEvents = {
-	[0.15] = function( self, timeMul ) 
+	[0.15] = function( self, timeMul )
 		if CLIENT then
 			self:GetOwner():PullLHTowards("ValveBiped.Bip01_L_Thigh", 2.5 * timeMul)
 			self:GetWM():ManipulateBoneScale(2, vector_full)
-		end 
+		end
 	end,
-	[0.37] = function( self ) 
+	[0.37] = function( self )
 		if CLIENT and self:Clip1() < 1 then
 			hg.CreateMag( self, Vector(-15,5,-15) )
 			self:GetWM():ManipulateBoneScale(2, vector_origin)
-		end 
+		end
 	end,
-	[0.55] = function( self ) 
+	[0.55] = function( self )
 		if CLIENT and self:Clip1() < 1 then
 			self:GetWM():ManipulateBoneScale(2, vector_full)
-		end 
+		end
 	end,
 }
 
@@ -153,12 +153,6 @@ SWEP.RHAng = Angle(0,-5,90)
 SWEP.LHPos = Vector(-1.2,-1.4,-2.8)
 SWEP.LHAng = Angle(5,9,-100)
 
-local finger1 = Angle(-25,10,25)
-local finger2 = Angle(0,25,0)
-local finger3 = Angle(31,1,-25)
-local finger4 = Angle(-10,-5,-5)
-local finger5 = Angle(0,-65,-15)
-local finger6 = Angle(15,-5,-15)
 
 function SWEP:AnimHoldPost()
 	--self:BoneSet("r_finger0", vector_zero, finger6)

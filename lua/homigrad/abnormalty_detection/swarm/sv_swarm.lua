@@ -39,40 +39,40 @@ SWARM.NextNetCD = 2
 local ChangedTable={}
 
 function SWARM:IsChanged(val,id,meta)
-	if(meta==nil)then 
-		meta = ChangedTable 
+	if(meta==nil)then
+		meta = ChangedTable
 	end
 	if(meta.ChangedTable==nil)then
 		meta['ChangedTable']={}
 	end
-	
+
 	if( meta.ChangedTable[id] == val )then return false end
-	
+
 	meta.ChangedTable[id]=val
 	return true
 end
 
 function SWARM:WeightedRandomSelect(tab)
 	local totalWeight=0
-	for i,item in pairs(tab) do
+	for _,item in pairs(tab) do
 		totalWeight=totalWeight+item[2]
 	end
 	local randnum=math.random(1,totalWeight)
 	local num=0
-	
-	for i,item in pairs(tab) do
+
+	for _,item in pairs(tab) do
 		num=num+item[2]
 		if(num>=randnum)then
 			return item[1]
 		end
-	end	
+	end
 end
 
 --Many of these lines were extracted from [EU]Homicide project, don't expect readable code
 function SWARM:Spread(p)
-	p:InvoluntaryEvent() 
-	for k,v in pairs(ents.FindInSphere(p:GetPos(),120))do 
-		if(v:IsPlayer() and v:Alive() and !p:GetNWBool('S_GasMask') and !v:GetNWBool('S_GasMask') and v.SwmInf and v.SwmInf>SWARM.CV_MinInfections:GetInt())then 
+	p:InvoluntaryEvent()
+	for _, v in pairs(ents.FindInSphere(p:GetPos(),120))do
+		if(v:IsPlayer() and v:Alive() and !p:GetNWBool('S_GasMask') and !v:GetNWBool('S_GasMask') and v.SwmInf and v.SwmInf>SWARM.CV_MinInfections:GetInt())then
 			v.Swm=true
 		end
 		if(v:IsPlayer())then
@@ -116,7 +116,7 @@ function SWARM:GetStats()
 	local mothers = 0
 	local ordercd = 0
 	local kingbuildcd = 0
-	for i,p in player.Iterator() do
+	for _,p in player.Iterator() do
 		perc=perc+(p.SwarmPerc or 0)
 		if(p.Swm)then
 			inf=inf+1
@@ -133,12 +133,12 @@ function SWARM:GetStats()
 		if(p.King and p.Hiding)then
 			kingbuildcd = kingbuildcd + p.Hiding-CurTime()
 		end
-	end	
+	end
 	return {Percent=perc,Infected=inf,Points = points,NPCAmt=amt,Mothers = mothers,OrderCD = ordercd,KingBuildCD = kingbuildcd}
 end
 
-hook.Add('Think','Swarm',function() 
-	if(SWARM.NextNet<=CurTime())then	
+hook.Add('Think','Swarm',function()
+	if(SWARM.NextNet<=CurTime())then
 		SWARM.NextNet = CurTime() + SWARM.NextNetCD
 		for _,ply in player.Iterator() do
 			local perc = math.Round(ply.SwarmPerc or 0)
@@ -149,35 +149,35 @@ hook.Add('Think','Swarm',function()
 		end
 	end
 
-	for i,p in player.Iterator() do
+	for _,p in player.Iterator() do
 		p.SwarmPerc=p.SwarmPerc or 0
-		
+
 		g=p.SwarmPerc
 		if(p.Swm)then
 			p.SwarmPerc=p.SwarmPerc+engine.TickInterval()*SWARM.CV_InfPerSecond:GetFloat()
-			if(p.SwarmPerc>110 and p.Inf==1)then 
-				p.Fin=1 
-			end 
-		end		
+			if(p.SwarmPerc>110 and p.Inf==1)then
+				p.Fin=1
+			end
+		end
 
-		if(p.Swm and math.random(0,1200-p.SwarmPerc*2)==0)then 
+		if(p.Swm and math.random(0,1200-p.SwarmPerc*2)==0)then
 			SWARM:Spread(p)
 		end
-		
-		if(g~=nil and g!=0)then 
+
+		if(g~=nil and g!=0)then
 			p.LostInnocence=true
 			p:SetColor(Color(255-math.max(g-80,0),255,255-math.max(g-80,0)))
 			if(g>200)then
-				p:Kill() 
-				p.SwarmPerc=nil 
-				p.Swm=false 
-			end 
-		end 
-		
-		if(p:GetNWBool("SwarmLeader"))then
-			
+				p:Kill()
+				p.SwarmPerc=nil
+				p.Swm=false
+			end
 		end
-	end 
+
+		if(p:GetNWBool("SwarmLeader"))then
+
+		end
+	end
 end)
 hook.Add('Think','Swarm2',function()
 	if(SWARM.NextSpawn<=CurTime())then
@@ -202,14 +202,14 @@ hook.Add('Think','Swarm2',function()
 	end
 end)
 
-hook.Add('PlayerDeath','Swarm',function(p) 
-	if(p.SwarmPerc>110)then 
-		CreateSwarm(p,p.SwarmPerc/65+(p.Fin or 0)) 
-	end 
-	p.Swm=false 
+hook.Add('PlayerDeath','Swarm',function(p)
+	if(p.SwarmPerc>110)then
+		CreateSwarm(p,p.SwarmPerc/65+(p.Fin or 0))
+	end
+	p.Swm=false
 	p.SwarmPerc=nil
-	p.Inf=0 
-	p.Fin=0 
+	p.Inf=0
+	p.Fin=0
 	p:SetColor(Color(255,255,255))
 	p:SetNWBool("SwarmLeader",false)
 	p.SwmInf=0
@@ -222,7 +222,7 @@ hook.Add('Player Spawn','Swarm',function(p)
 	-- end
 end)
 
-hook.Add('CanPlayerSuicide','Swarm',function(p) 
+hook.Add('CanPlayerSuicide','Swarm',function(p)
 	if(p.SwarmPerc>10 and p.Swm)then
 		p:ChatPrint("You can't.")
 		return false
@@ -234,7 +234,7 @@ function SWARM:Psych(ply,time)
 	net.Start("SWARM(Psych)")
 		net.WriteUInt(time,4)
 	net.Send(ply)
-	
+
 	ply.SWARM_PsychEnd = CurTime()+time
 	--seq_cower
 	--print(ply:LookupSequence("seq_cower"))
@@ -243,7 +243,7 @@ function SWARM:Psych(ply,time)
 	--ply:DoCustomAnimEvent(PLAYERANIMEVENT_CUSTOM_GESTURE_SEQUENCE,ply:LookupSequence("seq_cower"))
 	--ply:DoCustomAnimEvent( PLAYERANIMEVENT_ATTACK_GRENADE , 321 )
 	--hook.Remove("CalcMainActivity",ply)
-	
+
 	SWARM_AffectedEntities[ply] = true
 end
 --SWARM:Psych(Entity(1),1)
@@ -256,9 +256,9 @@ function SWARM:Knockout(ply,time,aftertime)
 	net.Send(ply)
 	ply.SWARM_KnockoutEnd = CurTime()+time
 	ply.SWARM_AfterKnockoutTime = aftertime or 0
-	
+
 	ply:ViewPunch(Angle( 30, math.random(-5,5), math.random(-15,15) ))
-	
+
 	SWARM_AffectedEntities[ply] = true
 end
 
@@ -271,9 +271,9 @@ function SWARM:ApplyBleed(ply,time,attacker)
 	ply.SWARM_BleedAttacker = attacker
 	ply.SWARM_Bleed = (SWARM_Bleed or 0)+time
 	ply.SWARM_NextBleed = CurTime()+SWARM_CV_BleedCD:GetFloat()
-	
+
 	--ply:ViewPunch(Angle( 30, math.random(-5,5), math.random(-15,15) ))
-	
+
 	SWARM_AffectedEntities[ply] = true
 end
 
@@ -297,7 +297,7 @@ function PlayerMeta:ClearSwarm()
 	self:SetColor(Color(255,255,255))
 	self:SetNWBool("SwarmLeader",false)
 	self.SwmInf=0
-	
+
 	self.SWARM_KnockoutEnd = nil
 	self.SWARM_AfterKnockoutEnd = nil
 	self.SWARM_PsychEnd = nil
@@ -311,9 +311,9 @@ PlayerMeta.InvoluntaryEvent = PlayerMeta.InvoluntaryEvent or function(self)
 end
 
 hook.Add('PostCleanupMap','Swarm',function()
-	for i,p in player.Iterator() do
+	for _,p in player.Iterator() do
 		p:ClearSwarm()
-	end 
+	end
 end)
 
 
@@ -387,7 +387,7 @@ hook.Add("StartCommand","Swarm",function(ply,cmd)
 	end
 	if(ply.SWARM_PsychEnd or ply.SWARM_AfterKnockoutEnd or ply.SWARM_Bleed)then
 		local bestmul = 1
-		
+
 		if(ply.SWARM_AfterKnockoutEnd)then
 			--print(1/((ply.SWARM_AfterKnockoutEnd-CurTime())/ply.SWARM_AfterKnockoutTime))
 			local mul = math.min((1-((ply.SWARM_AfterKnockoutEnd-CurTime())/ply.SWARM_AfterKnockoutTime))*0.04,0.08)

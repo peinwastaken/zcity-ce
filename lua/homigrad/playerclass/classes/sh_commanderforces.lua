@@ -29,7 +29,7 @@ end
 -- local function IsLookingAt(ply, targetVec)
 --     if not IsValid(ply) or not ply:IsPlayer() then return false end
 --     local diff = targetVec - ply:GetShootPos()
---     return ply:GetAimVector():Dot(diff) / diff:Length() >= 0.8 
+--     return ply:GetAimVector():Dot(diff) / diff:Length() >= 0.8
 -- end
 
 function CLASS.Guilt(self, Victim)
@@ -42,7 +42,6 @@ function CLASS.Guilt(self, Victim)
 end
 
 hook.Add("HG_PlayerFootstep", "commanderforces_footsteps", function(ply, pos, foot, sound, volume, rf)
-	local chr = hg.GetCurrentCharacter(ply)
 	if ply:Alive() and ply.PlayerClassName == "commanderforces" then
 		local ent = hg.GetCurrentCharacter(ply)
 

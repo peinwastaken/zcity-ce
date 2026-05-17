@@ -116,7 +116,7 @@ SWEP.ReloadSound = "weapons/crossbow/reload1.wav"
 SWEP.ReloadSoundes = {
 	"none",
 	"weapons/tfa_hl2r/crossbow/crossbow_deploy.wav",
-	"none",	
+	"none",
 	"weapons/tfa_hl2r/crossbow/bolt_load2.wav",
 	"none",
 	"weapons/tfa_hl2r/ar2/weapon_movement1.wav",
@@ -145,18 +145,17 @@ function SWEP:Shoot(override)
 		primary.Automatic = false
 		return false
 	end
-	local owner = self:GetOwner()
 	if primary.Next > CurTime() then return false end
 	if (primary.NextFire or 0) > CurTime() then return false end
 	primary.Next = CurTime() + primary.Wait
 	self:SetLastShootTime(CurTime())
 	primary.Automatic = weapons.Get(self:GetClass()).Primary.Automatic
-	
-	local tr,pos,ang = self:GetTrace(true)
+
+	local _, pos, ang = self:GetTrace(true)
 	local owner = self:GetOwner()
-	
+
 	if SERVER then
-		local dist, point = util.DistanceToLine(pos, pos - ang:Forward() * 50, owner:EyePos())
+		local _, point = util.DistanceToLine(pos, pos - ang:Forward() * 50, owner:EyePos())
 
 		--if(GetGlobalBool("PhysBullets_ReplaceDefault", false))then
 		local bullet = {}
@@ -230,7 +229,7 @@ if CLIENT then
 
 	function SWEP:OwnerChanged()
 		if !IsValid(self:GetWM()) then return end
-		
+
 		self:PlayAnim( self:Clip1() < 1 and "idle_empty" or "idle_is",10,nil,nil,nil,true)
 		self:GetWM():SetSkin(self:Clip1() < 1 and 0 or 1)
 	end
@@ -254,8 +253,6 @@ SWEP.RHAng = Angle(0,-5,90)
 SWEP.LHPos = Vector(14,-1,-5)
 SWEP.LHAng = Angle(-90,-90,-90)
 
-local finger1 = Angle(-15,0,5)
-local finger2 = Angle(-15,45,-5)
 
 --RELOAD ANIMS PISTOL
 

@@ -57,7 +57,7 @@ SWEP.AvailableCostumes = {
 }
 
 SWEP.Identity = {
-    AName = "Unknown", -- Player CustomName... 
+    AName = "Unknown", -- Player CustomName...
     AModel = "models/distac/player/ghostface.mdl", -- GMODModel?
     AColor = Color(255, 0, 0),
     AAttachments = {} -- Outer clothing table for hats and so on... -- Later!
@@ -127,14 +127,13 @@ if CLIENT then
             --surface.PlaySound("buttons/button10.wav")
             return
         end
-        
+
         if IsValid(self.CostumeMenu) then
             self.CostumeMenu:Remove()
         end
-        
-        local scrW, scrH = ScrW(), ScrH()
+
         local menuW, menuH = 600, 500
-        
+
 
         self.CostumeMenu = vgui.Create("ZFrame")
         self.CostumeMenu:SetSize(menuW, menuH)
@@ -143,18 +142,18 @@ if CLIENT then
         self.CostumeMenu:SetDraggable(true)
         self.CostumeMenu:ShowCloseButton(true)
         self.CostumeMenu:MakePopup()
-        
+
 
         self.CostumeMenu.Paint = function(self, w, h)
             draw.RoundedBox(8, 0, 0, w, h, Color(20, 20, 20, 230))
             draw.RoundedBox(8, 5, 5, w-10, h-10, Color(40, 0, 0, 180))
-            
+
             draw.RoundedBox(0, 0, 0, w, 30, Color(60, 0, 0, 200))
-            
+
             surface.SetDrawColor(180, 0, 0, 255)
             surface.DrawOutlinedRect(0, 0, w, h, 2)
         end
-        
+
 		local font = "ZB_InterfaceSmall"
 		if engine.ActiveGamemode() == "sandbox" then
 			font = "ZCity_Fixed_SuperTiny"
@@ -162,19 +161,19 @@ if CLIENT then
 
         self.CostumeMenu.lblTitle:SetFont(font)
         self.CostumeMenu.lblTitle:SetTextColor(color_white)
-        
+
 
         local grid = vgui.Create("DGrid", self.CostumeMenu)
         grid:Dock(FILL)
         grid:DockMargin(10, 10, 10, 10)
         grid:SetCols(2)
         grid:SetColWide(280)
-        grid:SetRowHeight(350) 
-        
+        grid:SetRowHeight(350)
+
         for i, costume in ipairs(self.AvailableCostumes) do
             local costumePanel = vgui.Create("DPanel")
-            costumePanel:SetSize(270, 340) 
-            
+            costumePanel:SetSize(270, 340)
+
             costumePanel.Paint = function(self, w, h)
                 draw.RoundedBox(4, 0, 0, w, h, Color(60, 0, 0, 180))
                 draw.RoundedBox(4, 2, 2, w-4, h-4, Color(30, 30, 30, 200))
@@ -182,16 +181,16 @@ if CLIENT then
                 surface.SetDrawColor(120, 0, 0, 255)
                 surface.DrawOutlinedRect(0, 0, w, h, 1)
                 draw.SimpleText(costume.Name, font, w/2, 15, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-                
+
                 draw.DrawText(costume.Description, font, w/2, h - 80, Color(200, 200, 200), TEXT_ALIGN_CENTER)
             end
-            
+
 
             local modelPanel = vgui.Create("DModelPanel", costumePanel)
             modelPanel:SetSize(220, 220)
             modelPanel:SetPos(25, 40)
             modelPanel:SetModel(costume.Model)
-            
+
             local mn, mx = modelPanel.Entity:GetRenderBounds()
             local size = 0
             size = math.max(size, math.abs(mn.x) + math.abs(mx.x))
@@ -200,41 +199,41 @@ if CLIENT then
             modelPanel:SetFOV(45)
             modelPanel:SetCamPos(Vector(size * 1.2, size * 1.2, size * 0.8))
             modelPanel:SetLookAt((mn + mx) * 0.5)
-            
+
 
             function modelPanel:LayoutEntity(ent)
                 ent:SetAngles(Angle(0, RealTime() * 30 % 360, 0))
             end
-            
+
             local selectButton = vgui.Create("DButton", costumePanel)
-            selectButton:SetSize(100, 30) 
-            selectButton:SetPos(85, 295) 
+            selectButton:SetSize(100, 30)
+            selectButton:SetPos(85, 295)
             selectButton:SetText("Select")
             selectButton:SetFont(font)
-            
+
             selectButton.Paint = function(self, w, h)
                 local buttonColor = self:IsHovered() and Color(180, 0, 0, 200) or Color(120, 0, 0, 200)
                 draw.RoundedBox(4, 0, 0, w, h, buttonColor)
                 surface.SetDrawColor(200, 0, 0, 255)
                 surface.DrawOutlinedRect(0, 0, w, h, 1)
             end
-            
+
             selectButton.DoClick = function()
                 self.SelectedCostume = table.Copy(costume)
-                
+
                 self.CostumeMenu:Close()
-                
+
                 net.Start("SuitCostumeSelected")
-                net.WriteInt(i, 8) 
+                net.WriteInt(i, 8)
                 net.SendToServer()
-                
+
                 --surface.PlaySound("buttons/button14.wav")
             end
-            
+
             grid:AddItem(costumePanel)
         end
     end
-    
+
     net.Receive("SuitCostumeStatus", function()
         local wep = LocalPlayer():GetActiveWeapon()
         if IsValid(wep) and wep:GetClass() == "weapon_traitor_suit" then
@@ -246,19 +245,19 @@ end
 if SERVER then
     util.AddNetworkString("SuitCostumeSelected")
     util.AddNetworkString("SuitCostumeStatus")
-    
+
     net.Receive("SuitCostumeSelected", function(len, ply)
         local wep = ply:GetActiveWeapon()
         if IsValid(wep) and wep:GetClass() == "weapon_traitor_suit" then
             if wep.IsCostumeActive then return end
-            
+
             local costumeIndex = net.ReadInt(8)
             local selectedCostume = wep.AvailableCostumes[costumeIndex]
-            
+
             if selectedCostume then
 
                 wep.StoredIdentity = table.Copy(ply.CurAppearance or {})
-                
+
                 local newIdentity = {
                     AName = selectedCostume.Name,
                     AClothes = {},
@@ -266,11 +265,11 @@ if SERVER then
                     AColor = selectedCostume.Color,
                     AAttachments = selectedCostume.Attachments or {}
                 }
-                
+
                 hg.Appearance.ForceApplyAppearance(ply, newIdentity)
-                
+
                 wep.IsCostumeActive = true
-                
+
                 net.Start("SuitCostumeStatus")
                     net.WriteBool(true)
                 net.Send(ply)
@@ -289,9 +288,9 @@ function SWEP:SecondaryAttack()
         if self.IsCostumeActive and self.StoredIdentity then
             hg.Appearance.ForceApplyAppearance(self:GetOwner(), self.StoredIdentity)
             self:EmitSound("snds_jack_gmod/equip"..math.random(1,5)..".wav")
-            
+
             self.IsCostumeActive = false
-            
+
             net.Start("SuitCostumeStatus")
             net.WriteBool(false)
             net.Send(self:GetOwner())
@@ -312,11 +311,11 @@ end
 
 function SWEP:PrimaryAttack()
 	if self.CD and self.CD > CurTime() then return end
-    
+
     if CLIENT then
         self:OpenCostumeMenu()
     end
-    
+
 	self.CD = CurTime() + 1.5
 end
 

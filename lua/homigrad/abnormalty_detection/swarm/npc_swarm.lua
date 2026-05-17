@@ -57,21 +57,21 @@ function ENT:Initialize()
 		--models/swarm/drone.mdl
 		--models/headcrab.mdl
 		--self:SetModelScale(0.5,0)
-		
+
 		self:SetHullType( HULL_TINY )
-		self:SetHullSizeNormal() 
+		self:SetHullSizeNormal()
 		self:SetSolid( SOLID_BBOX )
 		self:SetMoveType( MOVETYPE_STEP )
 		self:CapabilitiesAdd( bit.bor( CAP_MOVE_GROUND, CAP_SQUAD, CAP_MOVE_JUMP ) )
 		self:CapabilitiesRemove( bit.bor( CAP_OPEN_DOORS, CAP_AUTO_DOORS ) )
-		
+
 		self:SetHealth( 30*self:GetHealthMul(6) )
 		self:SetMaxHealth(30)
-		
+
 		self.Faction=1
 		--self:SetColor(Color(255,0,0))
 		self:SetBloodColor(BLOOD_COLOR_GREEN)
-		
+
 		self.JustSpawned = CurTime()+2
 		--self:SetNPCClass(CLASS_ALIEN_PREY)
 	end
@@ -96,7 +96,7 @@ function ENT:OnTakeDamage( dmginfo )	--Taking damage...
 		if(self.King)then
 			--print(4)
 			--PrintTable(self.CreatedNpcs)
-			for ent, time in pairs( self.CreatedNpcs ) do
+			for ent, _ in pairs( self.CreatedNpcs ) do
 				--print(ent)
 				if ( ent:IsValid() and ent:GetClass()=="npc_swarm" and ent!=self ) then
 					ent.Points = ent.Points + 30
@@ -153,12 +153,12 @@ function ENT:Think()
 	if(self.Hiding and self.Hiding<=CurTime())then
 		self.Hiding=nil
 		self:Build()
-	end	
+	end
 
 	if(self.MovingTo and self.MovingTo<=CurTime())then
 		self.MovingTo=nil
 	end
-	
+
 	if(SERVER and (!self.NextTryHide or self.NextTryHide<=CurTime()))then
 		self.NextTryHide = CurTime() + 1
 		local lastenem = self:GetEnemy()
@@ -175,7 +175,7 @@ function ENT:Think()
 			self.Hiding=CurTime()+30
 		end
 	end
-	
+
 	if(SERVER and ((!self.NextEntityHullClearing or self.NextEntityHullClearing<=CurTime()) and !self.JustSpawned))then
 		self.NextEntityHullClearing = CurTime() + 2
 		SWARM:ClearEntityHull(self,5)
@@ -185,7 +185,7 @@ end
 function ENT:Build()
 	--if(#ents.FindByClass(self.BuildEnt)>=2)then
 	--	self.Hiding=nil
-	--	return 
+	--	return
 	--end
 	if(self.Points<30)then return end
 	self.Points=self.Points-30
@@ -204,7 +204,7 @@ function ENT:Build()
 	--else
 	--	hel:MutateGenes(nil,3)
 	--end
-	self:EmitSound('NPC_HeadCrab.Gib',35)	
+	self:EmitSound('NPC_HeadCrab.Gib',35)
 	self:Remove()
 end
 
@@ -217,7 +217,6 @@ end
 
 function ENT:Leap( dir )
 	if(!self.Leaping and self:SWARM_OnGround())then
-		local lastenem = self:GetEnemy()
 		self:SetSchedule( SCHED_COMBAT_FACE )
 		self.Leaping=true
 		self:MoveJumpStart(dir)
@@ -247,14 +246,14 @@ function ENT:Touch(ent)
 			dmg:SetAttacker(self)
 			dmg:SetInflictor(self)
 			ent:TakeDamageInfo(dmg)
-			
+
 			self:TryInfect(ent,20,self)
 			self:EmitSound("NPC_BlackHeadcrab.Impact")--NPC_FastHeadcrab.Bite--Egg.Crack--NPC_BlackHeadcrab.Impact
 			self:MoveJumpStop()
 
 			self:SetSchedule( SCHED_FORCED_GO_RUN )
 			--self:SetNPCState(NPC_STATE_COMBAT)
-		
+
 			self.Points=self.Points+10
 			--self:SetParent(ent)
 		end
@@ -274,7 +273,7 @@ function ENT:GetRelationship( entity )
 	if(entity.Classify)then
 		class=entity:Classify()
 	end
-		
+
 	if(class and class==CLASS_PLAYER)then
 		return D_HT
 	elseif(entity:GetClass()=="player")then
@@ -284,17 +283,17 @@ function ENT:GetRelationship( entity )
 	end
 end]]
 
-function ENT:TaskStart_FindEnemy( data )	
+function ENT:TaskStart_FindEnemy( data )
 	if(data==nil)then data = {} end
 
 	local lastenem = self:GetEnemy()
-	
+
 	if(!IsValid(lastenem) or (lastenem.Alive and !lastenem:Alive()) or lastenem:GetPos():Distance(self:GetPos())>(SWARM_CV_SWARM_ForgetRange:GetInt()))then
-	
+
 		local et = ents.FindInSphere( self:GetPos(), data.Radius or SWARM_CV_SWARM_DetectRange:GetInt() )
 		local bestdistance = math.huge
 		local bestenemy = nil
-		for k, v in pairs( et ) do
+		for _, v in pairs( et ) do
 
 			if ( v:IsValid() && v != self && (self:Disposition(v)==D_HT or self:Disposition(v)==D_FR) and (!v.Alive or v:Alive()) and self:IsEntityPossibleEnemy(v) ) then
 				local dist = v:GetPos():DistToSqr(self:GetPos())
@@ -315,8 +314,8 @@ function ENT:TaskStart_FindEnemy( data )
 			self:UpdateEnemyMemory( bestenemy, bestenemy:GetPos() )
 			--self:TaskComplete()
 			return
-		end		
-		
+		end
+
 	end
 	if(IsValid(lastenem))then
 		if(!self.MovingTo)then
@@ -327,14 +326,14 @@ function ENT:TaskStart_FindEnemy( data )
 		--self:TaskComplete()
 		return
 	end
-	
+
 	self:SetEnemy( NULL )
 
 end
 
 function ENT:TaskStart_ShareDeathPoints( data )
 	local et = ents.FindInSphere( self:GetPos(), 200 )
-	for k, ent in pairs( et ) do
+	for _, ent in pairs( et ) do
 		if ( ent:IsValid() and ent.Points and ent:IsNPC() and ent!=self ) then
 			ent.Points = ent.Points + math.Round(self.Points/SWARM_CV_SWARM_DeadPointsDiv:GetFloat())
 			--print(math.Round(self.Points/SWARM_CV_SWARM_DeadPointsDiv:GetFloat()))
@@ -347,7 +346,7 @@ function ENT:TaskStart_GetPoints( data )
 	if(IsValid(self.SWARM_Mother))then return end
 	local et = ents.FindInSphere( self:GetPos(), 200 )
 
-	for k, v in pairs( et ) do
+	for _, v in pairs( et ) do
 		if ( v:IsValid() and v.Points and v.Points<self.Points and v:IsNPC() and !v.King ) then
 			self.Points=self.Points+v.Points
 			v.Points=0
@@ -356,7 +355,7 @@ function ENT:TaskStart_GetPoints( data )
 end
 
 function ENT:SelectSchedule( iNPCState )
-	
+
 	if(self.MovingTo)then
 		self:SetSchedule( SCHED_FORCED_GO_RUN )
 	elseif(self.Hiding)then
@@ -375,7 +374,7 @@ function ENT:SelectSchedule( iNPCState )
 			--self:SetSchedule( SCHED_RANGE_ATTACK1 )
 		end
 	end
-	
+
 end
 
 
@@ -399,21 +398,21 @@ function ENT:RunAI( strExp )
 	local lastenem = self:GetEnemy()
 	if( IsValid(lastenem) and (!lastenem.Alive or lastenem:Alive()) )then
 		if(IsValid(lastenem.FakeRagdoll))then
-			if(lastenem:GetPos():Distance(self:GetPos())<100)then	
-				if(self.NextLeap<=CurTime())then	
-					self.NextLeap=CurTime()+self.LeapCD			
+			if(lastenem:GetPos():Distance(self:GetPos())<100)then
+				if(self.NextLeap<=CurTime())then
+					self.NextLeap=CurTime()+self.LeapCD
 					local dmg = DamageInfo()
 					dmg:SetDamage(SWARM_CV_SWARM_MeleeDmg:GetInt()*self:GetDamageMul(2.5))
 					dmg:SetDamageType(DMG_SLASH)
 					dmg:SetAttacker(self)
 					dmg:SetInflictor(self)
 					lastenem.FakeRagdoll:TakeDamageInfo(dmg)
-					
+
 					self:TryInfect(lastenem, 20, self)
 					self:EmitSound("NPC_BlackHeadcrab.Impact")--NPC_FastHeadcrab.Bite--Egg.Crack--NPC_BlackHeadcrab.Impact
-				
-					self.Points=self.Points+10					
-				end	
+
+					self.Points=self.Points+10
+				end
 			end
 		else
 			if(lastenem:GetPos():Distance(self:GetPos())<200)then
@@ -424,8 +423,8 @@ function ENT:RunAI( strExp )
 				}
 				local trace = util.TraceLine(traceinfo)
 				if(trace.Entity==lastenem)then
-					if(self.NextLeap<=CurTime())then	
-						self.NextLeap=CurTime()+self.LeapCD			
+					if(self.NextLeap<=CurTime())then
+						self.NextLeap=CurTime()+self.LeapCD
 						self:Leap( ( (lastenem:GetShootPos()+lastenem:GetVelocity()/3)-self:GetPos() ):GetNormalized()*550 )
 					end
 				end
@@ -433,7 +432,7 @@ function ENT:RunAI( strExp )
 		end
 	end
 
-	if(self.NextEnemyFind<=CurTime())then	
+	if(self.NextEnemyFind<=CurTime())then
 		self.NextEnemyFind=CurTime()+self.EnemyFindCD
 		self:TaskStart_FindEnemy()
 	end
@@ -455,7 +454,7 @@ function ENT:RunAI( strExp )
 	end
 	--print(self:GetIdealActivity())
 	self:MaintainActivity()
-	
+
 end
 
 scripted_ents.Register(ENT,"npc_swarm")

@@ -24,9 +24,9 @@ end
 
 function ENT:PhysicsCollide(data, physobj)
 	if data.DeltaTime > .2 and data.Speed > 25 then
-		
+
 		self.Velocity = data.OurOldVelocity
-		if data.Speed > 200 and not self.Exploded then 
+		if data.Speed > 200 and not self.Exploded then
 			self:Detonate()
 			self:EmitSound("weapons/molotov/molotov_detonate.wav")
 		end
@@ -59,7 +59,7 @@ function ENT:Think()
 		ent:SetVelocity(self:GetPhysicsObject():GetVelocity())
 		ent.init = true
 		ent:Spawn()
-		
+
 		self.Exploded = true
 		self:Remove()
 	end
@@ -74,7 +74,7 @@ end
 function ENT:Detonate()
 	if self.Exploded then return end
 	self.Exploded = true
-	local SelfPos, Owner = self:LocalToWorld(self:OBBCenter()), self:GetOwner() or self
+	local SelfPos, _ = self:LocalToWorld(self:OBBCenter()), self:GetOwner() or self
 	--local Boom = ents.Create("env_explosion")
 	--Boom:SetPos(SelfPos)
 	--Boom:SetKeyValue("imagnitude", "50")
@@ -96,7 +96,7 @@ function ENT:Detonate()
 			end
 		end
 	end)
-	
+
 	hg.EmitAISound(SelfPos, 512, 16, 8)
 
 	--ParticleEffect("pcf_jack_incendiary_ground_sm2",SelfPos,vector_up:Angle())

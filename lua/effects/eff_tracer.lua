@@ -69,7 +69,10 @@ end
 function EFFECT:Render()
     local bullet = self.bullet
     local fireinthehole = IsValid(self.gun) and (math.Round(self.magnitude) == 1)
-    if fireinthehole and self.gun.GetMuzzleAtt then self.StartPos = (self.gun.GetTrace and select(2, self.gun:GetTrace(nil, nil, nil, true))) or self.StartPos end
+    if fireinthehole and self.gun.GetMuzzleAtt and self.gun.GetTrace then
+        local _, tracePos = self.gun:GetTrace(nil, nil, nil, true)
+        self.StartPos = tracePos or self.StartPos
+    end
     if not self.SpawnTime or not self.DieTime then return end
     local delta = (CurTime() - self.SpawnTime) / (self.DieTime - self.SpawnTime)
     local startbeampos = Lerp(delta, self.StartPos, self.EndPos)

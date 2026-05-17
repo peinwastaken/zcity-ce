@@ -19,7 +19,7 @@ function player.RegClass(name)
 end
 
 function player.EventPoint(pos, name, radius, ...)
-	for i, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if ply:GetPos():Distance(pos) > radius then continue end
 		ply:PlayerClassEvent("EventPoint", name, pos, radius, ...)
 	end

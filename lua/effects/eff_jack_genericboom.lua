@@ -1,5 +1,4 @@
 ﻿local ShockWave = Material("sprites/mat_jack_shockwave_white")
-local Refract = Material("sprites/mat_jack_shockwave")
 local Wake = Material("effects/splashwake1")
 local Shit = Material("sprites/mat_jack_ignorezsprite")
 
@@ -32,7 +31,7 @@ function EFFECT:Init(data)
 		util.Effect("WaterSplash", Splach)
 		local emitter = ParticleEmitter(vOffset)
 
-		for i = 0, 400 do
+		for _ = 0, 400 do
 			local Sprite
 			local Rand = math.random(1, 3)
 
@@ -63,7 +62,7 @@ function EFFECT:Init(data)
 			particle:SetColor(255, 255, 255)
 		end
 
-		for i = 0, 300 do
+		for _ = 0, 300 do
 			local Sprite
 			local Rand = math.random(1, 3)
 
@@ -131,7 +130,7 @@ function EFFECT:Init(data)
 		particle:SetColor(darg - 20, darg, darg)
 	end
 
-	for i = 0, 3 * Scayul ^ 2 do
+	for _ = 0, 3 * Scayul ^ 2 do
 		local Debris = emitter:Add("effects/fleck_cement" .. math.random(1, 2), vOffset)
 
 		if Debris then
@@ -274,7 +273,6 @@ function EFFECT:Render()
 	render.DrawSprite(self.Pos, self.Siyuz, self.Siyuz, Color(255, 255, 255, Opacity))
 	local TimeLeft = self.TimeToDie - CurTime()
 	local TimeFraction = math.Clamp(TimeLeft / (0.015 * self.Scale), 0, 10)
-	local ReverseFraction = 1 - TimeFraction
 	render.SetMaterial(Shit)
 	render.DrawSprite(self.Position, 2000 * TimeFraction * self.Scale, 2000 * TimeFraction * self.Scale, Color(255, 255, 255, 255 * TimeFraction))
 end

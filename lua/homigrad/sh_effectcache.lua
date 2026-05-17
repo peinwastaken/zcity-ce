@@ -35,7 +35,7 @@ local toPrecache = {
     "NMRIH_EXTINGUISHER"
 }
 
-for k, v in ipairs(toPrecache) do
+for _, v in ipairs(toPrecache) do
     PrecacheParticleSystem(v)
 end
 

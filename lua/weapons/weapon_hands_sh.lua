@@ -93,7 +93,7 @@ if CLIENT then
 
 		if (IsValid(owner)) then
 			local ang = owner:EyeAngles()
-			local posa, aimvec = hg.eye(owner)--hg.eyeTrace(owner)
+			local posa, _ = hg.eye(owner)--hg.eyeTrace(owner)
 
 			local pos = posa + ang:Forward() * (-14) + ang:Up() * -9 * self.blockinganim
 
@@ -295,7 +295,6 @@ local ang2 = Angle(90,15,0)
 local ang4 = Angle(0,0,180)
 local ang5 = Angle(0,0,0)
 
-local ang3 = Angle(0,0,180)
 local clamp = math.Clamp
 
 function hg.handcuffedhands(ply)
@@ -307,7 +306,7 @@ function hg.handcuffedhands(ply)
 	ang2[1] = 90 - 50 * ply.crouchinglerp
 
 	local pos = posi + ang:Up() * (6 + 12 * ply.crouchinglerp) + ang:Right() * (2 + -14 * ply.crouchinglerp) + ang:Forward() * 4 * ply.crouchinglerp
-	local pointpos = hg.torsoTrace(ply,20)
+	hg.torsoTrace(ply,20)
 	--[[if hg.KeyDown(ply,IN_ATTACK2) then
 		pos = pointpos.HitPos
 		ply.lerphandpos = Lerp(hg.lerpFrameTime2(0.1,dtime), ply.lerphandpos or Vector(0,0,0), pos)
@@ -325,15 +324,12 @@ SWEP.offsetAng = Angle(0, 90, 90)
 SWEP.idleVec = Vector(4.5, -2, -0.2)
 SWEP.idleAng = Angle(0, 0, -80)
 
-local blockingR = Vector()
-local blockingL = Vector()
 local vecBlockingR = Vector(-2, 3, -2)
 local vecBlockingL = Vector(-2, -3, 4)
 
 local vecIdleR = Vector(0, -1, 2)
 local vecIdleL = Vector(0, 1, 0.5)
 
-local ang180, ang1, ang2 = Angle(0,180,0), Angle(-110,-90,0), Angle(-70,-90,0)
 function SWEP:SetHandPos(noset)
 	local ply = self:GetOwner()
 	if CLIENT and self.IsLocal and not self:IsLocal() and IsValid(ply) and ply.PlayerClassName == "headcrabzombie" and not IsValid(ply:GetNetVar("carryent")) then return end
@@ -346,7 +342,6 @@ function SWEP:SetHandPos(noset)
 	self.rhandik = (self:GetFists()) or (IsValid(ent) and twohands)
 	self.lhandik = (self:GetFists() and hg.CanUseLeftHand(ply)) or IsValid(ent)
 
-	local bones2 = hg.TPIKBonesOther
 
 	local ply_spine_index = ply:LookupBone("ValveBiped.Bip01_Spine4")
 	if !ply_spine_index then return end
@@ -544,10 +539,8 @@ else
 	SWEP.WepSelectIcon = Material("vgui/wep_jack_hmcd_hands")
 	SWEP.IconOverride = "vgui/wep_jack_hmcd_hands.png"
 	local colWhite = Color(255, 255, 255, 255)
-	local colGray = Color(200, 200, 200, 200)
 	local lerpthing = 1
 	local lerpalpha = 0
-	local lerpalpha2 = 0
 	local colwhite = Color(0, 0, 0, 0)
 	local colred = Color(122, 0, 0, 0)
 
@@ -589,7 +582,7 @@ else
 			surface.SetFont("HomigradFontLarge")
 			surface.SetTextColor(255, 255, 255, lerpalpha)
 			local txt = "Afflictions shown for "..ent:GetPlayerName()..":"
-			local w1, h1 = surface.GetTextSize(txt)
+			local _, h1 = surface.GetTextSize(txt)
 			surface.SetTextPos(scrw * 0.05, scrh * 0.95 - h - h1)
 			surface.DrawText(txt)
 
@@ -661,7 +654,7 @@ end
 
 local function WhomILookinAt(ply, cone, dist)
 	local CreatureTr, ObjTr, OtherTr
-	for i = 1, 150 * cone do
+	for _ = 1, 150 * cone do
 		local Tr = hg.eyeTrace(ply, dist)
 		if Tr.Hit and not Tr.HitSky and Tr.Entity then
 			local Ent, Class = Tr.Entity, Tr.Entity:GetClass()
@@ -788,7 +781,7 @@ function SWEP:SecondaryAttack()
 
 		--if (IsValid(tr.Entity) or game.GetWorld() == tr.Entity) and self:CanPickup(tr.Entity) and not tr.Entity:IsPlayer() then
 		if (IsValid(tr.Entity)) and self:CanPickup(tr.Entity) and not tr.Entity:IsPlayer() then
-			local Dist = (select(1, hg.eye(owner)) - tr.HitPos):Length()
+			local Dist = (hg.eye(owner) - tr.HitPos):Length()
 			--if Dist < self.ReachDistance then
 				sound.Play("Flesh.ImpactSoft", owner:GetShootPos(), 65, math.random(90, 110))
 				self:SetCarrying(tr.Entity, tr.PhysicsBone, tr.HitPos, Dist)
@@ -796,7 +789,7 @@ function SWEP:SecondaryAttack()
 				self:ApplyForce()
 			--end
 		elseif IsValid(tr.Entity) and tr.Entity:IsPlayer() then
-			local Dist = (select(1, hg.eye(owner)) - tr.HitPos):Length()
+			local Dist = (hg.eye(owner) - tr.HitPos):Length()
 			if Dist < self.ReachDistance then
 				sound.Play("Flesh.ImpactSoft", owner:GetShootPos(), 65, math.random(90, 110))
 				owner:SetVelocity(owner:GetAimVector() * 20)
@@ -834,7 +827,7 @@ SWEP.Checking = 0
 
 function SWEP:ApplyForce()
 	local ply = self:GetOwner()
-	local target = self:GetOwner():GetAimVector() * self.CarryDist + select(1, hg.eye(ply))
+	local target = self:GetOwner():GetAimVector() * self.CarryDist + hg.eye(ply)
 	if not IsValid(self.CarryEnt) then return end
 	local phys = self.CarryEnt:GetPhysicsObjectNum(self.CarryBone)
 
@@ -843,7 +836,7 @@ function SWEP:ApplyForce()
 
 		return
 	end
-	
+
 	if IsValid(phys) then
 		local TargetPos = phys:GetPos()
 
@@ -898,7 +891,7 @@ function SWEP:ApplyForce()
 
 		if SERVER then
 			if self.CarryEnt.welds then
-				for i, weld in pairs(self.CarryEnt.welds) do
+				for _, weld in pairs(self.CarryEnt.welds) do
 					if IsValid(weld) then weld:Remove() end
 				end
 				self.CarryEnt.welds = nil
@@ -1014,7 +1007,7 @@ function SWEP:ApplyForce()
 				tr.mask = MASK_SOLID
 				tr.filter = {self.CarryEnt, self, ply}
 				local trace = util.TraceLine(tr)
-				
+
 				if bone != "ValveBiped.Bip01_Spine2" or !trace.Hit then
 					phys:ApplyForceCenter(ply:GetAimVector() * math.min(5000, phys:GetMass() * 800))
 					self:SetCarrying()
@@ -1164,43 +1157,27 @@ end
 SWEP.DamagePrimary = 10
 
 function SWEP:BlockingLogic(ent, mul, attacktype, trace)
-	local ent = hg.RagdollOwner(ent) or ent
+    ent = hg.RagdollOwner(ent) or ent
 
-	if ent:IsPlayer() then
-		local wep = ent:GetActiveWeapon()
+    if ent:IsPlayer() then
+        local wep = ent:GetActiveWeapon()
+        local pos, aimvec = hg.eye(ent)
+        local dist = util.DistanceToLine(pos + aimvec * 100, pos, trace.HitPos)
+        local dmg = wep.DamagePrimary
+        local selfdmg = self.DamagePrimary * 0.2
 
-		local owner = self:GetOwner()
+        if wep.GetBlocking and wep:GetBlocking() and wep.SetStartedBlocking and dist < 10 then
+            ent.organism.stamina.subadd = ent.organism.stamina.subadd + mul * math.Clamp(selfdmg / dmg, 0.1, 1) * selfdmg * (1 - math.Clamp((self:GetStartedBlocking() - CurTime() + 0.1), 0, 0.1) / 0.1)
 
-		local pos, aimvec = hg.eye(ent)
-		local pos2, aimvec2 = hg.eye(owner)
+            if wep.SetLastBlocked then
+                wep:SetLastBlocked(CurTime())
+            end
 
-		local dist, posHit, distLine = util.DistanceToLine(pos + aimvec * 100, pos, trace.HitPos)
+            return math.Clamp(selfdmg / dmg / math.Clamp(ent.organism.stamina[1] / (ent.organism.stamina.max * 0.66), 0.1, 1), 0.1, 1)
+        end
+    end
 
-		//print(dist, distLine)
-
-		local dmg = wep.DamagePrimary
-		local selfdmg = self.DamagePrimary * 0.2
-
-		if wep.GetBlocking and wep:GetBlocking() and wep.SetStartedBlocking and dist < 10 then
-			ent.organism.stamina.subadd = ent.organism.stamina.subadd + mul * math.Clamp(selfdmg / dmg, 0.1, 1) * selfdmg * (1 - math.Clamp((self:GetStartedBlocking() - CurTime() + 0.1), 0, 0.1) / 0.1)
-
-			wep:SetLastBlocked(CurTime())
-
-			//viewpunch the attacker maybe?
-			//self:PunchPlayer(owner, attacktype, -owner:GetAimVector(), selfdmg / 2)
-			//self:PunchPlayer(ent, attacktype, owner:GetAimVector(), selfdmg / 2)
-
-			//ent:EmitSound("physics/metal/metal_computer_impact_bullet3.wav") -- parry sound
-
-			if wep.SetLastBlocked then
-				wep:SetLastBlocked(CurTime())
-			end
-
-			return math.Clamp(selfdmg / dmg / math.Clamp(ent.organism.stamina[1] / (ent.organism.stamina.max * 0.66), 0.1, 1), 0.1, 1)
-		end
-	end
-
-	return 1
+    return 1
 end
 
 --[[hook.Add("UpdateAnimation", "blockingfists", function(ply , vel, seq)//salat balbes
@@ -1577,7 +1554,7 @@ function SWEP:AttackFront(special_attack, rand)
 		end
 
 		Mul = Mul * self:BlockingLogic(Ent, Mul, 0, trace)
-		
+
 		local glass = false
 		if string.find(Ent:GetClass(), "break") and Ent:GetBrushSurfaces()[1] and string.find(Ent:GetBrushSurfaces()[1]:GetMaterial():GetName(), "glass") then
 			glass = true
@@ -1699,8 +1676,6 @@ function SWEP:Reload()
 	local ent = self:GetCarrying()
 
 	if SERVER then
-		local target,_ = WorldToLocal(self:GetOwner():GetAimVector() * (self.CarryDist or 50) + self:GetOwner():GetShootPos(),angle_zero,self:GetOwner():EyePos(),self:GetOwner():EyeAngles())
-
 		if IsValid(ent) then
 			local owner = self:GetOwner()
 			local bon = self.CarryEnt:TranslatePhysBoneToBone(self.CarryBone)
@@ -1721,7 +1696,6 @@ function SWEP:Reload()
 end
 
 if SERVER then
-	local angZero = Angle(0, 0, 0)
 	hook.Add("Think", "held-entities", function()
 		heldents = heldents or {}
 		for i, tbl in pairs(heldents) do
@@ -1734,7 +1708,7 @@ if SERVER then
 				continue
 			end
 
-			local ent, ply, dist, target, bone, pos, lang = tbl[1], tbl[2], tbl[3], tbl[4], tbl[5], tbl[6], tbl[7]
+			local ent, ply, _, target, bone, pos, lang = tbl[1], tbl[2], tbl[3], tbl[4], tbl[5], tbl[6], tbl[7]
 			local phys = ent:GetPhysicsObjectNum(bone)
 
 			if not IsValid(phys) or not IsValid(ply) or not IsValid(ent) or not ply:Alive() or (ply:GetGroundEntity() == ent) or (ply:GetEntityInUse() == ent) or IsValid(ply.FakeRagdoll) or ply:KeyPressed(IN_RELOAD) then
@@ -1777,22 +1751,22 @@ if SERVER then
 			local target,_ = LocalToWorld(target,angle_zero,ply:EyePos(),(ent.rememberedang or ply:EyeAngles()) - (not ply:KeyDown(IN_USE) and ent.addang or ent.oldaddang or angle_zero))
 			local vec = target - TargetPos
 			local len, mul = vec:Length(), phys:GetMass()
-	
+
 			vec:Normalize()
-	
+
 			if (ply.organism and ply.organism.superfighter) then
 				mul = mul * 5
 			end
-	
+
 			if (ply.organism and ply:IsBerserk()) then
 				mul = mul * (1 + ply.organism.berserk / 5)
 			end
-	
+
 			local avec = vec * len * 8 - phys:GetVelocity()
-	
+
 			local Force = avec * mul
 			local ForceMagnitude = math.min(Force:Length(), 3000) * (1 / math.max(phys:GetVelocity():Dot(vec) / 25, 1))
-	
+
 			Force = Force:GetNormalized() * ForceMagnitude
 
 			phys:Wake()
@@ -1800,10 +1774,10 @@ if SERVER then
 			if len > 100 then
 				hg.SetCarryEnt2(ply)
 				heldents[i] = nil
-				
+
 				continue
 			end
-	
+
 			ent:SetPhysicsAttacker(ply, 15)
 
 			Force = Force:GetNormalized() * ForceMagnitude
@@ -1832,7 +1806,7 @@ if SERVER then
 
 			if wep.GetCarrying and ply:KeyDown(IN_ATTACK) then
 				phys:ApplyForceCenter(ply:GetAimVector() * math.min(5000, phys:GetMass() * 800))
-				
+
 				hg.SetCarryEnt2(ply)
 				heldents[i] = nil
 			end

@@ -3,7 +3,7 @@ wOS.DynaBase = wOS.DynaBase or {}
 
 net.Receive( "wOS.DynaBase.SendAllRegisters", function()
 	wOS.DynaBase.EnforceCount = net.ReadUInt( 32 )
-	for i=1, wOS.DynaBase.EnforceCount do
+	for _ = 1, wOS.DynaBase.EnforceCount do
 		local name = net.ReadString()
 		local tbl = wOS.DynaBase:GetSource( name )
 		if not tbl then wOS.DynaBase:RegisterSource({Name = name, ServerValid = true}) return end

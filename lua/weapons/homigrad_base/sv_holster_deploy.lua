@@ -46,11 +46,10 @@ function SWEP:Holster(wep)--
 	return true
 end
 
-local vecZero = Vector(0, 0, 0)
 function SWEP:Holster_End()
 	local owner = self:GetOwner()
 	local wep = IsValid(self:GetHolsterWep()) and self:GetHolsterWep() or owner:GetWeapon("weapon_hands_sh")
-	
+
 	if IsValid(wep) then
 		owner:SetActiveWeapon(wep)
 		wep:Deploy()
@@ -83,7 +82,7 @@ hook.Add("PlayerSwitchInFake","slingDrop",function(ply,oldWeapon,newWeapon)
 					hg.drop(ply, oldWeapon, newWeapon)
 				end
 			end)
-			
+
 			if not IsValid(ply.FakeRagdoll) then return true end
 		end
 	end
@@ -103,7 +102,7 @@ function SWEP:Deploy()
 
 	self.holster = nil
 	self:SetHolster(0)
-	
+
 	self.deploy = time + self.CooldownDeploy / self.Ergonomics
 	self:SetDeploy(self.deploy)
 

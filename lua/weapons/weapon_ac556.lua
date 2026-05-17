@@ -69,7 +69,6 @@ SWEP.AnimList = {
 }
 
 SWEP.MagModel = "models/weapons/arccw/c_ud_mini14.mdl"
-local vector_full = Vector(1,1,1)
 --models/weapons/arccw/uc_shells/22lr.mdl
 SWEP.lmagpos = Vector(0,0,0)
 SWEP.lmagang = Angle(0,0,0)
@@ -91,7 +90,7 @@ if CLIENT then
 		[0.27] = function( self, timeMul )
 			self:GetWM():ManipulateBoneScale(49, vector_full)
 		end,
-		
+
 		[0.30] = function(self,timeMul)
 			if self:Clip1() < 1 then
 				local ent = hg.CreateMag( self, Vector(15,0,0),nil, true )
@@ -201,7 +200,6 @@ SWEP.RHAng = Angle(0,-12,90)
 SWEP.LHPos = Vector(15,1,-3.3)
 SWEP.LHAng = Angle(-110,-180,0)
 
-local finger1 = Angle(25,0, 40)
 
 SWEP.ShootAnimMul = 3
 function SWEP:DrawPost()
@@ -220,11 +218,6 @@ function SWEP:DrawPost()
 	end
 end
 
-local lfang2 = Angle(0, -15, -1)
-local lfang1 = Angle(-5, -5, -5)
-local lfang0 = Angle(-12, -16, 20)
-local vec_zero = Vector(0,0,0)
-local ang_zero = Angle(0,0,0)
 function SWEP:AnimHoldPost()
 
 end

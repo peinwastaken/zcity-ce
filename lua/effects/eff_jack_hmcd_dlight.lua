@@ -2,7 +2,6 @@ function EFFECT:Init(data)
 	self.Position = data:GetOrigin()
 	local Pos = self.Position
 	self.smokeparticles = {}
-	local spawnpos = Pos
 	local scale = data:GetScale()
 	self.scale = scale
 	local dlight = DynamicLight(self:EntIndex())

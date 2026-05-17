@@ -155,7 +155,7 @@ function SWEP:ThinkAdd()
 	if CLIENT and self:IsResting() then
 		local wm = self:GetWM()
 		local bone = wm:LookupBone("bipod")
-		local posa, anga = self:GetBipodPosAng()
+		local _, anga = self:GetBipodPosAng()
 		wm:ManipulateBoneAngles(bone, Angle(anga[2] - owner:EyeAngles()[2], 0, -owner:EyeAngles()[3]))
 	end
 
@@ -243,7 +243,7 @@ function SWEP:PrimaryShootPost()
 
 		hg.LightStunPlayer(owner,1)
 	end
-	
+
 	char:GetPhysicsObjectNum(0):SetVelocity(char:GetVelocity() + owner:EyeAngles():Forward() * -2000)
 end
 
@@ -252,7 +252,6 @@ SWEP.stupidgun = false
 SWEP.GunCamPos = Vector(6,-12,-5)
 SWEP.GunCamAng = Angle(190,-5,-95)
 
-local vector_full = Vector(1,1,1)
 SWEP.FakeEjectBrassATT = "shell"
 -- Inspect Assault
 

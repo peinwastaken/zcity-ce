@@ -40,7 +40,7 @@ local randomgovno = {
 }
 
 -- probably a bit of shitcode, but it works fine
-local IsValid, hg, pairs, isnumber, timer, math, AngleRand, timer = IsValid, hg, pairs, isnumber, timer, math, AngleRand, timer
+local IsValid, hg, pairs, isnumber, math, AngleRand, timer = IsValid, hg, pairs, isnumber, math, AngleRand, timer
 
 local function FailSafe(ply)
 	if not IsValid(ply) then return end

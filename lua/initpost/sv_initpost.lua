@@ -1,5 +1,3 @@
-
-
 --[[---------------------------------------------------------
 	Name: gamemode:ScalePlayerDamage( ply, hitgroup, dmginfo )
 	Desc: Scale the damage based on being shot in a hitbox

@@ -245,7 +245,7 @@ table.insert(male["ValveBiped.Bip01_Spine2"],1,{"vest7", 1, Vector(3, 8, 0), Ang
 table.insert(male["ValveBiped.Bip01_Spine2"],1,{"vest7", 1, Vector(3, -2.5, 0), Angle(0, 0, 0), Vector(7, 1, 6), Color(68, 0, 255), true, hg.armor.torso["vest7"].protection})
 table.insert(male["ValveBiped.Bip01_Spine2"],1,{"vest7", 1, Vector(-2, 3, 6), Angle(0, 0, 90), Vector(3, 0.5, 4), Color(255, 242, 0), true, hg.armor.torso["vest7"].protection})
 table.insert(male["ValveBiped.Bip01_Spine2"],1,{"vest7", 1, Vector(-2, 3, -6), Angle(0, 0, 90), Vector(3, 0.5, 4), Color(255, 242, 0), true, hg.armor.torso["vest7"].protection})
--- Vest 8 
+-- Vest 8
 table.insert(male["ValveBiped.Bip01_Spine2"],1,{"vest8", 1, Vector(3, 8, 0), Angle(0, 0, 0), Vector(7, 2, 6), Color(55, 0, 255), true, hg.armor.torso["vest8"].protection})
 table.insert(male["ValveBiped.Bip01_Spine2"],1,{"vest8", 1, Vector(3, -2.5, 0), Angle(0, 0, 0), Vector(7, 2, 6), Color(68, 0, 255), true, hg.armor.torso["vest8"].protection})
 table.insert(male["ValveBiped.Bip01_Spine2"],1,{"vest8", 1, Vector(-2, 3, 6), Angle(0, 0, 90), Vector(3, 2, 4), Color(255, 242, 0), true, hg.armor.torso["vest8"].protection})
@@ -451,10 +451,6 @@ table.insert(male["ValveBiped.Bip01_Head1"],1,{"protovisor", 1, Vector(3, -1.5, 
 table.insert(male["ValveBiped.Bip01_Head1"],1,{"metrocop_helmet", 1, Vector(3, -1.5, 0), Angle(0, 0, 0), Vector(6, 6, 4), Color(250, 255, 0), true, 7})
 table.insert(male["ValveBiped.Bip01_Spine2"],1,{"metrocop_armor", 1, Vector(3,2,0), Angle(0, 0, 90), Vector(11,7,6), Color(255, 242, 0), true, 7})
 
-local cmb_mdls = {
-	["models/romka/player/combine_super_soldier.mdl"] = true,
-	["models/romka/player/combine_soldier.mdl"] = true
-}
 
 function hg.organism.GetHitBoxOrgans(model, ent)
 	return (models_female[model] and female) or male

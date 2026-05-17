@@ -57,11 +57,6 @@ function CLASS.On(self)
     self.CurAppearance = Appearance
 end
 
-local function IsLookingAt(ply, targetVec)
-    if not IsValid(ply) or not ply:IsPlayer() then return false end
-    local diff = targetVec - ply:GetShootPos()
-    return ply:GetAimVector():Dot(diff) / diff:Length() >= 0.8 
-end
 
 function CLASS.Guilt(self, Victim)
     if CLIENT then return end
@@ -79,7 +74,6 @@ function CLASS.Guilt(self, Victim)
 end
 
 hook.Add("HG_PlayerFootstep", "nationalguard_footsteps", function(ply, pos, foot, sound, volume, rf)
-	local chr = hg.GetCurrentCharacter(ply)
 	if ply:Alive() and ply.PlayerClassName == "nationalguard" then
 		local ent = hg.GetCurrentCharacter(ply)
 

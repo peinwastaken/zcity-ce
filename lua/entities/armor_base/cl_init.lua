@@ -33,7 +33,7 @@ end
 
 hook.Add("RagdollPerdiction","TransferMats",function(ragdoll, ply)
 	local armors = ragdoll.PredictedArmor
-	for k,v in pairs(armors) do
+	for _, v in pairs(armors) do
 		ragdoll:SetNWString("ArmorMaterials" .. v, ply:GetNWString("ArmorMaterials" .. v))
 		ragdoll:SetNWInt("ArmorSkins" .. v, ply:GetNWInt("ArmorSkins" .. v))
 	end

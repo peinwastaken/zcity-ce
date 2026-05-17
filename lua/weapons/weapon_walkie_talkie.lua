@@ -1,5 +1,5 @@
-if(SERVER)then 
-	AddCSLuaFile() 
+if(SERVER)then
+	AddCSLuaFile()
 end
 
 SWEP.Base = "weapon_base"
@@ -53,7 +53,6 @@ SWEP.Frequencies = {
 }
 
 local ST_TYPE_LOCALFILE = 0
-local ST_TYPE_URL = 1
 
 SWEP.FMStations = {
 	[97.5] = {ST_TYPE_LOCALFILE, function() return "radiorandom/radio" .. math.random(1,10) .. ".wav", 0 end},
@@ -73,19 +72,19 @@ if SERVER then
 		if !self.isOn or !input:GetWeapon("weapon_walkie_talkie").isOn then
 			return false
 		end
-		if(not IsValid(output) or not IsValid(input))then 
+		if(not IsValid(output) or not IsValid(input))then
 			return
 		end
 
-        if(not output:Alive() or output.organism.otrub or not input:Alive() or input.organism.otrub)then 
+        if(not output:Alive() or output.organism.otrub or not input:Alive() or input.organism.otrub)then
 			return false
 		end
 
-        if(not input:HasWeapon("weapon_walkie_talkie"))then 
+        if(not input:HasWeapon("weapon_walkie_talkie"))then
 			return
 		end
 
-        if(output:GetActiveWeapon() ~= self)then 
+        if(output:GetActiveWeapon() ~= self)then
 			return
 		end
 
@@ -93,7 +92,7 @@ if SERVER then
 			return
 		end
 
-        if(output:GetWeapon("weapon_walkie_talkie").Frequency == input:GetWeapon("weapon_walkie_talkie").Frequency or output:Team() == 1002)then 
+        if(output:GetWeapon("weapon_walkie_talkie").Frequency == input:GetWeapon("weapon_walkie_talkie").Frequency or output:Team() == 1002)then
 			return true
 		end
     end
@@ -101,7 +100,7 @@ if SERVER then
     hook.Add("CanListenOthers", "radio", function(output, input, isChat, teamonly, text)
         local wep = output:GetWeapon("weapon_walkie_talkie")
 
-		if not IsValid(wep) then 
+		if not IsValid(wep) then
 			return
 		end
 
@@ -110,10 +109,10 @@ if SERVER then
             if isChat then
 				wep:BippSound(output, 100)
 
-				if output == input then 
-					return 
+				if output == input then
+					return
 				end
-                
+
                 wep:BippSound(input, 100)
 
 				if input:GetPos():DistToSqr(output:GetPos()) < 600000 and not output.organism.otrub and not input.organism.otrub then
@@ -132,16 +131,16 @@ if SERVER then
 	hook.Add("StartVoice", "radio", function(output)
         local wep = output:GetWeapon("weapon_walkie_talkie")
 
-		if(not IsValid(wep))then 
-			return 
+		if(not IsValid(wep))then
+			return
 		end
 
-		for i, input in player.Iterator() do
+		for _, input in player.Iterator() do
 			if wep:CanListen(output, input, false) then
-				if output == input then 
+				if output == input then
 					wep:SetInUsing(true)
-					wep:BippSound(output, 100) 
-					continue 
+					wep:BippSound(output, 100)
+					continue
 				end
 
 				wep:BippSound(input, 100)
@@ -152,16 +151,16 @@ if SERVER then
 	hook.Add("EndVoice", "radio", function(output)
         local wep = output:GetWeapon("weapon_walkie_talkie")
 
-		if not IsValid(wep) then 
-			return 
+		if not IsValid(wep) then
+			return
 		end
 
-		for i, input in player.Iterator() do
+		for _, input in player.Iterator() do
 			if wep:CanListen(output, input, false) then
-				if output == input then 
-					wep:BippSound(output, 100) 
+				if output == input then
+					wep:BippSound(output, 100)
 					wep:SetInUsing(false)
-					continue 
+					continue
 				end
 
 				wep:BippSound(input, 100)
@@ -226,13 +225,13 @@ function SWEP:DrawWorldModel2()
 		local offsetAng = self.offsetAng
 		local boneid = owner:LookupBone("ValveBiped.Bip01_L_Hand")
 
-		if(not boneid)then 
-			return 
+		if(not boneid)then
+			return
 		end
 
 		local matrix = owner:GetBoneMatrix(boneid)
 
-		if(not matrix)then 
+		if(not matrix)then
 			return
 		end
 
@@ -269,7 +268,6 @@ function SWEP:SetHold(value)
 	self.holdtype = value
 end
 
-local bone, name
 function SWEP:BoneSet(lookup_name, vec, ang)
 	local owner = self:GetOwner()
     if IsValid(owner) and !owner:IsPlayer() then return end
@@ -284,7 +282,7 @@ function SWEP:Step()
 
 	if active then
 		self:SetHold(self.HoldType)
-	elseif self:GetHoldType() ~= self.IdleHoldType then 
+	elseif self:GetHoldType() ~= self.IdleHoldType then
 		self:SetHold(self.IdleHoldType)
 	end
 
@@ -298,12 +296,10 @@ function SWEP:Step()
 end
 
 function SWEP:Think()
-	local owner = self:GetOwner()
 
 	if CLIENT then
 		local FMStations = self.FMStations[ math.Round(self:GetHudFrequency(),1) ]
 		if FMStations and self:GetIsOn() then
-			local Type = FMStations[1]
 			local Output = FMStations[2]
 			self.FM_EventCD = self.FM_EventCD or CurTime() + math.random(125,165)
 			if self.FM_EventCD < CurTime() then
@@ -427,8 +423,8 @@ if(SERVER)then
 	end
 
 	function SWEP:RemoveFake()
-		if(not IsValid(self.fakeGun))then 
-			return 
+		if(not IsValid(self.fakeGun))then
+			return
 		end
 
 		self.fakeGun:Remove()
@@ -438,7 +434,7 @@ if(SERVER)then
 	SWEP.RHandPos = Vector(0, 0, 0)
 
 	function SWEP:CreateFake(ragdoll)
-		if(IsValid(self:GetNWEntity("fakeGun")))then 
+		if(IsValid(self:GetNWEntity("fakeGun")))then
 			return
 		end
 
@@ -465,7 +461,7 @@ if(SERVER)then
 		ragdoll:DeleteOnRemove(ent)
 		ragdoll.fakeGun = ent
 
-		if(IsValid(ragdoll.ConsRH))then 
+		if(IsValid(ragdoll.ConsRH))then
 			ragdoll.ConsRH:Remove()
 		end
 
@@ -481,7 +477,6 @@ if(SERVER)then
 
 	function SWEP:RagdollFunc(pos, angles, ragdoll)
 		shadowControl = shadowControl or hg.ShadowControl
-		local fakeGun = ragdoll.fakeGun
 
 		//pos:Add(angles:Right() * 5)
 		shadowControl(ragdoll, 5, 0.001, angles, 500, 30, pos, 500, 50)

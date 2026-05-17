@@ -16,12 +16,12 @@ function hg.CanEquipArmorPiece(ply, equipment)
 	if not IsValid(ply) or not ply.ArmorRestrictions or not istable(ply.ArmorRestrictions) then
 		return true
 	end
-	
+
 	local equipName = string.Replace(equipment, "ent_armor_", "")
 	local placement = hg.GetArmorPlacement(equipName)
-	
+
 	local isRestricted = ply.ArmorRestrictions[equipName] or ply.ArmorRestrictions[placement] or ply.ArmorRestrictions["all"]
-	
+
 	return not isRestricted
 end
 
@@ -54,30 +54,30 @@ function hg.AddArmor(ply, equipment, ent)
 		end
 		return false
 	end
-	
+
 	local can = hook.Run("CanEquipArmor", ply, equipment)
-	
+
 	if(can == false)then
 		return nil
 	end
-	
+
     if equipment and istable(equipment) then
-        for i,equipment1 in pairs(equipment) do
+        for _, equipment1 in pairs(equipment) do
             hg.AddArmor(ply, equipment1)
         end
         return
     end
     equipment = string.Replace(equipment,"ent_armor_","")
     local placement
-    for plc, tbl in pairs(hg.armor) do
+    for _, tbl in pairs(hg.armor) do
         placement = tbl[equipment] and tbl[equipment][1] or placement
     end
-    
+
     if not placement then
         print("sh_equipment.lua: no such equipment as: " .. equipment)
         return false
     end
-    
+
     if hg.armor[placement][equipment].whitelistClasses and !hg.armor[placement][equipment].whitelistClasses[ply.PlayerClassName] then return false end
 
     for plc, arm in pairs(ply.armors) do
@@ -86,18 +86,17 @@ function hg.AddArmor(ply, equipment, ent)
         if hg.armor[plc][arm].restricted and table.HasValue(hg.armor[plc][arm].restricted, placement) then
             if not hg.DropArmor(ply, ply.armors[plc]) then return false end
         end
-        
+
         if hg.armor[placement][equipment].restricted and table.HasValue(hg.armor[placement][equipment].restricted, plc) then
             if not hg.DropArmor(ply, ply.armors[plc]) then return false end
         end
     end
 
     if ply.armors[placement] and ply:IsPlayer() then
-		local currentArmorData = hg.armor[placement] and hg.armor[placement][ply.armors[placement]]
-		
+
         if not hg.DropArmor(ply, ply.armors[placement]) then return false end
     end
-    
+
     if hg.armor[placement][equipment].AfterPickup then
         hg.armor[placement][equipment].AfterPickup(ply)
     end
@@ -122,7 +121,7 @@ function hg.AddArmor(ply, equipment, ent)
 	end
 
     ply.armors[placement] = equipment
-    
+
     ply:SyncArmor()
     return true
 end
@@ -130,7 +129,7 @@ end
 function hg.DropArmorForce(ent, equipment)
     if not table.HasValue(ent.armors, equipment) then return false end
     local placement
-    for plc, tbl in pairs(hg.armor) do
+    for _, tbl in pairs(hg.armor) do
         placement = tbl[equipment] and tbl[equipment][1] or placement
     end
 
@@ -138,7 +137,7 @@ function hg.DropArmorForce(ent, equipment)
         print("sh_equipment.lua: no such equipment as: " .. equipment)
         return false
     end
-    
+
     if hg.armor[placement][equipment] then
         local equipmentEnt = ents.Create("ent_armor_" .. equipment)
         equipmentEnt:Spawn()
@@ -151,10 +150,9 @@ function hg.DropArmorForce(ent, equipment)
             ent:SetNetVar("zableval_masku", false)
         end
 
-        local phys = equipmentEnt:GetPhysicsObject()
 
         if IsValid(equipmentEnt) then table.RemoveByValue(ent.armors, equipment) end
-        
+
         if hg.armor[placement][equipment].voice_change then
             if eightbit and eightbit.EnableEffect and ent.UserID then
                 eightbit.EnableEffect(ent:UserID(), 0)
@@ -162,19 +160,19 @@ function hg.DropArmorForce(ent, equipment)
         end
 
         ent:SyncArmor()
-        
+
         return equipmentEnt
     end
 end
 
 function hg.DropArmor(ply, equipment)
     if not table.HasValue(ply.armors, equipment) then return false end
-    
+
     local placement
-    for plc, tbl in pairs(hg.armor) do
+    for _, tbl in pairs(hg.armor) do
         placement = tbl[equipment] and tbl[equipment][1] or placement
     end
-    
+
     if hg.armor[placement][equipment].nodrop then return false end
 
     if not placement then
@@ -195,16 +193,16 @@ function hg.DropArmor(ply, equipment)
         equipmentEnt:SetPos(ply:EyePos())
         equipmentEnt:SetAngles(ply:EyeAngles())
 		equipmentEnt:ReciveData(ply,equipment)
-        
+
         if placement == "face" and ply:GetNetVar("zableval_masku", false) then
             equipmentEnt.zablevano = true
             ply:SetNetVar("zableval_masku", false)
         end
-        
+
         local phys = equipmentEnt:GetPhysicsObject()
         if IsValid(phys) then phys:SetVelocity(ply:EyeAngles():Forward() * 150) end
         if IsValid(equipmentEnt) then table.RemoveByValue(ply.armors, equipment) end
-        
+
         if hg.armor[placement][equipment].voice_change then
             if eightbit and eightbit.EnableEffect and ply.UserID then
                 eightbit.EnableEffect(ply:UserID(), 0)
@@ -225,17 +223,17 @@ local force
 local function protec(org, bone, dmg, dmgInfo, placement, armor, scale, scaleprot, punch, boneindex, dir, hit, ricochet)
 	if not force and org.owner.armors[placement] ~= armor then return 0 end
 	force = nil
-	
+
 	local prot = placement and hg.armor[placement] and armor and hg.armor[placement][armor] and (hg.armor[placement][armor].protection - (dmgInfo:GetInflictor().bullet and dmgInfo:GetInflictor().bullet.Penetration or 1)) or (10 - ( dmgInfo:GetInflictor().bullet and dmgInfo:GetInflictor().bullet.Penetration or 1))
-	
+
 	org.owner.armors_health = org.owner.armors_health or {}
 
 	prot = prot * (org.owner.armors_health[armor] or 1)
-	
+
 	if punch then
 		if org.owner:IsPlayer() and org.alive and dmgInfo:IsDamageType(DMG_BUCKSHOT + DMG_BULLET) then
 			org.owner:ViewPunch(AngleRand(-30, 30))
-			
+
 			org.owner:EmitSound("homigrad/physics/shield/bullet_hit_shield_0"..math.random(7)..".wav", 80, math.random(95, 105))
 
 			org.owner:AddTinnitus(3, true)
@@ -251,9 +249,9 @@ local function protec(org, bone, dmg, dmgInfo, placement, armor, scale, scalepro
 			--org.spine3 = org.spine3 + math.Rand(0.05,1) * dmg / 5
 		end
 	end
-	
+
 	scale = scale * (dmgInfo:IsDamageType(DMG_SLASH) and 0.1 or 1)
-	
+
 	ArmorEffect(placement, armor, dmgInfo, org, hit, prot)
 
 	if prot < 0 then
@@ -274,7 +272,7 @@ ArmorEffect = function(placement, armor, dmgInfo, org, hit, prot)
 	local dir = -dmgInfo:GetDamageForce()
 	dir:Normalize()
 	local effdata = EffectData()
-	
+
 	effdata:SetOrigin((hit and isvector(hit) and hit or dmgInfo:GetDamagePosition()) - dir)
 	effdata:SetNormal(dir)
 	effdata:SetMagnitude(0.25)
@@ -293,7 +291,7 @@ local ArmorEffectEx = function(ent,dmgInfo,eff,surfaceprop)
 	local dir = -dmgInfo:GetDamageForce()
 	dir:Normalize()
 	local effdata = EffectData()
-	
+
 	effdata:SetOrigin( dmgInfo:GetDamagePosition() - dir )
 	effdata:SetNormal( dir )
 	effdata:SetMagnitude(0.25)
@@ -395,7 +393,6 @@ end
 
 -- Gordon's armor
 hg.organism.input_list.gordon_helmet = function(org, bone, dmg, dmgInfo, ...)
-	local owner = hg.GetCurrentCharacter(org.owner) or org.owner
 	--if owner:GetBodygroup(2) ~= 2 then return 0 end
 	--owner:SetBodygroup(2,0)
 	force = true
@@ -510,10 +507,10 @@ hg.organism.input_list.protovisor = function(org, bone, dmg, dmgInfo, ...)
 	org.owner.armors_health = org.owner.armors_health or {}
 
 	local protect = protec(org, bone, dmg, dmgInfo, "head", "protovisor", 0.8, 0.7, true, ...)
-	
+
 	org.owner.armors_health["protovisor"] = org.owner.armors_health["protovisor"] or 1
 	org.owner.armors_health["protovisor"] = org.owner.armors_health["protovisor"] * math.max((1 - dmg * 10), 0)
-	
+
 	if org.owner.armors_health["protovisor"] == 0 then
 		org.owner.armors["head"] = nil
 	end

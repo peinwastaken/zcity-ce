@@ -3,7 +3,7 @@ local chat_dist_whisper = 100
 
 --\\Whisper
 	util.AddNetworkString("ChatWhisper")
-	
+
 	net.Receive("ChatWhisper", function(len, ply)
 		ply.ChatWhisper = net.ReadBool()
 	end)
@@ -13,7 +13,7 @@ local function ChatLogic(output, input, isChat, teamonly, text)
 	if not IsValid(output) then return true, true end
 	if not IsValid(input) then return false end
 	local result, is3D = hook.Run("CanListenOthers",output,input,isChat,teamonly,text)
-	
+
 	if result ~= nil then return result,is3D end
 
 	local chat_dist = chat_dist_normal
@@ -31,12 +31,12 @@ local function ChatLogic(output, input, isChat, teamonly, text)
 	elseif not output:Alive() and not input:Alive() then
 		return true
 	else
-		if not input:Alive() and output:Alive() then 
+		if not input:Alive() and output:Alive() then
 			if input:GetPos():Distance(output:GetPos()) < chat_dist and input:TestPVS( output ) and not teamonly then
 				return true, true
 			else
 				return false
-			end 
+			end
 		end
 		if not output:Alive() and input:Team() == 1002 and input:Alive() then return true end
 
@@ -60,7 +60,6 @@ end)
 
 local function funca(ply, txt)
 	if !ply:Alive() or !ply.organism then return end
-	local starttxt = txt
 
 	if ply.organism.pain > 80 then
 		txt = table.Random(hg.sharp_pain)
@@ -77,7 +76,7 @@ local function funca(ply, txt)
 		local len = 0
 		local chars = {}
 		local minus = utf8.codepoint("-", 1, 1)
-		for i, code in iter do
+		for _, code in iter do
 			if math.random(3) == 1 then -- max dist 640
 				code = minus
 			end
@@ -87,18 +86,18 @@ local function funca(ply, txt)
 		end
 		txt = table.concat(chars)
 	end
-	
+
 	if bUnintelligeble then
 		local iter = utf8.codes(txt)
 		local len = 0
 		local chars = {}
 
-		for i, code in iter do
+		for _, code in iter do
 			len = len + 1
 			chars[len] = utf8.char(code)
 		end
 
-		for i, code in ipairs(chars) do
+		for i, _ in ipairs(chars) do
 			if i > 1 and math.random(bHasMassiveBrainDamage and 2 or 3) == 1 then
 				local old = chars[i]
 				chars[i] = chars[i - 1]
@@ -151,7 +150,7 @@ hook.Add("PlayerCanHearPlayersVoice", "RealisticVoice", function(listener,speake
 	local result,is3D = ChatLogic(speaker,listener,false,false)
 	local speak = speaker:IsSpeaking()
 	speaker.IsSpeak = speak
-	
+
 	if speaker.IsOldSpeak ~= speaker.IsSpeak then
 		speaker.IsOldSpeak = speak
 		--print("huy")

@@ -5,13 +5,13 @@ modes.slider = function(optiondata, panel)
     -- optiondata = {convar = "convarname",desc = "descreption", min = 123, max = 123}
     local DermaNumSlider = vgui.Create( "DNumSlider", panel )
     DermaNumSlider:Dock( TOP )
-    DermaNumSlider:DockMargin(10,5,5,2.5)	
-    DermaNumSlider:SetSize(50,45)	
-    DermaNumSlider:SetText( optiondata.convar .. "\n" .. optiondata.desc )	
-    DermaNumSlider:SetMin( optiondata.min )				 	
-    DermaNumSlider:SetMax( optiondata.max )				
-    DermaNumSlider:SetDecimals( optiondata.decimals or 0 )				
-    DermaNumSlider:SetConVar( optiondata.convar )	
+    DermaNumSlider:DockMargin(10,5,5,2.5)
+    DermaNumSlider:SetSize(50,45)
+    DermaNumSlider:SetText( optiondata.convar .. "\n" .. optiondata.desc )
+    DermaNumSlider:SetMin( optiondata.min )
+    DermaNumSlider:SetMax( optiondata.max )
+    DermaNumSlider:SetDecimals( optiondata.decimals or 0 )
+    DermaNumSlider:SetConVar( optiondata.convar )
     DermaNumSlider:SizeToContents()
 end
 modes.switcher = function(optiondata, panel)
@@ -22,7 +22,7 @@ modes.switcher = function(optiondata, panel)
 	DermaCheckbox:SetText( optiondata.convar .. "\n" .. optiondata.desc )
 	DermaCheckbox:SetConVar( optiondata.convar )
 	DermaCheckbox:SetValue( GetConVar(optiondata.convar):GetBool() )
-	DermaCheckbox:SizeToContents()		
+	DermaCheckbox:SizeToContents()
 end
 modes.binder = function(optiondata, panel)
     -- optiondata = {convar = "convarname",desc = "descreption"}
@@ -51,11 +51,7 @@ hg.AddOptionPanel( "hg_weaponshotblur_mul", "slider", {desc = "Multiplicates the
 hg.AddOptionPanel( "hg_maxsmoketrails", "slider", {desc = "Max amount of smoke trail effects (lags after 10)",min = 0,max = 30,decimals = 0}, "optimization" )
 hg.AddOptionPanel( "hg_optimise_scopes", "slider", {desc = "Enable this if scoping makes your fps cry (1 - lowers quality of props around you, 2 - \"disables\" main render)",min = 0,max = 2,decimals = 0}, "optimization" )
 
-local red = Color(75,25,25)
-local redselected = Color(150,0,0)
 
-local blurMat = Material("pp/blurscreen")
-local Dynamic = 0
 BlurBackground = BlurBackground or hg.DrawBlur
 
 local function CreateOptionsMenu()
@@ -63,7 +59,7 @@ local function CreateOptionsMenu()
 	local posX,posY = ScrW() / 2 - sizeX / 2,ScrH() / 2 - sizeY / 2
 
     local MainFrame = vgui.Create("ZFrame") -- The name of the panel we don't have to parent it.
-    MainFrame:SetPos( posX, posY ) -- Set the position to 100x by 100y. 
+    MainFrame:SetPos( posX, posY ) -- Set the position to 100x by 100y.
     MainFrame:SetSize( sizeX, sizeY ) -- Set the size to 300x by 200y.
     MainFrame:SetTitle( "ZCity options" ) -- Set the title in the top left to "Derma Frame".
     MainFrame:MakePopup() -- Makes your mouse be able to move around.
@@ -89,18 +85,18 @@ local function CreateOptionsMenu()
     DLabel:DockMargin(20,5,5,2.5)
     DLabel:SetText( "Optimization" )
 
-    for k,v in pairs(options["optimization"]) do
-       
+    for _,v in pairs(options["optimization"]) do
+
         modes[v[1]](v[2],DScrollPanel)
     end
-    
+
     local DLabel = vgui.Create( "DLabel", DScrollPanel )
     DLabel:Dock(TOP)
     DLabel:DockMargin(20,15,5,2.5)
     DLabel:SetText( "Other" )
 
-    for k,v in pairs(options["other"]) do
-       
+    for _,v in pairs(options["other"]) do
+
         modes[v[1]](v[2],DScrollPanel)
     end
 end

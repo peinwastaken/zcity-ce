@@ -1,4 +1,3 @@
-
 local ActIndex = {
 	[ "pistol" ]		= ACT_HL2MP_IDLE_PISTOL,
 	[ "smg" ]			= ACT_HL2MP_IDLE_SMG1,

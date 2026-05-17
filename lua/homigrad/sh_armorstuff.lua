@@ -30,7 +30,7 @@ local function DrawFirstPersonHelmet(ply, strModel, vecAdjust, fFov, setMat)
 	if mdl2:GetModel() != strModel then
 		mdl2:SetModel(strModel)
 	end
-	
+
 	if setMat and !mdl.matseted1 then
 		mdl:SetSubMaterial(0,setMat)
 		mdl.matseted = false
@@ -553,7 +553,7 @@ hg.armor.ears = {
 local function DrawNoise(amt, alpha)
 	local W, H = ScrW(), ScrH()
 
-	for i = 0, amt do
+	for _ = 0, amt do
 		local Bright = math.random(0, 255)
 		surface.SetDrawColor(Bright, Bright, Bright, alpha)
 		local X, Y = math.random(0, W), math.random(0, H)
@@ -567,7 +567,7 @@ local function BlurScreen(density,alpha)
 	local layers, density, alpha = 1, density or .4, alpha or 255
 	surface.SetDrawColor(255, 255, 255, alpha)
 	surface.SetMaterial(blurMat2)
-	local FrameRate, Num, Dark = 1 / FrameTime(), 3, 150
+	local FrameRate, Num, _ = 1 / FrameTime(), 3, 150
 
 	for i = 1, Num do
 		blurMat2:SetFloat("$blur", (i / layers) * density * Dynamic2)
@@ -701,7 +701,7 @@ hg.armor.face = {
 		ScrappersSlot = "Armor",
 		custommat = Material("overlays/nvg_scene_opticf2.png"),
 		NVGRender = function()
-			 
+
 			if not IsValid(lply.EZNVGlamp) then
 				lply.EZNVGlamp = ProjectedTexture()
 				lply.EZNVGlamp:SetTexture("effects/flashlight001")
@@ -819,11 +819,11 @@ function entityMeta:SyncArmor()
 end
 
 local function initArmor()
-	for possibleArmor, armors in pairs(hg.armor) do
+	for _, armors in pairs(hg.armor) do
 		for armorkey, armorData in pairs(armors) do
 			if CLIENT then language.Add(armorkey, armorNames[armorkey] or armorkey) end
 			if armorData.inbuilt then continue end
-			
+
 			local armor = {}
 			armor.Base = "armor_base"
 			armor.PrintName = CLIENT and language.GetPhrase(armorkey) or armorkey
@@ -855,10 +855,10 @@ end
 function hg.GetArmorPlacement(armor)
 	if istable(armor) then return end
 	armor = string.Replace(armor,"ent_armor_","")
-	
+
 	local found
 	for i,armplc in pairs(hg.armor) do
-		for i2,armor2 in pairs(armplc) do
+		for i2 in pairs(armplc) do
 			if i2 == armor then found = i end
 		end
 	end

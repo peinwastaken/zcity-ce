@@ -10,7 +10,7 @@ local function updatePlayer(ply)
     if not hg.achievements.SqlActive then
         hg.achievements.achievements_data.player_achievements[steamID64] = {}
         return
-    end 
+    end
 
 	local query = mysql:Select("hg_achievements")
 		query:Select("achievements")
@@ -54,7 +54,7 @@ hook.Add("DatabaseConnected", "AchievementsCreateData", function()
 
     print("Achievements SQL database connected.")
 
-    for i, ply in player.Iterator() do
+    for _, ply in player.Iterator() do
         updatePlayer(ply)
     end
 end)
@@ -62,7 +62,7 @@ end)
 hook.Add( "PlayerInitialSpawn","hg_Exp_OnInitSpawn", updatePlayer)
 hook.Add("PlayerDisconnected", "savevalues", function(ply)
     if !hg.achievements.SqlActive then print("Tried to save achievement data to SQL, but it is not active.") return end
-    
+
     hg.achievements.SaveToSQL(ply)
 end)
 
@@ -81,7 +81,7 @@ end
 function hg.achievements.SavePlayerAchievements()
     if !hg.achievements.SqlActive then print("Tried to save achievement data to SQL, but it is not active.") return end
 
-    for k, ply in player.Iterator() do
+    for _, ply in player.Iterator() do
         hg.achievements.SaveToSQL(ply)
     end
 end
@@ -194,7 +194,7 @@ local roundply = 0
 
 hook.Add("ZB_StartRound","hg_killemall_Acchivment",function()
     roundply = 0
-    for k,v in player.Iterator() do
+    for _,_ in player.Iterator() do
         roundply = roundply + 1
     end
 end)
@@ -218,7 +218,7 @@ hook.Add("PlayerDeath", "hg_killemall_Acchivment", function(ply)
             if ply.ZBestAttacker:Alive() and ply.ZBestAttacker.organism.brain >= 0.1 then
                 hg.achievements.SetPlayerAchievement(ply.ZBestAttacker, "lobotomygaming", 1)
             end
-            
+
             if IsValid(ply.ZBestInflictor) and ply.ZBestInflictor.ishggrenade and ply.ZBestInflictor.owner2 == ply and IsValid(ply.ZBestInflictor.owner) then
                 hg.achievements.SetPlayerAchievement(ply.ZBestInflictor.owner, "hotpotato", 1)
             end

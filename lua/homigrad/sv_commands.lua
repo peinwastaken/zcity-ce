@@ -32,7 +32,7 @@ function COMMAND_GETARGS(args)
 	local newArgs = {}
 	local waitClose,waitCloseText
 
-	for i,text in pairs(args) do
+	for _,text in pairs(args) do
 		if not waitClose and string.sub(text,1,1) == "\"" then
 			waitClose = true
 
@@ -92,14 +92,14 @@ COMMANDS.help = {function(ply,args)
 		local list = {}
 		for name in pairs(COMMANDS) do list[#list + 1] = name end
 		table.sort(list,function(a,b) return a > b end)
-        
+
 		for _,name in pairs(list) do
 			local cmd = COMMANDS[name]
             if not COMMAND_ACCES(ply,cmd) then continue end
-            
+
 			local argsList = cmd[3]
 			if argsList then argsList = " - " .. argsList else argsList = "" end
-            
+
 			text = text .. "	" .. name .. argsList .. "\n"
 		end
 	end
@@ -116,7 +116,7 @@ if SERVER then
 
     COMMANDS.zc_god = {function(ply)
         if not ply.organism then return end
-        
+
         ply.organism.godmode = !ply.organism.godmode
 		ply:Notify(ply.organism.godmode and "now i'm immortal..." or "now i'm mortal")
 		return
@@ -139,10 +139,10 @@ if SERVER then
             return
         end
 
-        local targetNickPartial = string.lower(args[1]) 
+        local targetNickPartial = string.lower(args[1])
         local target = nil
         for _, player in player.Iterator() do
-            if string.find(string.lower(player:Nick()), targetNickPartial) then 
+            if string.find(string.lower(player:Nick()), targetNickPartial) then
                 target = player
                 break
             end
@@ -186,10 +186,10 @@ if SERVER then
             return
         end
 
-        local targetNickPartial = string.lower(args[1]) 
+        local targetNickPartial = string.lower(args[1])
         local target = nil
         for _, player in player.Iterator() do
-            if string.find(string.lower(player:Nick()), targetNickPartial) then 
+            if string.find(string.lower(player:Nick()), targetNickPartial) then
                 target = player
                 break
             end
@@ -199,15 +199,15 @@ if SERVER then
             ply:ChatPrint("Player not found: " .. args[1])
             return
         end
-        
-        table.remove(args, 1) 
+
+        table.remove(args, 1)
         local message = table.concat(args, " ")
-        
+
         if message == "" then
             ply:ChatPrint("Message cannot be empty!")
             return
         end
-        
+
         target:Notify(message, 0)
         ply:ChatPrint("Sent notification to " .. target:GetName() .. ": " .. message)
 
@@ -218,7 +218,7 @@ if SERVER then
 		local plya = #args > 1 and args[1] or ply:Name()
 		local mdl = #args > 1 and args[2] or args[1]
 
-		for i, ply2 in pairs(player.GetListByName(plya)) do
+		for _, ply2 in pairs(player.GetListByName(plya)) do
 			if ply2:Alive() then
 				local Appearance = ply2.CurAppearance or hg.Appearance.GetRandomAppearance()
 				Appearance.AColthes = ""
@@ -242,7 +242,7 @@ if SERVER then
 		local plya = #args > 1 and args[1] or ply:Name()
 		local scale = #args > 1 and args[2] or args[1]
 
-		for i, ply2 in pairs(player.GetListByName(plya)) do
+		for _, ply2 in pairs(player.GetListByName(plya)) do
 			if ply2:Alive() then
 				ply2:SetModelScale(scale)
 

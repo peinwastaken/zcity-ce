@@ -44,13 +44,12 @@ end
 --// Well, I made it a bit more readable
 function MODE:HUDPaint()
     if zb.ROUND_START + 8.5 < CurTime() then return end
-     
+
     if not lply:Alive() then return end
     zb.RemoveFade()
 
     local fade = math.Clamp(zb.ROUND_START + 8 - CurTime(), 0, 1)
     local team_id = lply:Team()
-    local role = lply:GetNWString("PlayerRole")
     local team_data = teams[team_id]
 
     draw.SimpleText("ZBattle | Half-Life 2 Deathmatch", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0, 162, 255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -61,7 +60,7 @@ function MODE:HUDPaint()
         color = team_data.color1,
         objective = team_data.objective
     }
-    
+
     role_data.color.a = 255 * fade
 
     draw.SimpleText("You are " .. role_data.name, "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.5, role_data.color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -82,13 +81,12 @@ function MODE:HUDPaint()
 end
 
 hook.Add("radialOptions", "CMB_Airstrike", function()
-     
 	local org = lply.organism
-	
+
     if lply:GetNWString("PlayerRole") == "Elite" and not org.otrub then -- that's a feature apparently
 		local tbl = {
 			function()
-				net.Start("ZB_RequestAirStrike") 
+				net.Start("ZB_RequestAirStrike")
 				net.SendToServer()
 			end,
 			"Request Airstrike"
@@ -98,26 +96,8 @@ hook.Add("radialOptions", "CMB_Airstrike", function()
 end)
 
 local CreateEndMenu
-local winnersounds = {
-	[0] = { -- rebel wins
-		"vo/episode_1/npc/male01/cit_kill04.wav",
-		"vo/episode_1/npc/male01/cit_kill01.wav",
-		"vo/episode_1/npc/male01/cit_kill09.wav",
-		"vo/episode_1/npc/male01/cit_kill14.wav"
-	},
-	[1] = { -- combine wins
-		"vo/episode_1/npc/male01/cit_buddykilled11.wav",
-		"vo/episode_1/npc/male01/cit_buddykilled07.wav",
-		"vo/episode_1/npc/male01/cit_buddykilled10.wav",
-		"vo/episode_1/npc/male01/cit_buddykilled04.wav"
-	},
-	[2] = {"npc/combine_soldier/vo/overwatchtargetcontained.wav"}, -- draw
-	[3] = {"npc/combine_soldier/vo/overwatchsectoroverrun.wav"} -- everybody died
-}
 
 net.Receive("hl2dm_roundend", function()
-	local winnerteam = net.ReadInt(3)
-
 	surface.PlaySound("ambient/alarms/warningbell1.wav")
 
     CreateEndMenu()
@@ -127,18 +107,10 @@ local colGray = Color(85,85,85,255)
 local colRed = Color(130,10,10)
 local colRedUp = Color(160,30,30)
 
-local colBlue = Color(10,10,160)
-local colBlueUp = Color(40,40,160)
 local col = Color(255,255,255,255)
 
 local colSpect1 = Color(75,75,75,255)
 local colSpect2 = Color(255,255,255)
-
-local colorBG = Color(55,55,55,255)
-local colorBGBlacky = Color(40,40,40,255)
-
-local blurMat = Material("pp/blurscreen")
-local Dynamic = 0
 
 BlurBackground = BlurBackground or hg.DrawBlur
 
@@ -169,7 +141,7 @@ CreateEndMenu = function()
 	closebutton:SetPos(5,5)
 	closebutton:SetSize(ScrW() / 20,ScrH() / 30)
 	closebutton:SetText("")
-	
+
 	closebutton.DoClick = function()
 		if IsValid(hmcdEndMenu) then
 			hmcdEndMenu:Close()
@@ -182,7 +154,7 @@ CreateEndMenu = function()
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 		surface.SetFont( "ZB_InterfaceMedium" )
 		surface.SetTextColor(col.r,col.g,col.b,col.a)
-		local lengthX, lengthY = surface.GetTextSize("Close")
+		local lengthX, _ = surface.GetTextSize("Close")
 		surface.SetTextPos( lengthX - lengthX/1.1, 4)
 		surface.DrawText("Close")
 	end
@@ -192,7 +164,7 @@ CreateEndMenu = function()
 
 		surface.SetFont( "ZB_InterfaceMediumLarge" )
 		surface.SetTextColor(col.r,col.g,col.b,col.a)
-		local lengthX, lengthY = surface.GetTextSize("Players:")
+		local lengthX, _ = surface.GetTextSize("Players:")
 		surface.SetTextPos(w / 2 - lengthX/2,20)
 		surface.DrawText("Players:")
 
@@ -210,7 +182,7 @@ CreateEndMenu = function()
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 	end
 
-	for i,ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		local but = vgui.Create("DButton",DScrollPanel)
 		but:SetSize(100,50)
@@ -227,8 +199,8 @@ CreateEndMenu = function()
 
             local col = ply:GetPlayerColor():ToColor()
 			surface.SetFont( "ZB_InterfaceMediumLarge" )
-			local lengthX, lengthY = surface.GetTextSize( ply:GetPlayerName() or "He quited..." )
-			
+			local _, lengthY = surface.GetTextSize( ply:GetPlayerName() or "He quited..." )
+
 			surface.SetTextColor(0,0,0,255)
 			surface.SetTextPos(w / 2 + 1,h/2 - lengthY/2 + 1)
 			surface.DrawText(ply:GetPlayerName() or "He quited...")
@@ -237,11 +209,10 @@ CreateEndMenu = function()
 			surface.SetTextPos(w / 2,h/2 - lengthY/2)
 			surface.DrawText(ply:GetPlayerName() or "He quited...")
 
-            
 			local col = colSpect2
 			surface.SetFont( "ZB_InterfaceMediumLarge" )
 			surface.SetTextColor(col.r,col.g,col.b,col.a)
-			local lengthX, lengthY = surface.GetTextSize( ply:GetPlayerName() or "He quited..." )
+			local _, lengthY = surface.GetTextSize( ply:GetPlayerName() or "He quited..." )
 			surface.SetTextPos(15,h/2 - lengthY/2)
 			surface.DrawText((ply:Name() .. (not ply:Alive() and " - died" or "")) or "He quited...")
 

@@ -1,7 +1,5 @@
 hg.organism = hg.organism or {}
-local empty = {}
 local Vector = Vector --hehe
-local vecZero, angZero = Vector(0, 0, 0), Angle(0, 0, 0)
 local box, _mins = Vector(0, 0, 0), Vector(0, 0, 0)
 local center
 local function getTransform(pos, ang, mins, maxs, obbCenter)
@@ -20,8 +18,8 @@ local LocalToWorld = LocalToWorld
 function hg.organism.ShootMatrix(ent, organs)
 	if not organs or not istable(organs) or table.IsEmpty(organs) then return end
 	local boxs = {}
-	local mins, maxs, matrix, box
-	local pos, ang, center
+	local mins, maxs, matrix
+	local pos, ang
 	local sphereChunk = 0
 	local obbCenter = ent:GetPos() --what kind of bullshit is this))0
 	obbCenter:Add(ent:OBBCenter())
@@ -54,7 +52,7 @@ function hg.organism.ShootMatrix(ent, organs)
 			end
 			mins = -organ[5]
 			maxs = -mins
-			local center, disOfCenter, boxLen = getTransform(pos, ang, mins, maxs, obbCenter)
+			local center, disOfCenter = getTransform(pos, ang, mins, maxs, obbCenter)
 			if disOfCenter > sphereChunk then sphereChunk = disOfCenter end
 			local pos, ang = LocalToWorld(organ[3], organ[4], pos, ang)
 			boxs[#boxs + 1] = {pos, ang, mins, maxs, center, nameBone, key}
@@ -67,34 +65,16 @@ function hg.organism.ShootMatrix(ent, organs)
 end
 
 --local util_IsOBBIntersectingOBB = util.IsOBBIntersectingOBB --huy not server side
-local util_IntersectRayWithOBB = util.IntersectRayWithOBB
 local math_ceil = math.ceil
-local stepDiv = 1
-local tracePos = Vector(0, 0, 0)
 
 function hg.organism.Trace_Bullet(organs)
 	local organ = box[6] and organs[box[6]][box[7]]
 	return organ and organ[2] or 0
 end
 
-local models_female = {
-	["models/player/group01/female_01.mdl"] = true,
-	["models/player/group01/female_02.mdl"] = true,
-	["models/player/group01/female_03.mdl"] = true,
-	["models/player/group01/female_04.mdl"] = true,
-	["models/player/group01/female_05.mdl"] = true,
-	["models/player/group01/female_06.mdl"] = true,
-	["models/player/group03/female_01.mdl"] = true,
-	["models/player/group03/female_02.mdl"] = true,
-	["models/player/group03/female_03.mdl"] = true,
-	["models/player/group03/female_04.mdl"] = true,
-	["models/player/group03/female_05.mdl"] = true,
-	["models/player/group03/police_fem.mdl"] = true
-}
 
 if SERVER then return end
 
-local render_DrawW
 local white, red, blue, black = Color(255, 255, 255), Color(255, 0, 0), Color(0, 0, 255), Color(0, 0, 0)
 local hg_show_hitbox = ConVarExists("hg_show_hitbox") and GetConVar("hg_show_hitbox") or CreateClientConVar("hg_show_hitbox", "0", false, false, "shows custom players hitboxes, work only for admins or with sv_cheats 1 enabled")
 local hg_show_hitbox_dir = ConVarExists("hg_show_hitbox_dir") and GetConVar("hg_show_hitbox_dir") or CreateClientConVar("hg_show_hitbox_dir", "0", false, false, "work only for admins or with sv_cheats 1 enabled")
@@ -102,7 +82,7 @@ render_DrawWireframeBox = render.DrawWireframeBox
 hook.Add("PostDrawTranslucentRenderables", "homigrad-organism", function()
 	if not hg_show_hitbox:GetBool() then return end
 	if not LocalPlayer():IsAdmin() then return end
-	for i, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if GetViewEntity() == ply then continue end
 		ply = hg.GetCurrentCharacter(ply)
 		local organs = hg.organism.GetHitBoxOrgans(ply:GetModel(), ply)
@@ -114,9 +94,9 @@ hook.Add("PostDrawTranslucentRenderables", "homigrad-organism", function()
 			local distance = math_ceil(dir:Length())
 			local start = hg.eyeTrace(lply).HitPos -- Vector(1005.879456,608.151123,-77.997421)
 			//pos, dir, size, maxpen, boxs, center, endDis, organs, ricochetable, funcInput, ...
-			local endPos, hitBoxs, inputHole, outputHole = hg.organism.Trace(start, dir, 1, 0, boxs, pos, sphere, organs, false, hg.organism.Trace_Bullet, organs)
+			local _, hitBoxs, inputHole, outputHole = hg.organism.Trace(start, dir, 1, 0, boxs, pos, sphere, organs, false, hg.organism.Trace_Bullet, organs)
 			--render.DrawWireframeBox(endPos, angZero, -box, box)
-			
+
 			render.DrawWireframeBox(start, LocalPlayer():EyeAngles(), -Vector(0,distance / 50,distance / 50),Vector(distance / 1,distance / 50,distance / 50))
 			for i = 1, #boxs do
 				local box = boxs[i]

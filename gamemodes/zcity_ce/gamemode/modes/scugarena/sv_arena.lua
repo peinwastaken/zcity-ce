@@ -18,11 +18,11 @@ end
 function MODE:Intermission()
 	game.CleanUpMap()
 
-	for k, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then
 			continue
 		end
-		
+
 		ply:SetPlayerClass("Slugcat")
 		ply:SetupTeam(0)
 	end
@@ -50,7 +50,7 @@ function MODE:RoundStart()
 		if not ply:Alive() then continue end
 		ply:SetSuppressPickupNotices(true)
 		ply.noSound = true
-		local hands = ply:Give("weapon_hands_sh")
+		ply:Give("weapon_hands_sh")
 
 		local scug = ply:GetNWString("scug")
 

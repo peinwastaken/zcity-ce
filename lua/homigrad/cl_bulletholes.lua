@@ -1,11 +1,9 @@
-
 local drawing = false
 
 local rt = GetRenderTarget("bulletholes-testing2", ScrW(), ScrH())
 local vecHull = Vector(2, 2, 2)
 local coltransparent = Color(0, 0, 0, 0)
 
-local center = Vector()
 local timershit = 0
 
 hg.ConVars = hg.ConVars or {}
@@ -37,10 +35,10 @@ hook.Add("PostRender", "sadasdsad", function()
             any = true
         end
     end
-    
+
     if any and timershit < CurTime() then
         timershit = CurTime() + ((hg_bulletholesfps:GetInt() == 0) and 0 or (1 / hg_bulletholesfps:GetInt()))
-        
+
         local tr = {
             start = view.origin,
             endpos = view.angles:Forward() * 8000,
@@ -48,16 +46,16 @@ hook.Add("PostRender", "sadasdsad", function()
             maxs = vecHull,
             filter = {lply},
         }
-        
+
         local trace = util.TraceHull(tr)
         local pos = trace.HitPos
-    
+
         local len = (view.origin - pos):Length() + 25
-        
+
         render.PushRenderTarget( rt )
-        
+
         drawing = true
-        
+
         render.RenderView({
             znear = len,
             //origin = pos + view.angles:Forward() * add,
@@ -71,9 +69,9 @@ hook.Add("PostRender", "sadasdsad", function()
             --w = 1000,
             --h = 500,
         })
-        
+
         drawing = false
-    
+
         render.PopRenderTarget()
     end
 end)
@@ -81,11 +79,11 @@ end)
 hook.Add("PreDrawEffects","bulletholes-test",function()
     if !hg_bulletholes:GetBool() then return end
     local holes = GetNetVar("BulletHoles")
-    
+
     if !holes then return end
     if drawing then return end
 
-    local view = render.GetViewSetup()
+    render.GetViewSetup()
 
     render.SetStencilWriteMask( 0xFF )
     render.SetStencilTestMask( 0xFF )
@@ -107,7 +105,7 @@ hook.Add("PreDrawEffects","bulletholes-test",function()
     render.SetStencilFailOperation( STENCIL_KEEP )
 
     render.SetColorMaterial()
-    
+
     for i = 1, #holes do
         local tbl = holes[i]
         local ent = tbl[6]
@@ -117,24 +115,24 @@ hook.Add("PreDrawEffects","bulletholes-test",function()
         if (!ent:IsWorld() and ((!tbl.lastpos or !tbl.lastpos:IsEqualTol(ent:GetPos(), 0.1)) or (!tbl.lastang or !tbl.lastang:IsEqualTol(ent:GetAngles(), 0.1)))) or !tbl.pos1 then
             local pos, dir = LocalToWorld(pos, dir, ent:GetPos(), ent:GetAngles())
             local _, hitnormal = LocalToWorld(vector_origin, hitnormal, vector_origin, ent:GetAngles())
-        
+
             local up, right = dir:Up() * pen2, -dir:Right() * pen2
             local pos1 = pos + up * 0.5 - right * 0.5
             local pos1, pos2, pos3, pos4 = pos1, pos1 - up, pos1 - up + right, pos1 + right
-            
+
             local pos1 = util.IntersectRayWithPlane(pos1 - dir:Forward() * 50, dir:Forward() * 100, pos, hitnormal:Forward()) or pos1
             local pos2 = util.IntersectRayWithPlane(pos2 - dir:Forward() * 50, dir:Forward() * 100, pos, hitnormal:Forward()) or pos2
             local pos3 = util.IntersectRayWithPlane(pos3 - dir:Forward() * 50, dir:Forward() * 100, pos, hitnormal:Forward()) or pos3
             local pos4 = util.IntersectRayWithPlane(pos4 - dir:Forward() * 50, dir:Forward() * 100, pos, hitnormal:Forward()) or pos4
 
             local pos5, pos6, pos7, pos8 = pos1 + dir:Forward() * pen, pos2 + dir:Forward() * pen, pos3 + dir:Forward() * pen, pos4 + dir:Forward() * pen
-            
+
             tbl.lastpos = ent:GetPos()
             tbl.lastang = ent:GetAngles()
 
             if !pos1 or !pos2 or !pos3 or !pos4 then
                 tbl.pos1 = nil
-                
+
                 continue
             end
 
@@ -149,7 +147,7 @@ hook.Add("PreDrawEffects","bulletholes-test",function()
             right:Mul(4)
 
             local pos11, pos21, pos31, pos41 = pos1 + addthing + up * 0.1 - right * 0.1,pos2 + addthing - up * 0.1 - right * 0.1,pos3 + addthing - up * 0.1 + right * 0.1, pos4 + addthing + right * 0.1
-            
+
             tbl.pos1 = pos1
             tbl.pos2 = pos2
             tbl.pos3 = pos3
@@ -166,7 +164,7 @@ hook.Add("PreDrawEffects","bulletholes-test",function()
             tbl.dir = dir
             tbl.hitnormal = hitnormal
         end
-        
+
         render.DrawQuad(tbl.pos1, tbl.pos2, tbl.pos3, tbl.pos4, coltransparent)
     end
 
@@ -184,7 +182,7 @@ hook.Add("PreDrawEffects","bulletholes-test",function()
         local dot = tbl.dot
         --if dot < 0 then continue end
         local dot2 = tbl.dot2
-        
+
         if dot > 0.5 and dot2 > 0.5 then
             render.DrawQuad(tbl.pos5, tbl.pos11, tbl.pos21, tbl.pos6, color_black)
             render.DrawQuad(tbl.pos8, tbl.pos41, tbl.pos11, tbl.pos5, color_black)
@@ -200,9 +198,9 @@ hook.Add("PreDrawEffects","bulletholes-test",function()
     render.SetStencilCompareFunction( STENCIL_EQUAL )
 
     render.SetStencilFailOperation( STENCIL_KEEP )
-    
+
     render.DrawTextureToScreen(rt)
-    
+
     --surface.SetTexture(rt)
     --surface.DrawTexturedRect(0, 0, ScrW(), ScrH())
 

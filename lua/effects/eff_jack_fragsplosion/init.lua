@@ -48,7 +48,7 @@ function EFFECT:Init(data)
 	particle:SetRoll(math.Rand(180, 480))
 	particle:SetRollDelta(math.Rand(-1, 1) * 6)
 	particle:SetColor(255, 255, 255)
-	for i = 0, 1 * Scayul do
+	for _ = 0, 1 * Scayul do
 		local sprite = "sprites/flamelet" .. math.random(1, 3)
 		local particle = emitter:Add(sprite, vOffset)
 		particle:SetVelocity(math.Rand(900, 1300) * VectorRand() * Scayul)
@@ -66,7 +66,7 @@ function EFFECT:Init(data)
 		particle:SetColor(darg - 20, darg, darg)
 	end
 
-	for i = 0, 5 * Scayul ^ 2 do
+	for _ = 0, 5 * Scayul ^ 2 do
 		local Debris = emitter:Add("effects/fleck_cement" .. math.random(1, 2), vOffset)
 		if Debris then
 			Debris:SetVelocity(VectorRand() * math.Rand(250, 1500) * Scayul ^ 0.5)
@@ -85,7 +85,7 @@ function EFFECT:Init(data)
 		end
 	end
 
-	for i = 0, 150 * Scayul do
+	for _ = 0, 150 * Scayul do
 		local Pos = data:GetOrigin() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), math.Rand(-1, 1))
 		local particle = emitter:Add("sprites/mat_jack_nicespark", Pos)
 		if particle then

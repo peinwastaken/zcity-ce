@@ -1,14 +1,9 @@
 include("shared.lua")
 ENT.PhysPos = Vector(0,0,0)
 ENT.PhysAng = Angle(0,0,0)
-local flpos,flang = Vector(4,-1,0),Angle(0,0,0)
 
-local offsetVec,offsetAng = Vector(1,0,0),Angle(100,90,0)
-local vecZero, angZero = Vector(0, 0, 0), Angle(0, 0, 0)
-local mat = Material("sprites/rollermine_shock")
 local mat2 = Material("sprites/light_glow02_add_noz")
 local mat3 = Material("effects/flashlight/soft")
-local mat4 = Material("sprites/light_ignorez", "alphatest")
 function ENT:Draw()
 	self:DrawModel()
 

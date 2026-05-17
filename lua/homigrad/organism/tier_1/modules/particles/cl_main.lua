@@ -1,7 +1,6 @@
-local fps = 1 / 24
 local delay = 0
 local math_min = math.min
-local CurTime, FrameTime = CurTime, FrameTime
+local CurTime, _ = CurTime, FrameTime
 bloodparticles_hook = bloodparticles_hook or {}
 local bloodparticles_hook = bloodparticles_hook
 
@@ -13,7 +12,7 @@ hook.Add("PreDrawEffects", "bloodpartciels", function()
 	if not bloodparticles_hook then return end
 	local animpos = math_min((delay - time) / fps, 1)
 	if not bloodparticles_hook[1] then return end
-	
+
 	bloodparticles_hook[1](animpos, fps)
 	bloodparticles_hook[3](animpos, fps)
 

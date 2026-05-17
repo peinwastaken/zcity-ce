@@ -1,9 +1,7 @@
 --\\Translate plugin things into your things
 hg.Abnormalties = hg.Abnormalties or {}
-local PLUGIN = hg.Abnormalties
 --//
 
-local ci = PLUGIN.CharInfo
 
 -- ci["a"] = "harm"
 -- ci["b"] = "shield"

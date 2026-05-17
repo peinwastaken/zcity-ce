@@ -30,7 +30,7 @@ net.Receive("gwars_start", function()
 
 	//music_themes/ghetto_loop.wav
 	//music_themes/ghetto_start.wav
-	
+
 end)
 
 local teams = {
@@ -56,9 +56,9 @@ function MODE:RenderScreenspaceEffects()
 end
 
 surface.CreateFont("timer_Font2", {
-	font = "Bahnschrift", 
-	size = ScreenScale(12), 
-	extended = true, 
+	font = "Bahnschrift",
+	size = ScreenScale(12),
+	extended = true,
 	weight = 650,
 	antialias = true,
 	italic = false
@@ -73,8 +73,8 @@ function MODE:HUDPaint()
 		local text = "00:00:00"
 		surface.SetFont("timer_Font2")
 		surface.SetDrawColor(255, 255, 255, 255)
-		local w, h = surface.GetTextSize(text)
-		local w2, h2 = surface.GetTextSize("11:11:11 time left before SWAT arrives!")
+		local w, _ = surface.GetTextSize(text)
+		local w2, _ = surface.GetTextSize("11:11:11 time left before SWAT arrives!")
 		surface.SetTextPos(sw * 0.5 - w2 / 2, sh * 0.05)
 		surface.DrawText(time)
 		surface.SetTextPos(sw * 0.5 - w2 / 2 + w, sh * 0.05)
@@ -96,12 +96,12 @@ function MODE:HUDPaint()
 		end
 
 		lerpsnd = LerpFT(0.01, lerpsnd, !ended and (lply:Alive() and lply.organism and !lply.organism.otrub and lply.organism.fear and math.Clamp(lply.organism.fear + 0.3 + (timeBeforeSWAT <= 0 and 2 or 0), 0, 1) or 0.3) or 0)
-		
+
 		if zb.ROUND_START + 12 < CurTime() then
 			if IsValid(GWARS_LoopStation) then
 				GWARS_LoopStation:SetVolume(lerpsnd * MusicVolume:GetFloat())
 				GWARS_LoopStation:Play()
-				
+
 				if IsValid(GWARS_LoopStation2) then
 					GWARS_LoopStation2:SetVolume(0)
 					GWARS_LoopStation2:Play()
@@ -112,12 +112,12 @@ function MODE:HUDPaint()
 		if IsValid(GWARS_LoopStation) and GWARS_LoopStation:GetState() == GMOD_CHANNEL_PLAYING then
 			GWARS_LoopStation:SetVolume(lerpsnd * MusicVolume:GetFloat())
 		end
-	
+
 		if timeBeforeSWAT <= 0 then
 			if IsValid(GWARS_LoopStation2) then
 				GWARS_LoopStation2:SetVolume(lerpsnd * MusicVolume:GetFloat())
 			end
-			
+
 			if IsValid(GWARS_LoopStation) then
 				GWARS_LoopStation:SetVolume(0)
 			end
@@ -158,15 +158,9 @@ end)
 local colGray = Color(85, 85, 85, 255)
 local colRed = Color(130, 10, 10)
 local colRedUp = Color(160, 30, 30)
-local colBlue = Color(10, 10, 160)
-local colBlueUp = Color(40, 40, 160)
 local col = Color(255, 255, 255, 255)
 local colSpect1 = Color(75, 75, 75, 255)
 local colSpect2 = Color(255, 255, 255)
-local colorBG = Color(55, 55, 55, 255)
-local colorBGBlacky = Color(40, 40, 40, 255)
-local blurMat = Material("pp/blurscreen")
-local Dynamic = 0
 BlurBackground = BlurBackground or hg.DrawBlur
 
 if IsValid(hmcdEndMenu) then
@@ -207,7 +201,7 @@ CreateEndMenu = function()
 		surface.DrawOutlinedRect(0, 0, w, h, 2.5)
 		surface.SetFont("ZB_InterfaceMedium")
 		surface.SetTextColor(col.r, col.g, col.b, col.a)
-		local lengthX, lengthY = surface.GetTextSize("Close")
+		local lengthX, _ = surface.GetTextSize("Close")
 		surface.SetTextPos(lengthX - lengthX / 1.1, 4)
 		surface.DrawText("Close")
 	end
@@ -216,7 +210,7 @@ CreateEndMenu = function()
 		BlurBackground(self)
 		surface.SetFont("ZB_InterfaceMediumLarge")
 		surface.SetTextColor(col.r, col.g, col.b, col.a)
-		local lengthX, lengthY = surface.GetTextSize("Players:")
+		local lengthX, _ = surface.GetTextSize("Players:")
 		surface.SetTextPos(w / 2 - lengthX / 2, 20)
 		surface.DrawText("Players:")
 		surface.SetDrawColor(255, 0, 0, 128)
@@ -233,7 +227,7 @@ CreateEndMenu = function()
 		surface.DrawOutlinedRect(0, 0, w, h, 2.5)
 	end
 
-	for i, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		local but = vgui.Create("DButton", DScrollPanel)
 		but:SetSize(100, 50)
@@ -249,7 +243,7 @@ CreateEndMenu = function()
 			surface.DrawRect(0, h / 2, w, h / 2)
 			local col = ply:GetPlayerColor():ToColor()
 			surface.SetFont("ZB_InterfaceMediumLarge")
-			local lengthX, lengthY = surface.GetTextSize(ply:GetPlayerName() or "He quited...")
+			local _, lengthY = surface.GetTextSize(ply:GetPlayerName() or "He quited...")
 			surface.SetTextColor(0, 0, 0, 255)
 			surface.SetTextPos(w / 2 + 1, h / 2 - lengthY / 2 + 1)
 			surface.DrawText(ply:GetPlayerName() or "He quited...")
@@ -259,7 +253,7 @@ CreateEndMenu = function()
 			local col = colSpect2
 			surface.SetFont("ZB_InterfaceMediumLarge")
 			surface.SetTextColor(col.r, col.g, col.b, col.a)
-			local lengthX, lengthY = surface.GetTextSize(ply:GetPlayerName() or "He quited...")
+			local _, lengthY = surface.GetTextSize(ply:GetPlayerName() or "He quited...")
 			surface.SetTextPos(15, h / 2 - lengthY / 2)
 			surface.DrawText((ply:Name() .. (not ply:Alive() and " - died" or "")) or "He quited...")
 			surface.SetFont("ZB_InterfaceMediumLarge")

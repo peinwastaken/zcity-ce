@@ -1,12 +1,11 @@
 hg.weaponInv = hg.weaponInv or {}
 local weaponInv = hg.weaponInv
-local ammoType
 
 function weaponInv.CanInsert(ply, wep)
 	local category = wep.weaponInvCategory
 	if not category then return true end
 	local slot = (CLIENT and weaponInv.invWeapon[category]) or (SERVER and ply.weaponInv[category])
-	
+
 	if not slot then return true end
 
 	if #slot + 1 > slot.limit then return false end
@@ -53,11 +52,11 @@ if SERVER then
 		wep:CallOnRemove("weaponInv", Remove, slot)
 		return true
 	end
-	
+
 	function weaponInv.Remove(ply, wep)
 		local id, slot
 		if not ply.weaponInv then return end
-		for category, _slot in pairs(ply.weaponInv) do
+		for _, _slot in pairs(ply.weaponInv) do
 			for i = 1, #_slot do
 				if _slot[i] == wep then
 					slot = _slot
@@ -131,10 +130,10 @@ if SERVER then
 			end
 			return false
 		end
-		
+
 		if weaponInv.CanInsert(ply, wep) == false then
 			local wep = ply.weaponInv[wep.weaponInvCategory][1]
-			
+
 			if IsValid(wep) then
 				ply:DropWeapon(wep)
 				wep.IsSpawned = true

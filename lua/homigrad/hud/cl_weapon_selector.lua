@@ -37,7 +37,7 @@ function WS.GetWeaponTable( ply )
 
     table.sort(WeaponsGet, function(a, b) return (a.SlotPos or 0) > (b.SlotPos or 0) end)
 
-    for k,wep in ipairs(WeaponsGet) do
+    for _, wep in ipairs(WeaponsGet) do
         local tTbl = FormatedTable[wep.Slot or 0]
         local iMinPos = math.min( (wep.SlotPos and wep.SlotPos) or 1, ((#tTbl or 0) + 1)) - 1
         local iPos = tTbl[ iMinPos ] and #tTbl + 1 or iMinPos
@@ -48,16 +48,15 @@ end
 
 local scrW, scrH = ScrW(), ScrH()
 
-local AcsentColor = Color(155,0,0)
 local gradient_u = Material("vgui/gradient-d")
 
 function WS.WeaponSelectorDraw( ply )
     if not IsValid( ply ) or not ply:Alive() or GetGlobalBool("RadialInventory", false) then return end
-    if WS.Show < CurTime() then 
-        WS.SelectedSlot = WS.LastSelectedSlot 
+    if WS.Show < CurTime() then
+        WS.SelectedSlot = WS.LastSelectedSlot
         WS.SelectedSlotPos = -1
-        
-        return 
+
+        return
     end
     local Weapons = WS.GetWeaponTable( ply )
     local SelectedWep = WS.GetSelectedWeapon()
@@ -78,16 +77,16 @@ function WS.WeaponSelectorDraw( ply )
         if table.Count(slotTbl) < 1 then continue end
         local sizeX = scrW*0.1
         local position = scrW/2 + ( ( SuperAmmout -  (AmmoutSlots/2)) * sizeX )
-        
+
         WS.DrawText( i+1, "HomigradFontMedium", position + sizeX/2, scrH*0.02, ColorAlpha(color_white,WS.Transparent*255) ,TEXT_ALIGN_CENTER )
-        
+
         --  draw.RoundedBox(
         --      1,
         --      position,
         --      (scrH *0.01),
         --      sizeX,
-        --      (scrH *0.02), 
-        --      ColorAlpha(color_black,WS.Transparent*255) 
+        --      (scrH *0.02),
+        --      ColorAlpha(color_black,WS.Transparent*255)
         --  )
         --if slotTbl and table.Count(slotTbl) < 0 then continue end
         local Ammout = 0
@@ -98,25 +97,24 @@ function WS.WeaponSelectorDraw( ply )
             if not wep then continue end
             --print(wepId,wep)
             local sizeH = SelectedWep == wep and (scrH *0.12) or (scrH *0.025)
-            local LastSelected = 0
             if slotTbl[wepId-1] and SelectedWep == slotTbl[wepId-1] then
-                lastPos = (scrH *0.095) 
+                lastPos = (scrH *0.095)
             end
             draw.RoundedBox(
                 0,
                 position,
                 (scrH * 0.025) * (Ammout) + (scrH * 0.05) + lastPos,
                 sizeX,
-                sizeH, 
-                ColorAlpha(color_black,WS.Transparent*205) 
+                sizeH,
+                ColorAlpha(color_black,WS.Transparent*205)
             )
             draw.RoundedBox(
                 0,
                 position,
                 ((scrH * 0.025) * (Ammout) + (scrH * 0.05) + lastPos) + sizeH-2,
                 sizeX,
-                2, 
-                ColorAlpha(color_black,WS.Transparent*205) 
+                2,
+                ColorAlpha(color_black,WS.Transparent*205)
             )
             surface.SetDrawColor( 155, 0, 0, WS.Transparent*( SelectedWep == wep and 200 or 0 )  )
             surface.SetMaterial( gradient_u )
@@ -234,7 +232,7 @@ function WS.ChangeSelectionWep( ply, key )
         surface.PlaySound("arc9_eft_shared/weapon_generic_rifle_spin"..math.random(10)..".ogg")
         if iPos then
             iPos = iPos - 1
-            if LastSelected ~= iPos then 
+            if LastSelected ~= iPos then
                 WS.SelectedSlotPos = -1
             end
             WS.SelectedSlotPos = (Weapons[iPos] and LastSelected == iPos and WS.SelectedSlotPos + 1 > #Weapons[iPos] and 0 or math.min( WS.SelectedSlotPos + 1, #Weapons[iPos] )) or 0
@@ -271,20 +269,20 @@ function WS.SetActuallyWeapon( ply, cmd )
     if not IsValid( ply ) or not ply:Alive() or GetGlobalBool("RadialInventory", false) then return end
     if (cmd:KeyDown( IN_ATTACK ) or cmd:KeyDown( IN_ATTACK2 )) and WS.Show > CurTime() then
 
-        if WS.Selected and WS.Selected > CurTime() then 
-            cmd:RemoveKey(IN_ATTACK) 
-            cmd:RemoveKey(IN_ATTACK2) 
+        if WS.Selected and WS.Selected > CurTime() then
+            cmd:RemoveKey(IN_ATTACK)
+            cmd:RemoveKey(IN_ATTACK2)
         else
             cmd:RemoveKey(IN_ATTACK)
-            cmd:RemoveKey(IN_ATTACK2) 
+            cmd:RemoveKey(IN_ATTACK2)
             --print(WS.GetSelectedWeapon())
-            
+
             if IsValid(WS.GetSelectedWeapon()) then
                 WS.LastInv = WS.LastInv ~= ply:GetActiveWeapon() and WS.LastInv or ply:GetActiveWeapon()
                 input.SelectWeapon( WS.GetSelectedWeapon() )
             end
             cmd:RemoveKey(IN_ATTACK)
-            cmd:RemoveKey(IN_ATTACK2) 
+            cmd:RemoveKey(IN_ATTACK2)
 
             WS.LastSelectedSlot = WS.SelectedSlot
             WS.LastSelectedSlotPos = WS.SelectedSlotPos

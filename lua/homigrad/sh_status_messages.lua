@@ -1,4 +1,3 @@
-
 local allowedchars = {
 	"ah",
 	"AH",
@@ -129,22 +128,6 @@ local near_death_poetic = {
 	"Regrets are pointless now.",
 }
 
-local near_death_positive = {
-	"I don't want to die.",
-	"I have to survive.",
-	"There's still a chance.",
-	"I can't let fear win.",
-	"Just one more try.",
-	"I refuse to die here.",
-	"Alright... think this through.",
-	"Just stay still. Moving makes it worse.",
-	"Breathe slow. Panic won't help.",
-	"It's not over until it's over.",
-	"Pain is just a signal. Ignore it.",
-	"If this is it... at least it's gonna be quick.",
-	"I've survived worse. Probably.",
-	"This isn't how I pictured it.",
-}
 
 local broken_limb = {
 	"FUCK. FUCK. ITS DEFINITELY BROKEN!",
@@ -268,7 +251,9 @@ local heatvomit_phraselist = {
 	"Fuuck.. Oughhh.. I don't feel-"
 }
 
-local hg_showthoughts = ConVarExists("hg_showthoughts") and GetConVar("hg_showthoughts") or CreateClientConVar("hg_showthoughts", "1", true, true, "Toggle thoughts of your character", 0, 1)
+if not ConVarExists("hg_showthoughts") then
+	CreateClientConVar("hg_showthoughts", "1", true, true, "Toggle thoughts of your character", 0, 1)
+end
 
 function string.Random(length)
 	local length = tonumber(length)
@@ -336,7 +321,7 @@ local function get_status_message(ply)
     if ply:GetInfoNum("hg_showthoughts", 1) == 0 then return "" end
 
 	local org = ply.organism
-	
+
 	if not org or not org.brain then return "" end
 
 	local pain = org.pain
@@ -349,7 +334,7 @@ local function get_status_message(ply)
 	if broken_dislocated and org.just_damaged_bone then
 		org.just_damaged_bone = nil
 	end
-	
+
 	local broken_notify = (org.rarm == 1) or (org.larm == 1) or (org.rleg == 1) or (org.lleg == 1)
 	local dislocated_notify = (org.rarm == 0.5) or (org.larm == 0.5) or (org.rleg == 0.5) or (org.lleg == 0.5)
 	local after_unconscious_notify = org.after_otrub
@@ -359,7 +344,7 @@ local function get_status_message(ply)
 	local str = ""
 
 	local most_wanted_phraselist
-	
+
 	if temperature < 35 then
 		most_wanted_phraselist = temperature > 31 and cold_phraselist or (temperature < 28 and numb_phraselist or freezing_phraselist)
 	elseif temperature > 38 then
@@ -407,7 +392,7 @@ local function get_status_message(ply)
 	if brain > 0.1 then
 		most_wanted_phraselist = brain < 0.2 and slight_braindamage_phraselist or braindamage_phraselist
 	end
-	
+
 	if most_wanted_phraselist then
 		str = most_wanted_phraselist[math.random(#most_wanted_phraselist)]
 
@@ -429,13 +414,13 @@ function hg.get_phraselist(ply, type)
 			return
 		end
 	end
-	
+
 	local nomessage = ply.PlayerClassName == "Gordon" || ply.PlayerClassName == "Combine"
 
 	if nomessage then return "" end
     if ply:GetInfoNum("hg_showthoughts", 1) == 0 then return "" end
 
-	local org = ply.organism	
+	local org = ply.organism
 	if not org or not org.brain then return "" end
 
 	if not isstring(type) or not allowedlist_types[type] then return "" end

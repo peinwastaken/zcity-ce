@@ -42,20 +42,20 @@ function ENT:Initialize()
 		self:SetModel("models/headcrabblack.mdl")
 		self:SetColor(Color(220,255,220))
 		--self:SetModelScale(0.5,0)
-		
+
 		self:SetHullType( HULL_TINY )
-		self:SetHullSizeNormal() 
+		self:SetHullSizeNormal()
 		self:SetSolid( SOLID_BBOX )
 		self:SetMoveType( MOVETYPE_STEP )
 		self:CapabilitiesAdd( bit.bor( CAP_MOVE_GROUND, CAP_SQUAD ) )
 		self:CapabilitiesRemove( bit.bor( CAP_OPEN_DOORS, CAP_AUTO_DOORS ) )
-		
+
 		self:SetHealth( 30*self:GetHealthMul(3) )
 		self:SetMaxHealth( 150 )
 
 		--self:SetColor(Color(255,0,0))
 		self:SetBloodColor(BLOOD_COLOR_GREEN)
-		
+
 		self.JustSpawned = CurTime()+2
 	end
 	--self:SetKeyValue( "additionalequipment", GetConVarString("gmod_npcweapon") )
@@ -113,7 +113,7 @@ function ENT:Think()
 	if(self.JustSpawned and self.JustSpawned<=CurTime())then
 		self.JustSpawned=nil
 	end
-	
+
 	if(SERVER and ((!self.NextEntityHullClearing or self.NextEntityHullClearing<=CurTime()) and !self.JustSpawned))then
 		self.NextEntityHullClearing = CurTime() + 1
 		SWARM:ClearEntityHull(self,20)
@@ -129,11 +129,11 @@ function ENT:Shoot( dir )
 	hel:SetOwner(self)
 	hel.Damage = SWARM_CV_SENTRY_ProjectileDmg:GetFloat()*self:GetDamageMul(8)
 	self:EmitSound('NPC_HeadCrab.Gib',35)
-	
+
 	hel.GeneticData = table.Copy(self.GeneticData)
-	
+
 	local phys = hel:GetPhysicsObject()
-	if IsValid(phys) then		
+	if IsValid(phys) then
 		phys:SetVelocity(dir)
 	end
 end
@@ -155,7 +155,7 @@ function ENT:GetRelationship( entity )
 	if(entity.Classify)then
 		class=entity:Classify()
 	end
-		
+
 	if(class and class==CLASS_PLAYER)then
 		return D_HT
 	elseif(entity:GetClass()=="player")then
@@ -165,17 +165,17 @@ function ENT:GetRelationship( entity )
 	end
 end]]
 
-function ENT:TaskStart_FindEnemy( data )	
+function ENT:TaskStart_FindEnemy( data )
 	if(data==nil)then data = {} end
 
 	local lastenem = self:GetEnemy()
-	
+
 	if(!IsValid(lastenem) or (lastenem.Alive and !lastenem:Alive()) or lastenem:GetPos():Distance(self:GetPos())>(data.Radius or SWARM_CV_SENTRY_ForgetRange:GetInt()))then
-	
+
 		local et = ents.FindInSphere( self:GetPos(), data.Radius or SWARM_CV_SENTRY_DetectRange:GetInt() )
 		local bestdistance = math.huge
 		local bestenemy = nil
-		for k, v in pairs( et ) do
+		for _, v in pairs( et ) do
 
 			if ( v:IsValid() && v != self && (self:Disposition(v)==D_HT or self:Disposition(v)==D_FR) and (!v.Alive or v:Alive()) and self:IsEntityPossibleEnemy(v) ) then
 				local dist = v:GetPos():DistToSqr(self:GetPos())
@@ -194,8 +194,8 @@ function ENT:TaskStart_FindEnemy( data )
 			self:UpdateEnemyMemory( bestenemy, bestenemy:GetPos() )
 			--self:TaskComplete()
 			return
-		end		
-		
+		end
+
 	end
 	if(IsValid(lastenem))then
 		self:SetLastPosition(lastenem:GetPos())
@@ -204,7 +204,7 @@ function ENT:TaskStart_FindEnemy( data )
 		--self:TaskComplete()
 		return
 	end
-	
+
 	self:SetEnemy( NULL )
 end
 
@@ -240,8 +240,8 @@ function ENT:RunAI( strExp )
 		if(IsValid(lastenem.fakeragdoll))then
 			aimpos=lastenem.fakeragdoll:GetPos()
 		end
-	
-		if(lastenem:GetPos():Distance(self:GetPos())<300)then	
+
+		if(lastenem:GetPos():Distance(self:GetPos())<300)then
 			local traceinfo = {
 				start = self:GetPos(),
 				endpos = aimpos,
@@ -249,15 +249,15 @@ function ENT:RunAI( strExp )
 			}
 			local trace = util.TraceLine(traceinfo)
 			if(trace.Entity==lastenem or trace.Entity==lastenem.fakeragdoll)then
-				if(self.NextShoot<=CurTime())then	
-					self.NextShoot=CurTime()+self.ShootCD			
+				if(self.NextShoot<=CurTime())then
+					self.NextShoot=CurTime()+self.ShootCD
 					self:Shoot( ( (aimpos+lastenem:GetVelocity()/4)-self:GetPos() ):GetNormalized()*750 )
 				end
 			end
 		end
 	end
 
-	if(self.NextEnemyFind<=CurTime())then	
+	if(self.NextEnemyFind<=CurTime())then
 		self.NextEnemyFind=CurTime()+self.EnemyFindCD
 		self:TaskStart_FindEnemy()
 	end

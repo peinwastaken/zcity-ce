@@ -78,7 +78,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 		bullet.TraceFilter = bullet.TraceFilter or bullet.IgnoreEntity
 		bullet.AmmoID = bullet.AmmoID or bullet.AmmoType
 		bullet.TraceMask = bullet.TraceMask or PLUGIN.Bullet_StandartMask
-		
+
 		if(isstring(bullet.AmmoID))then
 			bullet.AmmoID = game.GetAmmoID(bullet.AmmoID)
 		end
@@ -92,7 +92,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 		hg_ammo_table = hg_ammo_table or {}
 		hg_ammo_table.BulletSettings = hg_ammo_table.BulletSettings or {}
 		hg_ammo_table.BulletFunctions = hg_ammo_table.BulletFunctions or {}
-		
+
 		--=\\???
 			bullet.AirResistMul = bullet.AirResistMul or hg_ammo_table.BulletSettings.AirResistMul
 			bullet.LifeTime = bullet.LifeTime or hg_ammo_table.BulletSettings.LifeTime
@@ -122,7 +122,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 			bullet.Vel = bullet.Dir * bullet.StartLen
 			bullet.Dir = nil
 		end
-		
+
 		if(not bullet.StartLen)then
 			bullet.StartLen = bullet.Vel:Length()
 		end
@@ -130,22 +130,22 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 		if(SERVER and bullet.Spread)then	--; OPTIMIZE ME
 			local dir = bullet.DirOriginal or bullet.Dir
 			local len = 1
-			
+
 			if(not dir)then
 				len = bullet.Vel:Length()
 				dir = bullet.Vel / len
 			end
-			
+
 			bullet.DirOriginal = bullet.DirOriginal or dir
 			local ang = dir:Angle()
 			local vec_right = ang:Right()
 			local vec_up = ang:Up()
 			local spread_x = bullet.Spread[1] * 45
 			local spread_y = bullet.Spread[2] * 45
-			
+
 			ang:RotateAroundAxis(vec_up, math.Rand(-spread_x, spread_x))
 			ang:RotateAroundAxis(vec_right, math.Rand(-spread_y, spread_y))
-			
+
 			bullet.Vel = ang:Forward() * len
 		end
 	end
@@ -154,13 +154,13 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 		local new_bullet = table.Copy(bullet)
 		new_bullet.Pos = Vector(new_bullet.Pos)
 		new_bullet.Vel = Vector(new_bullet.Vel)
-		
+
 		if(new_bullet.DirOriginal)then
 			new_bullet.DirOriginal = Vector(new_bullet.DirOriginal)
 		end
-		
+
 		new_bullet.Key = nil
-		
+
 		return new_bullet
 	end
 --//
@@ -187,7 +187,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 			len = value:Length()
 			value = value / len
 		end
-		
+
 		net.WriteInt(math.Round(value[1] * PLUGIN.MaxVelocityInt), PLUGIN.MaxVelocityBits)
 		net.WriteInt(math.Round(value[2] * PLUGIN.MaxVelocityInt), PLUGIN.MaxVelocityBits)
 		net.WriteInt(math.Round(value[3] * PLUGIN.MaxVelocityInt), PLUGIN.MaxVelocityBits)
@@ -201,7 +201,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 		local z = net.ReadInt(PLUGIN.MaxVelocityBits)
 		local value = Vector(x / PLUGIN.MaxVelocityInt, y / PLUGIN.MaxVelocityInt, z / PLUGIN.MaxVelocityInt)
 		local len = net.ReadUInt(PLUGIN.MaxVelocityLenBits)
-		
+
 		return value * len
 	end
 
@@ -211,12 +211,12 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 		end
 
 		local len = #filter
-		
+
 		net.WriteUInt(len, PLUGIN.MaxKeyBitsFilter)	--; OPTIMIZE ME Optimizable
-		
+
 		for key = 1, len do
 			local value = filter[key]
-			
+
 			if(isstring(value))then
 				net.WriteBool(true)
 				net.WriteString(value)
@@ -233,17 +233,17 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 	function PLUGIN.net_readtracefilter()
 		local len = net.ReadUInt(PLUGIN.MaxKeyBitsFilter)
 		local filter = {}
-		
+
 		for key = 1, len do
 			local is_str = net.ReadBool()
-			
+
 			if(is_str)then
 				filter[key] = net.ReadString()
 			else
 				filter[key] = net.ReadEntity()
 			end
 		end
-		
+
 		return filter
 	end
 --//
@@ -321,7 +321,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 				self.LastThinkTime = CurTime()
 				return
 			end
-			
+
 			self.LastThinkTime = CurTime()
 		end
 
@@ -333,56 +333,56 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 			if(self.OnStopped)then
 				self:OnStopped(nil, "time")
 			end
-		
+
 			self:Die()
 			return
 		end
-		
+
 		--[[if self.DistanceTraveled > 100 then
 			print(self.Vel:Length()/52)
 		end--]]
 		--; at 100 ~~meters~~ units, find out the speed for free
-		
+
 		if(self.DistanceTraveled >= self.Distance)then
 			if(self.OnStopped)then
 				self:OnStopped(nil, "distance")
 			end
-		
+
 			self:Die()
 			return
 		end
 
 		local interval = FrameTime()
 		local physenv_gravity = physenv.GetGravity()
-		
+
 		--=\\self.Vel changes
 			--==\\Gravity
 				if(!self.NoGravity)then
 					self.Vel = self.Vel + physenv_gravity * interval
 				end
 			--==//
-			
+
 			--==\\Drift
 				-- local drift = 50
 				-- local drift_vec = Vector(util.SharedRandom("x" .. self.Key, -drift, drift, CurTime()), util.SharedRandom("y" .. self.Key, -drift, drift, CurTime()), util.SharedRandom("z" .. self.Key, -drift, drift, CurTime()))
 				-- self:ApplyForceCenter(drift_vec)
 			--==//
 		--=//
-		
+
 		local len = self.Vel:Length()
 		self.DistanceTraveled = self.DistanceTraveled + len * interval
-		
+
 		if(len == 0)then
 			len = 1
 		end
-		
+
 		local dir = self.Vel / len
-		
+
 		--=\\speed length changes
-		
+
 		--[[
 		local tbl = hg.ammotypeshuy[game.GetAmmoName(self.AmmoID)].BulletSettings
-		
+
 		local Cd = tbl.AirResistanceCoef
 		local p = 1.2255--; in air
 		local V = len / 52.5
@@ -394,32 +394,32 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 		local newenergy = energy - energy_loss
 		local newspeed = newenergy
 		--]]
-		
+
 		--==\\AirResist
 			local resist_mul = self.AirResistMul
-			
+
 			if(self.PenetratingMaterial)then
 				resist_mul = PLUGIN.CalcMaterialResist(self.PenetratingMaterial)
 				-- Entity(1):ChatPrint(tostring(resist_mul))
 			end
-			
+
 			len = len - math.min(resist_mul * interval * len * len, len)
 		--==//
-		
+
 		--=//
-		
+
 		if(hg.IsChanged(self.Size, "Size", self))then
 			local size = self.Size / 2
 			self.SizeMins = Vector(-size, -size, -size)
 			self.SizeMaxs = Vector(size, size, size)
 		end
-		
+
 		local trace_hit = true
 		local vel_vector = self.Vel
 		local vel_normal = dir
 		local len_before = len
 		local iteration = 0
-		
+
 		while trace_hit and vel_vector do
 			local hull_trace = {}
 			local move_vector = vel_vector * interval
@@ -429,24 +429,24 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 			hull_trace.maxs = self.SizeMaxs
 			hull_trace.filter = self.TraceFilter
 			hull_trace.mask = self.TraceMask
-			
+
 			local trace = nil
-			
+
 			if(self.Size == 0)then
 				trace = util.TraceLine(hull_trace)
 			else
 				trace = util.TraceHull(hull_trace)
 			end
-			
+
 			trace_hit = trace.Hit
-			
+
 			if(self.PenetratingMaterial)then
 				if(!trace.AllSolid)then
 					local max_penetrate_iterations = 10
 					local one_penetrate_chunk = move_vector / max_penetrate_iterations * self.Penetration / 50
 					local penetration_pos = nil
 					local last_unsure_penetration_pos = nil
-					
+
 					for penetrate_iteration = 1, max_penetrate_iterations do
 						hull_trace.start = self.PenetratingStartPos + one_penetrate_chunk * penetrate_iteration
 						hull_trace.endpos = hull_trace.start - one_penetrate_chunk * penetrate_iteration
@@ -455,37 +455,37 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 						hull_trace.filter = self.TraceFilter
 						hull_trace.mask = self.TraceMask
 						local penetration_trace = nil
-						
+
 						if(self.Size == 0)then
 							penetration_trace = util.TraceLine(hull_trace)
 						else
 							penetration_trace = util.TraceHull(hull_trace)
 						end
-						
+
 						if(!penetration_trace.StartSolid and penetration_trace.Hit)then
 							penetration_pos = penetration_trace.HitPos
-							
+
 							break
 						elseif(!penetration_trace.AllSolid)then
 							last_unsure_penetration_pos = hull_trace.start
 						end
 					end
-				
+
 					if(penetration_pos)then
 						self.Pos = penetration_pos
 						len_before = PLUGIN.CalcVelocityLostInMaterial(material, self.PenetratingStartPos:DistToSqr(penetration_pos), len_before)
 						len = math.min(len, len_before)
-						
+
 						if(SERVER)then
 							local tr_back = {}
 							tr_back.start = penetration_pos + move_vector * 1
 							tr_back.endpos = tr_back.start - move_vector * 2
 							tr_back.mask = self.TraceMask
 							local trace_backwards = util.TraceLine(tr_back)
-							
+
 							if(!trace_backwards.StartSolid)then
 								local effectdata = EffectData()
-								
+
 								effectdata:SetOrigin(trace_backwards.HitPos)
 								effectdata:SetEntity(trace_backwards.Entity)
 								effectdata:SetStart(trace_backwards.StartPos)
@@ -495,63 +495,63 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 								util.Effect("Impact", effectdata, true, true)
 							end
 						end
-						
+
 						self.PenetratingMaterial = nil
 						self.PenetratingStartPos = nil
 						self.PenetratingSky = false
 					else
 						last_unsure_penetration_pos = last_unsure_penetration_pos or (self.Pos + move_vector)
 						self.PenetratingStartPos = last_unsure_penetration_pos	--; WARNING
-						
+
 						-- if(self.PenetratingSky)then
 							-- self.Pos = self.Pos + move_vector
 						-- else
 							if(self.OnStopped)then
 								self:OnStopped(last_unsure_penetration_pos, "penetration", self.PenetratingTrace)
 							end
-							
+
 							self:Die()
 						-- end
-						
+
 						return
 					end
-					
+
 					--=\\PLUG
 						if(CLIENT)then
 							self:AddPathPoint(self.Pos)
 						end
 					--=//
-					
+
 					goto phys_bullets_continue
 				end
 			end
-			
+
 			if(self.PenetratingMaterial)then
 				self.Pos = self.Pos + move_vector
 			else
 				self.Pos = trace.HitPos
 			end
-			
+
 			--=\\PLUG
 				if(CLIENT)then
 					self:AddPathPoint(self.Pos)
 				end
 			--=//
-			
+
 			--=\\Damage Trace
 				if(SERVER and IsValid(trace.Entity))then
 					self.AttackedEnts = self.AttackedEnts or {}
-					
+
 					if(!self.AttackedEnts[trace.Entity])then
 						self.AttackedEnts[trace.Entity] = true
 						local speedmul = (len_before / self.StartLen)
 						local dmg = DamageInfo()
-						
+
 						dmg:SetDamage(self.Damage * math.sqrt(speedmul))--; speed is lost too quickly... so square it
 						dmg:SetDamageType(self.DamageType or DMG_BULLET)
 						dmg:SetDamagePosition(trace.HitPos)
 						dmg:SetDamageForce(self.AmmoForce * dir * (speedmul * self.Force * self.ForceMul))
-						
+
 						if(IsValid(self.Shooter))then
 							dmg:SetAttacker(self.Shooter)
 							dmg:SetInflictor(self.Shooter)
@@ -566,7 +566,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 							if(self.OnStopped)then
 								self:OnStopped(nil, "organism", trace)
 							end
-							
+
 							self:Die()
 
 							return
@@ -574,7 +574,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 					end
 				end
 			--=//
-			
+
 			if(trace_hit)then
 				if(SERVER and not trace.StartSolid)then
 					local effectdata = EffectData()
@@ -586,47 +586,47 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 					effectdata:SetHitBox(trace.HitBox)
 					util.Effect("Impact", effectdata, true, true)
 				end
-				
+
 				if(self.PenetratingMaterial)then
-				
+
 				else
 					vel_normal, len, len_before = self:Hit(trace, len, len_before)
 				end
 			end
-			
+
 			if(self.Removed)then
 				return
 			end
-			
+
 			vel_normal = vel_normal or dir
 			len = len or len_before
 			vel_vector = vel_normal * len
-			
+
 			if(len < 0.001)then
 				if(self.OnStopped)then
 					self:OnStopped(nil, "len", self.PenetratingTrace)
 				end
-			
+
 				self:Die()
-				
+
 				return
 			end
-			
+
 			::phys_bullets_continue::	--; Extreme sin
-			
+
 			iteration = iteration + 1
-			
+
 			if(iteration > 4)then
 				break
 			end
 		end
-		
+
 		self.Vel = vel_normal * len_before
-		
+
 		if(SERVER and not self.NoNetworkUpdate)then
 			if(not self.LastUpdateTime or (self.LastUpdateTime + PLUGIN.NetCDUpdateBullet <= CurTime()))then
 				self.LastUpdateTime = CurTime()
-				
+
 				PLUGIN.NetworkBulletUpdate(self)
 			end
 		end
@@ -639,22 +639,22 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 	if(CLIENT)then
 		function PLUGIN.Class_Bullet:Draw()
 			local tracer_body = self.TracerSetings.TracerBody
-			
+
 			if(tracer_body)then
 				local color = self.TracerSetings.TracerColor or color_white
 				local size = math.max(self.Size, self.TracerSetings.TracerHeadSize or 5)
-				
+
 				render.SetMaterial(tracer_body)
 				render.DrawSprite(self.Pos, size, size, color)
 			end
-			
+
 			--=\\PLUG
 				if(self.PathPoints)then
 					local color = self.TracerSetings.TracerColor or color_white
-				
+
 					if(self.TracerSetings.TracerTail)then
 						local material_name = self.TracerSetings.TracerTail:GetName()
-						
+
 						if(!traces_materials[material_name])then
 							traces_materials[material_name] = CreateMaterial(material_name .. "_albedo", "UnlitGeneric", {
 								["$basetexture"] = self.TracerSetings.TracerTail:GetTexture("$basetexture"),
@@ -663,28 +663,28 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 								["$vertexcolor"] = 1
 							})
 						end
-						
+
 						render.SetMaterial(traces_materials[material_name])
 						-- render.SetMaterial(self.TracerSetings.TracerTail)
 					else
 						render.SetColorMaterial()
 					end
-					
+
 					render.StartBeam(math.min(#self.PathPoints, self.TracerSetings.MaxPathPoints))
-					
+
 					for i = math.max(#self.PathPoints - self.TracerSetings.MaxPathPoints, 1), #self.PathPoints do
 						render.AddBeam(self.PathPoints[i], (self.TracerSetings.TracerWidth or 2) / 5, 1, color)
 					end
-					
+
 					render.EndBeam()
 				end
 			--=//
 		end
-		
+
 		function PLUGIN.Class_Bullet:AddPathPoint(pos)
 			self.PathPoints = self.PathPoints or {}
 			self.PathPoints[#self.PathPoints + 1] = pos
-		
+
 			if(#self.PathPoints >= self.TracerSetings.MaxPathPoints * 2)then
 				self.PathPoints_Swap = self.PathPoints_Swap or {}
 				self.PathPoints = self.PathPoints_Swap
@@ -723,9 +723,9 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 				return
 			-- end
 		end
-		
+
 		local new_vel_normal, len, ricochet, ang_diff, stopped = PLUGIN.CalcHit(trace, len, len_before, self.TraceMask, self.Penetration, self.SizeMins, self.SizeMaxs)
-		
+
 		--[[if(stopped)then
 			self:Die()
 
@@ -737,7 +737,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 			local resist_mul = PLUGIN.CalcMaterialResist(self.PenetratingMaterial)
 			len_before = len_before - math.min(resist_mul * self.AirResistMul * 140 * len_subtract_frac * len_before * len_before, len_before)	--; Not confirmed by anything
 			len = math.min(len, len_before)
-			
+
 			if(SERVER)then
 				local rnd = math.random(12)
 				if rnd == 8 then rnd = 9 end
@@ -745,7 +745,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 				--sound.Play("snd_jack_hmcd_ricochet_" .. math.random(1, 2) .. ".wav", trace.HitPos, 75, math.random(90, 110))
 				--sound.Play("weapons/arccw/ricochet0" .. math.random(1, 5) .. "_quiet.wav", trace.HitPos, 75, math.random(90, 110))
 			end
-			
+
 			if(self.PostRicochet)then
 				self:PostRicochet(new_vel_normal, len, ricochet, ang_diff, len_before, trace)
 			end
@@ -754,7 +754,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 			self.PenetratingMaterial = trace.MatType
 			self.PenetratingStartPos = trace.HitPos
 			self.PenetratingTrace = trace
-			
+
 			if(trace.HitSky)then
 				self.PenetratingSky = true
 			else
@@ -764,11 +764,11 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 				len = math.min(len, len_before)
 				-- self.AirResistMul = self.AirResistMul * 2
 			end
-			
+
 			if(self.PostPenetration)then
 				self:PostPenetration(new_vel_normal, len, ricochet, ang_diff, len_before, trace)
 			end
-			
+
 			if(stopped)then
 				if(self.OnStopped) then
 					self:OnStopped(nil, "hit", trace)
@@ -777,7 +777,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 				self:Die()
 			end
 		end
-		
+
 		return new_vel_normal, len, len_before
 	end
 
@@ -794,13 +794,13 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 
 		self.Removed = true
 		PLUGIN.BulletsTable[self.Key] = nil
-		
+
 		if(SERVER)then
 			if(self.CreationTime ~= CurTime())then
 				PLUGIN.NetworkBulletRemove(self)
 			end
 		end
-		
+
 		if(self.PostRemove)then
 			self:PostRemove()
 		end
@@ -811,7 +811,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 	function PLUGIN.CreateBullet(bullet)
 		setmetatable(bullet, PLUGIN.Class_Bullet)
 		translate_default_bullet_to_phys(bullet)
-		
+
 		bullet.AmmoID = bullet.AmmoID or 0
 		bullet.Damage = bullet.Damage or 1
 		bullet.AirResistMul = bullet.AirResistMul or 0.0001	--; AMMOID
@@ -830,41 +830,41 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 		bullet.Key = bullet.Key or #PLUGIN.BulletsTable + 1
 		bullet.HG_IsBullet = true
 		PLUGIN.BulletsTable[bullet.Key] = bullet
-		
+
 		if(bullet.Damage == 0)then
 			bullet.Damage = game.GetAmmoPlayerDamage(bullet.AmmoID) or 0
 		end
-		
+
 		PLUGIN:RunHook("BulletPostSetup", bullet)
-		
+
 		local lag_compensate = false
-		
+
 		if(SERVER and bullet.Shooter:IsPlayer())then
 			lag_compensate = true
 			bullet.Vel = bullet.Vel + bullet.Shooter:GetVelocity()
 		end
-		
+
 		if(lag_compensate)then
 			bullet.Shooter:LagCompensation(true)
 		end
-		
+
 		bullet:Think()
-		
+
 		if(lag_compensate)then
 			bullet.Shooter:LagCompensation(false)
 		end
-		
+
 		if(bullet.Num and bullet.Num > 1)then
 			local new_bullet = copy_bullet(bullet)
 			new_bullet.Num = new_bullet.Num - 1
-			
+
 			PLUGIN.CreateBullet(new_bullet)
 		end
 
 		if(SERVER and not bullet.Removed and not bullet.NoNetwork)then
 			PLUGIN.NetworkBulletFull(bullet, nil)
 		end
-		
+
 		PLUGIN:RunHook("BulletPostCreationNetwork", bullet)
 
 		return bullet
@@ -878,7 +878,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 
 	function PLUGIN.CalcVelocityLostInMaterial(material, dist, len_before)
 		local resist_mul = PLUGIN.CalcMaterialResist(material, 2)
-		
+
 		return math.max(len_before - resist_mul * dist, 0)
 	end
 
@@ -889,7 +889,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 		local trace_hit_normal = trace.HitNormal
 		local trace_angle = trace_normal:Angle()
 		local surface_normal = trace.HitNormal
-		
+
 		--=\\
 			local ricochet = true
 			local stopped = false
@@ -910,11 +910,11 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 					hull_trace.endpos = hull_trace.start + move_vector
 					hull_trace.mask = trace_mask
 					local trace_new = util.TraceLine(hull_trace)
-					
+
 					if(trace_new.HitTexture == "**studio**")then
 						local max_penetrate_iterations = 5
 						local one_penetrate_chunk = (move_vector) / max_penetrate_iterations
-						
+
 						for penetrate_iteration = 1, max_penetrate_iterations do
 							hull_trace.start = trace.HitPos + one_penetrate_chunk * penetrate_iteration + trace_normal
 							hull_trace.endpos = hull_trace.start - one_penetrate_chunk * penetrate_iteration - trace_normal
@@ -922,13 +922,13 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 							hull_trace.mins = size_mins
 							hull_trace.maxs = size_maxs
 							local trace_penetrating = nil
-							
+
 							if(size_mins and size_maxs)then
 								trace_penetrating = util.TraceHull(hull_trace)
 							else
 								trace_penetrating = util.TraceLine(hull_trace)
 							end
-							
+
 							if(!trace_penetrating.StartSolid)then
 								ricochet = false
 
@@ -950,27 +950,27 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 							end
 						end
 					end
-					
+
 					if((90 - ang_diff + util.SharedRandom("Ricochet", -15, 15, CurTime() * 100)) > (60 * mat_hardness * 0.6))then
 						ricochet = false
 					end
 				end
 			end
 		--=//
-		
+
 		local ricochet_frac = (90 - ang_diff) / 90
 		local new_vel_normal = nil
-		
+
 		if(ricochet)then
 			trace_angle:RotateAroundAxis(surface_normal, 180)
-			
+
 			new_vel_normal = -trace_angle:Forward()
 			new_vel_normal = new_vel_normal + Vector(util.SharedRandom("Ricochet", -1, 1, CurTime() + 1) * 0.3, util.SharedRandom("Ricochet", -1, 1, CurTime() + 2) * 0.3, util.SharedRandom("Ricochet", -1, 1, CurTime() + 3) * 0.3) * ricochet_frac
 			new_vel_normal:Normalize()
 		else
 			new_vel_normal = trace_normal
 		end
-		
+
 		return new_vel_normal, len_left, ricochet, ang_diff, stopped
 	end
 --//
@@ -1017,12 +1017,11 @@ hook.Add("EntityFireBullets", "あPhysBullets", function(ent, bullet)
 			-- bullet.NoGravity = true
 			-- bullet.DieOnHit = true
 			-- bullet.Damage = 0
-			local att = bullet.Attacker
-			
+
 			PLUGIN.CreateBullet(bullet)
 			-- hook.Run("PostEntityFireBullets", ent, bullet)
 		end
-		
+
 		return false
 	end
 end)

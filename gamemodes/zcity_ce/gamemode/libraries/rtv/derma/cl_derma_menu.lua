@@ -1,8 +1,6 @@
 --
 local PANEL = {}
 
-local blurMat = Material("pp/blurscreen")
-local Dynamic = 0
 
 BlurBackground = hg.DrawBlur
 
@@ -14,7 +12,7 @@ function PANEL:Paint( w, h )
 
 	surface.SetFont( "ZB_InterfaceMediumLarge" )
 	surface.SetTextColor( color_white )
-	local lengthX, lengthY = surface.GetTextSize( text )
+	local lengthX, _ = surface.GetTextSize( text )
 	surface.SetTextPos( w / 2 - lengthX/2,20 )
 	surface.DrawText( text )
 

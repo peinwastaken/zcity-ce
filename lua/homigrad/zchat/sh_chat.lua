@@ -233,7 +233,7 @@ else
 
 		local rf = RecipientFilter()
 		-- local checkdist = ply.ChatWhisper and 128 * 128 or 1024 * 1024
-		for i, plya in player.Iterator() do
+		for _, plya in player.Iterator() do
 			if plya:Alive() and plya.organism and plya.organism.otrub then continue end
 			if plya:Alive() and !ply:Alive() then continue end
 
@@ -241,7 +241,7 @@ else
 				rf:AddPlayer(plya)
 			end
 		end
-		
+
 		net.Start("zChatMessage")
 			net.WriteEntity(ply)
 			net.WriteString(text)

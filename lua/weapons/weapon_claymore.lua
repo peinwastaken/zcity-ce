@@ -42,9 +42,9 @@ function SWEP:DrawWorldModel()
 	self.model = IsValid(self.model) and self.model or ClientsideModel(self.WorldModel)
 	local WorldModel = self.model
 	local owner = self:GetOwner()
-    
+
     if not IsValid(WorldModel) then return end
-    
+
 	WorldModel:SetNoDraw(true)
 	WorldModel:SetModelScale(self.ModelScale or 1)
     WorldModel:SetModel(self:GetModel())
@@ -67,7 +67,6 @@ function SWEP:DrawWorldModel()
 	WorldModel:DrawModel()
 end
 
-local bone, name
 function SWEP:BoneSet(lookup_name, vec, ang)
     if IsValid(self:GetOwner()) and !self:GetOwner():IsPlayer() then return end
 	hg.bone.Set(self:GetOwner(), lookup_name, vec, ang)
@@ -126,7 +125,7 @@ if CLIENT then
         local ply = self:GetOwner()
         local tr = hg.eyeTrace(ply)
         if not tr.Hit or tr.HitSky then return end
-		if not IsValid(tr.Entity) then return end 
+		if not IsValid(tr.Entity) then return end
 		if tr.Entity and tr.Entity:IsPlayer() then return end
         if tr.HitNormal:Dot(vector_up) < math.cos(math.rad(30)) then return end
         local pos,ang = tr.HitPos,tr.HitNormal:Angle()
@@ -169,7 +168,7 @@ end
 
 function SWEP:SecondaryAttack()
     local ply = self:GetOwner()
-    
+
     if not self:GetPlaced() then
         local tr = hg.eyeTrace(ply)
         if not tr.Hit or tr.HitSky then return end
@@ -182,23 +181,23 @@ function SWEP:SecondaryAttack()
         local pos,ang = tr.HitPos,tr.HitNormal:Angle()
         ang[3] = ply:EyeAngles()[2]-ang[2]
         local pos,ang = LocalToWorld(offsetPos,offsetAng,pos,ang)
-        
+
         local isSoftSurface = false
         local matType = tr.MatType or 0
-        
-        if matType == MAT_DIRT or 
-           matType == MAT_SAND or 
-           matType == MAT_GRASS or 
+
+        if matType == MAT_DIRT or
+           matType == MAT_SAND or
+           matType == MAT_GRASS or
            matType == MAT_SNOW or
            matType == MAT_SLOSH or
            matType == MAT_FLESH then
             isSoftSurface = true
         end
-        
+
         if not isSoftSurface then
             local texture = string.lower(tr.HitTexture or "")
-            
-            if string.find(texture, "dirt") or 
+
+            if string.find(texture, "dirt") or
                string.find(texture, "mud") or
                string.find(texture, "sand") or
                string.find(texture, "grass") or
@@ -208,7 +207,7 @@ function SWEP:SecondaryAttack()
                 isSoftSurface = true
             end
         end
-                
+
         local ent = ents.Create("ent_claymore")
         ent:SetPos(pos)
         ent:SetAngles(ang)
@@ -219,20 +218,20 @@ function SWEP:SecondaryAttack()
         local phys = ent:GetPhysicsObject()
         if IsValid(phys) then
             phys:EnableMotion(true)
-            
+
             if not isSoftSurface then
-                phys:SetMass(15) 
+                phys:SetMass(15)
 
                 ent.CanBeKnockedOver = true
             end
         end
-        
+
         if isSoftSurface then
             constraint.Weld(ent, tr.Entity, 0, tr.PhysicsBone or 0, 80000, true, false)
         else
             constraint.Weld(ent, tr.Entity, 0, tr.PhysicsBone or 0, 1000, true, false)
         end
-        
+
         self:SetPlaced(true)
         self:SetClaymore(ent)
     end

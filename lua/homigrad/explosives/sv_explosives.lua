@@ -22,7 +22,7 @@ local DebrisSounds = {
     "explosion_debris/interior/explosion_debris_sprinkle_interior_wave09.wav"
 }
 
-local hg, util, ParticleEffect, IsValid, timer, coroutine, Vector = hg, util, ParticleEffect, IsValid, timer, coroutine, Vector
+local hg, util, _, IsValid, timer, coroutine, Vector = hg, util, ParticleEffect, IsValid, timer, coroutine, Vector
 
 local vecCone = Vector(5, 5, 0)
 local ExpTypes = {
@@ -44,13 +44,13 @@ local ExpTypes = {
 
 		if not IsValid(Ent) then return end
 		local multi = math.min(Mass / 5, 20)
-		
+
 		local Tr = util.QuickTrace(SelfPos, -vector_up*500, {Ent})
 		local fire = CreateVFire(game.GetWorld(), Tr.HitPos, Tr.HitNormal, 150 / 7 * multi, Ent)
 		if IsValid(fire) then
 			fire:ChangeLife(150)
 		end
-		for i = 1, multi / 2 do
+		for _ = 1, multi / 2 do
 			local randvec = VectorRand(-1000,1000)--VectorRand(-1,1) * math.random(1000)
 			randvec[3] = math.random(100,1000)
 			CreateVFireBall(20, 50, SelfPos + vector_up * 10, randvec)
@@ -58,14 +58,14 @@ local ExpTypes = {
 
 		local dis = rad / 0.01900
 		local entsCount = 0
-		for i, enta in ipairs(ents.FindInSphere(SelfPos, dis)) do
+		for _, enta in ipairs(ents.FindInSphere(SelfPos, dis)) do
 			local tracePos = enta:IsPlayer() and (enta:GetPos() + enta:OBBCenter()) or enta:GetPos()
 			local tr = hg.ExplosionTrace(SelfPos, tracePos, {Ent})
 			local phys = enta:GetPhysicsObject()
 			if IsValid(phys) then
 				entsCount = entsCount + 1
 			end
-			
+
 			local phys = enta:GetPhysicsObject()
 			local force = (enta:GetPos() - SelfPos)
 			local len = force:Length()
@@ -165,14 +165,14 @@ local ExpTypes = {
 
 		local dis = rad / 0.01900
 		local entsCount = 0
-		for i, enta in ipairs(ents.FindInSphere(SelfPos, dis)) do
+		for _, enta in ipairs(ents.FindInSphere(SelfPos, dis)) do
 			local tracePos = enta:IsPlayer() and (enta:GetPos() + enta:OBBCenter()) or enta:GetPos()
 			local tr = hg.ExplosionTrace(SelfPos, tracePos, {Ent})
 			local phys = enta:GetPhysicsObject()
 			if IsValid(phys) then
 				entsCount = entsCount + 1
 			end
-			
+
 			local phys = enta:GetPhysicsObject()
 			local force = (enta:GetPos() - SelfPos)
 			local len = force:Length()
@@ -272,14 +272,14 @@ local ExpTypes = {
 
 		local dis = rad / 0.01900
 		local entsCount = 0
-		for i, enta in ipairs(ents.FindInSphere(SelfPos, dis)) do
+		for _, enta in ipairs(ents.FindInSphere(SelfPos, dis)) do
 			local tracePos = enta:IsPlayer() and (enta:GetPos() + enta:OBBCenter()) or enta:GetPos()
 			local tr = hg.ExplosionTrace(SelfPos, tracePos, {Ent})
 			local phys = enta:GetPhysicsObject()
 			if IsValid(phys) then
 				entsCount = entsCount + 1
 			end
-			
+
 			local phys = enta:GetPhysicsObject()
 			local force = (enta:GetPos() - SelfPos)
 			local len = force:Length()
@@ -324,7 +324,7 @@ local ExpTypes = {
 function hg.PropExplosion(Ent, ExpType, Force, Mass)
 	if Ent.HasExploded then return end
 	Ent.HasExploded = true
-	
+
     ExpTypes[ExpType](Ent,Force, Mass)
 end
 
@@ -352,7 +352,7 @@ hook.Add("EntityTakeDamage", "ExplosiveDamage", function( target, dmginfo )
 			if target.hp <= 0 and ( !target.Volume or target.Volume > 0 ) and not target.babahnut then
 				local tbl = expItems[target:GetModel()]
 				target.babahnut = true
-				
+
 				hg.PropExplosion( target, tbl.ExpType, (target.Volume or tbl.Force) * 2, target:GetPhysicsObject():GetMass() )
 			end
 		end

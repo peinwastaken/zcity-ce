@@ -82,7 +82,6 @@ function SWEP:SetupDataTables()
 	self:NetworkVar("Float", 0, "Holding")
 end
 
-local bone, name
 function SWEP:BoneSet(lookup_name, vec, ang)
 	if IsValid(self:GetOwner()) and !self:GetOwner():IsPlayer() then return end
 	hg.bone.Set(self:GetOwner(), lookup_name, vec, ang)

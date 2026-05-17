@@ -12,7 +12,7 @@ local Statics = {
 function PANEL:Init()
     self:SetSize(ScrW()/2,ScrH()*0.6)
     self:Center()
-    
+
     self.MainInfo = vgui.Create("ZB_ExpPanel",self)
     local MInfo = self.MainInfo
     MInfo:Dock(LEFT)
@@ -62,8 +62,6 @@ end
 
 local gradient_d = Material("vgui/gradient-d")
 
-local blurMat = Material("pp/blurscreen")
-local Dynamic = 0
 
 BlurBackground = hg.DrawBlur
 
@@ -77,7 +75,7 @@ local function PaintFrame(self,w,h)
     surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 end
 
-function PANEL:Paint( w, h )  
+function PANEL:Paint( w, h )
     PaintFrame( self, w, h )
 end
 

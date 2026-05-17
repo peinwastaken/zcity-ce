@@ -83,7 +83,7 @@ if CLIENT then
 			self:GetWM():ManipulateBoneScale(55, vector_full)
 			self:GetWM():ManipulateBoneScale(56, vector_full)
 		end,
-		
+
 		[0.40] = function(self,timeMul)
 			if self:Clip1() < 1 then
 				hg.CreateMag( self, Vector(50,10,10),nil, true )
@@ -210,7 +210,6 @@ SWEP.RHAng = Angle(0,-12,90)
 SWEP.LHPos = Vector(15,1,-3.3)
 SWEP.LHAng = Angle(-110,-180,0)
 
-local finger1 = Angle(25,0, 40)
 
 SWEP.ShootAnimMul = 3
 function SWEP:DrawPost()
@@ -226,11 +225,6 @@ function SWEP:DrawPost()
 	end
 end
 
-local lfang2 = Angle(0, -15, -1)
-local lfang1 = Angle(-5, -5, -5)
-local lfang0 = Angle(-12, -16, 20)
-local vec_zero = Vector(0,0,0)
-local ang_zero = Angle(0,0,0)
 function SWEP:AnimHoldPost()
 
 end

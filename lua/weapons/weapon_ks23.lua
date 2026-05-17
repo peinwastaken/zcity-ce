@@ -230,11 +230,10 @@ local function cock(self, time)
 		net.WriteBool(self.drawBullet)
 		net.WriteFloat(CurTime())
 	net.Broadcast()
-	
+
 	self.Primary.Next = CurTime() + self.AnimDraw + self.Primary.Wait
 	if CLIENT then self:PlaySnd(self.CockSound or "weapons/shotgun/shotgun_cock.wav",true,CHAN_AUTO) end
 
-	local ply = self:GetOwner()
 
 	self.reloadCoolDown = CurTime() + time
 end
@@ -252,15 +251,15 @@ local function reloadFunc(self)
 	if self.MagIndex then
 		self:GetWM():ManipulateBoneScale(self.MagIndex, vector_full)
 	end
-	
-	self:PlayAnim(self.AnimList["insert"] or "sgreload_insert", 1, false, function() 
-		self:InsertAmmo(1) 
+
+	self:PlayAnim(self.AnimList["insert"] or "sgreload_insert", 1, false, function()
+		self:InsertAmmo(1)
 		if self.MagIndex then
 			self:GetWM():ManipulateBoneScale(self.MagIndex, vector_origin)
 		end
-		
+
 		local key = hg.KeyDown(self:GetOwner(), IN_RELOAD)
-		
+
 		if key and self:CanReload() then
 			reloadFunc(self)
 
@@ -272,10 +271,10 @@ local function reloadFunc(self)
 				cock(self, 1)
 				self:PlayAnim(self.AnimList["cycle"], 1, false, function(self)
 					self:SetNetVar("shootgunReload", 0)
-				end, false, true) 
-			end, false, true) 
+				end, false, true)
+			end, false, true)
 		else
-			self:PlayAnim(self.AnimList["finish"], 0.3, false, function(self) self:SetNetVar("shootgunReload", 0) end, false, true) 
+			self:PlayAnim(self.AnimList["finish"], 0.3, false, function(self) self:SetNetVar("shootgunReload", 0) end, false, true)
 		end
 	end, false, true)
 end
@@ -304,14 +303,14 @@ function SWEP:Reload(time)
 	if SERVER then
 		self:SetNetVar("shootgunReload", CurTime() + 1.1)
 
-		self:PlayAnim(self.AnimList["start"] or "sgreload_start",1,false,function() 
-			self:InsertAmmo(1) 
+		self:PlayAnim(self.AnimList["start"] or "sgreload_start",1,false,function()
+			self:InsertAmmo(1)
 			if self.MagIndex then
 				self:GetWM():ManipulateBoneScale(self.MagIndex, vector_origin)
 			end
-			
+
 			local key = hg.KeyDown(self:GetOwner(), IN_RELOAD)
-			
+
 			if key and self:CanReload() then
 				reloadFunc(self)
 				return
@@ -321,10 +320,10 @@ function SWEP:Reload(time)
 					cock(self, 1)
 					self:PlayAnim(self.AnimList["cycle"], 1, false, function(self)
 						self:SetNetVar("shootgunReload", 0)
-					end, false, true) 
-				end, false, true) 
+					end, false, true)
+				end, false, true)
 			else
-				self:PlayAnim(self.AnimList["finish"], 0.3, false, function(self) self:SetNetVar("shootgunReload", 0) end, false, true) 
+				self:PlayAnim(self.AnimList["finish"], 0.3, false, function(self) self:SetNetVar("shootgunReload", 0) end, false, true)
 			end
 		end,
 		false, true)
@@ -372,9 +371,9 @@ if CLIENT then
 		local view = render.GetViewSetup(true)
 
 		local dot = view.angles:Forward():Dot(tr.Normal)
-		
+
 		local pos = tr.StartPos:ToScreen()
-		
+
 		if dot < -0.5 and pos.x > 0 and pos.x < ScrW() and pos.y > 0 and pos.y < ScrH() and hg.isVisible(lply:EyePos(), tr.StartPos, {lply, self}, MASK_VISIBLE) then
 			hg.AddFlash(view.origin, dot, tr.StartPos, 40, 4000)
 		end

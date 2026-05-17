@@ -3,7 +3,7 @@ MODE.name = "criresp"
 local song
 local songfade = 0
 net.Receive("criresp_start", function()
-	surface.PlaySound("zbattle/criresp.mp3") 
+	surface.PlaySound("zbattle/criresp.mp3")
 
 	timer.Simple(3, function()
 		sound.PlayFile( "sound/zbattle/criresp/criepmission.mp3", "mono noblock", function( station )
@@ -34,7 +34,7 @@ local teams = {
 function MODE:RenderScreenspaceEffects()
 	zb.RemoveFade()
 	if zb.ROUND_START + 85 < CurTime() then
-		 
+
 		if songfade <= 0.01 and IsValid( song ) then
 			song:Stop()
 			surface.PlaySound(lply:Team() == 0 and "zbattle/criresp/barricadedsuspectstart.mp3" or "snd_jack_hmcd_policesiren.wav")
@@ -51,7 +51,7 @@ end
 local posadd = 0
 function MODE:HUDPaint()
 	if zb.ROUND_START + 90 > CurTime() then
-		posadd = Lerp(FrameTime() * 5,posadd or 0, zb.ROUND_START + 7.3 < CurTime() and 0 or -sw * 0.4) 
+		posadd = Lerp(FrameTime() * 5,posadd or 0, zb.ROUND_START + 7.3 < CurTime() and 0 or -sw * 0.4)
 		local color = Color(255*-math.sin(CurTime()*3),25,255*math.sin(CurTime()*3))
 		draw.SimpleText( "SWAT will arrive in: "..string.FormattedTime(zb.ROUND_START + 90 - CurTime(), "%02i:%02i"	), "ZB_HomicideMedium", sw * 0.02 + posadd, sh * 0.95, Color(0,0,0), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		draw.SimpleText( "SWAT will arrive in: "..string.FormattedTime(zb.ROUND_START + 90 - CurTime(), "%02i:%02i"	), "ZB_HomicideMedium", (sw * 0.02) - 2 + posadd, (sh * 0.95) - 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -89,15 +89,9 @@ net.Receive("cri_roundend", function() CreateEndMenu(net.ReadBool()) end)
 local colGray = Color(85, 85, 85, 255)
 local colRed = Color(130, 10, 10)
 local colRedUp = Color(160, 30, 30)
-local colBlue = Color(10, 10, 160)
-local colBlueUp = Color(40, 40, 160)
 local col = Color(255, 255, 255, 255)
 local colSpect1 = Color(75, 75, 75, 255)
 local colSpect2 = Color(255, 255, 255)
-local colorBG = Color(55, 55, 55, 255)
-local colorBGBlacky = Color(40, 40, 40, 255)
-local blurMat = Material("pp/blurscreen")
-local Dynamic = 0
 BlurBackground = BlurBackground or hg.DrawBlur
 
 if IsValid(hmcdEndMenu) then
@@ -138,7 +132,7 @@ CreateEndMenu = function(whowin)
 		surface.DrawOutlinedRect(0, 0, w, h, 2.5)
 		surface.SetFont("ZB_InterfaceMedium")
 		surface.SetTextColor(col.r, col.g, col.b, col.a)
-		local lengthX, lengthY = surface.GetTextSize("Close")
+		local lengthX, _ = surface.GetTextSize("Close")
 		surface.SetTextPos(lengthX - lengthX / 1.1, 4)
 		surface.DrawText("Close")
 	end
@@ -146,7 +140,7 @@ CreateEndMenu = function(whowin)
 	hmcdEndMenu.PaintOver = function(self, w, h)
 		surface.SetFont("ZB_InterfaceMediumLarge")
 		surface.SetTextColor(col.r, col.g, col.b, col.a)
-		local lengthX, lengthY = surface.GetTextSize("Players:")
+		local lengthX, _ = surface.GetTextSize("Players:")
 		surface.SetTextPos(w / 2 - lengthX / 2, 20)
 		surface.DrawText("Players:")
 	end
@@ -156,7 +150,7 @@ CreateEndMenu = function(whowin)
 	DScrollPanel:SetPos(10, 80)
 	DScrollPanel:SetSize(sizeX - 20, sizeY - 90)
 
-	for i, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		local but = vgui.Create("DButton", DScrollPanel)
 		but:SetSize(100, 50)
@@ -172,7 +166,7 @@ CreateEndMenu = function(whowin)
 	surface.DrawRect(0, h / 2, w, h / 2)
 	local col = ply:GetPlayerColor():ToColor()
 	surface.SetFont("ZB_InterfaceMediumLarge")
-	local lengthX, lengthY = surface.GetTextSize(ply:GetPlayerName() or "He quited...")
+	local _, lengthY = surface.GetTextSize(ply:GetPlayerName() or "He quited...")
 	surface.SetTextColor(0, 0, 0, 255)
 	surface.SetTextPos(w / 2 + 1, h / 2 - lengthY / 2 + 1)
 	surface.DrawText(ply:GetPlayerName() or "He quited...")
@@ -182,7 +176,7 @@ CreateEndMenu = function(whowin)
 	local col = colSpect2
 	surface.SetFont("ZB_InterfaceMediumLarge")
 	surface.SetTextColor(col.r, col.g, col.b, col.a)
-	local lengthX, lengthY = surface.GetTextSize(ply:GetPlayerName() or "He quited...")
+	local _, lengthY = surface.GetTextSize(ply:GetPlayerName() or "He quited...")
 	surface.SetTextPos(15, h / 2 - lengthY / 2)
 	surface.DrawText(ply:Name() .. (ply:GetNetVar("handcuffed", false) and " - neutralized" or (not ply:Alive() and " - dead") or ""))
 	surface.SetFont("ZB_InterfaceMediumLarge")

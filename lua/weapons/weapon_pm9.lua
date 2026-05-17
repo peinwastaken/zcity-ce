@@ -108,17 +108,11 @@ SWEP.availableAttachments = {
 		}
 	},
 	grip = {
-		["mount"] = Vector(23.5, 1.4, 0.1), 
+		["mount"] = Vector(23.5, 1.4, 0.1),
 		["mountType"] = "picatinny"
 	}
 }
 
-local finger1 = Angle(-20, 40, 10)
-local finger2 = Angle(10, -15, 10)
-local finger3 = Angle(10, -70, 10)
-local finger4 = Angle(-10, -10, 30)
-local finger5 = Angle(10, -30, 10)
-local finger6 = Angle(-20, 0, -10)
 
 function SWEP:AnimHoldPost(model)
 

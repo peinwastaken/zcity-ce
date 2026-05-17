@@ -21,7 +21,7 @@ function CLASS.On(self)
             "terrorist_band"
         }
         self:SetNetVar("Accessories", Appearance.AAttachments or "none")
-        
+
         self.CurAppearance = Appearance
     end)
 end
@@ -32,14 +32,13 @@ function CLASS.Guilt(self, victim)
     if victim:GetPlayerClass() == self:GetPlayerClass() then
         return 1
     end
-    
+
     if victim == zb.hostage then
         return 1
     end
 end
 
 hook.Add("HG_PlayerFootstep", "terrorist_footsteps", function(ply, pos, foot, sound, volume, rf)
-	local chr = hg.GetCurrentCharacter(ply)
 	if ply:Alive() and ply.PlayerClassName == "terrorist" then
 		local ent = hg.GetCurrentCharacter(ply)
 

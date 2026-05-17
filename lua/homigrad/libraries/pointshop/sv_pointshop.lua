@@ -35,7 +35,7 @@ hook.Add( "PlayerInitialSpawn","Pointshop_OnInitSpawn", function( ply )
         PLUGIN.PlayerInstances[steamID64].points = 0
         PLUGIN.PlayerInstances[steamID64].items = {}
         return
-    end 
+    end
 
 	local query = mysql:Select("hg_pointshop")
 		query:Select("donpoints")
@@ -238,7 +238,6 @@ function PLUGIN:NET_BuyItem( ply, uid )
     if not hg.PointShop.Items[uid] then print(ply, "[PS-ZCity] The player is trying to buy invalid item.", "UID: "..uid ) return end
     if ply:PS_HasItem( uid ) then PLUGIN:NET_SendPointShopVars( ply ) return end
 
-    local yes = false
     local reason = ""
 
     if hg.PointShop.Items[uid].ISDONATE then
@@ -246,7 +245,7 @@ function PLUGIN:NET_BuyItem( ply, uid )
     else
         yes, reason = ply:PS_TakePoints(hg.PointShop.Items[uid].PRICE, function() ply:PS_AddItem( uid ) end)
     end
-    
+
     net.Start( "hg_pointshop_send_notificate" )
         net.WriteString(reason)
     net.Send( ply )

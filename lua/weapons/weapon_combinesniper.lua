@@ -74,7 +74,7 @@ SWEP.dort = true
 
 if CLIENT then
 	function SWEP:DrawHUDAdd()
-		
+
 	end
 
 	local lfang2 = Angle(0, 30, 0)
@@ -105,8 +105,6 @@ SWEP.RHAng = Angle(0,-5,90)
 SWEP.LHPos = Vector(14,1,-5)
 SWEP.LHAng = Angle(-90,-90,-90)
 
-local finger1 = Angle(-15,0,5)
-local finger2 = Angle(-15,45,-5)
 SWEP.Primary.Wait = 0.1
 SWEP.ReloadTime = 4
 SWEP.ReloadSoundes = {

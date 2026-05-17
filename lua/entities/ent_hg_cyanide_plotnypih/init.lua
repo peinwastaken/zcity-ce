@@ -36,13 +36,13 @@ function ENT:Think()
 		if not tbl then continue end
 		local pos,vel,time = tbl[1],tbl[2],tbl[3]
 		if time < CurTime() then self.particles[i] = false continue end
-		
+
 		tbl[2] = vel - vector_up * 0.3
 
 		local tr = util.TraceLine({start = pos,endpos = pos + vel,filter = self,mask = MASK_SOLID_BRUSHONLY})
-		
+
 		tbl[1] = (tr.Hit and tr.HitPos or pos + vel)
-		
+
 		local velLen = vel:Length()
 		if tr.Hit then
 			local vec = vel:Angle()
@@ -50,7 +50,7 @@ function ENT:Think()
 			tbl[2] = -vec:Forward() * velLen
 		end
 
-		for i,ent in ipairs(ents_FindInSphere(pos,124)) do
+		for _,ent in ipairs(ents_FindInSphere(pos,124)) do
 			if (not ent.organism) then continue end
 			if not ent.organism.owner:IsPlayer() then continue end
 			if util.TraceLine({start = pos,endpos = ent:GetPos(),filter = {self,ent},mask = MASK_SOLID_BRUSHONLY}).Hit then continue end

@@ -58,13 +58,13 @@ local function IncludeDir(dir)
 	dir = dir .. "/"
 	local files, directories = file.Find(dir .. "*", "LUA")
 	if files then
-		for k, v in ipairs(files) do
+		for _, v in ipairs(files) do
 			if string.EndsWith(v, ".lua") then AddFile(v, dir) end
 		end
 	end
 
 	if directories then
-		for k, v in ipairs(directories) do
+		for _, v in ipairs(directories) do
 			IncludeDir(dir .. v)
 		end
 	end
@@ -92,12 +92,12 @@ Run()
 
 timer.Simple(5, function()
 	if not istable(ulx) then
-		for i = 1, 6 do
+		for _ = 1, 6 do
 			MsgC(Color(255, 0, 0), "WARNING: Server doesn't have ULX & ULib installed! Z-City will not work properly without it!\n")
 		end
 	end
 	if game.SinglePlayer() then
-		for i = 1, 3 do
+		for _ = 1, 3 do
 			MsgC(Color(255, 0, 0), "WARNING: Game started in singleplayer! Z-City may not work properly until you start multiplayer game!\n")
 		end
 	end

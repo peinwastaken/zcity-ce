@@ -1,4 +1,3 @@
-
 -- // new blood
 
 game.AddDecal("Normal.Blood21", {

@@ -33,7 +33,7 @@ end
 
 util.AddNetworkString("setupclass")
 hook.Add("PlayerInitializeSpawn", "PlayerClass", function(plySend)
-	for i, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if not ply:GetPlayerClass() then continue end
 		net.Start("setupclass")
 		net.WriteEntity(ply)
@@ -62,7 +62,7 @@ COMMANDS.playerclass = {
 			ply:SetPlayerClass(class)
 			ply:ChatPrint(ply:Name())
 		else
-			for i, ply2 in pairs(player.GetListByName(plya)) do
+			for _, ply2 in pairs(player.GetListByName(plya)) do
 				ply2:SetPlayerClass(class)
 				ply:ChatPrint(ply2:Name())
 			end

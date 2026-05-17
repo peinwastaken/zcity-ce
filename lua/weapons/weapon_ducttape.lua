@@ -43,7 +43,6 @@ SWEP.modeNames = {
 
 SWEP.sprint_ang = Angle(20, 0, 0)
 SWEP.sprint_pos = Vector(-5, 0, -5)
-local clr, mat = Color(100, 100, 100, 255), "models/shiny"
 function SWEP:Initialize()
 	--self:SetModelScale(0.15)
 	--self:SetColor(clr)
@@ -131,11 +130,10 @@ end
 --
 --	--WorldModel:SetColor(clr) -- why does it not work
 --	--WorldModel:SetMaterial(mat)
---	
+--
 --	WorldModel:DrawModel()
 --end
 
-local bone, name
 function SWEP:BoneSet(lookup_name, vec, ang)
 	if IsValid(self:GetOwner()) and not self:GetOwner():IsPlayer() then return end
 	hg.bone.Set(self:GetOwner(), lookup_name, vec, ang)
@@ -181,7 +179,6 @@ if CLIENT then
 		surface.SetMaterial(Mat)
 		mul = Lerp(FrameTime() * 15, mul, (self:GetTapeAmount() + 10) / 100)
 		surface.DrawTexturedRectUV(ScrW() - 350, ScrH() - 250, 300 * mul, 150, 0, 0, 1 * mul, 1)
-		local Owner = self:GetOwner()
 		local toScreen = self:GetEyeTrace().HitPos:ToScreen()
 		for i = 1, 10 do
 			surface.DrawCircle(toScreen.x, toScreen.y, 55 - i, 155 - i * 15, 155 - i * 15, 155 - i * 15, 205)
@@ -248,7 +245,7 @@ end
 
 function SWEP:FindObjects()
 	local Owner = self:GetOwner()
-	local Pos, Vec, GotOne, Tries, TrOne, TrTwo = select(1, hg.eye(Owner)), Owner:GetAimVector(), false, 0, nil, nil
+	local Pos, Vec, GotOne, Tries, TrOne, TrTwo = hg.eye(Owner), Owner:GetAimVector(), false, 0, nil, nil
 	while not GotOne and (Tries < 100) do
 		local Tr = util.QuickTrace(Pos - Vec * 10, Vec * 60, {Owner})
 		local FindBone = util.QuickTrace(Pos, Vec * 60, {Owner})
@@ -363,7 +360,7 @@ end
 
 function SWEP:SprayDecals()
 	local Owner = self:GetOwner()
-	local pos = select(1, hg.eye(Owner))
+	local pos = hg.eye(Owner)
 	local aim = Owner:GetAimVector()
 	local Tr = util.QuickTrace(pos, aim * 70, {Owner})
 	util.Decal("hmcd_jackatape", Tr.HitPos + Tr.HitNormal, Tr.HitPos - Tr.HitNormal)

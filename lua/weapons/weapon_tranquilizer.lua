@@ -63,7 +63,6 @@ SWEP.FakeEmptyReloadSounds = {
 	[1.05] = "zcitysnd/sound/weapons/m9/handling/m9_boltrelease.wav",
 }
 SWEP.MagModel = "models/weapons/upgrades/w_magazine_m45_8.mdl"
-local vector_full = Vector(1,1,1)
 
 SWEP.lmagpos = Vector(0,0,0)
 SWEP.lmagang = Angle(0,0,0)

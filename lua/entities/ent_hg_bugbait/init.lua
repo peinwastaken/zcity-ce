@@ -47,10 +47,10 @@ function ENT:Think()
 end
 
 function ENT:Detonate(data)
-	local SelfPos, Owner = self:LocalToWorld(self:OBBCenter()), self:GetOwner() or self
+	local SelfPos, _ = self:LocalToWorld(self:OBBCenter()), self:GetOwner() or self
 	timer.Simple(.01, function()
 		if not IsValid(self) then return end
-		for i = 0, 1 do
+		for _ = 0, 1 do
 			if data then
 				local effData = EffectData()
 				effData:SetOrigin(SelfPos)
@@ -83,7 +83,7 @@ function ENT:Detonate(data)
 				end)
 			end
 
-			for i, ent in ipairs(ents.FindInSphere(SelfPos, 512)) do
+			for _, ent in ipairs(ents.FindInSphere(SelfPos, 512)) do
 				if ent ~= self:GetOwner() and npc:Visible(ent) and ent:GetClass() ~= "npc_antlion" then
 					npc:AddEntityRelationship(ent, D_HT, 99)
 				end

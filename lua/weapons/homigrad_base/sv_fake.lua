@@ -3,11 +3,11 @@ SWEP.WorkWithFake = true
 
 hook.Add("PlayerSwitchWeapon", "homigrad-weapons", function(ply, oldWep, newWep)
 	local switch = hook.Run("PlayerSwitchInFake",ply,oldWep,newWep)
-	
+
 	if switch ~= nil then
 		return switch
 	end
-	
+
 	if not IsValid(ply.FakeRagdoll) then return end
 	if IsValid(ply.FakeRagdoll.weldHuy) then
 		ply.FakeRagdoll.weldHuy:Remove()
@@ -26,15 +26,15 @@ hook.Add("PlayerSwitchWeapon", "homigrad-weapons", function(ply, oldWep, newWep)
 		end
 	else
 		ply.ActiveWeapon = newWep
-		
+
 		if !oldWep.Holster or oldWep:Holster(newWep) then
 			timer.Simple(0,function() if not IsValid(ply) then return end ply:SetActiveWeapon(NULL) end)
 		end
 
 		local ragdoll = ply.FakeRagdoll
-		
+
 		if not IsValid(ragdoll) then return true end
-		
+
 		if ragdoll:LookupBone("ValveBiped.Bip01_R_Finger21") then
 			for i = 1, 4 do
 				if not ragdoll:LookupBone("ValveBiped.Bip01_R_Finger" .. tostring(i) .. "1") then continue end
@@ -74,22 +74,20 @@ function SWEP:CreateFake(ragdoll)
 	local ent = ents.Create("prop_physics")
 	local physbonelh = GetPhysBoneNum(ragdoll,"ValveBiped.Bip01_L_Hand")
 	local physbonerh = GetPhysBoneNum(ragdoll,"ValveBiped.Bip01_R_Hand")
-	local lh = ragdoll:GetPhysicsObjectNum(physbonelh)
 	local rh = ragdoll:GetPhysicsObjectNum(physbonerh)
 	--rh:SetPos(rh:GetPos() + self:GetOwner():EyeAngles():Forward() * 20)
-	local _,ang = LocalToWorld(vector_origin,Angle(0,0,180),vector_origin,self:GetOwner():EyeAngles())
 	--rh:SetAngles(ang)
 	--lh:SetPos(rh:GetPos())
 	ent:SetModel(self.WorldModel)
 	ent:SetPos(rh:GetPos())
 	ent:SetAngles(rh:GetAngles() + Angle(0, 0, 180))
-	
+
 	for i = 1, #self:GetBodyGroups() do
 		ent:SetBodygroup(i, self:GetBodygroup(i))
 	end
 
 	ent:Spawn()
-	
+
 	if !IsValid(ent:GetPhysicsObject()) then return end
 
 	ent:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
@@ -106,8 +104,6 @@ function SWEP:CreateFake(ragdoll)
 
 	--constraint.Weld(ent,ragdoll,0,0,0,true)
 	--constraint.NoCollide(ent, ragdoll, 0, 0)
-
-	local vec,ang = LocalToWorld(Vector(8,-2,0),Angle(0,0,180),rh:GetPos(),rh:GetAngles())
 
 	if self.LHandPos then
 		if IsValid(ragdoll.ConsLH) then ragdoll.ConsLH:Remove() end

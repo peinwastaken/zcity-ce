@@ -329,7 +329,7 @@ AddTrack(
         if org.adrenaline > 2.5 then
             intens = intens + 1
         end
-        
+
         return intens
     end,
     "uzelezz",
@@ -388,10 +388,9 @@ AddTrack(
         ["keys"] = "zcity_ost/uzelezz/final_heartbeat/keys.wav",
     },
     function(ply)
-        local intens = 0
         local org = ply.organism
         if (!org or org.otrub) or !ply:Alive() then return -1 end
-        
+
         return 2
     end,
     "uzelezz",

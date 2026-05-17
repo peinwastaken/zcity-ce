@@ -1,4 +1,4 @@
-local Angle, Vector, AngleRand, VectorRand, math, hook, util, game = Angle, Vector, AngleRand, VectorRand, math, hook, util, game
+local Angle, Vector, _, VectorRand, math, hook, util, game = Angle, Vector, AngleRand, VectorRand, math, hook, util, game
 
 local ENTITY = FindMetaTable("Entity")
 local PLAYER = FindMetaTable("Player")
@@ -67,7 +67,7 @@ hg.ConVars = hg.ConVars or {}
 
 		local curlen = 1
 
-		for i, code in codes do
+		for _, code in codes do
 			characters[curlen] = utf8.char(code)
 			curlen = curlen + 1
 		end
@@ -122,8 +122,6 @@ hg.ConVars = hg.ConVars or {}
 		local old_matrix = self.unmanipulated[bone]
 
 		local lmat = old_matrix:GetInverse() * new_matrix
-		local ang = lmat:GetAngles()
-		local vec, _ = WorldToLocal(new_matrix:GetTranslation(), angle_zero, old_matrix:GetTranslation(), matp:GetAngles())
 
 		--self:ManipulateBonePosition(bone, vec)
 		--self:ManipulateBoneAngles(bone, lmat:GetAngles())
@@ -172,11 +170,9 @@ hg.ConVars = hg.ConVars or {}
 	FrameTimeClamped = 1/66
 	ftlerped = 1/66
 
-	local def = 1 / 144
 
-	local FrameTime, TickInterval, engine_AbsoluteFrameTime = FrameTime, engine.TickInterval, engine.AbsoluteFrameTime
+	local FrameTime = FrameTime
 	local Lerp, LerpVector, LerpAngle = Lerp, LerpVector, LerpAngle
-	local math_min = math.min
 	local math_Clamp = math.Clamp
 
 	local host_timescale = game.GetTimeScale
@@ -247,7 +243,7 @@ hg.ConVars = hg.ConVars or {}
 			return player.GetAll()
 		end
 
-		for i, ply in player.Iterator() do
+		for _, ply in player.Iterator() do
 			if string.find(string.lower(ply:Name()), string.lower(name)) then list[#list + 1] = ply end
 		end
 		return list
@@ -376,7 +372,7 @@ hg.ConVars = hg.ConVars or {}
 				local penetrating = ( IsValid(target:GetPhysicsObject()) and target:GetPhysicsObject():IsPenetrating() ) or false
 				local tooNearPlayer = false
 
-				for i, ply in player.Iterator() do
+				for _, ply in player.Iterator() do
 					if ply == target then continue end
 					if !ply:Alive() or IsValid(ply.FakeRagdoll) then continue end
 					if target:GetPos():DistToSqr(ply:GetPos()) <= (24 * 24) then
@@ -464,14 +460,13 @@ hg.ConVars = hg.ConVars or {}
 
 		ply:DrawShadow(true)
 		ply:SetRenderMode(RENDERMODE_NORMAL)
-		local ang = ply:EyeAngles()
 
 		ply:RemoveFlags(FL_NOTARGET)
 
 
 		ply.RenderOverride = function(self, flags)
 			if not IsValid(self) or self:IsDormant() then return end
-			local p,a = self:GetBonePosition(1)
+			local p,_ = self:GetBonePosition(1)
 			if not p or p:IsEqualTol(self:GetPos(), 0.01) then return end
 			local ent = self.FakeRagdoll
 			if IsValid(ent) then return end
@@ -539,7 +534,7 @@ hg.ConVars = hg.ConVars or {}
 				--bull:SetCollisionGroup(COLLISION_GROUP_PLAYER)
 
 				bull.ply = ply
-				for i, ent in ipairs(ents.FindByClass("npc_*")) do
+				for _, ent in ipairs(ents.FindByClass("npc_*")) do
 					if not IsValid(ent) or not ent.AddEntityRelationship then continue end
 					ent:AddEntityRelationship(bull, ent:Disposition(ply))
 				end
@@ -549,7 +544,7 @@ hg.ConVars = hg.ConVars or {}
 --//
 --\\ addbonecallback
 	function hg.addbonecallback(ent)
-		for i, callback in pairs(ent:GetCallbacks("BuildBonePositions")) do
+		for i in pairs(ent:GetCallbacks("BuildBonePositions")) do
 			ent:RemoveCallback("BuildBonePositions", i)
 		end
 
@@ -619,7 +614,7 @@ local IsValid = IsValid
 		local ply, ent
 
 		if self:IsRagdoll() then
-			ply = self:GetNWEntity("ply")		
+			ply = self:GetNWEntity("ply")
 			ent = self
 		else
 			ply = self
@@ -671,7 +666,6 @@ local IsValid = IsValid
 		local time = SysTime() - 0.01
 		hook.Add("HUDPaint", "leanin", function()
 			local ply = LocalPlayer()
-			local angles = ply:EyeAngles()
 
 			local dtime = SysTime() - time
 			time = SysTime()
@@ -755,7 +749,7 @@ local IsValid = IsValid
 
 		local aim_vector = aim_vector or ply:GetAimVector()
 
-		local pos, ang = LocalToWorld(lpos, lang, mat:GetTranslation(), mat:GetAngles())// aim_vector:Angle())
+		local pos, _ = LocalToWorld(lpos, lang, mat:GetTranslation(), mat:GetAngles())// aim_vector:Angle())
 
 		return hg.eyeTrace(ply, dist, ent, aim_vector, pos)
 	end
@@ -772,11 +766,6 @@ local IsValid = IsValid
 		local aim_vector = isvector(aimvec) and aimvec or isangle(aimvec) and aimvec:Forward() or ply:GetAimVector()
 
 		if not bon or not ent:GetBoneMatrix(bon) then
-			local tr = {
-				start = ply:EyePos(),
-				endpos = ply:EyePos() + aim_vector * (dist or 60),
-				filter = ply
-			}
 			return ply:EyePos(), aim_vector * (dist or 60), ply//util.TraceLine(tr)
 		end
 
@@ -872,7 +861,7 @@ local IsValid = IsValid
 		return ishgweapon(wep) and wep.CanSuicide and not wep.reload
 	end
 --//
---\\ Calculate Weight 
+--\\ Calculate Weight
 	function hg.CalculateWeight(ply,maxweight)
 		local weight = 0
 
@@ -1047,12 +1036,12 @@ local IsValid = IsValid
 	-- 		if (ply.change_posture_cooldown or 0) > CurTime() then return end
 	-- 		ply.change_posture_cooldown = CurTime() + 0.1
 
-	-- 		if pos ~= -1 then 
+	-- 		if pos ~= -1 then
 	-- 			if pos == ply.standposture then
 	-- 				ply.standposture = 0
 	-- 				pos = 0
 	-- 			else
-	-- 				ply.standposture = pos 
+	-- 				ply.standposture = pos
 	-- 			end
 	-- 		else
 	-- 			ply.standposture = ply.standposture or 0
@@ -1082,13 +1071,12 @@ local IsValid = IsValid
 		ply.AddForceRag[physbone] = ply.AddForceRag[physbone] or {}
 
 		local restforce = math.max(((ply.AddForceRag[physbone][1] or CurTime()) - CurTime()), 0) / 0.25 * (ply.AddForceRag[physbone][2] or vector_origin)
-		local resttime = (ply.AddForceRag[physbone][1] or CurTime())
 
 		ply.AddForceRag[physbone][2] = restforce + force
 		ply.AddForceRag[physbone][1] = CurTime() + 0.25
 	end
 --//
---\\ Precache Sounds 
+--\\ Precache Sounds
 	function hg.PrecacheSoundsSWEP(self)
 		if self.HolsterSnd and self.HolsterSnd[1] then util.PrecacheSound(self.HolsterSnd[1]) end
 		if self.DeploySnd and self.DeploySnd[1] then util.PrecacheSound(self.DeploySnd[1]) end
@@ -1347,7 +1335,7 @@ local IsValid = IsValid
 		if ( ply:IsPlayingTaunt() ) then return end
 
 		local wep = ply:GetActiveWeapon()
-		
+
 		if ( ply:IsTyping() ) or ( ply:GetNetVar("flashlight", false) and ( !wep.IsPistolHoldType or wep:IsPistolHoldType() or ply.PlayerClassName == "Gordon") ) then
 			plyTable.ChatGestureWeight = math.Approach( plyTable.ChatGestureWeight, 1, FrameTime() * 3.0 )
 		else
@@ -1381,7 +1369,7 @@ local IsValid = IsValid
 				bullet.Dir = (ent:GetEnemy().rag:GetBonePosition(ent:GetEnemy().rag:LookupBone("ValveBiped.Bip01_Spine1")) + VectorRand(-20, 20) - bullet.Src):GetNormalized()
 			end
 			bullet.AmmoType = tbl.AmmoType or bullet.AmmoType
-			if bullet.AmmoType then 
+			if bullet.AmmoType then
 				bullet.Damage = (hg.ammotypeshuy[bullet.AmmoType] and hg.ammotypeshuy[bullet.AmmoType].BulletSettings.Damage or game.GetAmmoPlayerDamage(game.GetAmmoID(bullet.AmmoType)))// * npcs[ent:GetClass()].multi
 				bullet.Force = (hg.ammotypeshuy[bullet.AmmoType] and hg.ammotypeshuy[bullet.AmmoType].BulletSettings.Force or game.GetAmmoPlayerDamage(game.GetAmmoID(bullet.AmmoType))) * (npcs[ent:GetClass()].force or 1)
 				bullet.Penetration = (hg.ammotypeshuy[bullet.AmmoType] and hg.ammotypeshuy[bullet.AmmoType].BulletSettings.Penetration or game.GetAmmoPlayerDamage(game.GetAmmoID(bullet.AmmoType))) * (npcs[ent:GetClass()].PenetrationMul or 1)
@@ -1393,7 +1381,7 @@ local IsValid = IsValid
 			ent.weapon = ent
 
 			bullet.IgnoreEntity = ent
-		
+
 			bullet.Filter = {ent}
 			bullet.Inflictor = ent
 
@@ -1496,7 +1484,7 @@ local IsValid = IsValid
 			local tr = {}
 			tr.start = eyetr.HitPos
 			tr.endpos = eyetr.HitPos
-			tr.filter = checkUse	
+			tr.filter = checkUse
 			tr.mins = -hullVec
 			tr.maxs = hullVec
 			tr.mask = MASK_SOLID + CONTENTS_DEBRIS + CONTENTS_PLAYERCLIP
@@ -1544,8 +1532,8 @@ duplicator.Allow( "homigrad_base" )
 
 --\\ Fireworks effects? why so many, we use only one lol
     --Firework trails
-    game.AddParticles( "particles/gf2_trails_firework_rocket_01.pcf") 
-    
+    game.AddParticles( "particles/gf2_trails_firework_rocket_01.pcf")
+
     PrecacheParticleSystem("gf2_firework_trail_main")
     --Firework Large Explosions
     game.AddParticles( "particles/gf2_large_rocket_01.pcf" )
@@ -1554,62 +1542,62 @@ duplicator.Allow( "homigrad_base" )
     game.AddParticles( "particles/gf2_large_rocket_04.pcf" )
     game.AddParticles( "particles/gf2_large_rocket_05.pcf" )
     game.AddParticles( "particles/gf2_large_rocket_06.pcf" )
-    
+
     PrecacheParticleSystem( "gf2_rocket_large_explosion_01" )
     PrecacheParticleSystem( "gf2_rocket_large_explosion_02" )
     PrecacheParticleSystem( "gf2_rocket_large_explosion_03" )
     PrecacheParticleSystem( "gf2_rocket_large_explosion_04" )
     PrecacheParticleSystem( "gf2_rocket_large_explosion_05" )
     PrecacheParticleSystem( "gf2_rocket_large_explosion_06" )
-    
+
     --Battery stuff
-    game.AddParticles( "particles/gf2_battery_generals.pcf" ) 
+    game.AddParticles( "particles/gf2_battery_generals.pcf" )
     game.AddParticles( "particles/gf2_battery_01_effects.pcf" )
     game.AddParticles( "particles/gf2_battery_02_effects.pcf" )
     game.AddParticles( "particles/gf2_battery_03_effects.pcf" )
     game.AddParticles( "particles/gf2_battery_mine_01_effects.pcf" )
-    
+
     --Cakes stuff
     game.AddParticles( "particles/gf2_cake_01_effects.pcf" )
-    
+
     --Firecrackers stuff
     game.AddParticles( "particles/gf2_firecracker_m80.pcf" )
-    
+
     --Misc
     game.AddParticles( "particles/gf2_misc_neighborhater.pcf" )
     game.AddParticles( "particles/gf2_matchhead_light.pcf" )
-    
+
     --Fountains
-    
+
     game.AddParticles( "particles/gf2_fountain_01_effects.pcf")
     game.AddParticles( "particles/gf2_fountain_02_effects.pcf")
     game.AddParticles( "particles/gf2_fountain_03_effects.pcf")
     game.AddParticles( "particles/gf2_fountain_04_effects.pcf")
     game.AddParticles( "particles/gf2_fountain_05_effects.pcf")
-    
+
     --Mortars
     game.AddParticles( "particles/gf2_mortar_shells_effects.pcf")
     game.AddParticles( "particles/gf2_mortar_shells_big_01.pcf")
     game.AddParticles( "particles/gf2_mortar_shells_big_02.pcf")
     game.AddParticles( "particles/gf2_mortar_shells_big_03.pcf")
-    
+
     --Wheels
-    
+
     game.AddParticles( "particles/gf2_wheel_01.pcf")
-    
+
     -- Flares
     game.AddParticles( "particles/gf2_flare_multicoloured_effects.pcf")
-    
+
     -- Giga rockets
-    
+
     game.AddParticles( "particles/gf2_gigantic_rocket_01.pcf" )
     game.AddParticles( "particles/gf2_gigantic_rocket_02.pcf" )
-    
+
     -- Roman Candles
     game.AddParticles( "particles/gf2_romancandle_01_effect.pcf" )
     game.AddParticles( "particles/gf2_romancandle_02_effect.pcf" )
     game.AddParticles( "particles/gf2_romancandle_03_effect.pcf" )
-    
+
     --Small Fireworks
     game.AddParticles( "particles/gf2_firework_small_01.pcf" )
 --//
@@ -1626,7 +1614,7 @@ duplicator.Allow( "homigrad_base" )
 			endpos = endpos,
 			filter = function(ent) -- i think this too shit, need edit...
 				--print(ent:GetModel())
-				if filter1[ent] then return false end 
+				if filter1[ent] then return false end
 				local phys = ent:GetPhysicsObject()
 				--print(ent:GetModel(),phys:GetMass())
 				if not ent:IsPlayer() and IsValid(phys) and phys:GetMass() > 50 then return true end
@@ -1638,7 +1626,7 @@ duplicator.Allow( "homigrad_base" )
 --//
 
 --\\ Just shared freelook limits
-	hg.MaxLookX,hg.MinLookX = 55,-55 
+	hg.MaxLookX,hg.MinLookX = 55,-55
 	hg.MaxLookY,hg.MinLookY = 45,-45
 --//
 

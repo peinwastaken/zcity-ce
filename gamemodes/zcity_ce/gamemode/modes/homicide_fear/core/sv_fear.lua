@@ -1,4 +1,3 @@
-
 local MODE = MODE
 
 MODE.GuiltDisabled = true
@@ -54,9 +53,9 @@ function MODE:RandomStuff()
 		if crysound then return end
 		local tbl = ents.FindByClass("func_door_rotating")
 		table.Add(ents.FindByClass("prop_door_rotating"))
-		
+
 		local door
-		for i, ent in RandomPairs(tbl) do
+		for _, ent in RandomPairs(tbl) do
 			if DoorIsOpen(ent) then
 				door = ent
 
@@ -64,7 +63,6 @@ function MODE:RandomStuff()
 			end
 		end
 
-		local pos = door:GetPos() + door:GetAngles():Right() * 1
 		crysound = CreateSound(door, snd)
 		crysound:Play()
 
@@ -84,7 +82,7 @@ function MODE:RandomStuff()
 end
 
 hook.Add("PostCleanupMap", "removehooksass", function()
-	for i, hooka in ipairs(hooks) do
+	for _, hooka in ipairs(hooks) do
 		hook.Remove("PlayerUse", hooka)
 	end
 end)
@@ -113,7 +111,7 @@ function MODE:Intermission()
 	self.Type = CROUND
 	local player_count = 0
 
-	for k, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		ply:KillSilent()
 
@@ -141,7 +139,7 @@ function MODE:Intermission()
 
 
 	//MODE.NextRoundMainTraitors = MODE.NextRoundMainTraitors or {}
-	for i, ply in RandomPairs(player.GetAll()) do
+	for _, ply in RandomPairs(player.GetAll()) do
 		if ply.isTraitor or ply:Team() == TEAM_SPECTATOR then continue end
 		//if not MODE.NextRoundMainTraitors[ply:SteamID()] then continue end
 
@@ -157,7 +155,7 @@ function MODE:Intermission()
 	end
 
 
-	for i, ply in RandomPairs(player.GetAll()) do
+	for _, ply in RandomPairs(player.GetAll()) do
 		if ply.isTraitor or ply:Team() == TEAM_SPECTATOR then continue end
 		if math.random(100) > (ply.Karma or 100) then continue end
 
@@ -174,7 +172,7 @@ function MODE:Intermission()
 	end
 
 	if traitors_needed > 0 then
-		for i, ply in RandomPairs(player.GetAll()) do
+		for _, ply in RandomPairs(player.GetAll()) do
 			if ply.isTraitor or ply:Team() == TEAM_SPECTATOR then continue end
 
 			if traitors_needed > 0 then
@@ -195,7 +193,7 @@ function MODE:Intermission()
 	self.PoliceSpawned = false
 	self.PoliceAllowed = false
 
-	for k, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if(MODE.ShouldStartRoleRound())then
 			net.Start("HMCD_RoundStart")	--; TODO Structure description
 				net.WriteBool(ply.isTraitor)	--; Is Traitor
@@ -251,9 +249,9 @@ function MODE:EndRound()
 
 	local traitors, gunners = {}, {}
 	local players_alive = 0
-	local endround, winner = zb:CheckWinner(self:CheckAlivePlayers())
+	zb:CheckWinner(self:CheckAlivePlayers())
 
-	for i, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if ply.isTraitor and ply:Team() ~= TEAM_SPECTATOR then
 			traitors[#traitors + 1] = ply
 		end
@@ -303,7 +301,7 @@ function MODE:CheckInAGroup(ply)
 	local players = zb:CheckAlive()
 	local flag = false
 
-	for i2, ply2 in ipairs(players) do
+	for _, ply2 in ipairs(players) do
 		if IsLookingAt(ply2, ply:EyePos(), 0.8) and hg.isVisible(ply:EyePos(), ply2:EyePos(), {ply, ply2}, MASK_VISIBLE) then
 			flag = true
 		end
@@ -319,13 +317,13 @@ local checkPlayers = {}
 local maxLen = math.sqrt(3)
 net.Receive("check_lightness", function(len, ply)
 	local vec = net.ReadVector()
-	
+
 	if vec:Length() > maxLen then return end
 	if vec[1] < 0 or vec[2] < 0 or vec[3] < 0 then return end
 
 	if checkedPlayer and !checkPlayers[ply] then
 		checkPlayers[ply] = true
-		
+
 		checkedPlayer.lightcolor = checkedPlayer.lightcolor or Vector(0.5, 0.5, 0.5)
 		checkedPlayer.lightcolor = LerpVector(0.5, checkedPlayer.lightcolor, vec)
 	end
@@ -337,12 +335,11 @@ end
 
 function MODE:SelectTheBestVictim()
 	local alive = zb:CheckAlive()
-	local victims = {}
 	local victims_stats = {}
 
-	for i, ply in ipairs(alive) do
+	for _, ply in ipairs(alive) do
 		if self:SkipVictim(ply) then continue end
-		
+
 		local index = #victims_stats + 1
 
 		victims_stats[index] = {}
@@ -359,16 +356,16 @@ function MODE:SelectTheBestVictim()
 			+ tbl.in_darkness + tbl.in_darkness + tbl.has_a_gun
 			+ tbl.doesnt_move + tbl.randomness
 	end
-	
+
 	self.saved.KillTime = CurTime() + math.random(30, 90) * math.max(#alive / 20, 0.5)
 
 	if #alive == 1 then
 		self.saved.KillTime = CurTime() + 5
 	end
 
-	local victim = table.Random(alive)
+	table.Random(alive)
 	local max_interest = -5
-	for i, tbl in ipairs(victims_stats) do
+	for _, tbl in ipairs(victims_stats) do
 		if max_interest < tbl.calculated_interest then
 			max_interest = tbl.calculated_interest
 			vicitm = tbl.ply
@@ -388,7 +385,7 @@ function MODE:ReturnToRealmOfLiving(ply)
 		if !IsValid(ply) or !ply:Alive() then
 			timer.Remove("ReturnToLife " .. entindex)
 		else
-			for i2, ply2 in ipairs(players) do
+			for _, ply2 in ipairs(players) do
 				if IsLookingAt(ply2, ply:EyePos(), 0.8) and hg.isVisible(ply:EyePos(), ply2:EyePos(), {ply, ply2}, MASK_VISIBLE) then
 					return
 				else
@@ -468,17 +465,17 @@ function MODE:RoundThink()
 	local players = zb:CheckAlive()
 
 	self.saved.TimePlayed = (self.saved.TimePlayed or 0) + 0.5
-	
+
 	self.NextLightCheck = self.NextLightCheck or self.saved.TimePlayed + 5
 
 	if self.saved.TimePlayed > self.NextLightCheck then
 		self.NextLightCheck = self.saved.TimePlayed + 5
-		
+
 		if table.Count(counted_players) >= #players then
 			counted_players = {}
 		end
-		
-		for i, ply in ipairs(players) do
+
+		for _, ply in ipairs(players) do
 			if ply.lightcolor and counted_players[ply] then continue end
 			counted_players[ply] = true
 			checkedPlayer = ply
@@ -487,7 +484,7 @@ function MODE:RoundThink()
 			net.Start("check_lightness")
 			net.WriteEntity(ply)
 			net.Broadcast()
-	
+
 			timer.Simple(0.5, function()
 				checkedPlayer = nil
 				checkPlayers = {}
@@ -500,7 +497,7 @@ function MODE:RoundThink()
 	self.CurrentVictim = IsValid(self.CurrentVictim) and self.CurrentVictim:Alive() and self.CurrentVictim or self:SelectTheBestVictim()
 
 	local ply = self.CurrentVictim
-	
+
 	-- print(ply, CurTime(), MODE.saved.KillTime)
 
 	if !IsValid(ply) then return end
@@ -519,7 +516,7 @@ function MODE:RoundThink()
 	if !use_weapon then
 		local flag = true
 
-		for i2, ply2 in ipairs(players) do
+		for _, ply2 in ipairs(players) do
 			if IsLookingAt(ply2, ply:EyePos(), 0.8) and hg.isVisible(ply:EyePos(), ply2:EyePos(), {ply, ply2}, MASK_VISIBLE) then
 				flag = false
 			end
@@ -539,7 +536,7 @@ function MODE:RoundThink()
 			end
 		else
 			if math.random(2) == 1 then
-				for k, v in player.Iterator() do
+				for _, v in player.Iterator() do
 					v:ScreenFade(SCREENFADE.IN, Color(0, 0, 0), 0.7, 0.4)
 				end
 				ply:KillSilent()
@@ -548,7 +545,7 @@ function MODE:RoundThink()
 				bot.Victim = ply
 				bot:Spawn()
 			elseif math.random(2) == 1 then
-				for k, v in player.Iterator() do
+				for _, v in player.Iterator() do
 					v:ScreenFade(SCREENFADE.IN, Color(0, 0, 0), 0.7, 0.4)
 				end
 
@@ -593,8 +590,8 @@ function MODE:PlayerDeath(ply)
 
 		if #alive == 1 then
 			MODE.saved.KillTime = CurTime() + 120
-			
-			for i, ent in ipairs(ents.FindByClass('env_soundscape*')) do
+
+			for _, ent in ipairs(ents.FindByClass('env_soundscape*')) do
 				ent:Remove()
 			end
 

@@ -44,7 +44,7 @@ function CLASS.FallDmgFunc(self, speed, tr)
     if speed > 1000 then
         hg.LightStunPlayer(self)
     end
-    
+
     if speed > 250 then
         if tr.Entity:IsPlayer() then
             hg.drop(tr.Entity)
@@ -105,7 +105,7 @@ function CLASS.Think(self)
             if tr.Hit then
                 self.pressedasd = true
             end
-            
+
             if not self.pressedasd then
                 --ParticleEffect("pcf_jack_airsplode_small3",self:GetPos(),vector_up:Angle())
                 --hg.ExplosionEffect(self:GetPos(), 100, 80)
@@ -140,8 +140,6 @@ function CLASS.Move(self,mv)
             if licked then
                 local pos = licked[1].HitPos
                 local tr = hg.eyeTrace(self,1000)
-
-                local dist = math.min(licked[2] - pos:Distance(tr.StartPos),0)
 
                 if SERVER and (self.cooldownhuyhuyasd or 0) < CurTime() then
                     self.cooldownhuyhuyasd = CurTime() + 0.1
@@ -178,7 +176,7 @@ function CLASS.PlayerDraw(self)
     local scug = self:GetNWString("scug")
     if scug == "saint" then
         local tr = hg.eyeTrace(self)
-        
+
         if self:GetNetVar("licked") then
             local pos = self:GetNetVar("licked")[1].HitPos
             render.SetMaterial(mat)

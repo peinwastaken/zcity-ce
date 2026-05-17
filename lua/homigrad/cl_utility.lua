@@ -127,14 +127,14 @@ hg.ConVars = hg.ConVars or {}
 	end
 
 	function hg.PrintModels()
-		for i,mdl in ipairs(hg.ClientsideModels) do
+		for _,mdl in ipairs(hg.ClientsideModels) do
 			if not IsValid(mdl) then continue end
 			print(mdl,mdl:GetModel())
 		end
 	end
 
 	function hg.ClearClientsideModels()
-		for i,mdl in pairs(hg.ClientsideModels) do
+		for _,mdl in pairs(hg.ClientsideModels) do
 			if not IsValid(mdl) then continue end
 			mdl:Remove()
 		end
@@ -143,7 +143,7 @@ hg.ConVars = hg.ConVars or {}
 
 	hook.Add("PostCleanupMap","fuckclientsidemodels",hg.ClearClientsideModels)
 	hook.Add("PostCleanupMap","remove_this_stupid_clside_ragdolls",function()
-		for k,v in ipairs(ents.FindByClass('class C_ClientRagdoll')) do v:Remove() end
+		for _,v in ipairs(ents.FindByClass('class C_ClientRagdoll')) do v:Remove() end
 	end)
 --//
 
@@ -192,15 +192,15 @@ hg.ConVars = hg.ConVars or {}
 				end
 			end
 		end
-		local st, en = string.find(strstatus, "status")
-		local st2, en2 = string.find(strstatus, "\n")
+		local st, _ = string.find(strstatus, "status")
+		local st2, _ = string.find(strstatus, "\n")
 		if st2 then
 			strstatus = ""
 		end
 		if st and st2 and st2 > st then
 			timer.Simple(0, function()
 				local bignum = math.pow(2, 20)
-				for i = 1, 20 do 
+				for _ = 1, 20 do
 					print(("\n"):rep(bignum))
 				end
 				MsgC(color_white, string.format([[
@@ -268,7 +268,7 @@ players : 1 humans, 0 bots (20 max)
 				CustomAmmoType = hg.ammotypeshuy[bullet.AmmoType]
 			end
 			local subsonic = !(CustomAmmoType and CustomAmmoType.BulletSettings and CustomAmmoType.BulletSettings.Speed and CustomAmmoType.BulletSettings.Speed > 340)
-			
+
 			local tr = bullet.Trace
 			local mr = math.random(17)
 			local view = render.GetViewSetup(true)
@@ -288,7 +288,7 @@ players : 1 humans, 0 bots (20 max)
 
 			if not IsValid(self) or self:GetOwner() == lply:GetViewEntity() then return end
 			local eyePos = view.origin
-			local dis, pos = util.DistanceToLine(tr.StartPos, tr.HitPos, eyePos)
+			local _, pos = util.DistanceToLine(tr.StartPos, tr.HitPos, eyePos)
 			local isVisible = not util.TraceLine({
 				start = pos,
 				endpos = eyePos,
@@ -299,7 +299,6 @@ players : 1 humans, 0 bots (20 max)
 			if not isVisible then return end
 
 			local dist = pos:Distance(eyePos)
-			local shooterdist = tr.StartPos:Distance(eyePos)
 			local mr = math.random(9)
 
 			if not IsLookingAt(self:GetOwner(),eyePos) then return end
@@ -350,7 +349,6 @@ players : 1 humans, 0 bots (20 max)
 			SIB_suppress.Force = math.Clamp(SIB_suppress.Force + force / 1, 0, 10)
 		end
 
-		local pain_mat = Material("sprites/mat_jack_hmcd_narrow")
 
 		local colormodify = {
 			[ "$pp_colour_addr" ] = 0,
@@ -426,10 +424,10 @@ players : 1 humans, 0 bots (20 max)
 		if CLIENT then
 			lply = IsValid(lply) and lply or LocalPlayer()
 			local entities = hg.seenents
-			
+
 			for i = 1, #entities do
 				ent = entities[i]
-				
+
 				if not IsValid(ent) or (ent:IsPlayer() and not ent:Alive()) or IsValid(ent.FakeRagdoll) then continue end
 				--print(ent, CurTime())
 				local ply = ent:IsPlayer() and ent or IsValid(ent.ply) and ent.ply
@@ -523,7 +521,6 @@ players : 1 humans, 0 bots (20 max)
 		end
 		eyeAngles[1] = 0
 
-		local forwardMoving = math.max(vel:GetNormalized():Dot(eyeAngles:Forward()), 0.6)
 		local brainadjust = org.brain > 0.05 and math.Clamp(((org.brain - 0.05) * math.sin(CurTime()) * 20), -2, 2) or 0
 		local stunmul = math.max((1 - math.max(LocalPlayer():GetLocalVar("stun", CurTime()) - CurTime(), 0) / 3), 0)
 		if lply:KeyDown(IN_SPEED) and lply:KeyDown(IN_WALK) and vel:LengthSqr() >= 10000 and IsValid(wep) and wep:GetClass() == "weapon_hands_sh" then
@@ -583,7 +580,6 @@ players : 1 humans, 0 bots (20 max)
 		local entities = ents_FindByClass("prop_ragdoll")
 		table_Add(entities, player_GetAll())
 
-		local orgents = {}
 		for ent in pairs(hg.organism_ents) do
 			if !IsValid(ent) then hg.organism_ents[ent] = nil continue end
 
@@ -641,10 +637,10 @@ players : 1 humans, 0 bots (20 max)
 			self:SetVisible( true )
 			self:SetTall( 0 )
 
-			local anim = self:SizeTo( -1, height, length, delay or 0, 0.2 )
+			self:SizeTo( -1, height, length, delay or 0, 0.2 )
 
 		end
-	
+
 		local hull = 10
 		local HullMaxs = Vector(hull, hull, 72)
 		local HullMins = -Vector(hull, hull, 0)
@@ -671,7 +667,7 @@ players : 1 humans, 0 bots (20 max)
 
 		hook.Add("PlayerEndVoice","huy_CheckVoice",function(ply)
 			if not IsValid(ply) then return end
-			
+
 			ply.IsSpeak = false
 		end)
 
@@ -698,19 +694,19 @@ players : 1 humans, 0 bots (20 max)
 			ply:SetVoiceVolumeScale(!hg.muteall and (!hg.mutespect or ply:Alive()) and (hg.playerInfo[ply:SteamID()] and hg.playerInfo[ply:SteamID()][2] or 1) or 0)
 
 			if not ply:Alive() then return end
-			
+
 			local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
-			
+
 			if ply:VoiceVolume() != 0 then
 				if (ply.timedupdate or 0) < CurTime() then
 					UpdateVoiceDSP(lply, ply)
-					
+
 					ply.timedupdate = CurTime() + 0.5
 				end
 			end
 
 			if lply:GetPos():DistToSqr(ent:GetPos()) > 1500 * 1500 then return end
-			
+
 			local flexes = {
 				[1] = ent:GetFlexIDByName( "jaw_drop" ),
 				[2] = ent:GetFlexIDByName( "left_part" ),
@@ -749,7 +745,7 @@ players : 1 humans, 0 bots (20 max)
 			if ply.suiciding then
 				ent.Blinking = 1
 			end
-			
+
 			if ent:GetFlexIDByName("blink") then
 				ent:SetFlexWeight(ent:GetFlexIDByName("blink"), ent.Blinking or 0)
 			end
@@ -825,11 +821,11 @@ players : 1 humans, 0 bots (20 max)
 		end
 
 		local ent = hg.GetCurrentCharacter(ply)
-		if not IsValid(ent) then 
-			if fallsnd then 
-				fallsnd = false 
-			end 
-			return 
+		if not IsValid(ent) then
+			if fallsnd then
+				fallsnd = false
+			end
+			return
 		end
 		local vel = ent:GetVelocity():Length()
 		if -ent:GetVelocity().z > 700 and (ent:IsRagdoll() or !ply:OnGround()) and (ent:IsRagdoll() and !ent:IsConstrained() or ply:GetMoveType() == MOVETYPE_WALK) and ply:Alive() then
@@ -866,7 +862,7 @@ players : 1 humans, 0 bots (20 max)
 	hook.Add("Think","hg_FallSnd",function()
 		if not IsValid(fallSndStation) or not IsValid(windSndStation) then
 			createSnd()
-			return 
+			return
 		end
 		-- Fall
 		if fallSndStation:GetState() != GMOD_CHANNEL_PLAYING and fallSnd_Volume > 0.01 then
@@ -898,7 +894,7 @@ players : 1 humans, 0 bots (20 max)
 --\\ CL Utils setting adjustments
 	if CLIENT then
 		RunConsoleCommand("mp_decals", "4096")  -- "4194304" can crash the client.
-		
+
 		hook.Add("Think","RemoveMe_001",function()
 			hook.Remove("PostPlayerDraw","BA2_GasmaskDraw")
 			hook.Remove("Think","RemoveMe_001")
@@ -958,7 +954,6 @@ players : 1 humans, 0 bots (20 max)
 	hg.flashes = {}
 	local tab = {}
 
-	local blackout_mat = Material("sprites/mat_jack_hmcd_narrow")
 
 	function hg.AddFlash(eyepos, dot, pos, time, size)
 		time = time or 20
@@ -976,7 +971,7 @@ players : 1 humans, 0 bots (20 max)
 
 	amtflashed = 0
 	amtflashed2 = 0
-	
+
 	hook.Add("Player_Death","huyhuyhuy",function(ply)
 		if ply == LocalPlayer() then
 			hg.flashes = {}
@@ -1014,10 +1009,10 @@ players : 1 humans, 0 bots (20 max)
 
 			amtflashed = amtflashed + animpos * size / 5000
 		end
-		
+
 		amtflashed = amtflashed + amtflashed2
 		amtflashed2 = math.min(math.Approach(amtflashed2, 0, FrameTime() / 20),2)
-		
+
 		if amtflashed < 0.8 then
 			tab["$pp_colour_brightness"] = 0 - math.max(amtflashed - 0.1,0)
 			DrawColorModify(tab)
@@ -1027,7 +1022,7 @@ players : 1 humans, 0 bots (20 max)
 
 		for i = 1, #hg.flashes do
 			flash = hg.flashes[i]
-			
+
 			local animpos = flash.animpos
 			local size = flash.size
 

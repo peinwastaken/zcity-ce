@@ -16,7 +16,7 @@ function EFFECT:Init(data)
 	end
 
 	local Emitter = ParticleEmitter(SelfPos)
-	for i = 0, Radius / 10 do
+	for _ = 0, Radius / 10 do
 		local sprite = "sprites/flamelet" .. math.random(1, 5)
 		local particle = Emitter:Add(sprite, SelfPos)
 		if particle then

@@ -43,7 +43,7 @@ function EVENT:StartScare( ply )
     local EndIndex = self.Ent:EntIndex()
     timer.Simple(1,function()
         if IsValid(ply) and ply:Alive() then return end
-        ply:SendLua("Entity("..EndIndex.."):EmitSound(\"cry1.wav\")") -- 
+        ply:SendLua("Entity("..EndIndex.."):EmitSound(\"cry1.wav\")") --
     end)
     self.Started = CurTime()
 end
@@ -63,7 +63,7 @@ function EVENT:Think( ply )
             self:Run(ply)
         end
     end
-    
+
 end
 
 function EVENT:IsActive( ply )
@@ -71,7 +71,6 @@ function EVENT:IsActive( ply )
 end
 
 function EVENT:Run( ply )
-    local plypos = ply:GetPos()
     local entpos = self.Ent:GetPos()
     local vec = LerpVector(15*FrameTime(),entpos,ply:GetPos())
     self.Ent:SetPos(vec)
@@ -85,7 +84,7 @@ function EVENT:Run( ply )
         timer.Simple(0.6,function()
             ply:SendLua("RunConsoleCommand(\"stopsound\")")
         end)--
-        for k,v in player.Iterator() do
+        for _, v in player.Iterator() do
             v:ScreenFade(SCREENFADE.IN, Color(0,0,0), 0.7, 0.4)
         end
         self.Ent:Remove()

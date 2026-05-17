@@ -128,7 +128,7 @@ function CLASS.On(self)
 
 		self:SetNetVar("headcrab", false)
 
-		for k, v in ipairs(ents.FindByClass("npc_*")) do
+		for _, v in ipairs(ents.FindByClass("npc_*")) do
 			if table.HasValue(rebels, v:GetClass()) or table.HasValue(combines, v:GetClass()) then
 				v:AddEntityRelationship(self, D_HT, 99)
 			elseif table.HasValue(zombies, v:GetClass()) then
@@ -177,7 +177,7 @@ end
 function CLASS.Off(self)
     if CLIENT then return end
 
-	for k, v in ipairs(ents.FindByClass("npc_*")) do
+	for _, v in ipairs(ents.FindByClass("npc_*")) do
         if table.HasValue(rebels, v:GetClass()) then
             v:AddEntityRelationship(self, D_LI, 99)
         elseif table.HasValue(combines, v:GetClass()) or table.HasValue(zombies, v:GetClass()) then
@@ -194,7 +194,7 @@ end
 
 --// Reset npc relationship
 function CLASS.PlayerDeath(self)
-	for k, v in ipairs(ents.FindByClass("npc_*")) do
+	for _, v in ipairs(ents.FindByClass("npc_*")) do
         if table.HasValue(rebels, v:GetClass()) then
             v:AddEntityRelationship(self, D_LI, 99)
         elseif table.HasValue(combines, v:GetClass()) or table.HasValue(zombies, v:GetClass()) then
@@ -403,25 +403,25 @@ else
 			ply.FirstPersonCrab:SetNoDraw(true)
 			return
 		end
-	
+
 		if not IsValid(ply.FirstPersonCrab2) then
 			ply.FirstPersonCrab2 = ClientsideModel(strModel)
 			ply.FirstPersonCrab2:SetNoDraw(true)
 			ply.FirstPersonCrab2:SetModelScale(1.05)
 			return
 		end
-	
+
 		local mdl = ply.FirstPersonCrab
 		local mdl2 = ply.FirstPersonCrab2
-	
+
 		if mdl:GetModel() != strModel then
 			mdl:SetModel(strModel)
 		end
-	
+
 		if mdl2:GetModel() != strModel then
 			mdl2:SetModel(strModel)
 		end
-	
+
 		if ply == GetViewEntity() then
 			local view = render.GetViewSetup()
 
@@ -439,7 +439,7 @@ else
 				mdl2:SetRenderOrigin(view.origin + ang:Forward() * vecAdjust.x + ang:Right() * vecAdjust.y + ang:Up() * vecAdjust.z)
 				mdl2:SetRenderAngles(ang)
 				mdl:SetParent(ply, ply:LookupBone("ValveBiped.Bip01_Head1"))
-				
+
 				render.SetColorModulation(1, 1, 1)
 					render.SetStencilWriteMask(0xFF)
 					render.SetStencilTestMask(0xFF)
@@ -449,20 +449,20 @@ else
 					render.SetStencilFailOperation(STENCIL_KEEP)
 					render.SetStencilZFailOperation(STENCIL_KEEP)
 					render.ClearStencil()
-					
+
 					-- Enable stencils
 					render.SetStencilEnable(true)
 					-- Set everything up everything draws to the stencil buffer instead of the screen
 					render.SetStencilReferenceValue(1)
 					render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
 					render.SetStencilPassOperation(STENCIL_REPLACE)
-					
+
 					render.SetBlend(0)
 						mdl2:DrawModel()
 					render.SetBlend(1)
 
 					render.SetStencilCompareFunction(STENCIL_EQUAL)
-					
+
 					mdl:DrawModel()
 
 					DrawBokehDOF(26, 0.93, 15)
@@ -525,7 +525,7 @@ else
 
 			render.UpdateScreenEffectTexture()
 			render.UpdateFullScreenDepthTexture()
-			
+
 			local asad = math.Clamp(math.sin(CurTime() * 2), 0.7, 1)
 			zombMat:SetFloat("$c0_x", CurTime()) -- time
 			zombMat:SetFloat("$c0_y", -1) -- gate
@@ -537,7 +537,7 @@ else
 			zombMat:SetFloat("$c2_y", 0.05) -- g
 			zombMat:SetFloat("$c2_z", 0) -- b
 			zombMat:SetFloat("$c3_x", 0) -- ImageIntensity
-		
+
 			render.SetMaterial(zombMat)
 			render.DrawScreenQuad()
 		end

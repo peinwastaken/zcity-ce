@@ -1,4 +1,3 @@
-
 --[[---------------------------------------------------------
 	Name: SetupWeaponHoldTypeForAI
 	Desc: Sets up ACT translations from generic activities to NPC specific activies. In a seperate file to clean up the init.lua

@@ -163,7 +163,7 @@ function TOOL:DrawHUD()
 
 			surface.SetFont("ChatFont")
 
-			local txtsize, _txtsizey = surface.GetTextSize(text)
+			local txtsize, _ = surface.GetTextSize(text)
 
 			if EyePos():DistToSqr(pos) <= 10000000 then
 				cam.Start3D()

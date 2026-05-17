@@ -101,7 +101,7 @@ function PLAYER:LegAttack()
             if org.rleg == 1 or org.rlegdislocation then
                 org.painadd = org.painadd + 20
             end
-            
+
             local entss = {}--ents.FindInBox( tr.HitPos + rad, tr.HitPos - rad )
             if !table.HasValue(entss, tr.Entity) then
                 entss[#entss+1] = tr.Entity
@@ -117,9 +117,9 @@ function PLAYER:LegAttack()
             end
 
             if tr.Entity.fires then
-            local key, fire = next(tr.Entity.fires)
+            local key, _ = next(tr.Entity.fires)
 
-                if key then 
+                if key then
                     tr.Entity.fires[key] = nil
 
                     if IsValid(key) then
@@ -128,7 +128,7 @@ function PLAYER:LegAttack()
                 end
             end
 
-            for k,ent in ipairs(entss) do
+            for _, ent in ipairs(entss) do
                 if IsValid(ent) and not blacklist[ent] then
                     local normal = ang:Forward()
                     local phys = ent:GetPhysicsObjectNum(tr.PhysicsBone or 0)
@@ -157,7 +157,7 @@ function PLAYER:LegAttack()
 					MaxPenLenGlobal = 1
                     hg.AddForceRag(ent, tr.PhysicsBone or 0, normal * dmg * 1000, 0.25)
                     ent:TakeDamageInfo(dmginfo)
-                    
+
                     if IsValid(phys) then
                         phys:ApplyForceOffset(normal * dmg * 200, tr.HitPos)
                     end
@@ -179,7 +179,7 @@ function PLAYER:LegAttack()
                         ent.HP = ent.HP or 200
                         ent.HP = ent.HP - dmg * (tr.MatType == MAT_METAL and 1 or 2)
                         ent:EmitSound( "physics/wood/wood_crate_impact_hard" .. math.random(1,4) .. ".wav" )
-                        
+
                         if DoorIsOpen(ent) then
                             if !DoorIsOpen2(ent) then
                                 ent:FastOpenDoor(self, 5, true)

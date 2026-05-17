@@ -1,4 +1,4 @@
-﻿AddCSLuaFile()
+AddCSLuaFile()
 --
 local surface_hardness = {
 	[MAT_METAL] = 1,
@@ -59,18 +59,18 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 	if bullet.penetrated > 6 then return end
 	if bullet.limit_ricochet > 6 then return end
 	if tr.Entity.organism then return end
-	
+
 	local dir, hitNormal, hitPos = tr.Normal, tr.HitNormal, tr.HitPos
 	local hardness = surface_hardness[tr.MatType] or 0.5
 	local ApproachAngle = -math.deg(math.asin(hitNormal:DotProduct(dir)))
 	local MaxRicAngle = 60 * hardness * (bullet.noricochet and 0 or 1)
-	
+
 	-- all the way through
 	--print(ApproachAngle > MaxRicAngle * 0.7  )
 	if ApproachAngle > MaxRicAngle * 1 or tr.Entity:IsVehicle() then
 		local Pen = (bullet.Penetration or 5) * 3 or dmg
 		local MaxDist, SearchPos, SearchDist, Penetrated = math.min(Pen / hardness * 0.4, 100), hitPos, 5, false
-		
+
 		local hit
 		while SearchDist < MaxDist do
 			SearchPos = hitPos + dir * SearchDist
@@ -112,7 +112,7 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 				filter = {tr.Entity}
 
 				if tr.Entity.seats then
-					for i, seat in pairs(tr.Entity.seats) do
+					for _, seat in pairs(tr.Entity.seats) do
 						table.insert(filter, seat)
 					end
 				end
@@ -142,23 +142,22 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 			}
 
 			self.bullet = tBullet
-			
+
 			self:FireLuaBullets( tBullet )
 
 			if hg_bulletholes:GetBool() then
 				local ent = IsValid(tr.Entity) and tr.Entity or Entity(0)
-								
+
 				local hitPos2, dir2 = WorldToLocal(hitPos, dir:Angle(), ent:GetPos(), ent:GetAngles())
 				local _, hitNormal2 = WorldToLocal(hitPos, hitNormal:Angle(), ent:GetPos(), ent:GetAngles())
-				
+
 				local size = bullet.Diameter / 25.4 * math.Rand(2, 4) * math.Rand(1, (self.NumBullet or 1))
 				local dontadd = false
 				for i = 1, #hg.bulletholes do
 					if hitPos2:IsEqualTol(hg.bulletholes[i][1], size * 1.414) then --sqrt of 2, cuz it's a square
-						local lerp = size / (hg.bulletholes[i][5] + size)
 						--hg.bulletholes[i][1] = LerpVector(lerp, hitPos2, hg.bulletholes[i][1])
 						--hg.bulletholes[i][5] = math.min(3, (size + hg.bulletholes[i][5]) * 0.9)
-						
+
 						if hg.bulletholes[i + 1] then
 							--hg.bulletholes[i + 1][5] = math.min(3, (size + hg.bulletholes[i + 1][5]) * 0.9)
 						end
@@ -167,17 +166,17 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 						break
 					end
 				end
-				
+
 				if !dontadd then
 					local dist = hitPos:Distance(hit.HitPos)
 					table.insert(hg.bulletholes, {hitPos2, dir2, dist, hitNormal2, size, ent})
-					
+
 					local hitPos2, dir2 = WorldToLocal(hit.HitPos, (-dir):Angle(), ent:GetPos(), ent:GetAngles())
 					local _, hitNormal2 = WorldToLocal(hit.HitPos, hit.HitNormal:Angle(), ent:GetPos(), ent:GetAngles())
 					table.insert(hg.bulletholes, {hitPos2, dir2, dist, hitNormal2, size, ent})
 
 					if hgIsDoor(ent) then -- open the areaportal so it can be seen through
-						for i, enta in ipairs(ents.FindByClass("func_areaportal")) do
+						for _, enta in ipairs(ents.FindByClass("func_areaportal")) do
 							if enta:GetInternalVariable("target") == ent:GetName() then
 								enta:SetKeyValue("target", "")
 								enta:Fire("Open")
@@ -245,11 +244,11 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 			noricochet = bullet.noricochet,
 			AmmoType = bullet.AmmoType
 		}
-		
+
 		self.bullet = tBullet
 
 		self:FireLuaBullets( tBullet )
-		
+
 		local tr = util.TraceLine( {
 			start = hitPos + hitNormal,
 			endpos = hitPos + hitNormal + -NewVec * 10000,
@@ -293,33 +292,7 @@ end
 
 game.AddDecal("Impact.ShootPowderAdd", "decals/burn01a")
 
-local ipairs, ents = ipairs, ents
-local ents_FindInCone = ents.FindInCone
-local vectorup = Vector(0, 0, 25)
-local ang = math.cos( math.rad( 125 ) )
-local function gasInertia(pos, force, dir, self, tr)
-	--if force >= 150 then return end
-	for _, ent in ipairs(ents_FindInCone(pos, dir, force, ang)) do
-		--print(ent)
-		if IsValid(ent) and not ent:IsNPC() and not ent:IsPlayer() then
-			local phys = ent:GetPhysicsObject()
-
-			if (ent:GetClass() == "func_breakable_surf") and !tr.HitPos then
-				--ent:Fire("Shatter", "0.5 0.5 100", 0, self, self)
-			end
-
-			if IsValid(phys) then
-				if phys:GetMass() > 5 then continue end
-				local entpos = ent:GetPos()
-				local dist = pos:Distance(entpos)
-				local falloff = 1.5 - (dist / (force))
-
-				phys:Wake()
-				phys:ApplyForceCenter( ( ( (pos - entpos):GetNormalized() + dir) * 2 * ((-phys:GetMass() / 1.5) * (force / 5)) + vectorup ) * falloff)
-			end
-		end
-	end
-end
+local _, ents= ipairs, ents
 
 local allowedMats = {
 	[MAT_CONCRETE] = true,
@@ -331,7 +304,7 @@ bulletHit = function(ply, tr, dmgInfo, bullet, Weapon)
 	local dmg, force = dmgInfo:GetDamage(), dmgInfo:GetDamage()--dmgInfo:GetDamageForce():Length()
 
 	local trPos, trNormal, trStart = tr.HitPos, tr.HitNormal, tr.StartPos
-	
+
 	if tr.MatType == MAT_FLESH then
 		util.Decal("Impact.Flesh", trPos + trNormal, trPos - trNormal)
 	end
@@ -341,7 +314,7 @@ bulletHit = function(ply, tr, dmgInfo, bullet, Weapon)
 		util.Decal("Impact.ShootAdd" .. math.random(shootDecalRand), trPos + trNormal, trPos - trNormal)
 		util.ScreenShake(trPos, 3, 1, 1, 128)
 	end
-	
+
 	-- if force >= 35 and dist <= 1400000 and (math.random(3) == 2 or force >= 45) and !tr.Entity:IsRagdoll() then
 	-- 	util.Decal("Impact.ShootPowderAdd", trPos + trNormal, trPos - trNormal)
 	-- 	util.ScreenShake(trPos, 3, 10, 1, 150)
@@ -353,7 +326,7 @@ bulletHit = function(ply, tr, dmgInfo, bullet, Weapon)
 	local penetration, dmgmul
 	if tr.Entity:IsVehicle() then
 		penetration, dmgmul = hg.VehiclePenetration(tr.Entity, tr, bullet)
-		
+
 		dmgInfo:SetDamage(dmgInfo:GetDamage() * dmgmul)
 	end
 
@@ -366,12 +339,7 @@ end
 hg.bulletHit = bulletHit
 hg.callbackBullet = callbackBullet
 
-local bullet = {}
-local empty = {}
-local vecCone = Vector(0, 0, 0)
-local cone, att, att2, owner, primary, ang
 local math_Rand, math_random = math.Rand, math.random
-local gun
 function SWEP:GetWeaponEntity()
 	return IsValid(self.worldModel) and IsValid(self:GetOwner()) and self.worldModel or self
 end
@@ -392,12 +360,12 @@ function SWEP:GetMuzzleAtt(ent, trueAtt, supressorAdd)
 	gun = ent or self:GetWeaponEntity()
 	if not IsValid(gun) then return attTbl end
 
-	if SERVER then 
-		if owner:IsNPC() then 
+	if SERVER then
+		if owner:IsNPC() then
 			attTbl.Pos = owner:EyePos()
 			attTbl.Ang = owner:GetAimVector():Angle()
-			
-			return attTbl 
+
+			return attTbl
 		end
 	end
 
@@ -413,10 +381,10 @@ function SWEP:GetMuzzleAtt(ent, trueAtt, supressorAdd)
 	if not att then
 		local angHuy = gun:GetAngles()
 		local posHuy = gun:GetPos()
-		
+
 		angHuy:RotateAroundAxis(angHuy:Forward(), 90)
 		local _,angHuy = LocalToWorld(vecZero,attAng,vecZero,angHuy)
-		
+
 		posHuy:Add(angHuy:Up() * attPos[1] + angHuy:Right() * attPos[2] + angHuy:Forward() * attPos[3])
 		if supressorAdd and self:HasAttachment("barrel", "supressor") then posHuy:Add(angHuy:Forward() * 10) end
 
@@ -427,17 +395,17 @@ function SWEP:GetMuzzleAtt(ent, trueAtt, supressorAdd)
 
 		return attTbl
 	end
-	
+
 	if trueAtt then
 		local pos, ang = att.Pos, att.Ang
-		
+
 		local pos, ang = LocalToWorld(attPos, attAng, pos, ang)
-		
+
 
 		att.Pos = pos
 		att.Ang = ang
 		ang:RotateAroundAxis(ang:Forward(),self.rotatehuy or 0)
-		
+
 		if self:ShouldUseFakeModel() then pos, ang = LocalToWorld(self.AttachmentPos, self.AttachmentAng, pos, ang) end
 
 		--ang:Add(attAng)
@@ -451,15 +419,14 @@ function SWEP:GetMuzzleAtt(ent, trueAtt, supressorAdd)
 end
 
 local tr = {}
-local att
 local util_TraceLine = util.TraceLine
 
 function SWEP:GetTrace(bCacheTrace, desiredPos, desiredAng, NoTrace, closeanim)
 	if SERVER and !bCacheTrace and self.cache_trace and !(desiredPos or desiredAng) then return self.cache_trace[1], self.cache_trace[2], self.cache_trace[3] end
 	local owner = self:GetOwner()
-	
+
 	if IsValid(owner) and owner:IsNPC() then local att = self:GetMuzzleAtt() return nil,SERVER and owner:GetShootPos() or att.Pos,SERVER and owner:GetAimVector():Angle() or att.Ang end
-	
+
 	local gun = self:GetWeaponEntity()
 	if !IsValid(gun) then return end
 
@@ -470,7 +437,7 @@ function SWEP:GetTrace(bCacheTrace, desiredPos, desiredAng, NoTrace, closeanim)
 	else
 		gunpos, gunang = self:WorldModel_Transform(true)
 	end
-	
+
 	gunpos = gunpos or gun:GetPos()
 	gunang = gunang or gun:GetAngles()
 	--debugoverlay.Line(gunpos, gunpos + gunang:Forward() * 20,0.5,color_white)
@@ -482,9 +449,9 @@ function SWEP:GetTrace(bCacheTrace, desiredPos, desiredAng, NoTrace, closeanim)
 		mat = mat:GetInverse()
 		gunpos, gunang = LocalToWorld(mat:GetTranslation(), mat:GetAngles(), gunpos, gunang)
 	end
-	
+
 	local pos, ang = LocalToWorld(self.LocalMuzzlePos, self.LocalMuzzleAng, gunpos, gunang)
-	
+
 	if NoTrace then self.cache_trace = self.cache_trace or {} self.cache_trace[2] = pos self.cache_trace[3] = ang
 		if !bCacheTrace then
 			return {}, pos, ang
@@ -520,12 +487,7 @@ SWEP.ShellEject = "EjectBrass_556"
 SWEP.MuzzleEffectType = 1
 
 
-local images_muzzle = {
-	[2] = {"effects/muzzleflash1", "effects/muzzleflash2", "effects/muzzleflash3", "effects/muzzleflash4"},
-	[3] = {"effects/gunshipmuzzle","effects/combinemuzzle2"}
-}
 local vecZero = Vector(0, 0, 0)
-local image_distort = "sprites/heatwave"
 
 SWEP.PPSMuzzleEffect = "pcf_jack_mf_mpistol" -- shared in sh_effects.lua
 SWEP.PPSMuzzleEffectSuppress = "pcf_jack_mf_suppressed"
@@ -536,7 +498,7 @@ function SWEP:GetLocalHuynyis()
 
 	local atth = gun:GetAttachment(gun:LookupAttachment("muzzle"))
 	local atth = atth ~= nil and atth or gun:GetAttachment(gun:LookupAttachment("muzzle_flash"))
-	
+
 	local att2 = self:GetMuzzleAtt(gun,false)
 	local muzzle_local_pos,muzzle_local_ang = WorldToLocal(att2.Pos,att2.Ang,gun:GetPos(),gun:GetAngles())
 	if atth then
@@ -584,7 +546,7 @@ function SWEP:FireBullet()
 	end
 
     local ammotype = hg.ammotypeshuy[self.Primary.Ammo].BulletSettings
-    
+
 	if SERVER and !timer.Exists("ShootWeaponAfterDeath"..self:EntIndex()) then
 		timer.Create("ShootWeaponAfterDeath"..self:EntIndex(), 0.1, 1, function()
 			if (!IsValid(owner) or !owner:Alive()) and self.Primary and self.Primary.Automatic then
@@ -597,7 +559,6 @@ function SWEP:FireBullet()
     if not att then return end
     local pos, ang = att.Pos, att.Ang
     //if not isply and not owner:IsNPC() then return end
-    local fakeGun = self:GetNWEntity("fakeGun")
 
     local primary = self.Primary
 
@@ -635,7 +596,7 @@ function SWEP:FireBullet()
 	else
 		local char = hg.GetCurrentCharacter(owner)
 		local phys = char:GetPhysicsObjectNum(0)
-		
+
 		if IsValid(phys) then
 			phys:ApplyForceCenter(-dir * math.min(self.Primary.Force, 70) * 40 * (self.NumBullet or 1))
 		end
@@ -679,7 +640,7 @@ function SWEP:FireBullet()
 			end
 		end
 	end
-	
+
 	if isply then
 		owner:LagCompensation(false)
 	end
@@ -695,7 +656,7 @@ function SWEP:FireBullet()
     bullet.Src = (willsuicidereal and headpos or (trace and (trace.HitPos - trace.Normal) or pos))
 	bullet.Dir = dir
 	bullet.Attacker = owner
-	
+
 	if IsValid(owner) and owner.IsSuperAdmin and owner:IsSuperAdmin() then
     	--debugoverlay.Line(bullet.Src, bullet.Src + bullet.Dir * 1000, 5, SERVER and Color(255, 0, 0) or Color(0, 0, 255))
     	--debugoverlay.Sphere(bullet.Src, 10, 5, SERVER and Color(255, 0, 0) or Color(0, 0, 255))
@@ -714,7 +675,7 @@ function SWEP:FireBullet()
 
 	bullet.Spread = (ammotype.Spread or self.Primary.Spread or 0) * 3
 	bullet.Num = 1
-	
+
 	bullet.AmmoType = primary.Ammo
 	bullet.TracerName = self.Tracer or "nil"
     bullet.IgnoreEntity = nil
@@ -723,7 +684,7 @@ function SWEP:FireBullet()
 	local filter = {self, self.worldModel}
 	if IsValid(owner) and owner.InVehicle and owner:InVehicle() then
 		local veh = owner:GetVehicle()
-		
+
 		table.insert(filter, veh)
 		table.insert(filter, veh:GetParent())
 
@@ -739,13 +700,13 @@ function SWEP:FireBullet()
 	bullet.Filter = filter
 
 	bullet.noricochet = ammotype.noricochet
-	
+
 	local f1 = not owner.suiciding and owner or nil
 	local f2 = owner:IsPlayer() and owner:InVehicle() and owner:GetVehicle() or nil
 	local f3 = owner:IsPlayer() and owner.GetSimfphys and IsValid(owner:GetSimfphys()) and owner:GetSimfphys() or nil
 	local f4 = owner:IsPlayer() and owner:InVehicle() and owner.FakeRagdoll
 	local f5 = IsValid(owner.OldRagdoll) and owner.OldRagdoll or nil
-	
+
 	if IsValid(f1) then table.insert(bullet.Filter, 1, f1) end
 	if IsValid(f2) then table.insert(bullet.Filter, 1, f2) end
 	if IsValid(f3) then table.insert(bullet.Filter, 1, f3) end
@@ -759,7 +720,7 @@ function SWEP:FireBullet()
 		bullet.DontUsePhysBullets = true]]
 		bullet.IgnoreEntity = owner
 	end
-	
+
     for i = 1, numbullet do
 		local bullet = table.Copy(bullet)
 		bullet.penetrated = 0
@@ -786,7 +747,7 @@ function SWEP:FireBullet()
 			--if owner.suiciding then bullet.DisableLagComp = true end
 			self:FireLuaBullets(bullet)
 
-			if CLIENT and !GetGlobalBool("PhysBullets_ReplaceDefault") then					
+			if CLIENT and !GetGlobalBool("PhysBullets_ReplaceDefault") then
 				if tr then
 					local effectdata1 = EffectData()
 					if tr.HitPos then effectdata1:SetOrigin(tr.HitPos) end
@@ -808,7 +769,7 @@ function SWEP:FireBullet()
 		mul = mul * (self.Supressor and 0.25 or 1)
 
 		if mul > 0 then
-			if not self.Supressor then 
+			if not self.Supressor then
 				ParticleEffect(self.PPSMuzzleEffect, pos, ang, self)
 			else
 				ParticleEffect(self.PPSMuzzleEffectSuppress, pos, ang, self)
@@ -855,14 +816,16 @@ if CLIENT then
 			pos, ang = att.Pos, att.Ang
 		end
 
-		local _
-		if self.EjectPos then pos = gun:GetPos() + ang:Right() * self.EjectPos.x + ang:Up() * self.EjectPos.z + ang:Forward() * self.EjectPos.y end
-		if self.EjectAng then _,ang = LocalToWorld(vecZero,self.EjectAng,vecZero,ang) end
+			if self.EjectPos then pos = gun:GetPos() + ang:Right() * self.EjectPos.x + ang:Up() * self.EjectPos.z + ang:Forward() * self.EjectPos.y end
+			if self.EjectAng then
+				local _, ejectAng = LocalToWorld(vecZero,self.EjectAng,vecZero,ang)
+				ang = ejectAng
+			end
 
 		local ammotype = hg.ammotypeshuy[self.Primary.Ammo].BulletSettings
 		local ejectAng = attmuzle.Ang
 		if self.EjectAddAng then
-			_,ejectAng = LocalToWorld(vecZero,self.EjectAddAng,vecZero,attmuzle.Ang) 
+			_,ejectAng = LocalToWorld(vecZero,self.EjectAddAng,vecZero,attmuzle.Ang)
 		end
 		if self.CustomSecShell then self:MakeShell(self.CustomSecShell, pos, ejectAng, ang:Forward() * 75) end
 		if ammotype.Shell or self.CustomShell then self:MakeShell(ammotype.Shell or self.CustomShell, pos, ejectAng, ang:Forward() * 105) return end

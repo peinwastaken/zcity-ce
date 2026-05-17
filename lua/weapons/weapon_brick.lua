@@ -1,4 +1,4 @@
-﻿if SERVER then AddCSLuaFile() end
+if SERVER then AddCSLuaFile() end
 SWEP.Base = "weapon_melee"
 SWEP.PrintName = "Brick"
 SWEP.Instructions = "A heavy construction brick, that can be used as a deadly weapon.\n\nLMB to attack.\nRMB to block.\nRMB + LMB to throw."
@@ -54,7 +54,6 @@ SWEP.HP = 20
 
 function SWEP:PrimaryAttackAdd(ent, trace)
     if SERVER then
-		local dmg = self.DamagePrimary
 		local owner = self:GetOwner()
 
 		if ent then
@@ -80,7 +79,7 @@ function SWEP:CustomAttack2()
 
     local ply = self:GetOwner()
 
-    ent:SetPos(select(1, hg.eye(ply,60,hg.GetCurrentCharacter(ply))) - ply:GetAimVector() * 2)
+    ent:SetPos(hg.eye(ply,60,hg.GetCurrentCharacter(ply)) - ply:GetAimVector() * 2)
     ent:SetAngles(ply:EyeAngles())
     ent:SetOwner(self:GetOwner())
     ent:Spawn()
@@ -118,7 +117,7 @@ function SWEP:CustomBlockAnim(addPosLerp, addAngLerp)
     addAngLerp.r = addAngLerp.r + (self:GetBlocking() and -15 or 0)
     addAngLerp.y = addAngLerp.y + (self:GetBlocking() and -90 or 0)
     addAngLerp.p = addAngLerp.p + (self:GetBlocking() and 90 or 0)
-    
+
     return true
 end
 

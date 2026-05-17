@@ -118,8 +118,6 @@ local whitelist = {
 }
 
 if CLIENT then
-	local col1 = Color(0, 0, 0, 150)
-	local col2 = Color(0, 0, 0, 200)
 
 	local gradient_u = Material("vgui/gradient-u")
 	local function PaintButton(self,w,h)
@@ -157,8 +155,8 @@ if CLIENT then
         frame:SetDeleteOnClose(true)
 
         --frame.Paint = function(self, w, h)
-        --    draw.RoundedBox(10, 0, 0, w, h, col1) 
-        --    surface.SetDrawColor(255, 0, 0, 255) 
+        --    draw.RoundedBox(10, 0, 0, w, h, col1)
+        --    surface.SetDrawColor(255, 0, 0, 255)
         --    surface.DrawOutlinedRect(0, 0, w, h)
         --end
 
@@ -167,15 +165,15 @@ if CLIENT then
 
 		local weps = lply:GetWeapons()
 
-		for i, wep in ipairs(ents.FindInSphere(lply:GetPos(), 64)) do
+		for _, wep in ipairs(ents.FindInSphere(lply:GetPos(), 64)) do
 			if !wep:IsWeapon() or IsValid(wep:GetOwner()) then continue end
 
 			table.insert(weps, wep)
 		end
-		
-		for i, wep in ipairs(weps) do
+
+		for _, wep in ipairs(weps) do
 			if not whitelist[wep:GetClass()] then continue end
-			
+
 			local but = vgui.Create("DButton", dscroll)
 			but:SetText("Poison " .. wep.PrintName)
 			but:SetFont("HomigradFontSmall")
@@ -185,8 +183,8 @@ if CLIENT then
 
 			but.Paint = function(self, w, h)
 				PaintButton(self,w,h)
-				--[[draw.RoundedBox(10, 0, 0, w, h, col2) 
-				surface.SetDrawColor(255, 0, 0, 255) 
+				--[[draw.RoundedBox(10, 0, 0, w, h, col2)
+				surface.SetDrawColor(255, 0, 0, 255)
 				surface.DrawOutlinedRect(0, 0, w, h)]]
 			end
 
@@ -220,9 +218,9 @@ if SERVER then
 		if not IsValid(ply) or not ply:Alive() or ply.organism.otrub then return end
 
 		local weps = ply:GetWeapons()
-		for i, wep in ipairs(ents.FindInSphere(ply:GetPos(), 64)) do
+		for _, wep in ipairs(ents.FindInSphere(ply:GetPos(), 64)) do
 			if !wep:IsWeapon() or IsValid(wep:GetOwner()) then continue end
-			
+
 			table.insert(weps, wep)
 		end
 
@@ -248,7 +246,7 @@ function SWEP:DoPoison(ent)
     local owner = self:GetOwner()
 
     owner:EmitSound("snd_jack_hmcd_needleprick.wav",30)
-	
+
 	ent.poisoned2 = true
 
     self:Remove()
@@ -264,7 +262,7 @@ if SERVER then
 	hook.Add("Org Think", "poison4",function(owner, org, timeValue)
 		if not IsValid(owner) or not owner:IsPlayer() or not owner:Alive() then return end
 		if (not org.poison4) or (not org.alive) then return end
-		
+
 		if (not org.poison4notificate) and ((org.poison4 + 20) < CurTime()) then
 			org.poison4notificate = true
 			org.owner:Notify("Breathing is... oddly harder...", true, "poison4", 3)

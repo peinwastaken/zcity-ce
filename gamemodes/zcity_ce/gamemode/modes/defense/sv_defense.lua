@@ -1,10 +1,10 @@
 --[[
-  _   _                ______       __                       
- | \ | |               |  _  \     / _|                      
- |  \| | _____      __ | | | |____| |_ ___ _ __  ___  ___ 
+  _   _                ______       __
+ | \ | |               |  _  \     / _|
+ |  \| | _____      __ | | | |____| |_ ___ _ __  ___  ___
  | . ` |/ _ \ \ /\ / / | | | / _ \  _/ _ \ '_ \/ __|/ _ \
  | |\  |  __/\ V  V /  | |/ /  __/ |  __/ | | \__ \  __/
- \_| \_/\___| \_/\_/   |___/ \___|_|\___|_| |_|___/\___|                                                
+ \_| \_/\___| \_/\_/   |___/ \___|_|\___|_| |_|___/\___|
 ]]--
 
 local MODE = MODE
@@ -13,8 +13,8 @@ MODE.name = "defense"
 MODE.PrintName = "NPC Defense"
 MODE.randomSpawns = true
 MODE.ROUND_TIME = 10000
-MODE.TotalWaves = 6  
-MODE.CurrentSubMode = "STANDARD" 
+MODE.TotalWaves = 6
+MODE.CurrentSubMode = "STANDARD"
 MODE.LootSpawn = true
 MODE.ForBigMaps = true
 MODE.Chance = 0.02
@@ -47,7 +47,7 @@ local defensePlayerSpawnOffsets = {
 
 util.AddNetworkString("defense_start_vote")
 util.AddNetworkString("defense_submit_vote")
-util.AddNetworkString("defense_change_vote") 
+util.AddNetworkString("defense_change_vote")
 util.AddNetworkString("defense_vote_result")
 util.AddNetworkString("defense_vote_update")
 util.AddNetworkString("defense_show_selected_mode")
@@ -57,13 +57,13 @@ util.AddNetworkString("npc_defense_roundend")
 util.AddNetworkString("npc_defense_prepphase")
 util.AddNetworkString("StartWaveMusic")
 util.AddNetworkString("StopWaveMusic")
-util.AddNetworkString("defense_boss_incoming") 
+util.AddNetworkString("defense_boss_incoming")
 
 MODE.VoteTime = 15
 MODE.VoteResults = {
-    [1] = 0, 
-    [2] = 0, 
-    [3] = 0  
+    [1] = 0,
+    [2] = 0,
+    [3] = 0
 }
 MODE.VoteInProgress = false
 
@@ -75,28 +75,28 @@ end
 
 function MODE:IsBossWave(wave)
     wave = wave or self.Wave
-    
+
     if not self.CurrentSubMode or not wave then return false end
-    
+
     local waveDefinitions = DEFENSE_WAVE_DEFINITIONS[self.CurrentSubMode]
     if not waveDefinitions or not waveDefinitions[wave] then return false end
-    
+
     local currentWave = waveDefinitions[wave]
     for _, npcDef in ipairs(currentWave or {}) do
         if npcDef.boss then
             return true
         end
     end
-    
+
     return false
 end
 
 function MODE:GetCurrentWaveDefinition()
     if not self.CurrentSubMode or not self.Wave then return nil end
-    
+
     local waveDefinitions = DEFENSE_WAVE_DEFINITIONS[self.CurrentSubMode]
     if not waveDefinitions then return nil end
-    
+
     return waveDefinitions[self.Wave]
 end
 
@@ -127,9 +127,9 @@ function MODE:EndWave()
         net.WriteString(DEFENSE_MUSIC.WAITING[self.Wave])
         net.Broadcast()
     end
-    
+
     self.WaveCompleted = true
-    
+
 
     timer.Simple(1, function()
         for _, ent in ents.Iterator() do
@@ -140,7 +140,7 @@ function MODE:EndWave()
                         ent:Remove()
                     end
                 end
-                
+
 
                 if ent:IsWeapon() and not IsValid(ent:GetOwner()) then
                     ent:Remove()
@@ -242,7 +242,7 @@ end
 function MODE:CanLaunch()
     local points = self:GetUsualPlayerSpawnPoints()
     local navAreas = navmesh.GetAllNavAreas() or {}
-    
+
     return (#points > 0) and (#navAreas > 0)
 end
 
@@ -252,7 +252,7 @@ function MODE:Intermission()
     self.WaveActive = false
     self.WaveCompleted = false
 
-    self:ClearAllTimers() 
+    self:ClearAllTimers()
     game.CleanUpMap()
 
     self.SpawnPoints = self:GetUsualPlayerSpawnPoints()
@@ -260,11 +260,11 @@ function MODE:Intermission()
         self.SpawnPoints = {}
     end
 
-    for k, ply in player.Iterator() do
+    for _, ply in player.Iterator() do
         if ply:Team() == TEAM_SPECTATOR then continue end
         ply:SetupTeam(1)
         ply.HasVoted = nil
-        
+
         if ply:Alive() then
             ply:KillSilent()
         end
@@ -276,31 +276,31 @@ end
 
 function MODE:StartVoting()
     self.VoteResults = {
-        [1] = 0, 
-        [2] = 0, 
-        [3] = 0 
+        [1] = 0,
+        [2] = 0,
+        [3] = 0
     }
     self.VoteInProgress = true
 
     net.Start("defense_start_vote")
     net.WriteFloat(CurTime() + self.VoteTime)
     net.Broadcast()
-    
-   
+
+
     self.LastVoteUpdate = CurTime()
     self.VotesChanged = false
-    
+
     self:CreateTimer("vote_end_timer", self.VoteTime, 1, function()
         self:EndVoting()
     end)
-    
-    
+
+
     self:CreateTimer("vote_update_timer", 1, self.VoteTime, function()
         if self.VotesChanged or CurTime() - self.LastVoteUpdate > 5 then
             net.Start("defense_vote_update")
             net.WriteTable(self.VoteResults)
             net.Broadcast()
-            
+
             self.VotesChanged = false
             self.LastVoteUpdate = CurTime()
         end
@@ -309,27 +309,27 @@ end
 
 function MODE:EndVoting()
     self:RemoveTimer("vote_update_timer")
-    
+
     local highestVotes = 0
     local selectedModes = {}
-    
-    for mode, votes in pairs(self.VoteResults) do
+
+    for _, votes in pairs(self.VoteResults) do
         if votes > highestVotes then
             highestVotes = votes
         end
     end
-    
+
     for mode, votes in pairs(self.VoteResults) do
         if votes == highestVotes then
             table.insert(selectedModes, mode)
         end
     end
-    
-    local selectedMode = 1 
+
+    local selectedMode = 1
     if #selectedModes > 0 then
         selectedMode = selectedModes[math.random(#selectedModes)]
     end
-    
+
 
     if selectedMode == 1 then
         self.CurrentSubMode = "STANDARD"
@@ -341,18 +341,18 @@ function MODE:EndVoting()
         self.CurrentSubMode = "ZOMBIE"
         self.TotalWaves = 6
     end
-    
+
     net.Start("defense_vote_result")
     net.WriteString(self.CurrentSubMode)
     net.WriteTable(self.VoteResults)
     net.Broadcast()
-    
+
     net.Start("defense_show_selected_mode")
     net.WriteString(self.CurrentSubMode)
     net.Broadcast()
 
     self.VoteInProgress = false
-    
+
     timer.Simple(3, function()
         net.Start("npc_defense_start")
         net.Broadcast()
@@ -378,8 +378,8 @@ function MODE:StartPrepPhase()
 
     self:CreateTimer("prep_phase_timer", 30, 1, function()
         self.Wave = 1
-        self.NPCCount = 0  
-        self:StartWave()  
+        self.NPCCount = 0
+        self:StartWave()
         self:SpawnWave()
     end)
 
@@ -393,7 +393,7 @@ function MODE:ShouldRoundEnd()
     if self.VoteInProgress then
         return false
     end
-    
+
     if (#zb:CheckAlive(true) <= 0) then
         local menuActive = false
         for _, ply in player.Iterator() do
@@ -402,18 +402,18 @@ function MODE:ShouldRoundEnd()
                 break
             end
         end
-        
+
         if menuActive then
             return false
         end
-        
+
         return true
     end
-    
+
     if self.WaveCompleted and self.Wave >= self.TotalWaves then
         return true
     end
-    
+
     return false
 end
 
@@ -429,7 +429,7 @@ function MODE:RoundThink()
     self.Wave = self.Wave or 0
     self.TotalWaves = self.TotalWaves or 6
     self.WaveCompleted = self.WaveCompleted or false
-    
+
     if not self:IsWaveActive() then
         if self.WaveCompleted and self.Wave and self.TotalWaves and self.Wave >= self.TotalWaves then
             if zb and type(zb.EndMatch) == "function" then
@@ -448,15 +448,15 @@ function MODE:RoundThink()
 
 
     if not self.nextNPCCheck or self.nextNPCCheck < CurTime() then
-        self.nextNPCCheck = CurTime() + 2 
-        
+        self.nextNPCCheck = CurTime() + 2
+
 
         if not self.DefenseWaveEntities then
             self.DefenseWaveEntities = {}
         end
-        
+
         local validNPCCount = 0
-        
+
 
         for id, ent in pairs(self.DefenseWaveEntities) do
             if IsValid(ent) then
@@ -466,13 +466,13 @@ function MODE:RoundThink()
                 end
 
                 local isDead = false
-                
+
                 if ent.IsZBaseNPC then
                     isDead = (ent.Dead == true)
                 elseif ent:IsNPC() then
                     isDead = (ent:Health() <= 0)
                 end
-                
+
 
                 if not isDead and not ent.DefenseNPCCountedAsDead then
                     validNPCCount = validNPCCount + 1
@@ -489,34 +489,34 @@ function MODE:RoundThink()
                 self.DefenseWaveEntities[id] = nil
             end
         end
-        
+
         -- Why are you iterating over all entities; it is obviously better to use ents.FindByClass()
         -- WHY THE HELL IS THIS USING PAIRS AT ALL... and inside Think too D:
         for _, ent in ents.Iterator() do
 			-- poor Deka
             if IsValid(ent) and ent.IsDefenseWaveNPC and not ent.DefenseNPCCountedAsDead then
                 local class = ent:GetClass() or ""
-                
+
 
                 if class == "zb_temporary_ent" then continue end
 
-                if (ent:IsNPC() or 
-                    string.find(class, "npc_vj_") or 
+                if (ent:IsNPC() or
+                    string.find(class, "npc_vj_") or
                     string.find(class, "sent_vj_") or
-                    string.find(class, "zb_") or 
+                    string.find(class, "zb_") or
                     string.find(class, "terminator_nextbot_")) and
-                   class ~= "npc_bullseye" and 
-                   class ~= "npc_enemyfinder" and 
+                   class ~= "npc_bullseye" and
+                   class ~= "npc_enemyfinder" and
                    class ~= "npc_bullseye_new" then
-                    
+
                     local isDead = false
-                    
+
                     if ent.IsZBaseNPC then
                         isDead = (ent.Dead == true)
                     elseif ent:IsNPC() then
                         isDead = (ent:Health() <= 0)
                     end
-                    
+
                     if not isDead then
 
                         if not ent.DefenseEntityID then
@@ -524,7 +524,7 @@ function MODE:RoundThink()
                             self.DefenseWaveEntities[ent.DefenseEntityID] = ent
                             print("[DEFENSE] Found new NPC to track: " .. class)
                         end
-                        
+
                         validNPCCount = validNPCCount + 1
                     else
 
@@ -533,18 +533,18 @@ function MODE:RoundThink()
                 end
             end
         end
-        
+
 
         if validNPCCount != self.NPCCount then
             print("[DEFENSE] NPC Count Updated: " .. self.NPCCount .. " -> " .. validNPCCount)
             self.NPCCount = validNPCCount
         end
-        
+
 
         if self.NPCCount <= 0 and self:IsWaveActive() and not self.WaveSpawnInProgress then
             print("[DEFENSE] Wave Ended: No NPCs remaining!")
             self:EndWave()
-            
+
             if self.Wave < self.TotalWaves then
                 timer.Simple(1, function()
                     if type(self.StartNewWave) == "function" then
@@ -562,14 +562,14 @@ function MODE:EndRound()
     self:EndWave()
     self:ClearPlayerRoles()
     self:ClearAllTimers()
-    
+
 
     self.DefenseWaveEntities = {}
     self.NPCCount = 0
-    
+
 
     for _, ent in ents.Iterator() do
-        if IsValid(ent) and (ent:IsNPC() or 
+        if IsValid(ent) and (ent:IsNPC() or
             string.find(tostring(ent:GetClass() or ""), "npc_vj_") or
             string.find(tostring(ent:GetClass() or ""), "sent_vj_") or
             string.find(tostring(ent:GetClass() or ""), "zb_") or
@@ -585,7 +585,7 @@ end
 
 function MODE:CreateTimer(name, delay, repetitions, func)
     timer.Create(name, delay, repetitions, func)
-    table.insert(self.Timers, name) 
+    table.insert(self.Timers, name)
 end
 
 function MODE:RemoveTimer(name)
@@ -611,26 +611,24 @@ end
 
 net.Receive("defense_submit_vote", function(len, ply)
     if not IsValid(ply) then return end
-    
+
 
     if not ply.LastVoteTime then ply.LastVoteTime = 0 end
     if CurTime() - ply.LastVoteTime < 1 then return end
     ply.LastVoteTime = CurTime()
-    
+
     local vote = net.ReadInt(4)
     if vote < 1 or vote > 3 then return end
 
     local MODE = CurrentRound()
     if not MODE or MODE.name ~= "defense" or not MODE.VoteInProgress then return end
-    
+
     if not ply.HasVoted then
         MODE.VoteResults[vote] = MODE.VoteResults[vote] + 1
-        ply.HasVoted = vote 
-        
-        
+        ply.HasVoted = vote
+
         MODE.VotesChanged = true
-        
-        
+
         if CurTime() - MODE.LastVoteUpdate > 2 or math.random(1, 3) == 1 then
             net.Start("defense_vote_update")
             net.WriteTable(MODE.VoteResults)
@@ -643,30 +641,27 @@ end)
 
 net.Receive("defense_change_vote", function(len, ply)
     if not IsValid(ply) then return end
-    
+
     if not ply.LastVoteChangeTime then ply.LastVoteChangeTime = 0 end
     if CurTime() - ply.LastVoteChangeTime < 1 then return end
     ply.LastVoteChangeTime = CurTime()
-    
-    local previousVote = net.ReadInt(4)
+
     local newVote = net.ReadInt(4)
-    
+
     if newVote < 1 or newVote > 3 then return end
-    
+
     local MODE = CurrentRound()
     if not MODE or MODE.name ~= "defense" or not MODE.VoteInProgress then return end
-    
+
     if ply.HasVoted and ply.HasVoted > 0 and ply.HasVoted <= 3 then
         MODE.VoteResults[ply.HasVoted] = math.max(0, MODE.VoteResults[ply.HasVoted] - 1)
     end
-    
+
     MODE.VoteResults[newVote] = MODE.VoteResults[newVote] + 1
     ply.HasVoted = newVote
-    
-    
+
     MODE.VotesChanged = true
-    
-    
+
     if CurTime() - MODE.LastVoteUpdate > 1 then
         net.Start("defense_vote_update")
         net.WriteTable(MODE.VoteResults)
@@ -675,6 +670,5 @@ net.Receive("defense_change_vote", function(len, ply)
         MODE.VotesChanged = false
     end
 end)
-
 
 

@@ -152,7 +152,6 @@ local anims = {
 }
 
 function SWEP:AnimationPostPost()
-	local wep = self:GetWeaponEntity()
 	local animpos = math.Clamp(self:GetAnimPos_Draw(CurTime()), 0, 1)
 	local sin = 1 - animpos
 
@@ -168,7 +167,7 @@ function SWEP:AnimationPostPost()
 
 		local lohsin = math.floor(sin * (#anims))
 		local lerp = sin * (#anims) - lohsin
-		
+
 		self.RHPosOffset = Lerp(lerp, anims[math.Clamp(lohsin, 1, #anims)], anims[math.Clamp(lohsin + 1, 1, #anims)])
 		self.RHPos[1] = 2 - sin * -2
 		self.RHPos[2] = -4 - sin * -4

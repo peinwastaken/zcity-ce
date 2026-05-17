@@ -1,4 +1,4 @@
--- 
+--
 util.AddNetworkString("Get_Appearance")
 util.AddNetworkString("OnlyGet_Appearance")
 hg.Appearance = hg.Appearance or {}
@@ -180,13 +180,13 @@ function ApplyAppearanceRagdoll(ent, ply)
 
     local tMdl = APmodule.PlayerModels[1][ent:GetModel()] or APmodule.PlayerModels[2][ent:GetModel()] or ent:GetModel()
     if istable(tMdl) then
-        for k,v in pairs(tMdl.submatSlots) do
+        for k,_ in pairs(tMdl.submatSlots) do
             ent:SetNWString("Colthes" .. k,ply:GetNWString("Colthes" .. k,"normal"))
         end
     end
 end
 
--- Sandbox applyApperance 
+-- Sandbox applyApperance
 if engine.ActiveGamemode() == "sandbox" then
     hook.Add("PlayerSpawn","SetAppearance",function(ply)
         if OverrideSpawn then return end

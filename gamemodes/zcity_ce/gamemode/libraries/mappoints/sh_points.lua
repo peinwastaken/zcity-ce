@@ -43,48 +43,48 @@ if CLIENT then
         local radius = 4
         local wideSteps = 10
         local tallSteps = 10
-        
+
         local angeye = LocalPlayer():EyeAngles()
-        
+
         angeye:RotateAroundAxis( angeye:Forward(), 90 )
         angeye:RotateAroundAxis( angeye:Right(), 90 )
-    
+
         for id, points in ipairs(zb.ClPoints) do
             for id2, point in ipairs(points) do
                 local pos = point.pos
                 local ang = point.ang
-    
+
                 render.SetColorMaterial() -- white material for easy coloring
-    
+
                 local color = zb.Points[id].Color
                 local name = zb.Points[id].Name
                 local text = name .. " #" .. id2
                 local txtsize = surface.GetTextSize(text)
-                
+
                 cam.IgnoreZ( true ) -- makes next draw calls ignore depth and draw on top
-                    render.DrawWireframeBox( pos, ang, Vector(15,1,1), -Vector(0,1,1), color ) -- draws the box 
+                    render.DrawWireframeBox( pos, ang, Vector(15,1,1), -Vector(0,1,1), color ) -- draws the box
                     render.DrawWireframeSphere( pos, radius, wideSteps, tallSteps, color )
-    
+
                     if showpointnames:GetBool() then
                         cam.Start3D2D( pos, angeye, 0.2 )
                             surface.SetDrawColor(0,0,0,235)
                             surface.DrawRect(-txtsize/2 -20, -7.5, 15, 15)
-    
+
                             surface.SetDrawColor(color.r,color.g,color.b,255)
                             surface.DrawRect(-txtsize/2 -19, -6, 13, 13)
-    
+
                             draw.SimpleTextOutlined( text, "ChatFont", 0, 0, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black )
                         cam.End3D2D()
                     end
-    
+
                 cam.IgnoreZ( false ) -- disables previous call
             end
         end
     end
 
-    local drawpoints = CreateConVar( "zb_drawpoints", "0", FCVAR_PROTECTED, "Draw map points if player is admin", 0, 1 )
+    CreateConVar( "zb_drawpoints", "0", FCVAR_PROTECTED, "Draw map points if player is admin", 0, 1 )
     cvars.AddChangeCallback("zb_drawpoints", function(convar_name, value_old, value_new)
-        if tobool(value_new) then 
+        if tobool(value_new) then
             hook.Add("PostDrawOpaqueRenderables", "RenderPoints", zb.DrawPoints)
             zb.GetAllPoints()
         else
@@ -96,7 +96,7 @@ if CLIENT then
         if not ply:IsAdmin() then return end
         zb.GetAllPoints()
     end )
-    
+
 end
 
 --PrintTable(zb.GetAllPoints())

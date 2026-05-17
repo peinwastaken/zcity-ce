@@ -1,5 +1,5 @@
 --[[
-	
+
 3D2D VGUI Wrapper
 Copyright (c) 2015-2017 Alexander Overvoorde, Matt Stevens
 
@@ -35,13 +35,13 @@ local function getCursorPos()
 	local x,y = input.GetCursorPos()
 	--gui.ScreenToVector(x,y)
 	local dir = util.AimVector(view.angles,view.fov,x,y,ScrW(),ScrH())
-	
+
 	local p = util.IntersectRayWithPlane(view.origin, dir, origin, normal)
 
 	-- if there wasn't an intersection, don't calculate anything.
 	if not p then return end
 	if WorldToLocal(view.origin, Angle(0,0,0), origin, angle).z < 0 then return end
-	
+
 	if maxrange > 0 then
 		if p:Distance(LocalPlayer():EyePos()) > maxrange then
 			return
@@ -49,7 +49,7 @@ local function getCursorPos()
 	end
 
 	local pos = WorldToLocal(p, Angle(0,0,0), origin, angle)
-	
+
 	return pos.x, -pos.y
 end
 vgui.getCursorPos3D2D = getCursorPos
@@ -67,13 +67,13 @@ end
 local function absolutePanelPos(pnl)
 	local x, y = pnl:GetPos()
 	local parents = getParents(pnl)
-	
+
 	for _, parent in ipairs(parents) do
 		local px, py = parent:GetPos()
 		x = x + px
 		y = y + py
 	end
-	
+
 	return x, y
 end
 
@@ -94,24 +94,21 @@ end
 local inputWindows = {}
 local usedpanel = {}
 
-local function isMouseOver(pnl)
-	return pointInsidePanel(pnl, getCursorPos())
-end
 
 local function postPanelEvent(pnl, event, ...)
 	if not IsValid(pnl) or not pnl:IsVisible() or not pointInsidePanel(pnl, getCursorPos()) then return false end
 
 	local handled = false
-	
-	for i, child in pairs(table.Reverse(pnl:GetChildren())) do
+
+	for _, child in pairs(table.Reverse(pnl:GetChildren())) do
 		if not child:IsMouseInputEnabled() then continue end
-		
+
 		if postPanelEvent(child, event, ...) then
 			handled = true
 			break
 		end
 	end
-	
+
 	if not handled and pnl[event] then
 		pnl[event](pnl, ...)
 		usedpanel[pnl] = {...}
@@ -128,9 +125,9 @@ local function checkHover(pnl, x, y, found)
 	end
 
 	local validchild = false
-	for c, child in pairs(table.Reverse(pnl:GetChildren())) do
+	for _, child in pairs(table.Reverse(pnl:GetChildren())) do
 		if not child:IsMouseInputEnabled() then continue end
-		
+
 		local check = checkHover(child, x, y, found or validchild)
 
 		if check then
@@ -164,7 +161,7 @@ local lmbpressed,rmbpressed
 hook.Add("SetupMove", "VGUI3D2DMousePress", function(ply,mv,cmd)
 	local LMB = input.IsMouseDown(MOUSE_LEFT)
 	local RMB = input.IsMouseDown(MOUSE_RIGHT)
-	
+
 	lmbpressed = false
 	rmbpressed = false
 	if LMB then
@@ -194,7 +191,7 @@ hook.Add("SetupMove", "VGUI3D2DMousePress", function(ply,mv,cmd)
 				normal = pnl.Normal
 
 				local key = lmbpressed and MOUSE_LEFT or MOUSE_RIGHT
-				
+
 				postPanelEvent(pnl, "OnMousePressed", key)
 			end
 		end
@@ -226,7 +223,7 @@ function vgui.Start3D2D(pos, ang, res)
 	angle = ang
 	normal = ang:Up()
 	maxrange = 0
-	
+
 	cam.Start3D2D(pos, ang, res)
 	is3d2d = true
 end
@@ -247,7 +244,7 @@ end
 local Panel = FindMetaTable("Panel")
 function Panel:Paint3D2D()
 	if not self:IsValid() then return end
-	
+
 	-- Add it to the list of windows to receive input
 	inputWindows[self] = true
 
@@ -255,41 +252,41 @@ function Panel:Paint3D2D()
 	local oldMouseX = gui.MouseX
 	local oldMouseY = gui.MouseY
 	local cx, cy = getCursorPos()
-	
+
 	function gui.MouseX()
 		return (cx or 0) / scale
 	end
 	function gui.MouseY()
 		return (cy or 0) / scale
 	end
-	
+
 	--surface.DrawRect(gui.MouseX() - 5,gui.MouseY() - 5,10,10)
 
 	-- Override think of DFrame's to correct the mouse pos by changing the active orientation
 	if self.Think then
 		if not self.OThink then
 			self.OThink = self.Think
-			
+
 			self.Think = function()
 				origin = self.Origin
 				scale = self.Scale
 				angle = self.Angle
 				normal = self.Normal
-				
+
 				self:OThink()
 			end
 		end
 	end
-	
+
 	-- Update the hover state of controls
-	local _, tab = checkHover(self)
-	
+	checkHover(self)
+
 	-- Store the orientation of the window to calculate the position outside the render loop
 	self.Origin = origin
 	self.Scale = scale
 	self.Angle = angle
 	self.Normal = normal
-	
+
 	-- Draw it manually
 	self:SetPaintedManually(false)
 		self:PaintManual()

@@ -1,4 +1,4 @@
---[[ 
+--[[
     TO-DO:
         - Transition from ambient to dynamic music
         - Sync with server mode -
@@ -17,7 +17,6 @@ hg.DynaMusic = hg.DynaMusic or {}
 local DMusic = hg.DynaMusic
 
 DMusic.MusicMeta = DMusic.MusicMeta or {}
-local musMeta = DMusic.MusicMeta
 
 DMusic.CurrentPack = DMusic.CurrentPack or "mirrors_edge"
 DMusic.Tracks = DMusic.Tracks or nil
@@ -25,12 +24,12 @@ DMusic.Tracks = DMusic.Tracks or nil
 function DMusic:Start( strPack, strTrack )
     DMusic.CurrentPack = strPack or DMusic.CurrentPack
     DMusic.Tracks = DMusic.Tracks or {}
-    for k, v in pairs(DMusic.Tracks) do
+    for _, v in pairs(DMusic.Tracks) do
         if IsValid(v[1]) then v[1]:Stop() v[1] = nil end
     end
     table.Empty( DMusic.Tracks )
-    for k, song in pairs( 
-        strTrack and DMusic.Pack[DMusic.CurrentPack][strTrack] or 
+    for k, song in pairs(
+        strTrack and DMusic.Pack[DMusic.CurrentPack][strTrack] or
         table.Random(DMusic.Pack[DMusic.CurrentPack])
     ) do
         --print(k)
@@ -51,7 +50,7 @@ end
 DMusic.threaded = 0.0
 function DMusic:Stop()
     DMusic.Tracks = DMusic.Tracks or {}
-    for k, v in pairs(DMusic.Tracks) do
+    for _, v in pairs(DMusic.Tracks) do
         if IsValid(v[1]) then v[1]:Stop() v[1] = nil end
     end
     table.Empty( DMusic.Tracks )
@@ -61,14 +60,14 @@ end
 local hg_sound = ConVarExists("hg_dmusic") and GetConVar("hg_dmusic") or CreateClientConVar("hg_dmusic","1",true,false,"Enable dynamic music (Enable music in gmod settings)",0,1)
 
 concommand.Add("hg_dmusic_skip",function()
-    if not DMusic.Tracks then return end 
-    for adr,song in pairs(DMusic.Tracks) do
+    if not DMusic.Tracks then return end
+    for _,song in pairs(DMusic.Tracks) do
         song[3] = false
     end
 end)
 local MusicVolume = GetConVar("snd_musicvolume")
 hook.Add( "Think", "DMusic.Think", function()
-    if not DMusic.Tracks then return end 
+    if not DMusic.Tracks then return end
     local ply = LocalPlayer()
     if not ply:Alive() then DMusic.threaded = 0 end
     local i = 1
@@ -90,11 +89,11 @@ hook.Add( "Think", "DMusic.Think", function()
         --print(adr)
         --print(threaded, ( Keys[i+1] or 5 ),threaded < ( Keys[i+1] or 5 ))
         if DMusic.threaded < ( Keys[i+1] or 5 ) and
-            DMusic.threaded >= adr and 
-            ply:Alive() and not 
+            DMusic.threaded >= adr and
+            ply:Alive() and not
             ply.organism.otrub and
-            hg_sound:GetBool() and 
-            (song[3]) 
+            hg_sound:GetBool() and
+            (song[3])
         then
             if song[1]:GetTime() > song[1]:GetLength() - 1 then
                 --song[3] = song[3] + 1
@@ -124,7 +123,7 @@ hook.Add( "Think", "DMusic.Think", function()
             end
         end
         i = i + 1
-    end 
+    end
     --if PlyAdr < 0.01 then
     DMusic.threaded = math.max(DMusic.threaded - FrameTime()*0.2,0)
     --end

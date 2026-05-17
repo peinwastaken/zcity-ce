@@ -27,9 +27,9 @@ util.AddNetworkString("tdm_start")
 function MODE:Intermission()
 	game.CleanUpMap()
 
-	for i, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		ply:SetupTeam(ply:Team())
-		
+
 		ply:SetNWInt( "TDM_Money", self.StartMoney )
 	end
 
@@ -42,12 +42,12 @@ function MODE:CheckAlivePlayers()
 end
 
 function MODE:ShouldRoundEnd()
-	local endround, winner = zb:CheckWinner(self:CheckAlivePlayers())
+	local endround, _ = zb:CheckWinner(self:CheckAlivePlayers())
 	return endround
 end
 
 function MODE:RoundStart()
-	for k,ply in player.Iterator() do
+	for _,ply in player.Iterator() do
 		ply:Freeze(false)
 	end
 end
@@ -61,23 +61,7 @@ local tblweps = {
 	},
 }
 
-local tblatts = {
-	[0] = {
-		{""},
-	},
-	[1] = {
-		{"holo14","laser2","grip3"},
-	},
-}
 
-local tblarmors = {
-	[0] = {
-		{"vest4","helmet1"},
-	},
-	[1] = {
-		{"vest4","helmet1"},
-	},
-}
 
 -- local giveweapons = CreateConVar("zb_tdm_giveweapon","1",FCVAR_LUA_SERVER,"TDMSPAWNS",0,1)
 
@@ -86,11 +70,11 @@ end
 
 function MODE:GiveEquipment()
 	timer.Simple(0.1,function()
-		local mrand = math.random(#tblweps[0])
+		math.random(#tblweps[0])
 
 		for _, ply in player.Iterator() do
 			if not ply:Alive() then continue end
-			
+
 			local inv = ply:GetNetVar("Inventory")
 			inv["Weapons"]["hg_sling"] = true
 			ply:SetNetVar("Inventory",inv)
@@ -111,7 +95,7 @@ function MODE:GiveEquipment()
 			--[[if giveweapons:GetBool() then
 				local gun = ply:Give(tblweps[ply:Team()][mrand])
 				ply:GiveAmmo(gun:GetMaxClip1() * 3,gun:GetPrimaryAmmoType(),true)
-				
+
 				hg.AddAttachmentForce(ply,gun,tblatts[ply:Team()][mrand])
 				hg.AddArmor(ply, tblarmors[ply:Team()][mrand])
 
@@ -131,7 +115,7 @@ function MODE:GiveEquipment()
 
 			local Radio = ply:Give("weapon_walkie_talkie")
 			Radio.Frequency = (ply:Team() == 1 and math.Round(math.Rand(88,95),1)) or math.Round(math.Rand(100,108),1)
-			local hands = ply:Give("weapon_hands_sh")
+			ply:Give("weapon_hands_sh")
 			ply:SelectWeapon("weapon_hands_sh")
 
 			timer.Simple(0.1,function()
@@ -159,8 +143,8 @@ function MODE:EndRound()
 		net.Start("tdm_roundend")
 		net.Broadcast()
 	end)
-	local endround, winner = zb:CheckWinner(self:CheckAlivePlayers())
-	for k,ply in player.Iterator() do
+	local _, winner = zb:CheckWinner(self:CheckAlivePlayers())
+	for _,ply in player.Iterator() do
 		if ply:Team() == winner then
 			ply:GiveExp(math.random(15,30))
 			ply:GiveSkill(math.Rand(0.1,0.15))
@@ -212,7 +196,7 @@ net.Receive("tdm_buyitem",function(len,ply)
 
 	if ((ply:GetNWInt("TDM_Money",0) - item.Price) < 0) then ply:ChatPrint("Not enough money.") return end
 	local ent = ply:Give(item.ItemClass)
-	
+
 	if ent.Use and IsValid(ent) then
 		ent:Use( ply )
 	end

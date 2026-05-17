@@ -29,7 +29,7 @@ function hg.DrawBlur(panel, amount, passes, alpha)
 		for i = -(passes or 0.2), 1, 0.2 do
 			blur:SetFloat("$blur", i * amount)
 			blur:Recompute()
-			
+
 			render.UpdateScreenEffectTexture()
 			surface.DrawTexturedRect(x * -1, y * -1, ScrW(), ScrH())
 		end
@@ -77,7 +77,7 @@ local team_GetAllTeams = team.GetAllTeams
 
 function zb:CheckTeams()
 	local tbl = {}
-	for i, info in pairs(team_GetAllTeams()) do
+	for i, _ in pairs(team_GetAllTeams()) do
 		tbl[i] = {}
 	end
 
@@ -90,7 +90,7 @@ end
 function zb:CheckAliveTeams(incapacitatedcheck)
 	local tbl = {}
 
-	for i, info in pairs(team_GetAllTeams()) do
+	for i, _ in pairs(team_GetAllTeams()) do
 		if i == TEAM_UNASSIGNED or i == TEAM_SPECTATOR then continue end
 		tbl[i] = {}
 	end
@@ -121,7 +121,7 @@ function zb:CheckPlaying()
 	for _, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		if not ply:Alive() then continue end
-		
+
 		tbl[#tbl + 1] = ply
 	end
 	return tbl

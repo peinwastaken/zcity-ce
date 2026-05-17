@@ -38,7 +38,6 @@ function SWEP:SetupDataTables()
 	self:NetworkVar("Float",0,"Holding")
 end
 
-local bone, name
 function SWEP:BoneSet(lookup_name, vec, ang)
 	if IsValid(self:GetOwner()) and !self:GetOwner():IsPlayer() then return end
 	hg.bone.Set(self:GetOwner(), lookup_name, vec, ang)
@@ -86,7 +85,7 @@ function SWEP:PrimaryAttack()
 
 	if self:GetHolding() < 100 then return end
 	if CLIENT then return end
-		
+
 	self:SetCharge(Tr)
 end
 
@@ -99,7 +98,6 @@ end
 
 function SWEP:SetCharge(Tr)
 	if CLIENT then return end
-	local owner = self:GetOwner()
 	if IsValid(Tr.Entity) then
 		local charge = ents.Create("ent_hg_breachcharge")
 		local ang = Tr.HitNormal:Angle()
@@ -136,7 +134,7 @@ end
 if CLIENT then
 	local csent = ClientsideModel(SWEP.WorldModel)
 	csent:SetNoDraw(true)
-	
+
 	function SWEP:DrawHUD()
 		if not IsValid(csent) then
             csent = ClientsideModel(self.WorldModel)
@@ -147,7 +145,7 @@ if CLIENT then
 		local tr = ply:GetEyeTrace()
 
 		if not tr.Hit or tr.HitSky or not InPlacementRadius(ply, tr) then return end
-		if not IsValid(tr.Entity) then return end 
+		if not IsValid(tr.Entity) then return end
 		if tr.Entity and tr.Entity:IsPlayer() then return end
 		if not ((tr.Entity:GetClass() == "func_door_rotating") or (tr.Entity:GetClass() == "prop_door_rotating") or (tr.Entity:GetClass() == "func_door") or (tr.Entity:GetClass() == "func_physbox")) then return end
 		local pos, ang = tr.HitPos, tr.HitNormal:Angle()

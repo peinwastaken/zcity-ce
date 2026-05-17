@@ -212,7 +212,7 @@ SWEP.availableAttachments = {
 		}
 	},
 	grip = {
-		["mount"] = Vector(15, 1.2, 0.1), 
+		["mount"] = Vector(15, 1.2, 0.1),
 		["mountType"] = "picatinny"
 	}
 }
@@ -232,7 +232,6 @@ function SWEP:DrawPost()
 	if CLIENT and IsValid(wep) then
 		self.shooanim = LerpFT(0.4,self.shooanim or 0,((self:Clip1() > 0 or self.reload) and 0) or 1.8)
 		wep:ManipulateBonePosition(48,Vector(0 ,0 ,-1*self.shooanim ),false)
-		local mul = self:Clip1() > 0 and 1 or 0
 		--wep:ManipulateBoneScale(12,Vector(mul,mul,mul),false)
 	end
 end

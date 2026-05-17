@@ -28,9 +28,9 @@ end
 
 function MODE:OnWaveComplete()
     if not self.CurrentSubMode then return end
-    
+
     local pointsPerWave = DEFENSE_COMMANDER_ECONOMY.POINTS_PER_WAVE[self.CurrentSubMode] or 50
-    
+
 
     local isBossWave = false
     if self.IsBossWave and type(self.IsBossWave) == "function" then
@@ -48,17 +48,17 @@ function MODE:OnWaveComplete()
             end
         end
     end
-    
+
 
     if isBossWave then
         pointsPerWave = pointsPerWave * 2
-        
+
 
         for _, ply in player.Iterator() do
             if ply:GetNWString("PlayerRole") == "Commander" and ply:Alive() then
                 local currentPoints = ply:GetNWInt("CommanderPoints", 0)
                 ply:SetNWInt("CommanderPoints", currentPoints + pointsPerWave)
-                
+
                 net.Start("defense_commander_notification")
                 net.WriteString("You received double points for defeating the boss!")
                 net.WriteInt(pointsPerWave, 16)
@@ -84,24 +84,24 @@ function MODE:AssignPlayerRoles()
     end
 
     local numPlayers = #players
-    local numMedics = math.max(1, math.floor(numPlayers / 4)) 
-    local numEngineers = math.max(1, math.floor(numPlayers / 6)) 
+    local numMedics = math.max(1, math.floor(numPlayers / 4))
+    local numEngineers = math.max(1, math.floor(numPlayers / 6))
 
     table.Shuffle(players)
 
     local function EquipBaseGear(ply)
         if not ply or not IsValid(ply) then return end
-        
+
         local inv = ply:GetNetVar("Inventory")
         if not inv or not inv["Weapons"] then return end
-        
+
         inv["Weapons"]["hg_sling"] = true
         ply:SetNetVar("Inventory", inv)
 
 
         local weaponClass = DEFENSE_WEAPONS[0][math.random(#DEFENSE_WEAPONS[0])]
         local gun = ply:Give(weaponClass)
-        
+
 
         timer.Simple(0.2, function()
             if IsValid(ply) and IsValid(gun) then
@@ -130,28 +130,28 @@ function MODE:AssignPlayerRoles()
     if commander then
         commander:SetNWString("PlayerRole", "Commander")
         commander:SetNWInt("CommanderPoints", DEFENSE_COMMANDER_ECONOMY.STARTING_POINTS)
-        
+
 
         net.Start("defense_player_role_assigned")
         net.WriteString("Commander")
         net.Send(commander)
-        
+
         EquipBaseGear(commander)
     end
 
-    for i = 1, numMedics do
+    for _ = 1, numMedics do
         local ply = table.remove(players, math.random(#players))
         if not ply or not IsValid(ply) then continue end
         ply:SetNWString("PlayerRole", "Medic")
         EquipBaseGear(ply)
         ply:Give("weapon_medkit_sh")
         local wep = ply:Give("weapon_bloodbag")
-        timer.Simple(0.2, function() 
-            if IsValid(wep) then 
+        timer.Simple(0.2, function()
+            if IsValid(wep) then
                 wep.modeValues = wep.modeValues or {}
-                wep.modeValues[1] = 1 
-                wep.bloodtype = "o-" 
-            end 
+                wep.modeValues[1] = 1
+                wep.bloodtype = "o-"
+            end
         end)
         ply:Give("weapon_painkillers")
         ply:Give("weapon_betablock")
@@ -159,7 +159,7 @@ function MODE:AssignPlayerRoles()
         ply:Give("weapon_morphine")
     end
 
-    for i = 1, numEngineers do
+    for _ = 1, numEngineers do
         local ply = table.remove(players, math.random(#players))
         if not ply or not IsValid(ply) then continue end
         ply:SetNWString("PlayerRole", "Engineer")
@@ -191,7 +191,7 @@ function MODE:GetPlySpawn(ply)
             ply:SetEyeAngles(Angle(0, spawnPoint.ang.y, 0))
         end
 
-        if #self.SpawnPoints > 1 then 
+        if #self.SpawnPoints > 1 then
             table.remove(self.SpawnPoints, spawnIndex)
         end
 
@@ -213,7 +213,7 @@ function MODE:GiveEquipment()
         if not ply:Alive() or ply:Team() == TEAM_SPECTATOR then
             continue
         end
-        
+
         ply:SetSuppressPickupNotices(true)
         ply.noSound = true
 
@@ -243,11 +243,11 @@ function SetCommanderRoleByID(playerID)
     local ply = Player(playerID)
     if IsValid(ply) then
         ply:SetNWString("PlayerRole", "Commander")
-        
+
         net.Start("defense_player_role_assigned")
         net.WriteString("Commander")
         net.Send(ply)
-        
+
         ply:ChatPrint("u are cmd now")
     end
 end

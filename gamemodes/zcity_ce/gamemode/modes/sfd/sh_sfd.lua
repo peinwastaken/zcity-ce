@@ -1,4 +1,3 @@
-
 local MODE = MODE
 
 hook.Add( "StartCommand", "DisallowShoting", function( ply, mv )

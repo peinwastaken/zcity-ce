@@ -3,7 +3,7 @@ function EFFECT:Init(data)
 	local emitter = ParticleEmitter(Pos)
 
 	if emitter then
-		for i = 1, 10 do
+		for _ = 1, 10 do
 			local ParticlePos = Pos + Dir * math.random(-50, 200)
 			local particle = emitter:Add("particle/smokestack", ParticlePos)
 			particle:SetVelocity(Dir * math.random(500, 5000))

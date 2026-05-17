@@ -11,26 +11,11 @@ if CLIENT then
 		weapon_pistol = true,
 		weapon_crossbow = true
 	}
-	
-	local models_female = {
-		["models/player/group01/female_01.mdl"] = true,
-		["models/player/group01/female_02.mdl"] = true,
-		["models/player/group01/female_03.mdl"] = true,
-		["models/player/group01/female_04.mdl"] = true,
-		["models/player/group01/female_05.mdl"] = true,
-		["models/player/group01/female_06.mdl"] = true,
-		["models/player/group03/female_01.mdl"] = true,
-		["models/player/group03/female_02.mdl"] = true,
-		["models/player/group03/female_03.mdl"] = true,
-		["models/player/group03/female_04.mdl"] = true,
-		["models/player/group03/female_05.mdl"] = true,
-		["models/player/group03/police_fem.mdl"] = true
-	}
-	
-	local PixVis
+
+
 	hook.Add("Initialize", "SetupPixVis", function() PixVis = util.GetPixelVisibleHandle() end)
 	local islply
-	
+
 	local blmodels = {
 		["models/monolithservers/kerry/swat_male_02.mdl"] = true,
 		["models/monolithservers/kerry/swat_male_04.mdl"] = true,
@@ -91,16 +76,16 @@ if CLIENT then
 	function RenderArmors(ply, armors, ent)
 
 		if not IsValid(ply) or not armors then return end
-	
+
 		--if armors and #armors < 1 then return end
-		
+
 		local wep = ply:IsPlayer() and ply:GetActiveWeapon()
-		
+
 		islply = ((ply:IsRagdoll() and hg.RagdollOwner(ply)) or ply) == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer())) and GetViewEntity() == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer()))
-	
+
 		if islply and IsValid(wep) and whitelist[wep:GetClass()] then
 			if not ent.modelArmor then return end
-			for k,v in ipairs(ent.modelArmor) do
+			for _,v in ipairs(ent.modelArmor) do
 				if IsValid(v) then
 					v:Remove()
 					v = nil
@@ -108,11 +93,11 @@ if CLIENT then
 			end
 			return
 		end
-		
-	
+
+
 		if not ent.shouldTransmit or ent.NotSeen then
 			if not ent.modelArmor then return end
-			for k,v in ipairs(ent.modelArmor) do
+			for _,v in ipairs(ent.modelArmor) do
 				if IsValid(v) then
 					v:Remove()
 					v = nil
@@ -120,17 +105,17 @@ if CLIENT then
 			end
 			return
 		end
-		
+
 		DrawArmors(ply,armors,ent)
 
-	end	
+	end
 
 	function DrawArmors(ply, armors, ent)
 		if not IsValid(ply) or not armors then return end
 		if blmodels[ply:GetModel()] then return end
 		local lply = LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect")
 		islply = ((ply:IsRagdoll() and hg.RagdollOwner(ply)) or ply) == lply and (LocalPlayer():Alive() and (GetViewEntity() == lply) or (viewmode == 1))
-		
+
 		for placement, armor in pairs(armors) do
 			if placement == "torso" and blVestmodels[ply:GetModel()] then continue end
 			local armorData = hg.armor[placement][armor]
@@ -158,7 +143,7 @@ if CLIENT then
 				if not armorData.nobonemerge then
 					model:AddEffects(EF_BONEMERGE)
 				end
-				
+
 				ply:CallOnRemove("removearmors"..placement,function()
 					if ply.modelArmor and IsValid(model) then
 						model:Remove()
@@ -172,15 +157,15 @@ if CLIENT then
 					end
 				end)
 			end
-			
+
 			local ent = hg.GetCurrentCharacter(ply)
-	
+
 			if not IsValid(ent) then return end
-	
+
 			local model = ply.modelArmor[armor]
-			
+
 			if not IsValid(model) then return end
-			
+
 			if ent.NotSeen or not ent.shouldTransmit then
 				return
 			end
@@ -189,12 +174,12 @@ if CLIENT then
 			if mdl and model:GetFlexIDByName(mdl) then
 				model:SetFlexWeight(model:GetFlexIDByName(mdl),1)
 			end
-			
+
 			local matrix = ent:GetBoneMatrix(ent:LookupBone(armorData["bone"]))
 			if not matrix then
 				return
 			end
-			
+
 			local bonePos, boneAng = matrix:GetTranslation(), matrix:GetAngles()
 			bonePos:Add(boneAng:Forward() * (fem and armorData.femPos[1] or 0) + boneAng:Up() * (fem and armorData.femPos[2] or 0) + boneAng:Right() * (fem and armorData.femPos[3] or 0))
 			local pos, ang = LocalToWorld(armorData[3], armorData[4], bonePos, boneAng)
@@ -202,23 +187,22 @@ if CLIENT then
 			model:SetRenderAngles(ang)
 
 			model:SetParent(ent,ent:LookupBone(armorData["bone"]))
-			
+
 			--model:SetupBones()
-			
+
 			if not (islply and armorData.norender) then
 				model:DrawModel()
 			end
 		end
 	end
-	
+
 	hook.Add("OnNetVarSet","ArmorVarSet",function(index, key, var)
 		if key == "Armor" then
 			timer.Simple(.1,function()
 				local ent = Entity(index)
 
-				local armors = ent.armors or {}
 
-				for k,v in pairs(ent.modelArmor or {}) do
+				for k,_ in pairs(ent.modelArmor or {}) do
 					if IsValid(ent.modelArmor[k]) then
 						ent.modelArmor[k]:Remove()
 					end
@@ -229,7 +213,7 @@ if CLIENT then
 			end)
 		end
 	end)
-	
+
 	local mat = Material("sprites/mat_jack_hmcd_helmover")
 	loopingsound = nil
 
@@ -239,7 +223,7 @@ if CLIENT then
 		local layers, density, alpha = 1, density or .4, alpha or 255
 		surface.SetDrawColor(255, 255, 255, alpha)
 		surface.SetMaterial(blurMat2)
-		local FrameRate, Num, Dark = 1 / FrameTime(), 3, 150
+		local FrameRate, Num, _ = 1 / FrameTime(), 3, 150
 
 		for i = 1, Num do
 			blurMat2:SetFloat("$blur", (i / layers) * density * Dynamic2)
@@ -254,7 +238,6 @@ if CLIENT then
 	local BlurAfterNVG = 5
 	local CustomSndPlayed = false
 	local NVGEnabled = false
-	local cd = 0
 
 	hook.Add( "Think", "NVGEnabling", function( )
 		--print(lply:GetNWBool("NVG_Enabled", false))
@@ -269,7 +252,6 @@ if CLIENT then
 		end
 	end )
 
-	local white = Material("color/white")
 	local brainhemorrhage = Material( "overlays/brainhemorrhageoverlay.png" )
 
 	local hg_gopro = ConVarExists("hg_gopro") and GetConVar("hg_gopro") or CreateClientConVar("hg_gopro", "0", true, false, "Toggle GoPro-like first-person camera view", 0, 1)
@@ -286,7 +268,7 @@ if CLIENT then
 		if GetViewEntity() != lply then
 			return
 		end
-	
+
 		lply.NVGEnabled = NVGEnabled
 
 		if armors and armors["face"] then
@@ -317,7 +299,7 @@ if CLIENT then
 				surface.SetDrawColor(255,255,255,255)
 				surface.SetMaterial(custommat or mat)
 				surface.DrawTexturedRect(-1, -1, ScrW()+1, ScrH()+1)
-				
+
 				if lply:GetNetVar("zableval_masku", false) and lply.organism and not lply.organism.otrub then
 					draw.NoTexture()
 					surface.SetDrawColor(100,0,0,240)
@@ -336,7 +318,7 @@ if CLIENT then
 				end
 			end
 		end
-		
+
 		//local shouldplaysnd = lply.organism and lply.organism.pulse > 80 and "scp cb/breath1gas.wav" or hg.armor.face[armors["face"]].loopsound
 		if lply.soundhuy and ((not (armors["face"] and hg.armor.face[armors["face"]].loopsound)) or (lply.organism and lply.organism.pulse > 85)) then// or shouldplaysnd != lply.soundhuy) then
 			lply:StopSound(lply.soundhuy)
@@ -345,13 +327,13 @@ if CLIENT then
 
 		if armors and armors["head"] then
 			local custommat = hg.armor.head[armors["head"]].viewmaterial
-			
+
 			if custommat != false then
 				surface.SetDrawColor(255,255,255,255)
 				surface.SetMaterial(custommat or mat)
 				surface.DrawTexturedRect(-1, -1, ScrW()+1, ScrH()+1)
 			end
-			
+
 			local customviewfunc = armors["head"] and hg.armor.head[armors["head"]].customviewrender
 			if customviewfunc then
 				customviewfunc(lply)
@@ -387,19 +369,19 @@ if CLIENT then
 			lply.soundhuy = nil
 		end
 	end)
-	
+
 	local function equipmentMenu()
 		RunConsoleCommand("hg_get_equipment")
 
 		return 0
 	end
-	
+
 	hook.Add("radialOptions", "equipment", function()
 		local armors = LocalPlayer().armors or {}
 		local inventory = LocalPlayer():GetNetVar("Inventory",{})
 		inventory["Weapons"] = inventory["Weapons"] or {}
 		local organism = LocalPlayer().organism or {}
-	
+
 		local tbl = table.Copy(armors)
 		if inventory["Weapons"]["hg_flashlight"] then
 			tbl["hg_flashlight"] = inventory["Weapons"]["hg_flashlight"]
@@ -412,22 +394,22 @@ if CLIENT then
 		if inventory["Weapons"]["hg_brassknuckles"] then
 			tbl["hg_brassknuckles"] = inventory["Weapons"]["hg_brassknuckles"]
 		end
-	
+
 		if not organism.otrub and table.Count(tbl) > 0 and lply:KeyDown(IN_WALK) then
 			hg.radialOptions = hg.radialOptions or {}
 			local newEntry = {equipmentMenu, "Drop Equipment"}
 			hg.radialOptions[#hg.radialOptions + 1] = newEntry
 		end
 	end)
-	
-	
+
+
 	concommand.Add("hg_add_equipment", function(ply, cmd, args)
 		local att = args[1]
 		net.Start("hg_add_equipment")
 		net.WriteString(att)
 		net.SendToServer()
 	end)
-	
+
 	concommand.Add("hg_drop_equipment", function(ply, cmd, args)
 		local att = args[1]
 		net.Start("hg_drop_equipment")
@@ -440,19 +422,7 @@ if CLIENT then
 		RunConsoleCommand("hg_drop_equipment", arm)
 	end
 
-	local plyEquipment = plyEquipment or {}
-	local armors = plyEquipment or {}
-	local drop = true
-	local gray = Color(200, 200, 200)
-	local blue = Color(200, 200, 255)
-	local red = Color(75,25,25)
-	local redselected = Color(150,0,0)
-	local whitey = Color(255, 255, 255)
-	local menuPanel
-	local chosen2
 
-	local blurMat = Material("pp/blurscreen")
-    local Dynamic = 0
 	BlurBackground = BlurBackground or hg.DrawBlur
 
 	local function refreshtbl()
@@ -463,7 +433,7 @@ if CLIENT then
 
 		inventory["Weapons"] = inventory["Weapons"] or {}
 
-		for i, att in pairs(tbl) do
+		for _, att in pairs(tbl) do
 			if !att then continue end
 			table.insert(tblcpy, att)
 		end
@@ -498,7 +468,7 @@ if CLIENT then
 			hg.armorMenuPanel:Remove()
 			hg.armorMenuPanel = nil
 		end
-	
+
 		local tblcpy = refreshtbl()
 
 		local frame = vgui.Create( "ZFrame" )
@@ -510,7 +480,7 @@ if CLIENT then
 		frame:SetKeyboardInputEnabled(false)
 
 		frame:SetAlpha(0)
-	
+
 		frame:MoveTo(frame:GetX(), ScrH() / 2 - frame:GetTall() / 2, 0.5, 0, 0.3, function() end)
 		frame:AlphaTo( 255, 0.2, 0.1, nil )
 
@@ -531,7 +501,7 @@ if CLIENT then
 		local scroll = vgui.Create("DScrollPanel",frame)
 		scroll:Dock(FILL)
 		frame.scroll = scroll
-	
+
 		local sbar = scroll:GetVBar()
 		sbar:SetHideButtons(true)
 
@@ -554,7 +524,7 @@ if CLIENT then
 			scroll = vgui.Create("DScrollPanel", frame)
 			scroll:Dock(FILL)
 			frame.scroll = scroll
-			
+
 			for k, v in pairs(tblcpy) do
 				if !hg.armorNames[v] and isnumber(k) then continue end
 				//if hg.armor[v][k].nodrop then continue end
@@ -575,17 +545,17 @@ if CLIENT then
 					surface.SetDrawColor(100, 0, 0, 255)
 					surface.DrawTexturedRect(0, 0, w, h)
 				end
-	
+
 				local img = vgui.Create("DImage", but)
 				img:SetSize(ScreenScaleH(20), ScreenScaleH(20))
 				img:Dock(LEFT)
 				img:DockMargin( 5, 0, 0, 0 )
 				if hg.armorIcons[v] then img:SetImage( hg.armorIcons[v] ) end
-	
+
 				but.DoClick = function()
 					dropArmor(isnumber(k) and v or k)
 				end
-	
+
 				scroll:AddItem(but)
 			end
 		end

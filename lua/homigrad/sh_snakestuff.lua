@@ -26,12 +26,12 @@ if CLIENT then
 
 	local function calculate_anchoredpos(pos1,pos2,len,prevang,delenie)
 		local length = len / delenie
-		
+
 		local anchored_point = pos2-pos1
-		
+
 		local angle = anchored_point:Angle()
 		local diff = math_AngleDifference(angle[2],prevang)
-		
+
 		if math.abs(diff) > 30 then
 			angle[2] = math.ApproachAngle(angle[2],prevang,FrameTime() * 500)
 		end
@@ -43,9 +43,6 @@ if CLIENT then
 	local snakes_poses = {}
 	local old_snakesposes = {}
 
-	local function clearSnakes()
-		snakes = {}
-	end
 
 	local function addSnake(index,bodyfunc,numsegments,detail,gravity,followvec,color1,color2,leading_part)
 		leading_part = leading_part or 1
@@ -73,16 +70,12 @@ if CLIENT then
 	end
 
 	local time_send = 0
-	local len = 30
-	local segments = {}
 	local gravity = 0
 	local delenie = 6
-	local max = 8 * delenie
 
 	local math_cos,math_sin,FrameTime,math_Clamp = math.cos,math.sin,FrameTime,math.Clamp
 
 	local vecUp = Vector(0,1)
-	local pos = Vector(0,0)
 
 	local color = Color(0,0,0)
 	local color2 = Color(0,0,0)
@@ -93,7 +86,7 @@ if CLIENT then
 
 	local zmeyka_lmao = function()
 		cursor = Vector(input.GetCursorPos())
-		
+
 		for k in pairs(snakes) do
 			local poses_right = {}
 			local poses_left = {}
@@ -123,7 +116,7 @@ if CLIENT then
 						local len2 = prevseg[2]
 
 						local pos2_new,angle_new
-						
+
 						if i == leading_part then
 							pos2_new = segments[i][1]
 							angle_new = prevseg[3]
@@ -131,35 +124,35 @@ if CLIENT then
 							pos2_new,angle_new = calculate_anchoredpos(pos2,pos+segments[i][4],len+len2-1,prevseg[3],delenie)
 							angle_new = angle_new[2]
 						end
-						
+
 						local vel = (pos2_new - segments[i][1]) * FrameTime() * 25
-						
+
 						segments[i][1] = pos2_new + (i == leading_part and segments[i][4] or vector_origin)
 						segments[i][3] = angle_new
 						segments[i][4] = gravity and Lerp(0.1,segments[i][4] or vector_origin,vecUp * gravity + vel) or vector_origin--Vector(0,FrameTime() * 100)--Lerp(FrameTime() * 10,(segments[i][4] or Vector(0,0)) + vel,vector_origin)
 
 						local angle = math.rad(segments[i][3])
-						
+
 						x1,y1 = math_cos(angle + math.pi / 2),math_sin(angle + math.pi / 2)
 						x2,y2 = math_cos(angle - math.pi / 2),math_sin(angle - math.pi / 2)
 
 						local pos = segments[i][1]
-						
+
 						poses_right[i] = {x = pos[1] + x1 * len,y = pos[2] + y1 * len,u = 0.5,v = 0.5}
 						poses_left[i] = {x = pos[1] + x2 * len,y = pos[2] + y2 * len,u = 0.5,v = 0.5}
 					end
 				else
 					for i = iter2[1],iter2[2],iter2[3] do
-						
+
 						local pos = segments[i][1]
 						local len = segments[i][2]
-						
+
 						local prevseg = segments[math_Clamp(i >= leading_part and i-1 or i+1,1,#segments)]
 						local pos2 = prevseg[1]
 						local len2 = prevseg[2]
 
 						local pos2_new,angle_new
-						
+
 						if i == leading_part then
 							pos2_new = segments[i][1]
 							angle_new = prevseg[3]
@@ -167,29 +160,29 @@ if CLIENT then
 							pos2_new,angle_new = calculate_anchoredpos(pos2,pos+segments[i][4],len+len2-1,prevseg[3],delenie)
 							angle_new = angle_new[2]
 						end
-						
+
 						local vel = (pos2_new - segments[i][1]) * FrameTime() * 25
-						
+
 						segments[i][1] = pos2_new + (i == leading_part and segments[i][4] or vector_origin)
 						segments[i][3] = angle_new
 						segments[i][4] = gravity and Lerp(0.1,segments[i][4] or vector_origin,vecUp * gravity + vel) or vector_origin--Vector(0,FrameTime() * 100)--Lerp(FrameTime() * 10,(segments[i][4] or Vector(0,0)) + vel,vector_origin)
 
 						local angle = math.rad(segments[i][3])
-						
+
 						x1,y1 = math_cos(angle + math.pi / 2),math_sin(angle + math.pi / 2)
 						x2,y2 = math_cos(angle - math.pi / 2),math_sin(angle - math.pi / 2)
 
 						local pos = segments[i][1]
-						
+
 						poses_right[i] = {x = pos[1] + x1 * len,y = pos[2] + y1 * len,u = 0.5,v = 0.5}
 						poses_left[i] = {x = pos[1] + x2 * len,y = pos[2] + y2 * len,u = 0.5,v = 0.5}
 					end
 				end
 			end
-			
+
 			if (time_send or 0) < CurTime() and k == lply:UserID() then
 				time_send = CurTime() + zmeyka_netsendtime
-				
+
 				net.Start("zmeyka_net")
 				net.WriteVector(segments[leading_part][1])
 				net.WriteFloat(segments[leading_part][3])
@@ -214,11 +207,11 @@ if CLIENT then
 						poses_right[i],
 						poses_left[i+1],
 					}
-				
+
 					surface.DrawPoly( poly )
 					surface.DrawPoly( poly2 )
 				end
-				
+
 				draw.NoTexture()
 				surface.SetDrawColor(r,g,b,a)
 				draw.Circle(segments[i][1][1],segments[i][1][2],segments[i][2],16)
@@ -226,7 +219,7 @@ if CLIENT then
 
 			if snakes_poses[k] and lply:UserID() ~= k then
 				--local lerp = 1 - ((snakes_poses[k][4] or CurTime()) - CurTime()) * 10
-				
+
 				old_snakesposes[k][1] = Lerp(0.1,old_snakesposes[k][1],snakes_poses[k][1])
 				old_snakesposes[k][2] = Lerp(0.1,old_snakesposes[k][2],snakes_poses[k][2])
 				--old_snakesposes[k][3] = Lerp(0.01,old_snakesposes[k][3],snakes_poses[k][3])
@@ -267,9 +260,9 @@ if CLIENT then
 	local function startZmeyka(i)
 		local color1 = Color(math.random(255),math.random(255),math.random(255))
 		local color2 = Color(math.random(255),math.random(255),math.random(255))
-		
+
 		local len = zmeyka_size:GetFloat()
-		
+
 		local func = funcs[zmeyka_func:GetInt()]
 
 		--clearSnakes()
@@ -279,18 +272,18 @@ if CLIENT then
 
 		addSnake(i,function(i,max) return {Vector(0,0),len * func(i / max),0,Vector(0,0)} end,num,detail,zmeyka_gravity:GetBool() and zmeyka_gravity:GetFloat(),function() return i ~= lply:UserID() and old_snakesposes[i] and old_snakesposes[i][1] or cursor end,color1,color2,1)--math.floor(num * detail))
 		--addSnake(0,function(i,max) return {Vector(0,0),len * func(i / max),0,Vector(0,0)} end,num,detail,zmeyka_gravity:GetBool() and zmeyka_gravity:GetFloat(),function() return old_snakesposes[i] and old_snakesposes[i][1] or cursor end,color1,color2,1)--math.floor(num * detail))
-		
+
 		--[[if math.random(5) == 1 then
 			local func = funcs[math.random(#funcs)]
 			local len = math.Rand(30,40)
 			local vec = Vector(0,0)
 			addSnake(function(i,max) return {Vector(0,0),len * func(i / max),0,Vector(0,0)} end,8,4,false,function() vec[1] = ((math.cos(CurTime()) / 6 + math.sin(CurTime() * 2) / 6 + math.cos(CurTime() / 3) / 6) + 1) / 2 * ScrW() vec[2] = ((math.sin(CurTime()) / 6 + math.cos(CurTime() * 4) / 6 + math.cos(CurTime() / 4) / 6) + 1) / 2 * ScrH() return vec end,nil,nil)
-			
+
 			local func = funcs[math.random(#funcs)]
 			local len = math.Rand(30,40)
 			local vec = Vector(0,0)
 			addSnake(function(i,max) return {Vector(0,0),len * func(i / max),0,Vector(0,0)} end,8,4,false,function() vec[1] = ((math.cos(CurTime() / 2) / 6 + math.sin(CurTime() * 4) / 6 + math.cos(CurTime() / 6) / 6) + 1) / 2 * ScrW() vec[2] = ((math.sin(CurTime() * 3) / 6 + math.cos(CurTime() / 2) / 6 + math.cos(CurTime() / 3) / 6) + 1) / 2 * ScrH() return vec end,nil,nil)
-			
+
 			local func = funcs[math.random(#funcs)]
 			local len = math.Rand(30,40)
 			local vec = Vector(0,0)
@@ -328,13 +321,13 @@ if CLIENT then
 	modes.slider = function(optiondata, panel)
 		local DermaNumSlider = vgui.Create( "DNumSlider", panel )
 		DermaNumSlider:Dock( TOP )
-		DermaNumSlider:DockMargin(10,5,5,2.5)	
-		DermaNumSlider:SetSize(50,45)	
-		DermaNumSlider:SetText( optiondata.convar .. "\n" .. optiondata.desc )	
-		DermaNumSlider:SetMin( optiondata.min )				 	
-		DermaNumSlider:SetMax( optiondata.max )				
-		DermaNumSlider:SetDecimals( optiondata.decimals or 0 )				
-		DermaNumSlider:SetConVar( optiondata.convar )	
+		DermaNumSlider:DockMargin(10,5,5,2.5)
+		DermaNumSlider:SetSize(50,45)
+		DermaNumSlider:SetText( optiondata.convar .. "\n" .. optiondata.desc )
+		DermaNumSlider:SetMin( optiondata.min )
+		DermaNumSlider:SetMax( optiondata.max )
+		DermaNumSlider:SetDecimals( optiondata.decimals or 0 )
+		DermaNumSlider:SetConVar( optiondata.convar )
 		DermaNumSlider:SizeToContents()
 	end
 
@@ -345,7 +338,7 @@ if CLIENT then
 		DermaCheckbox:SetText( optiondata.convar .. "\n" .. optiondata.desc )
 		DermaCheckbox:SetConVar( optiondata.convar )
 		DermaCheckbox:SetValue( GetConVar(optiondata.convar):GetBool() )
-		DermaCheckbox:SizeToContents()		
+		DermaCheckbox:SizeToContents()
 	end
 
 	modes.binder = function(optiondata, panel)
@@ -367,12 +360,8 @@ if CLIENT then
 	AddOptionPanel( "zmeyka_gravity", "slider", {desc = "gravity",min = 0, max = 30}, "general" )
 	AddOptionPanel( "zmeyka_func", "slider", {desc = "func",min = 1, max = 5}, "general" )
 	AddOptionPanel( "zmeyka_legs", "switcher", {desc = "func"}, "general" )
-	
-	local red = Color(75,25,25)
-	local redselected = Color(150,0,0)
 
-	local blurMat = Material("pp/blurscreen")
-	local Dynamic = 0
+
 	BlurBackground = BlurBackground or hg.DrawBlur
 
 	local function CreateOptionsMenu()
@@ -380,7 +369,7 @@ if CLIENT then
 		local posX,posY = ScrW() / 2 - sizeX / 2,ScrH() / 2 - sizeY / 2
 
 		local MainFrame = vgui.Create("ZFrame") -- The name of the panel we don't have to parent it.
-		MainFrame:SetPos( posX, posY ) -- Set the position to 100x by 100y. 
+		MainFrame:SetPos( posX, posY ) -- Set the position to 100x by 100y.
 		MainFrame:SetSize( sizeX, sizeY ) -- Set the size to 300x by 200y.
 		MainFrame:SetTitle( "zmeyka settings" ) -- Set the title in the top left to "Derma Frame".
 		MainFrame:MakePopup() -- Makes your mouse be able to move around.
@@ -400,14 +389,14 @@ if CLIENT then
 			surface.SetDrawColor( 255, 0, 0, 128)
 			surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 		end
-		
+
 		local DLabel = vgui.Create( "DLabel", DScrollPanel )
 		DLabel:Dock(TOP)
 		DLabel:DockMargin(20,15,5,2.5)
 		DLabel:SetText( "General" )
 
-		for k,v in pairs(settings["general"]) do
-		
+		for _,v in pairs(settings["general"]) do
+
 			modes[v[1]](v[2],DScrollPanel)
 		end
 	end
@@ -418,7 +407,7 @@ if CLIENT then
 
 	net.Receive("zmeyka_net",function()
 		snakes_poses = net.ReadTable()
-		
+
 		for i,snake in pairs(snakes_poses) do
 			if not old_snakesposes[i] then old_snakesposes[i] = snake end
 			snake[4] = CurTime() + zmeyka_netsendtime
@@ -429,13 +418,12 @@ if CLIENT then
 	end)
 
 	local Segments = {}
-	
-	local function calculate_anchoredpos2(anchor_pos,lead_pos,length,previous_angle)		
+
+	local function calculate_anchoredpos2(anchor_pos,lead_pos,length,previous_angle)
 		local anchored_point = lead_pos-anchor_pos
-		
+
 		local angle = anchored_point:Angle()
-		local diff = math.AngleDifference(angle[2],previous_angle[2])
-		
+
 		--[[if math.abs(diff) > 30 then
 			angle[2] = math.ApproachAngle(angle[2],previous_angle[2],FrameTime() * 500)
 		end--]]
@@ -485,7 +473,7 @@ if CLIENT then
 		if child then
 			local oldpos = -(-self.Pos)
 			self.Pos = calculate_anchoredpos2(child.Pos,self.Pos,child.Length,child.Ang)
-			local child_pos,child_angle = calculate_anchoredpos2(self.Pos,child.Pos,self.Length,self.Ang)	
+			local child_pos,child_angle = calculate_anchoredpos2(self.Pos,child.Pos,self.Length,self.Ang)
 			child.Pos = child_pos
 			child.Ang = child_angle
 			child.Vel = oldpos - self.Pos
@@ -493,7 +481,7 @@ if CLIENT then
 
 		--[[local parent = Segments[self.Parent]
 		if parent then
-			local parent_pos,parent_angle = calculate_anchoredpos2(self.Pos,parent.Pos,self.Length,self.Ang)	
+			local parent_pos,parent_angle = calculate_anchoredpos2(self.Pos,parent.Pos,self.Length,self.Ang)
 			parent.Pos = parent_pos
 			parent.Ang = parent_angle
 		end--]]
@@ -504,7 +492,7 @@ if CLIENT then
 		surface.SetDrawColor(r or 255,g or 255,b or 255,a or 255)
 		local pos = self.Pos
 		local len = self.Size
-		
+
 		draw.Circle(pos[1],pos[2],len,16)
 		local child = Segments[self.Child]
 		if child then
@@ -526,7 +514,7 @@ if CLIENT then
 
 	hg.drawPart = function(segment,r,g,b,a)
 		local leg = Segments[segment.leg1]
-		
+
 		if leg then
 			segment_draw(leg,r,g,b,a)
 			local leg = Segments[Segments[segment.leg1].Child]
@@ -536,7 +524,7 @@ if CLIENT then
 		end
 
 		local leg = Segments[segment.leg2]
-		
+
 		if leg then
 			segment_draw(leg,r,g,b,a)
 			local leg = Segments[Segments[segment.leg2].Child]
@@ -582,7 +570,7 @@ if CLIENT then
 						local lastpos = segments[j][1]
 						local x,y = lastpos[1],lastpos[2]
 						segment.Pos[1] = x
-						segment.Pos[2] = y 
+						segment.Pos[2] = y
 					end
 				end
 				segment.Draw = function(segment)
@@ -620,7 +608,7 @@ if CLIENT then
 						local lastpos = segments[j][1]
 						local x,y = lastpos[1],lastpos[2]
 						segment.Pos[1] = x
-						segment.Pos[2] = y 
+						segment.Pos[2] = y
 					end
 				end
 				segment.Draw = function(segment)
@@ -654,7 +642,7 @@ else
 		timer.Create("zmeyka_remove"..id,1,1,function() snakes[id] = nil end)
 
 		ply:CallOnRemove("removesnake",function() snakes[id] = nil end)
-		
+
 		net.Start("zmeyka_net")
 		net.WriteTable(snakes)
 		net.Send(ply)
@@ -663,13 +651,13 @@ end
 
 /*if CLIENT then
 	local Segments = {}
-	
-	local function calculate_anchoredpos2(anchor_pos,lead_pos,length,previous_angle)		
+
+	local function calculate_anchoredpos2(anchor_pos,lead_pos,length,previous_angle)
 		local anchored_point = lead_pos-anchor_pos
-		
+
 		local angle = anchored_point:Angle()
 		local diff = math.AngleDifference(angle[2],previous_angle[2])
-		
+
 		--[[if math.abs(diff) > 30 then
 			angle[2] = math.ApproachAngle(angle[2],previous_angle[2],FrameTime() * 500)
 		end--]]
@@ -719,7 +707,7 @@ end
 		if child then
 			local oldpos = -(-self.Pos)
 			self.Pos = calculate_anchoredpos2(child.Pos,self.Pos,child.Length,child.Ang)
-			local child_pos,child_angle = calculate_anchoredpos2(self.Pos,child.Pos,self.Length,self.Ang)	
+			local child_pos,child_angle = calculate_anchoredpos2(self.Pos,child.Pos,self.Length,self.Ang)
 			child.Pos = child_pos
 			child.Ang = child_angle
 			child.Vel = oldpos - self.Pos
@@ -727,7 +715,7 @@ end
 
 		local parent = Segments[self.Parent]
 		if parent then
-			local parent_pos,parent_angle = calculate_anchoredpos2(self.Pos,parent.Pos,self.Length,self.Ang)	
+			local parent_pos,parent_angle = calculate_anchoredpos2(self.Pos,parent.Pos,self.Length,self.Ang)
 			parent.Pos = parent_pos
 			parent.Ang = parent_angle
 		end
@@ -737,7 +725,7 @@ end
 		surface.SetDrawColor(255,255,255,255)
 		local pos = self.Pos
 		local len = self.Size
-		
+
 		draw.Circle(pos[1],pos[2],len,16)
 		local child = Segments[self.Child]
 		if child then
@@ -769,7 +757,7 @@ end
 			if i == 1 then segment.Think = function(segment) local x,y = ScrW()/2,ScrH()/2 segment.Pos[1] = x segment.Pos[2] = y  end end
 		end
 	end
-	
+
 	hook.Add("ContextMenuOpen","zmeyka_new",function()
 		start_snake()
 	end)

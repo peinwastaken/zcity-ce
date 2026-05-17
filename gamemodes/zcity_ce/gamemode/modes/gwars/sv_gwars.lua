@@ -28,8 +28,8 @@ function MODE:Intermission()
 	table.CopyFromTo(zb.GetMapPoints( "HMCD_TDM_CT" ),self.CTPoints)
 	self.TPoints = {}
 	table.CopyFromTo(zb.GetMapPoints( "HMCD_TDM_T" ),self.TPoints)
-	
-	for i, ply in player.Iterator() do
+
+	for _, ply in player.Iterator() do
 		ply:SetupTeam(ply:Team())
 	end
 
@@ -42,12 +42,12 @@ function MODE:CheckAlivePlayers()
 end
 
 function MODE:ShouldRoundEnd()
-	local endround, winner = zb:CheckWinner(self:CheckAlivePlayers())
+	local endround, _ = zb:CheckWinner(self:CheckAlivePlayers())
 
 	return endround or boringround
 end
 
-function MODE:BoringRoundFunction()		
+function MODE:BoringRoundFunction()
 	timer.Simple(2, function()
 		//PrintMessage(HUD_PRINTTALK, "IT IS A GANG SHOOTOUT FFS...")
 	end)
@@ -56,7 +56,7 @@ end
 local swatSpawned = false
 
 function MODE:RoundStart()
-    swatSpawned = false 
+    swatSpawned = false
 end
 
 local tblweps = {
@@ -102,14 +102,6 @@ local tblweps = {
 	}
 }]]
 
-local tblarmors = {
-	[0] = {
-		{"ent_armor_vest3","ent_armor_helmet2"}
-	},
-	[1] = {
-		{"ent_armor_vest3","ent_armor_helmet2"}
-	}
-}
 
 function MODE:GetPlySpawn(ply)
 end
@@ -120,7 +112,6 @@ function MODE:GiveEquipment()
 	self.TPoints = {}
 	table.CopyFromTo(zb.GetMapPoints( "HMCD_TDM_T" ),self.TPoints)
 	timer.Simple(0.1,function()
-		local teamArmorCount = { [0] = 0, [1] = 0 } 
 
 		for _, ply in player.Iterator() do
 			if not ply:Alive() then continue end
@@ -150,7 +141,7 @@ function MODE:GiveEquipment()
 			ply:Give("weapon_tourniquet")
 			ply:Give("weapon_fentanyl")
 
-			local hands = ply:Give("weapon_hands_sh")
+			ply:Give("weapon_hands_sh")
 			ply:SelectWeapon("weapon_hands_sh")
 
 			timer.Simple(0.1,function()
@@ -197,7 +188,7 @@ function MODE:RoundThink()
                 hg.AddArmor(ply, "ent_armor_helmet1")
                 hg.AddArmor(ply, "ent_armor_vest4")
 
-                local hands = ply:Give("weapon_hands_sh")
+                ply:Give("weapon_hands_sh")
                 ply:SelectWeapon("weapon_hands_sh")
             //end
         end
@@ -220,8 +211,8 @@ function MODE:EndRound()
 		net.Broadcast()
 	end)
 
-	local endround, winner = zb:CheckWinner(self:CheckAlivePlayers())
-	for k,ply in player.Iterator() do
+	local _, winner = zb:CheckWinner(self:CheckAlivePlayers())
+	for _, ply in player.Iterator() do
 		if ply:Team() == winner then
 			ply:GiveExp(math.random(15,30))
 			ply:GiveSkill(math.Rand(0.1,0.15))

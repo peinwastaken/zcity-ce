@@ -1,4 +1,3 @@
-
 local CLASS = player.RegClass("Metrocop")
 
 
@@ -81,7 +80,7 @@ function CLASS.Off(self)
 		eightbit.EnableEffect(self:UserID(), 0)
 	end
 
-    for k,v in ipairs(ents.FindByClass("npc_*")) do
+    for _,v in ipairs(ents.FindByClass("npc_*")) do
         if table.HasValue(combines,v:GetClass()) then
             v:AddEntityRelationship( self, D_HT, 99 )
         elseif table.HasValue(rebels,v:GetClass()) then
@@ -182,7 +181,7 @@ function CLASS.On(self, data)
     if zb.GiveRole then zb.GiveRole(self, "Officer", Color(89,230,255)) end
     self:SetNWString("PlayerName", callsign)
 
-    for k,v in ipairs(ents.FindByClass("npc_*")) do
+    for _,v in ipairs(ents.FindByClass("npc_*")) do
         if table.HasValue(combines,v:GetClass()) then
             v:AddEntityRelationship( self, D_LI, 0 )
             v:ClearEnemyMemory()
@@ -220,7 +219,7 @@ end
 
 function CLASS.PlayerDeath(self)
 
-    for k,v in ipairs(ents.FindByClass("npc_*")) do
+    for _,v in ipairs(ents.FindByClass("npc_*")) do
         if table.HasValue(combines,v:GetClass()) then
             v:AddEntityRelationship( self, D_HT, 99 )
         elseif table.HasValue(rebels,v:GetClass()) then
@@ -252,7 +251,6 @@ if CLIENT then
     hook.Add("PostDrawHUD","Metrocop_helmet",function()
         local lply = LocalPlayer()
         if lply:Alive() and lply.PlayerClassName == "Metrocop" then
-            local role = lply:GetNWString("PlayerRole")
 
             surface.SetDrawColor(150,190,190,255)
 

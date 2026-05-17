@@ -49,7 +49,7 @@ SWEP.handAng = Angle(0,0,0)
 SWEP.UsePistolHold = false
 
 SWEP.offsetVec = Vector(5,-7,-1)
-SWEP.offsetAng = Angle(0,90,195)   
+SWEP.offsetAng = Angle(0,90,195)
 
 SWEP.HeadPosOffset = Vector(15,1.7,-5)
 SWEP.HeadAngOffset = Angle(-90,0,-90)
@@ -69,7 +69,7 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:SecondaryAttack()
-    
+
 end
 
 local BlackList = {
@@ -137,8 +137,8 @@ if SERVER then
 
         local Cart = net.ReadTable()
         local CartWeight = 0
-        
-        for k, item in pairs(Cart) do
+
+        for _, item in pairs(Cart) do
             if not item or not item[1] then wep:AddNotificate("No.") return end
             local entStore = scripted_ents.GetStored(item[1])
             local entTbl = weapons.GetStored(item[1]) or (entStore and entStore.t) or nil
@@ -170,7 +170,7 @@ if SERVER then
                 ent:SetPos(tr.HitPos + tr.HitNormal * 15)
                 ent:Spawn()
 
-                for k,item in pairs(Cart) do
+                for _,item in pairs(Cart) do
                     ent.Loot = ent.Loot or {}
                     ent.Loot[#ent.Loot + 1] = { class = item[1] }
                 end
@@ -251,7 +251,7 @@ function SWEP:CreateMenu()
                 gui.EnableScreenClicker(false)
                 tablet.MouseHasControl = false
             end
-            --self:Remove() 
+            --self:Remove()
         end
         if not IsValid(tablet) then
             gui.EnableScreenClicker(false)
@@ -292,15 +292,15 @@ function SWEP:CreateMenu()
         if swep.LastNotifyTime < CurTime() then swep.LastNotifyText = "" end
         self:SetText(os.date("%H:%M")..swep.LastNotifyText)
     end
-    
+
     local sheet = vgui.Create( "DPropertySheet", self.menu )
     sheet:Dock( FILL )
 
     local Deliver = vgui.Create( "DPanel", sheet )
-    Deliver:SetParent( sheet ) 
+    Deliver:SetParent( sheet )
 
         local LeftPanel = vgui.Create( "DPanel", Deliver )
-        LeftPanel:SetParent( Deliver ) 
+        LeftPanel:SetParent( Deliver )
         LeftPanel:Dock(LEFT)
         LeftPanel:SetSize(200,0)
 
@@ -309,7 +309,7 @@ function SWEP:CreateMenu()
             LBLRich:DockMargin(10,10,10,5)
             LBLRich:SetFont("ZCity_Fixed_Tiny")
             LBLRich:SetContentAlignment(7)
-            
+
             function LBLRich:Think()
                 if not IsValid(swep) then return end
                 self:SetText([[Cart: #]]..(swep:EntIndex()*123)..[[
@@ -319,10 +319,10 @@ Arrive: ]]..(swep.CartWeight/KgInTime)..[[ Min
 
 Cost: Free]])
                 swep.CartWeight = 0
-                for k, item in pairs(swep.Cart) do
+                for _, item in pairs(swep.Cart) do
                     swep.CartWeight = swep.CartWeight + item[3]
                 end
-                
+
             end
 
             local button = vgui.Create( "DButton", LeftPanel )
@@ -337,7 +337,7 @@ Cost: Free]])
 
         local RightPanel = vgui.Create( "DScrollPanel", Deliver )
         RightPanel:SetParent( Deliver )
-        RightPanel:Dock( FILL )   
+        RightPanel:Dock( FILL )
 
             function button:DoClick()
 
@@ -354,19 +354,19 @@ Cost: Free]])
 
                 RightPanel = vgui.Create( "DScrollPanel", Deliver )
                 RightPanel:SetParent( Deliver )
-                RightPanel:Dock( FILL ) 
+                RightPanel:Dock( FILL )
             end
 
-        for k, item in pairs(self.Cart) do
+        for _, item in pairs(self.Cart) do
             addDiliverPanel( RightPanel, item, self )
         end
 
-    
+
     sheet:AddSheet( "Deliver", Deliver )
 
     local Categores = {}
 
-    for k, guns in pairs(weapons.GetList()) do
+    for _, guns in pairs(weapons.GetList()) do
         local gun = weapons.Get(guns.ClassName)
         local Category = gun.Category or nil
         if not Category then continue end
@@ -375,13 +375,12 @@ Cost: Free]])
         --print(Category)
         if not CategoresAllowed[Category] then continue end
 
-        local Names = gun.PrintName
 
         Categores[ Category ] = Categores[ Category ] or {}
         Categores[ Category ][ guns.ClassName ] = { guns.ClassName, gun.PrintName }
-    end 
+    end
 
-    for k, ent in pairs(scripted_ents.GetList()) do
+    for _, ent in pairs(scripted_ents.GetList()) do
         local rent = ent["t"]
         --PrintTable(ent)
         if not rent then continue end
@@ -392,7 +391,6 @@ Cost: Free]])
         --print(Category)
         if not CategoresAllowed[Category] then continue end
 
-        local Names = ent.PrintName
 
         Categores[ Category ] = Categores[ Category ] or {}
         Categores[ Category ][ rent.ClassName ] = { rent.ClassName, rent.PrintName }
@@ -400,13 +398,13 @@ Cost: Free]])
 
     local sheetDeliver = vgui.Create( "DPropertySheet", sheetDeliver )
     --sheetDeliver:Dock( FILL )
-    
+
         for k,Category in pairs(Categores) do
             local Shop = vgui.Create( "DScrollPanel", sheetDeliver )
             Shop:SetParent( sheetDeliver )
-            Shop:Dock( FILL )   
+            Shop:Dock( FILL )
 
-            for i,gun in pairs(Category) do
+            for _, gun in pairs(Category) do
                 local button = vgui.Create( "DButton", Shop )
                 button:Dock( TOP )
                 button:SetSize( 0,55 )
@@ -433,7 +431,7 @@ Cost: Free]])
 
     sheet:AddSheet( "Shop", sheetDeliver )
 
-    
+
     --for k, v in SortedPairsByMemberValue( spawnmenu.GetCreationTabs(), "Order" ) do
     --    if k ~= "#spawnmenu.category.weapons" and k ~= "#spawnmenu.category.entities" then continue end
 --
@@ -466,13 +464,13 @@ Cost: Free]])
     end
 
     --function html:PaintOver(w,h)
-    --    
+    --
     --end
 
     sheet:AddSheet( "Browser", html )
 
     self.NotifiyPan = vgui.Create( "DPanel", sheet )
-    self.NotifiyPan:SetParent( sheet ) 
+    self.NotifiyPan:SetParent( sheet )
 
     sheet:AddSheet( "Notifications", self.NotifiyPan )
 

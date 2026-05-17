@@ -2,34 +2,11 @@ hg.undernoradrenaline = hg.undernoradrenaline or false
 hg.noradrenalineStartTime = hg.noradrenalineStartTime or 0
 hg.noradrenalineStation = hg.noradrenalineStation or nil
 
-local tab = {
-	[ "$pp_colour_addr" ] = 0,
-	[ "$pp_colour_addg" ] = 0,
-	[ "$pp_colour_addb" ] = 0,
-	[ "$pp_colour_brightness" ] = 0,
-	[ "$pp_colour_contrast" ] = 1,
-	[ "$pp_colour_colour" ] = 1,
-	[ "$pp_colour_mulr" ] = 0,
-	[ "$pp_colour_mulg" ] = 0,
-	[ "$pp_colour_mulb" ] = 0
-}
 
-local tab2 = {
-	[ "$pp_colour_addr" ] = 0,
-	[ "$pp_colour_addg" ] = 0,
-	[ "$pp_colour_addb" ] = 0,
-	[ "$pp_colour_brightness" ] = 0,
-	[ "$pp_colour_contrast" ] = 1,
-	[ "$pp_colour_colour" ] = 1,
-	[ "$pp_colour_mulr" ] = 0,
-	[ "$pp_colour_mulg" ] = 0,
-	[ "$pp_colour_mulb" ] = 0
-}
 
-local cc = Material( "effects/shaders/merc_chromaticaberration" )
 hook.Add("RenderScreenspaceEffects", "noradrenalineEffect", function()
 	local organism = lply:Alive() and lply.organism
-	
+
 	if !organism then
 		if hg.undernoradrenaline then
 			hg.DynamicMusicV2.Player.Stop()
@@ -44,7 +21,7 @@ hook.Add("RenderScreenspaceEffects", "noradrenalineEffect", function()
 
 	local noradrenaline = (organism.noradrenaline or 0)
 	local noradrenalineClamped = math.Clamp(noradrenaline, 0, 3) * (organism.consciousness or 1)
-	
+
 	hg.noradrenalineClamped = noradrenalineClamped
 
 	if noradrenaline > 0.0001 and !hg.undernoradrenaline then
@@ -108,7 +85,7 @@ hook.Add("Post Post Processing", "noradrenalineEffect", function()
 		grainMat:SetFloat("$c2_y", 2 * start) -- g
 		grainMat:SetFloat("$c2_z", 6 * start) -- b
 		grainMat:SetFloat("$c3_x", 0) -- ImageIntensity
-	
+
 		render.SetMaterial(grainMat)
 		render.DrawScreenQuad()
 	end

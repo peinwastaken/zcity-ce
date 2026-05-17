@@ -35,7 +35,7 @@ end
 
 function ENT:Think()
 	if self.Blocking then
-		for key, door in pairs(self.Doors) do
+		for _, door in pairs(self.Doors) do
 			if not IsValid(door) then
 				self:UnBlock()
 				break
@@ -57,7 +57,7 @@ end
 function ENT:UnBlock()
 	if self.Blocking then
 		self.Blocking = false
-		for key, door in pairs(self.Doors) do
+		for _, door in pairs(self.Doors) do
 			if IsValid(door) and not self.DoorLocked then door:Fire("unlock", "", 0) end
 		end
 

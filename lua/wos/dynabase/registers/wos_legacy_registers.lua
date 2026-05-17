@@ -16,7 +16,7 @@ local function GenericRegister( data )
         elseif gender == WOS_DYNABASE.FEMALE and data.Female then
             IncludeModel( "models/xdreanims/f_anm_slot_" .. data.BaseSlot .. ".mdl" )
         elseif gender == WOS_DYNABASE.ZOMBIE and data.Zombie then
-            IncludeModel( "models/xdreanims/z_anm_slot_" .. data.BaseSlot .. ".mdl" )  
+            IncludeModel( "models/xdreanims/z_anm_slot_" .. data.BaseSlot .. ".mdl" )
         end
     end )
 end
@@ -77,35 +77,35 @@ local tbl = {
         Male = true,
         Female = true,
         Zombie = true,
-    },   
+    },
     ['2148772437'] = {
         Name = "Reduced Breath Reanimations",
         BaseSlot = '029',
         Male = true,
         Female = true,
         Zombie = true,
-    },  
+    },
     ['2903472153'] = {
         Name = "Human Realm Reanimations",
         BaseSlot = '039',
         Male = true,
         Female = true,
         Zombie = true,
-    },  
+    },
     ['2918092137'] = {
         Name = "COD Modern Warfare Reanimations",
         BaseSlot = '046',
         Male = true,
         Female = false,
         Zombie = false,
-    }, 
+    },
     ['2791673215'] = {
         Name = "CODIW Idle Reanimations",
         BaseSlot = '030',
         Male = true,
         Female = true,
         Zombie = true,
-    }, 
+    },
     ['2792431263'] = {
         Name = "CODIW Last Stand Extension",
         BaseSlot = '040',
@@ -113,42 +113,42 @@ local tbl = {
         Male = true,
         Female = true,
         Zombie = true,
-    }, 
+    },
     ['2912631064'] = {
         Name = "Feminine Sitting Reanimations",
         BaseSlot = '015',
         Male = false,
         Female = true,
         Zombie = false,
-    },  
+    },
     ['2742793067'] = {
         Name = "TF2 Laughing Reanimations",
         BaseSlot = '031',
         Male = true,
         Female = true,
         Zombie = false,
-    },  
+    },
     ['2891284985'] = {
         Name = "SadCat Dance Reanimations",
         BaseSlot = '027',
         Male = true,
         Female = true,
         Zombie = false,
-    },  
+    },
     ['2895861489'] = {
         Name = "Zero Two Dance Reanimations",
         BaseSlot = '013',
         Male = true,
         Female = true,
         Zombie = false,
-    },  
+    },
     ['2892723717'] = {
         Name = "KDA Dance Reanimations",
         BaseSlot = '026',
         Male = true,
         Female = true,
         Zombie = false,
-    },  
+    },
 }
 
 // Workshop addon  check  first because that's the most reliable
@@ -180,13 +180,13 @@ for _, data in pairs( op_table ) do
 end
 
 if CLIENT then
-    hook.Add( "wOS.DynaBase.PopulateHelperFunctions", "wOS.DynaBase.LEgacyAddHelper", function( parent ) 
+    hook.Add( "wOS.DynaBase.PopulateHelperFunctions", "wOS.DynaBase.LEgacyAddHelper", function( parent )
         local download_butt = vgui.Create( "DButton", parent )
         download_butt:SetSize( parent:GetWide(), parent:GetTall()*0.0625 )
         download_butt:Dock( TOP )
         download_butt:SetText( "Create User Mounts from Legacy Addon (Will overwrite mounts with the same name!)" )
-        download_butt.DoClick = function(pan) 
-            for wsid, data in pairs( tbl ) do
+        download_butt.DoClick = function(pan)
+            for _, data in pairs( tbl ) do
                 local ndata = {
                     Name = data.Name,
                     Male = ( data.Male and "models/xdreanims/m_anm_slot_" .. data.BaseSlot .. ".mdl" ) or nil,

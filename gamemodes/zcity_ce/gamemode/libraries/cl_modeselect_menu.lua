@@ -1,17 +1,16 @@
 if CLIENT then
     local isMenuOpen = nil
     zb.availableModes = zb.availableModes or {}
-    local availableModes = zb.availableModes
-    
+
     zb.RoundList = zb.RoundList or {}
     zb.nextround = zb.nextround or nil
-    local queuePanelInstance = nil 
+    local queuePanelInstance = nil
     local selectedModes = {}
 
     net.Receive("ZB_SendModesInfo", function()
         zb.availableModes = net.ReadTable()
     end)
-    
+
     net.Receive("ZB_SendRoundList", function()
         zb.RoundList = net.ReadTable()
         zb.nextround = net.ReadString()
@@ -21,47 +20,47 @@ if CLIENT then
             queuePanelInstance:QueueUpdate()
         end
     end)
-    
+
     net.Receive("ZB_NotifyRoundListChange", function()
         local playerName = net.ReadString()
-        
+
         chat.AddText(Color(180, 180, 255), playerName, Color(255, 255, 255), " has modified the game mode queue")
-        
+
         net.Start("ZB_RequestRoundList")
         net.SendToServer()
     end)
 
     local function StyleElement(element, bgColor)
         bgColor = bgColor or Color(40, 40, 40, 200)
-        
+
         element.Paint = function(self, w, h)
             draw.RoundedBox(6, 0, 0, w, h, bgColor)
-            
+
             if self:IsHovered() and self.Selectable then
                 draw.RoundedBox(6, 1, 1, w-2, h-2, Color(60, 60, 60, 100))
                 surface.SetDrawColor(0, 0, 0, 150)
                 surface.DrawOutlinedRect(1, 1, w-2, h-2, 1)
             end
-            
+
             if self.Selected then
                 surface.SetDrawColor(0, 255, 0, 150)
                 surface.DrawOutlinedRect(0, 0, w, h, 2)
             end
         end
     end
-    
+
     local function CreateModeItem(parent, mode, queue, index)
         local modePanel = vgui.Create("DPanel", parent)
         modePanel:SetTall(40)
         modePanel:Dock(TOP)
         modePanel:DockMargin(5, 2, 5, 2)
         modePanel.Mode = mode
-        modePanel.Index = index 
+        modePanel.Index = index
         modePanel.Selectable = true
         modePanel.Selected = selectedModes[mode.key] or false
-        
+
         StyleElement(modePanel, Color(50, 50, 50, 200))
-        
+
         local title = vgui.Create("DLabel", modePanel)
         title:SetFont("DermaDefaultBold")
         title:SetText(mode.name)
@@ -69,7 +68,7 @@ if CLIENT then
         title:Dock(LEFT)
         title:DockMargin(10, 0, 0, 0)
         title:SizeToContents()
-        
+
         if queue then
             local posLabel = vgui.Create("DLabel", modePanel)
             posLabel:SetFont("DermaDefault")
@@ -78,7 +77,7 @@ if CLIENT then
             posLabel:Dock(LEFT)
             posLabel:DockMargin(5, 0, 0, 0)
             posLabel:SizeToContents()
-            
+
             local upBtn = vgui.Create("DButton", modePanel)
             upBtn:SetSize(24, 24)
             upBtn:Dock(RIGHT)
@@ -89,14 +88,14 @@ if CLIENT then
                     local item = table.remove(zb.RoundList, index)
                     table.insert(zb.RoundList, index - 1, item)
                     queue:QueueUpdate()
-                    
+
                     /*net.Start("ZB_UpdateRoundList")
                         net.WriteTable(zb.RoundList)
-                        net.WriteBool(false) 
+                        net.WriteBool(false)
                     net.SendToServer()*/
                 end
             end
-            
+
             local downBtn = vgui.Create("DButton", modePanel)
             downBtn:SetSize(24, 24)
             downBtn:Dock(RIGHT)
@@ -107,14 +106,14 @@ if CLIENT then
                     local item = table.remove(zb.RoundList, index)
                     table.insert(zb.RoundList, index + 1, item)
                     queue:QueueUpdate()
-                    
+
                     /*net.Start("ZB_UpdateRoundList")
                         net.WriteTable(zb.RoundList)
                         net.WriteBool(false)
                     net.SendToServer()*/
                 end
             end
-            
+
             local removeBtn = vgui.Create("DButton", modePanel)
             removeBtn:SetSize(24, 24)
             removeBtn:Dock(RIGHT)
@@ -134,7 +133,7 @@ if CLIENT then
             modePanel.OnMousePressed = function()
                 modePanel.Selected = not modePanel.Selected
                 selectedModes[mode.key] = modePanel.Selected
-                
+
                 if modePanel.Selected then
                     surface.PlaySound("buttons/button9.wav")
                 else
@@ -142,31 +141,31 @@ if CLIENT then
                 end
             end
         end
-        
+
         return modePanel
     end
-    
+
     local function CreateQueuePanel(frame)
         local queuePanel = vgui.Create("DPanel", frame)
         queuePanel:SetSize(frame:GetWide() / 2 - 10, frame:GetTall())
         queuePanel:Dock(RIGHT)
         queuePanel:DockMargin(5, 5, 5, 5)
         StyleElement(queuePanel, Color(30, 30, 30, 200))
-        
+
         queuePanelInstance = queuePanel
-        
+
         local titleLabel = vgui.Create("DLabel", queuePanel)
         titleLabel:SetText("Game Mode Queue")
         titleLabel:SetFont("DermaLarge")
         titleLabel:SetTextColor(Color(255, 200, 0))
         titleLabel:Dock(TOP)
         titleLabel:DockMargin(0, 5, 0, 5)
-        titleLabel:SetContentAlignment(5) 
-        
+        titleLabel:SetContentAlignment(5)
+
         local queueScroll = vgui.Create("DScrollPanel", queuePanel)
         queueScroll:Dock(FILL)
         queueScroll:DockMargin(5, 5, 5, 5)
-        
+
         local saveBtn = vgui.Create("DButton", queuePanel)
         saveBtn:SetText("Apply Queue")
         saveBtn:Dock(BOTTOM)
@@ -178,15 +177,14 @@ if CLIENT then
                 //table.insert(tbl, 1, zb.nextround)
                 net.Start("ZB_UpdateRoundList")
                     net.WriteTable(tbl)
-                    net.WriteBool(true)
                 net.SendToServer()
-                
+
                 chat.AddText(Color(0, 255, 0), "Game mode queue has been set!")
             //else
                 //chat.AddText(Color(255, 0, 0), "Game mode queue is empty!")
             //end
         end
-        
+
         local clearBtn = vgui.Create("DButton", queuePanel)
         clearBtn:SetText("Clear Queue")
         clearBtn:Dock(BOTTOM)
@@ -195,18 +193,18 @@ if CLIENT then
         clearBtn.DoClick = function()
             zb.RoundList = {}
             queuePanel:QueueUpdate()
-            
+
             /*net.Start("ZB_UpdateRoundList")
                 net.WriteTable({})
                 net.WriteBool(false)
             net.SendToServer()*/
-            
+
             chat.AddText(Color(255, 165, 0), "Game mode queue cleared!")
         end
-        
+
         function queuePanel:QueueUpdate()
             queueScroll:Clear()
-            
+
             if zb.nextround and zb.nextround ~= "" then
                 local nextRoundLabel = vgui.Create("DLabel", queueScroll)
                 nextRoundLabel:SetText("Next Mode: " .. zb.nextround)
@@ -216,25 +214,25 @@ if CLIENT then
                 nextRoundLabel:DockMargin(5, 0, 0, 10)
                 nextRoundLabel:SizeToContents()
             end
-            
+
             for idx, modeKey in ipairs(zb.RoundList) do
                 local mode = nil
-                
+
                 for _, availableMode in ipairs(zb.availableModes) do
                     if availableMode.key == modeKey then
                         mode = availableMode
                         break
                     end
                 end
-                
+
                 if not mode then
                     mode = {key = modeKey, name = modeKey}
                 end
-                
+
                 CreateModeItem(queueScroll, mode, queuePanel, idx)
             end
         end
-        
+
         queuePanel:QueueUpdate()
         return queuePanel
     end
@@ -245,52 +243,52 @@ if CLIENT then
         frame:Center()
         frame:SetTitle("Game Mode Manager")
         frame:MakePopup()
-        
+
         selectedModes = {}
-        
+
         local queuePanel = CreateQueuePanel(frame)
-        
+
         local leftPanel = vgui.Create("DPanel", frame)
         leftPanel:SetSize(frame:GetWide() / 2 - 10, frame:GetTall())
         leftPanel:Dock(LEFT)
         leftPanel:DockMargin(5, 5, 5, 5)
         StyleElement(leftPanel, Color(30, 30, 30, 200))
-        
+
         local titleLabel = vgui.Create("DLabel", leftPanel)
         titleLabel:SetText("Available Game Modes")
         titleLabel:SetFont("DermaLarge")
         titleLabel:SetTextColor(Color(255, 200, 0))
         titleLabel:Dock(TOP)
         titleLabel:DockMargin(0, 5, 0, 5)
-        titleLabel:SetContentAlignment(5) 
-        
+        titleLabel:SetContentAlignment(5)
+
         local searchBar = vgui.Create("DTextEntry", leftPanel)
         searchBar:SetPlaceholderText("Search game modes...")
         searchBar:Dock(TOP)
         searchBar:DockMargin(5, 5, 5, 5)
         searchBar:SetTall(25)
-        
+
         local dscroll = vgui.Create("DScrollPanel", leftPanel)
         dscroll:Dock(FILL)
         dscroll:DockMargin(5, 5, 5, 5)
-        
+
         local modeItems = {}
-        
+
         local function UpdateSearch(filter)
             filter = filter:lower()
-            
+
             for _, item in ipairs(modeItems) do
                 local visible = filter == "" or string.find(item.Mode.name:lower(), filter)
                 item:SetVisible(visible)
             end
-            
+
             dscroll:InvalidateLayout()
         end
-        
+
         searchBar.OnChange = function(self)
             UpdateSearch(self:GetValue())
         end
-        
+
         local allowedModes = {
             ["tdm"] = true,
             ["cstrike"] = true,
@@ -300,16 +298,16 @@ if CLIENT then
             ["gwars"] = true,
             ["criresp"] = true,
         }
-        
+
         for i, mode in SortedPairsByMemberValue(zb.availableModes,"canlaunch",true) do
             if !LocalPlayer():IsSuperAdmin() and !allowedModes[mode.key] then continue end
-            
+
             local modeBtn = CreateModeItem(dscroll, mode)
             table.insert(modeItems, modeBtn)
-            
+
             modeBtn:SetCursor("hand")
             modeBtn:SetTooltip("Click to select/unselect mode")
-            
+
             local inQueue = false
             for _, queuedModeKey in ipairs(zb.RoundList) do
                 if queuedModeKey == mode.key then
@@ -335,12 +333,12 @@ if CLIENT then
                 indicator.IndiColor = Color(255, 155, 0, 255)
                 indicator:SetTooltip("This mode is already in queue")
             end
-     
+
             if mode.canlaunch == 0 then
                 indicator.IndiColor = Color(255,0,0,255)
                 indicator:SetTooltip("This mode can't launch")
             end
-            
+
             if command == "setmode" or command == "setforcemode" then
                 local selectBtn = vgui.Create("DButton", modeBtn)
                 selectBtn:SetSize(80, 26)
@@ -351,20 +349,20 @@ if CLIENT then
                     net.Start("AdminSetGameMode")
                     net.WriteString(command)
                     net.WriteString(mode.key)
-                    net.WriteBool(false) 
+                    net.WriteBool(false)
                     net.SendToServer()
                     frame:Close()
                 end
             end
         end
-        
+
 
         local batchPanel = vgui.Create("DPanel", leftPanel)
         batchPanel:Dock(BOTTOM)
         batchPanel:DockMargin(5, 5, 5, 5)
         batchPanel:SetTall(160)
         StyleElement(batchPanel, Color(40, 40, 40, 200))
-        
+
         local batchTitle = vgui.Create("DLabel", batchPanel)
         batchTitle:SetText("Batch Operations")
         batchTitle:SetFont("DermaDefaultBold")
@@ -372,7 +370,7 @@ if CLIENT then
         batchTitle:Dock(TOP)
         batchTitle:DockMargin(0, 5, 0, 5)
         batchTitle:SetContentAlignment(5)
-        
+
         local addToQueueBtn = vgui.Create("DButton", batchPanel)
         addToQueueBtn:SetText("Add Selected to Beginning of Queue")
         addToQueueBtn:Dock(TOP)
@@ -380,33 +378,33 @@ if CLIENT then
         addToQueueBtn:SetTall(26)
         addToQueueBtn.DoClick = function()
             local selectedCount = 0
-            
+
             local selectedKeys = {}
             for key, selected in pairs(selectedModes) do
                 if selected then
-                    table.insert(selectedKeys, 1, key) 
+                    table.insert(selectedKeys, 1, key)
                     selectedCount = selectedCount + 1
                 end
             end
-            
+
             for i = 1, #selectedKeys do
                 table.insert(zb.RoundList, 1, selectedKeys[i])
             end
-            
+
             if selectedCount > 0 then
                 queuePanel:QueueUpdate()
-                
+
                 /*net.Start("ZB_UpdateRoundList")
                     net.WriteTable(zb.RoundList)
                     net.WriteBool(false)
                 net.SendToServer()*/
-                
+
                 chat.AddText(Color(0, 255, 0), "Added " .. selectedCount .. " modes to beginning of queue!")
             else
                 chat.AddText(Color(255, 0, 0), "No modes selected!")
             end
         end
-        
+
         local addToEndBtn = vgui.Create("DButton", batchPanel)
         addToEndBtn:SetText("Add Selected to End of Queue")
         addToEndBtn:Dock(TOP)
@@ -414,22 +412,22 @@ if CLIENT then
         addToEndBtn:SetTall(26)
         addToEndBtn.DoClick = function()
             local selectedCount = 0
-            
+
             for key, selected in pairs(selectedModes) do
                 if selected then
                     table.insert(zb.RoundList, key)
                     selectedCount = selectedCount + 1
                 end
             end
-            
+
             if selectedCount > 0 then
                 queuePanel:QueueUpdate()
-                
+
                 /*net.Start("ZB_UpdateRoundList")
                     net.WriteTable(zb.RoundList)
                     net.WriteBool(false)
                 net.SendToServer()*/
-                
+
                 chat.AddText(Color(0, 255, 0), "Added " .. selectedCount .. " modes to end of queue!")
             else
                 chat.AddText(Color(255, 0, 0), "No modes selected!")
@@ -443,19 +441,19 @@ if CLIENT then
         clearSelectBtn:SetTall(26)
         clearSelectBtn.DoClick = function()
             local selectedCount = 0
-            
+
             local selectedKeys = {}
             for key, selected in pairs(selectedModes) do
                 if selected then
-                    table.insert(selectedKeys, 1, key) 
+                    table.insert(selectedKeys, 1, key)
                     selectedCount = selectedCount + 1
                 end
             end
-            
+
             for i = 1, #selectedKeys do
                 table.insert(zb.RoundList, 1, selectedKeys[i])
             end
-            
+
             if selectedCount > 0 then
                 selectedModes = {}
                 for _, item in ipairs(modeItems) do
@@ -467,7 +465,7 @@ if CLIENT then
                 chat.AddText(Color(255, 0, 0), "No modes selected!")
             end
         end
-        
+
         local refreshBtn = vgui.Create("DButton", leftPanel)
         refreshBtn:SetText("Refresh Data")
         refreshBtn:Dock(BOTTOM)
@@ -480,7 +478,7 @@ if CLIENT then
 
         batchPanel:InvalidateLayout(true)
         batchPanel:SizeToChildren(false, true)
-        
+
         timer.Create("QueueAutoRefresh", 5, 0, function()
             if IsValid(frame) then
                 //net.Start("ZB_RequestRoundList")
@@ -489,12 +487,12 @@ if CLIENT then
                 timer.Remove("QueueAutoRefresh")
             end
         end)
-        
+
         frame.OnClose = function()
             timer.Remove("QueueAutoRefresh")
             queuePanelInstance = nil
         end
-        
+
         net.Start("ZB_RequestRoundList")
         net.SendToServer()
     end
@@ -516,7 +514,7 @@ if CLIENT then
         setModeBtn:SetSize(300, 40)
         StyleElement(setModeBtn)
         setModeBtn.DoClick = function()
-            OpenModeSelection("setmode") 
+            OpenModeSelection("setmode")
         end
 
         local setForceModeBtn = vgui.Create("DButton", frame)
@@ -528,7 +526,7 @@ if CLIENT then
         setForceModeBtn.DoClick = function()
             OpenModeSelection("setforcemode")
         end
-        
+
         local queueModeBtn = vgui.Create("DButton", frame)
         queueModeBtn:SetText("Manage game mode queue")
         queueModeBtn:Dock(TOP)
@@ -557,7 +555,7 @@ if CLIENT then
         frame:InvalidateLayout(true)
         frame:SizeToChildren(false, true)
     end
-    
+
 
     hook.Add("InitPostEntity", "RequestModeData", function()
         if LocalPlayer():IsAdmin() then

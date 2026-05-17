@@ -17,7 +17,7 @@ MODE.TypeSounds = {
 }
 local fade = 0
 net.Receive("HMCD_RoundStart",function()
-	for i, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		ply.isTraitor = false
 		ply.isGunner = false
 	end
@@ -53,7 +53,7 @@ net.Receive("HMCD_RoundStart",function()
 				chat.AddText("Traitor names (only you, as a main traitor can see them):")
 			end
 
-			for key = 1, MODE.TraitorExpectedAmt do
+			for _ = 1, MODE.TraitorExpectedAmt do
 				local traitor_info = {net.ReadColor(false), net.ReadString()}
 
 				if(MODE.TraitorExpectedAmt > 1)then
@@ -302,7 +302,7 @@ function MODE:HUDPaint()
 	if not MODE.Type or not MODE.TypeObjectives[MODE.Type] then return end
 	if lply:Team() == TEAM_SPECTATOR then return end
 	if StartTime + 12 < CurTime() then return end
-	
+
 	fade = Lerp(FrameTime()*1, fade, math.Clamp(StartTime + 5 - CurTime(),-2,2))
 
 	draw.SimpleText("Homicide | " .. (MODE.TypeNames[MODE.Type] or "Unknown"), "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -372,7 +372,7 @@ function MODE:HUDPaint()
 
 		draw.SimpleText("Occupation: " .. ((MODE.Professions[lply.Profession] and MODE.Professions[lply.Profession].Name or lply.Profession) or lply.Profession), "ZB_HomicideMedium", sw * 0.5, cur_y, color_role_innocent, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
-	
+
 	if(handicap[lply:GetLocalVar("karma_sickness", 0)])then
 		cur_y = cur_y + ScreenScale(20)
 
@@ -462,11 +462,7 @@ local col = Color(255,255,255,255)
 local colSpect1 = Color(75,75,75,255)
 local colSpect2 = Color(255,255,255)
 
-local colorBG = Color(55,55,55,255)
-local colorBGBlacky = Color(40,40,40,255)
 
-local blurMat = Material("pp/blurscreen")
-local Dynamic = 0
 
 BlurBackground = BlurBackground or hg.DrawBlur
 
@@ -491,10 +487,10 @@ CreateEndMenu = function(traitor)
 	local traitorName = IsValid(traitor) and traitor:GetPlayerName() or "unknown"
 	local traitorNick = IsValid(traitor) and traitor:Nick() or "unknown"
 
-	for i, ply in player.Iterator() do
+	for _, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		if !IsValid(ply) then return end
-		
+
 		players[#players + 1] = {
 			nick = ply:Nick(),
 			name = ply:GetPlayerName(),
@@ -536,7 +532,7 @@ CreateEndMenu = function(traitor)
 		surface.DrawOutlinedRect(0, 0, w, h, 2.5)
 		surface.SetFont("ZB_InterfaceMedium")
 		surface.SetTextColor(col.r, col.g, col.b, col.a)
-		local lengthX, lengthY = surface.GetTextSize("Close")
+		local lengthX, _ = surface.GetTextSize("Close")
 		surface.SetTextPos(lengthX - lengthX / 1.1, 4)
 		surface.DrawText("Close")
 	end
@@ -544,7 +540,7 @@ CreateEndMenu = function(traitor)
 	hmcdEndMenu.PaintOver = function(self,w,h)
 		surface.SetFont( "ZB_InterfaceMediumLarge" )
 		surface.SetTextColor(col.r,col.g,col.b,col.a)
-		local lengthX, lengthY = surface.GetTextSize(traitorName .. " was a traitor ("..traitorNick..")")
+		local lengthX, _ = surface.GetTextSize(traitorName .. " was a traitor ("..traitorNick..")")
 		surface.SetTextPos(w / 2 - lengthX / 2, 20)
 		surface.DrawText(traitorName .. " was a traitor ("..traitorNick..")")
 	end
@@ -554,7 +550,7 @@ CreateEndMenu = function(traitor)
 	DScrollPanel:SetPos(10, 80)
 	DScrollPanel:SetSize(sizeX - 20, sizeY - 90)
 
-	for i, info in ipairs(players) do
+	for _, info in ipairs(players) do
 		local but = vgui.Create("DButton",DScrollPanel)
 
 		but:SetSize(100,50)
@@ -573,7 +569,7 @@ CreateEndMenu = function(traitor)
 
 			local col = info.col
 			surface.SetFont("ZB_InterfaceMediumLarge")
-			local lengthX, lengthY = surface.GetTextSize(name)
+			local _, lengthY = surface.GetTextSize(name)
 
 			surface.SetTextColor(0, 0, 0, 255)
 			surface.SetTextPos(w / 2 + 1, h / 2 - lengthY / 2 + 1)
@@ -587,7 +583,7 @@ CreateEndMenu = function(traitor)
 			local col = colSpect2
 			surface.SetFont("ZB_InterfaceMediumLarge")
 			surface.SetTextColor(col.r,col.g,col.b,col.a)
-			local lengthX, lengthY = surface.GetTextSize(info.name)
+			local _, lengthY = surface.GetTextSize(info.name)
 			surface.SetTextPos(15, h / 2 - lengthY / 2)
 			surface.DrawText(info.name .. ((!info.alive and " - died") or (info.incapacitated and " - incapacitated") or ""))
 

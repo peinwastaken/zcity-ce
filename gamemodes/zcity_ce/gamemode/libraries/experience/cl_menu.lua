@@ -9,12 +9,10 @@ local EXP = zb.Experience
 EXP.OpenedMenu = EXP.OpenedMenu or nil
 
 --local function BG()
---    
+--
 --end
 local gradient_u = Material("vgui/gradient-u")
 
-local blurMat = Material("pp/blurscreen")
-local Dynamic = 0
 
 BlurBackground = hg.DrawBlur
 
@@ -68,7 +66,7 @@ net.Receive("zb_xp_get",function()
             EXP.OpenedAccount:Remove()
             EXP.OpenedAccount = nil
         end
-        
+
         EXP.OpenedAccount = vgui.Create("ZB_AccountFrame")
         local AcMenu = EXP.OpenedAccount
         AcMenu:MakePopup()

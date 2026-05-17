@@ -23,7 +23,6 @@ MODE.FootStepsLifeTimeMax = 5000
 MODE.FootStepsCriticalAmt = 500
 
 local footMat = Material("thieves/footprint")
-local footMat2 = Material("dog_swep/footprint2")
 
 function MODE.IsRoundTypeSuitableForProfessions()
 	mode_type = MODE.Type or mode_type
@@ -34,13 +33,13 @@ end
 --\\Use these and only these functions to address MODE.FootSteps, otherwise it will break
 function MODE.AddFootstep(pos, ang_y, foot, color)
 	local footstep_info = {}
-	
+
 	local trace_data = {}
 		trace_data.start = pos
 		trace_data.endpos = trace_data.start + Vector(0, 0, -10)
 		trace_data.filter = {"player"}
 	local trace = util.TraceLine(trace_data)
-	
+
 	footstep_info.Normal = trace.HitNormal
 	footstep_info.Pos = trace.HitPos + footstep_info.Normal
 	footstep_info.Ang = ang_y
@@ -65,11 +64,11 @@ hook.Add("PostDrawTranslucentRenderables", "HMCD_Professions_Abilities", functio
 
 	if(MODE.NextFootStepsArrangementTime <= CurTime())then
 		MODE.NextFootStepsArrangementTime = math.huge
-		
+
 		MODE.CoroutineFootStepsArrangement = coroutine.create(function()
 			local frame_time = FrameTime()
 			local new_arranged_footsteps = {}
-			
+
 			if(LocalPlayer():Crouching())then
 				MODE.FootStepsCurArrangementDistanceSqr = Lerp(frame_time * 3, MODE.FootStepsCurArrangementDistanceSqr, MODE.FootStepsArrangementDistanceCrouchedSqr)
 			else
@@ -77,11 +76,11 @@ hook.Add("PostDrawTranslucentRenderables", "HMCD_Professions_Abilities", functio
 			end
 
 			local iteration = 0
-			
+
 			for footstep_key, footstep_info in pairs(MODE.FootSteps) do
 				iteration = iteration + 1
 				local cur_life_time = MODE.FootStepsLifeTimeMin + (1 - math.min(MODE.FootStepsAmt / MODE.FootStepsCriticalAmt, 1)) * (MODE.FootStepsLifeTimeMax - MODE.FootStepsLifeTimeMin)
-				
+
 				if(footstep_info.CreationTime + cur_life_time <= CurTime())then
 					MODE.RemoveFootstep(footstep_key)
 				else
@@ -89,40 +88,40 @@ hook.Add("PostDrawTranslucentRenderables", "HMCD_Professions_Abilities", functio
 						new_arranged_footsteps[#new_arranged_footsteps + 1] = footstep_info
 					end
 				end
-				
+
 				if(iteration > 100)then
 					iteration = 0
-					
+
 					coroutine.yield()
 				end
 			end
-			
+
 			MODE.ArrangedFootSteps = new_arranged_footsteps
 			MODE.CoroutineFootStepsArrangement = nil
 			MODE.NextFootStepsArrangementTime = CurTime() + MODE.FootStepsArrangementTimeCD
 		end)
-		
+
 		coroutine.resume(MODE.CoroutineFootStepsArrangement)
 	end
 
 	if(MODE.IsRoundTypeSuitableForProfessions() and LocalPlayer().Profession == "huntsman")then
 		local frame_time = FrameTime()
-		
+
 		if(LocalPlayer():Crouching())then
 			MODE.FootStepsCurDrawDistanceSqr = Lerp(frame_time * 3, MODE.FootStepsCurDrawDistanceSqr, MODE.FootStepsDrawDistanceCrouchedSqr)
 		else
 			MODE.FootStepsCurDrawDistanceSqr = Lerp(frame_time * 3, MODE.FootStepsCurDrawDistanceSqr, MODE.FootStepsDrawDistanceSqr)
 		end
-		
+
 		cam.Start3D(ply_pos, ply_angs)
-			for footstep_key, footstep_info in ipairs(MODE.ArrangedFootSteps) do
+			for _, footstep_info in ipairs(MODE.ArrangedFootSteps) do
 				local length = 20
-				
+
 				render.SetMaterial(footMat)
-				
+
 				local dist_sqr = footstep_info.Pos:DistToSqr(ply_pos)
 				footstep_info.Color.a = math.max((1 - (dist_sqr / MODE.FootStepsCurDrawDistanceSqr)), 0) * 255
-				
+
 				render.DrawQuadEasy(footstep_info.Pos, footstep_info.Normal, 10, length, footstep_info.Color, footstep_info.Ang)
 			end
 		cam.End3D()
@@ -189,8 +188,8 @@ hook.Add("radialOptions", "EngineerCraft", function()
 		local have_barrel_nearby
 		local have_bandage = ply:HasWeapon("weapon_bandage_sh") or ply:HasWeapon("weapon_bigbandage_sh")
 		local have_bottle = ply:HasWeapon("weapon_hg_bottle")
-		
-		for i, ent in ipairs(ents.FindInSphere(ply:GetPos(), 64)) do
+
+		for _, ent in ipairs(ents.FindInSphere(ply:GetPos(), 64)) do
 			if hg.gas_models[ent:GetModel()] and !ent:GetNWBool("EmptyBarrel", false) then
 				have_barrel_nearby = true
 				break

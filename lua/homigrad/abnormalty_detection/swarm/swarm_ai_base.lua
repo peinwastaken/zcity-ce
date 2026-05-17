@@ -14,7 +14,7 @@ ENT.Type = "ai"
 --E - Intelligent
 
 --Rf - Resistance flame
---Rp - Resistance projectile 
+--Rp - Resistance projectile
 --Rm - Resistance melee
 
 --D - Damage
@@ -32,18 +32,18 @@ ENT.PossibleGenes = {
 	{{"T",1},40},
 	{{"L",1},40},
 	{{"M",0.6},35},
-	
+
 	{{"Rf",1},30},
 	{{"Rp",1},30},
 	{{"Rm",1},30},
-	
+
 	{{"D",1},20},
-	
+
 	{{"S",1},10},
-	
+
 	{{"A",1},10},
 	{{"B",1},20},
-	
+
 	{{"I",1},8},
 
 	--{{"P",1},20},
@@ -99,7 +99,7 @@ ENT.GenesAddTable = {
 		["T"]=-1,
 		["M"]=-1,
 	},
-	
+
 	["Rf"]={
 		["Rp"]=-0.8,
 		["Rm"]=-1,
@@ -116,14 +116,14 @@ ENT.GenesAddTable = {
 		["Rp"]=-1,
 		["D"]=-0.2,
 	},
-	
+
 	["S"]={
 		["Rf"]=-0.3,
 		["Rp"]=-0.3,
 		["Rm"]=-0.3,
 		["D"]=-0.3,
 	},
-	
+
 	["A"]={
 		["B"]=-1,
 	},
@@ -250,14 +250,14 @@ ENT.DefenceGeneMuls = {
 	[DMG_CLUB] = {
 		["Rm"] = 2
 	},
-	
+
 	[DMG_BURN] = {
 		["Rf"] = 1.5
 	},
 	[DMG_SLOWBURN] = {
 		["Rf"] = 1.5
 	},
-	
+
 	[DMG_BUCKSHOT] = {
 		["Rp"] = 2
 	},
@@ -347,7 +347,7 @@ end
 function ENT:TransferMotherRights(ent)
 	ent.CreatedNpcs = self.CreatedNpcs
 	ent.Hostiles = self.Hostiles
-	for npc,time in pairs(ent.CreatedNpcs)do
+	for npc in pairs(ent.CreatedNpcs)do
 		if(IsValid(npc))then
 			npc:SetMother(ent)
 		else

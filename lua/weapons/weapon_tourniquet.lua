@@ -21,11 +21,11 @@ if CLIENT then
 --
 		surface.SetDrawColor( 255, 255, 255, alpha )
 		surface.SetMaterial( self.WepSelectIcon2 )
-	
+
 		surface.DrawTexturedRect( x, y + 10,  wide, wide/2 )
-	
+
 		self:PrintWeaponInfo( x + wide + 20, y + tall * 0.95, alpha )
-	
+
 	end
 end
 
@@ -64,7 +64,6 @@ function SWEP:Think()
 	end
 end
 
-local lang1, lang2 = Angle(0, -10, 0), Angle(0, 10, 0)
 function SWEP:Animation()
 	local owner = self:GetOwner()
 	local aimvec = self:GetOwner():GetAimVector()

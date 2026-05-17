@@ -14,9 +14,9 @@ function EFFECT:Init(data)
 
     local emitter = ParticleEmitter(pos)
 
-    for i = 1,15*intensity do
+    for _ = 1,15*intensity do
         local smoke = emitter:Add(smoke_mats[math.random(#smoke_mats)], pos)
-        
+
         smoke:SetStartAlpha(math.Rand(40, 80))
         smoke:SetEndAlpha(0)
         smoke:SetColor(100,75,50)
@@ -31,9 +31,9 @@ function EFFECT:Init(data)
         smoke:SetVelocity((normal*math.Rand(40, 200)+VectorRand()*50)*intensity)
     end
 
-    for i = 1,8*intensity do
+    for _ = 1,8*intensity do
         local smoke = emitter:Add("particle/particle_debris_02", pos+normal*8)
-        
+
         smoke:SetStartAlpha(255)
         smoke:SetEndAlpha(0)
         smoke:SetLighting(true)

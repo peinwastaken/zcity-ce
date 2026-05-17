@@ -131,7 +131,6 @@ SWEP.AnimList = {
 	["reload"] = "reload",
 	["reload_empty"] = "reload_empty",
 }
-local vector_full = Vector(1,1,1)
 SWEP.FakeReloadEvents = {
 	[0.15] = function( self, timeMul )
 		if CLIENT then
@@ -157,7 +156,7 @@ SWEP.LocalMuzzlePos = Vector(18.893,0.388,1.648)
 SWEP.LocalMuzzleAng = Angle(0,0,0)
 SWEP.WeaponEyeAngles = Angle(0,0,0)
 
-SWEP.Chocking = false 
+SWEP.Chocking = false
 
 SWEP.punchmul = 1
 SWEP.punchspeed = 0.1
@@ -220,7 +219,7 @@ function SWEP:Shoot(override)
 		return false
 	end
     self.Shooted = self.Shooted + 1
-	
+
 	primary.Next = CurTime() + primary.Wait
 	self:SetLastShootTime(CurTime())
 	self:PrimaryShoot()
@@ -235,7 +234,7 @@ function SWEP:Step()
 		if self.reloadMiddle and self.reloadMiddle < CurTime() then
             if self.Shooted > 0 then
 				local ammotype = hg.ammotypes[string.lower( string.Replace( self.Primary and self.Primary.Ammo or "nil"," ", "") )].BulletSettings
-			    self:MakeShell(ammotype.Shell, owner:GetBonePosition(owner:LookupBone("ValveBiped.Bip01_L_Hand")), Angle(0,0,0), Vector(0,0,0)) 
+			    self:MakeShell(ammotype.Shell, owner:GetBonePosition(owner:LookupBone("ValveBiped.Bip01_L_Hand")), Angle(0,0,0), Vector(0,0,0))
                 --self:EmitSound("weapons/tfa_ins2/doublebarrel/shelleject1.wav",70,100,1,CHAN_AUTO)
                 self.Shooted = self.Shooted - 1
 			else

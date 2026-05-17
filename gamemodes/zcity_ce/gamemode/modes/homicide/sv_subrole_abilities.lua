@@ -9,14 +9,14 @@ util.AddNetworkString("HMCD_UpdateChemicalResistance")
 --\\Chemical resistance
 	function MODE.NetworkChemicalResistanceOfPlayer(ply)
 		ply.PassiveAbility_ChemicalAccumulation = ply.PassiveAbility_ChemicalAccumulation or {}
-		
+
 		net.Start("HMCD_UpdateChemicalResistance")
-		
+
 		for chemical_name, amt in pairs(ply.PassiveAbility_ChemicalAccumulation) do
 			net.WriteString(chemical_name)
 			net.WriteUInt(math.Round(amt), MODE.NetSize_ChemicalResistanceBits)
 		end
-		
+
 		net.WriteString("")
 		net.Send(ply)
 	end
@@ -30,13 +30,13 @@ hook.Add("PlayerPostThink", "HMCD_SubRoles_Abilities", function(ply)
 					if(ply:KeyPressed(IN_RELOAD))then
 						local aim_ent, other_ply = hg.eyeTrace(ply,85).Entity
 						other_ply = hg.RagdollOwner(aim_ent) or aim_ent
-						
+
 						if(IsValid(aim_ent) and aim_ent:IsRagdoll())then	--; REDO
 							local other_appearance = aim_ent.CurAppearance
 							local your_appearance = ply.CurAppearance
 
 							local aMdl1,aMdl2 = your_appearance.AModel,other_appearance.AModel
-							
+
 							other_appearance.AModel = aMdl1
 							your_appearance.AModel = aMdl2
 
@@ -57,16 +57,16 @@ hook.Add("PlayerPostThink", "HMCD_SubRoles_Abilities", function(ply)
 							aim_ent.CurAppearance = your_appearance
 
 							hg.Appearance.ForceApplyAppearance(aim_ent, your_appearance, true)
-							
+
 							if other_ply:IsPlayer() and other_ply:Alive() then
 								hg.Appearance.ForceApplyAppearance(other_ply, your_appearance, true)
 							end
 						end
 					end
-					
+
 					if(ply:KeyPressed(IN_USE))then
 						local aim_ent, other_ply = MODE.GetPlayerTraceToOther(ply)
-						
+
 						if(IsValid(aim_ent))then
 							if(other_ply and MODE.CanPlayerBreakOtherNeck(ply, aim_ent))then
 								MODE.StartBreakingOtherNeck(ply, other_ply)
@@ -77,7 +77,7 @@ hook.Add("PlayerPostThink", "HMCD_SubRoles_Abilities", function(ply)
 							MODE.ContinueBreakingOtherNeck(ply)
 						end
 					end
-					
+
 					if(ply:KeyReleased(IN_USE))then
 						MODE.StopBreakingOtherNeck(ply)
 					end
@@ -85,12 +85,12 @@ hook.Add("PlayerPostThink", "HMCD_SubRoles_Abilities", function(ply)
 					MODE.StopBreakingOtherNeck(ply)
 				end
 			end
-			
+
 			if(ply.SubRole == "traitor_assasin" or ply.SubRole == "traitor_assasin_soe")then
 				if(ply:KeyDown(IN_WALK))then
 					if(ply:KeyPressed(IN_USE))then
-						local aim_ent, other_ply, trace = MODE.GetPlayerTraceToOther(ply, nil, MODE.DisarmReach)
-						
+						local aim_ent, other_ply, _ = MODE.GetPlayerTraceToOther(ply, nil, MODE.DisarmReach)
+
 						if(IsValid(aim_ent))then
 							if(other_ply and MODE.CanPlayerDisarmOther(ply, aim_ent, MODE.DisarmReach) and MODE.CanPlayerDisarmOtherPly(ply, other_ply, MODE.DisarmReach))then
 								MODE.StartDisarmingOther(ply, other_ply)
@@ -101,7 +101,7 @@ hook.Add("PlayerPostThink", "HMCD_SubRoles_Abilities", function(ply)
 							MODE.ContinueDisarmingOther(ply)
 						end
 					end
-					
+
 					if(ply:KeyReleased(IN_USE))then
 						MODE.StopDisarmingOther(ply)
 					end
@@ -109,16 +109,16 @@ hook.Add("PlayerPostThink", "HMCD_SubRoles_Abilities", function(ply)
 					MODE.StopDisarmingOther(ply)
 				end
 			end
-			
+
 			if(ply.SubRole == "traitor_zombie")then
 				if(ply:KeyDown(IN_WALK))then
-					
+
 				end
 			end
 
 			if(ply.SubRole == "traitor_chemist")then
 				DegradeChemicalsOfPlayer(ply)
-				
+
 				if(!ply.PassiveAbility_ChemicalAccumulation_NextNetworkTime or ply.PassiveAbility_ChemicalAccumulation_NextNetworkTime <= CurTime())then
 					MODE.NetworkChemicalResistanceOfPlayer(ply)
 

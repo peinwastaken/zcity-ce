@@ -3,7 +3,7 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
-local vecZero, vec30 = Vector(0,0,0), Vector(0,0,30)
+local vec30 = Vector(0,0,30)
 function ENT:Initialize()
 	self:SetModel(self.PhysModel or self.Model)
 	self:PhysicsInit(SOLID_VPHYSICS)
@@ -74,7 +74,7 @@ end
 
 hook.Add("ItemsTransfered","TransferMats",function(ply, ragdoll)
 	local armors = ply:GetNetVar("Armor",{})
-	for k,v in pairs(armors) do
+	for _, v in pairs(armors) do
 		ragdoll:SetNWString("ArmorMaterials" .. v, ply:GetNWString("ArmorMaterials" .. v))
 		ply:SetNWString("ArmorMaterials" .. v, nil)
 

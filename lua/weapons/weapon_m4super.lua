@@ -1,4 +1,3 @@
-
 SWEP.Base = "homigrad_base"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
@@ -199,7 +198,6 @@ end
 SWEP.Chocking = true
 
 function SWEP:ReloadEnd()
-	local owner = self:GetOwner()
 	--owner:SetPlaybackRate(-1)
 	self:InsertAmmo(1)
 	self.ReloadNext = CurTime() + self.ReloadCooldown
