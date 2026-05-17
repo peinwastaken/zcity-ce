@@ -775,6 +775,7 @@
 			end
 
 			ply.cachedval = true
+			print(ply.cachedval)
 			return true
 		end
 

@@ -236,6 +236,7 @@ local TPIKBonesRHDictTranslate = {
 
 hg.TPIKBonesRHDict = TPIKBonesRHDict
 hg.TPIKBonesLHDict = TPIKBonesLHDict
+hg.TPIKBonesLHDictTranslate = TPIKBonesLHDictTranslate
 hg.TPIKBonesRHDictTranslate = TPIKBonesRHDictTranslate
 
 hg.TPIKBones = TPIKBones
@@ -1203,6 +1204,7 @@ function hg.DoTPIK(ply, ent)
         angle3 = math.NormalizeAngle(angle3)
         local torsoright = eyeang.y + 90
 
+        q = Quaternion()
         q = q * Quaternion():SetAngleAxis(angrr.y, vecUpZ)
         q = q * Quaternion():SetAngleAxis(angrr.p, vecUpY)
         q = q * Quaternion():SetAngleAxis(-30 + angrr.y - eyeang.y + eyeang.r, Vector(1, 0, 0))

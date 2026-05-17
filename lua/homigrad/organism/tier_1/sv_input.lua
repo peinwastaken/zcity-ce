@@ -1171,6 +1171,7 @@ local function GetTraceDamage(ent, start, dir)
 	endpos:Set(start)
 	endpos:Add(dir)
 	tr.endpos = endpos
+	local traceResult = util.TraceLine(tr)
 	if not traceResult.Hit then
 		endpos:Set(start)
 		endpos:Sub(dir)

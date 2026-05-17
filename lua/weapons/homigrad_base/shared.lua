@@ -2071,7 +2071,9 @@ function SWEP:SetHandPos(noset)
 		local mdl = self:GetWM()
 
 		local TPIKBonesRHDict = hg.TPIKBonesRHDict
+		local TPIKBonesLHDict = hg.TPIKBonesLHDict
 		local TPIKBonesRHDictTranslate = hg.TPIKBonesRHDictTranslate
+		local TPIKBonesLHDictTranslate = hg.TPIKBonesLHDictTranslate
 		local canuseright = hg.CanUseRightHand(ply) and wpn.rhandik
 		local canuseleft = hg.CanUseLeftHand(ply) and wpn.lhandik
 
