@@ -36,7 +36,7 @@ function SWEP:ApplyAmmoChanges(type_)
 
 	local ammotype = ammohuy.BulletSettings
 	if not ammotype then
-		print("ЭРРАР: Нет настройек огузки") -- Deka is an idiot
+		print("ЭРРАР: No settings for rumps") -- Deka is an idiot
 		return
 	end
 

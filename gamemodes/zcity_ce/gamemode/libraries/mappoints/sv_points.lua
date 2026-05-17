@@ -35,7 +35,7 @@ function zb.GetMapPoints( pointGroup, forceupdatepoints ) -- Load points into ga
     return newTbl
 end--undebiled this function no need to thank me
 
--- pointsData = zb.Points[pointGroup].Points  // Tablitsa poyntov
+-- pointsData = zb.Points[pointGroup].Points  // Points table
 function zb.SaveMapPoints( pointGroup, pointsData ) -- Saves all points in the group
     if not zb.CreateMapDir() then PrintMessage( HUD_PRINTTALK, "sv_points.lua: map folder dosen't exists?" ) return false end
     if not zb.Points[pointGroup] then PrintMessage( HUD_PRINTTALK, "sv_points.lua: point group " .. "\"" .. pointGroup .. "\"" .. " doesn't exist." ) return false end
