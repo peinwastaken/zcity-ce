@@ -1,6 +1,6 @@
 local PANEL = {}
 local curent_panel 
-local red_select = Color(192,0,0)
+local red_select = Color(0,154,192)
 
 DISCORD_URL = "https://discord.gg/475EmEdTgH"
 
@@ -76,26 +76,18 @@ local Selects = {
     {Title = "Settings", Func = function(luaMenu,pp) 
         hg.DrawSettings(pp) 
     end},
+    {Title = "Binds", Func = function(luamenu, pp)
+        hg.DrawBinds(pp)
+    end},
     {Title = "Appearance", Func = function(luaMenu,pp) hg.CreateApperanceMenu(pp) end},
     {Title = "Return", Func = function(luaMenu) luaMenu:Close() end},
 }
 
 local splasheh = {
-    'LIKE HOMICIDED',
-    'PLUV PLUV PLUVISKI',
-    'LULU IS NOT DEAD | !PLUV',
-    'THE TRAITOR WAS KILLED',
-    'NAB HOMICIDE SERVER',
-    'ALSO TRY MODDED HOMICIDE 2',
-    'HOP ON Z-CITY',
-    'JOHN Z-CITY',
-    ':pluvrare:',
-    'SAW51 IS REAL',
-    'MORE SMALLTOWN',
-    'MORE CLUE2022',
-    'BACKROOMS == CLUE',
-    'HELL IS NEAR',
-    'I WISH YOU GOOD HEALTH, JASON STATHAM'
+    "we love homigrad!",
+    "NOW WITHOUT FURRIES!",
+    "Welcome!",
+    "steam happy"
 }
 
 --print(string.upper('I wish you good health, Jason Statham'))
@@ -115,7 +107,7 @@ function PANEL:InitializeMarkup()
 	if prefix then
 		mapname = string.sub(mapname, prefix + 1)
 	end
-	local gm = splasheh[math.random(#splasheh)] .. " | " .. string.NiceName(mapname) 
+	local gm = splasheh[math.random(#splasheh)] .. " | Playing on: " .. mapname
 
     if hg.PluvTown.Active then
         local text = "<font=ZC_MM_Title><colour=199,2,2>    </colour>City</font>\n<font=ZCity_Tiny><colour=105,105,105>" .. gm .. "</colour></font>"
@@ -125,7 +117,7 @@ function PANEL:InitializeMarkup()
         return markup.Parse(text)
     end
 
-    local text = "<font=ZC_MM_Title><colour=199,2,2,255>Z</colour>-City</font>\n<font=ZCity_Tiny><colour=105,105,105>" .. gm .. "</colour></font>"
+    local text = "<font=ZC_MM_Title><colour=0,228,245>Z</colour>-City</font>\n<font=ZCity_Tiny><colour=105,105,105>" .. gm .. "</colour></font>"
     return markup.Parse(text)
 end
 
@@ -224,7 +216,7 @@ local gradient_d = surface.GetTextureID("vgui/gradient-d")
 local gradient_r = surface.GetTextureID("vgui/gradient-u")
 local gradient_l = surface.GetTextureID("vgui/gradient-l")
 
-local clr_1 = Color(102,0,0,35)
+local clr_1 = Color(0,36,102,35)
 function PANEL:Paint(w,h)
     draw.RoundedBox( 0, 0, 0, w, h, self.ColorBG )
     hg.DrawBlur(self, 5)

@@ -39,7 +39,7 @@ if CLIENT then
             
             if self:IsHovered() and self.Selectable then
                 draw.RoundedBox(6, 1, 1, w-2, h-2, Color(60, 60, 60, 100))
-                surface.SetDrawColor(255, 165, 0, 150)
+                surface.SetDrawColor(0, 0, 0, 150)
                 surface.DrawOutlinedRect(1, 1, w-2, h-2, 1)
             end
             
@@ -362,7 +362,7 @@ if CLIENT then
         local batchPanel = vgui.Create("DPanel", leftPanel)
         batchPanel:Dock(BOTTOM)
         batchPanel:DockMargin(5, 5, 5, 5)
-        batchPanel:SetTall(80)
+        batchPanel:SetTall(160)
         StyleElement(batchPanel, Color(40, 40, 40, 200))
         
         local batchTitle = vgui.Create("DLabel", batchPanel)
@@ -402,11 +402,6 @@ if CLIENT then
                 net.SendToServer()*/
                 
                 chat.AddText(Color(0, 255, 0), "Added " .. selectedCount .. " modes to beginning of queue!")
-                
-                selectedModes = {}
-                for _, item in ipairs(modeItems) do
-                    item.Selected = false
-                end
             else
                 chat.AddText(Color(255, 0, 0), "No modes selected!")
             end
@@ -436,12 +431,38 @@ if CLIENT then
                 net.SendToServer()*/
                 
                 chat.AddText(Color(0, 255, 0), "Added " .. selectedCount .. " modes to end of queue!")
-                
+            else
+                chat.AddText(Color(255, 0, 0), "No modes selected!")
+            end
+        end
 
+        local clearSelectBtn = vgui.Create("DButton", batchPanel)
+        clearSelectBtn:SetText("Clear selected modes")
+        clearSelectBtn:Dock(TOP)
+        clearSelectBtn:DockMargin(5, 5, 5, 5)
+        clearSelectBtn:SetTall(26)
+        clearSelectBtn.DoClick = function()
+            local selectedCount = 0
+            
+            local selectedKeys = {}
+            for key, selected in pairs(selectedModes) do
+                if selected then
+                    table.insert(selectedKeys, 1, key) 
+                    selectedCount = selectedCount + 1
+                end
+            end
+            
+            for i = 1, #selectedKeys do
+                table.insert(zb.RoundList, 1, selectedKeys[i])
+            end
+            
+            if selectedCount > 0 then
                 selectedModes = {}
                 for _, item in ipairs(modeItems) do
                     item.Selected = false
                 end
+
+                chat.AddText(Color(0, 255, 0), "Cleared selected modes!")
             else
                 chat.AddText(Color(255, 0, 0), "No modes selected!")
             end
@@ -456,6 +477,9 @@ if CLIENT then
             net.Start("ZB_RequestRoundList")
             net.SendToServer()
         end
+
+        batchPanel:InvalidateLayout(true)
+        batchPanel:SizeToChildren(false, true)
         
         timer.Create("QueueAutoRefresh", 5, 0, function()
             if IsValid(frame) then
@@ -486,7 +510,7 @@ if CLIENT then
         frame:MakePopup()
 
         local setModeBtn = vgui.Create("DButton", frame)
-        setModeBtn:SetText("Set Next Mode")
+        setModeBtn:SetText("Set next game mode")
         setModeBtn:Dock(TOP)
         setModeBtn:DockMargin(5, 10, 5, 2)
         setModeBtn:SetSize(300, 40)
@@ -496,7 +520,7 @@ if CLIENT then
         end
 
         local setForceModeBtn = vgui.Create("DButton", frame)
-        setForceModeBtn:SetText("Set Auto Next Mode")
+        setForceModeBtn:SetText("Set automatic next game mode")
         setForceModeBtn:Dock(TOP)
         setForceModeBtn:DockMargin(5, 2, 5, 2)
         setForceModeBtn:SetSize(300, 40)
@@ -506,7 +530,7 @@ if CLIENT then
         end
         
         local queueModeBtn = vgui.Create("DButton", frame)
-        queueModeBtn:SetText("Manage Game Mode Queue")
+        queueModeBtn:SetText("Manage game mode queue")
         queueModeBtn:Dock(TOP)
         queueModeBtn:DockMargin(5, 2, 5, 2)
         queueModeBtn:SetSize(300, 40)
@@ -516,7 +540,7 @@ if CLIENT then
         end
 
         local endRoundBtn = vgui.Create("DButton", frame)
-        endRoundBtn:SetText("End Round")
+        endRoundBtn:SetText("End round")
         endRoundBtn:Dock(TOP)
         endRoundBtn:DockMargin(5, 2, 5, 2)
         endRoundBtn:SetSize(300, 40)

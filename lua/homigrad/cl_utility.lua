@@ -171,6 +171,7 @@ hg.ConVars = hg.ConVars or {}
 	hook.Add("Move", "fakestatus", function(ply, mv)
 		if !CurrentRound then return end
 		local rnd = CurrentRound()
+		if !rnd then return end
 		if rnd.name != "fear" then return end
 		local alive = zb:CheckAlive()
 		if (#alive != 1) or (alive[1] != ply) then return end

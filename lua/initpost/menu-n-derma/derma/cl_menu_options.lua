@@ -359,3 +359,107 @@ function hg.DrawSettings(ParentPanel)
     pppanel23:SetSize(0, 0)
     pppanel23:SetPos(0,yOffset+12)
 end
+
+function hg.CreateBindRow(buttonData, convarName, ParentPanel, yPos)
+    local convar = GetConVar(convarName)
+
+    if not convar then 
+        return 
+    end
+    local pppanel = vgui.Create('DPanel', ParentPanel)
+    pppanel:SetSize(ParentPanel:GetWide()/1.05, ParentPanel:GetTall()/15)
+    pppanel:SetPos(ParentPanel:GetWide()/2-pppanel:GetWide()/2, yPos)
+    
+    surface.SetFont('ZCity_setiings_fine')
+    local width2, height2 = surface.GetTextSize(buttonData[3])
+    
+    convarType = buttonData[6] or hg.GetConVarType(convar)
+    pppanel.Paint = function(self,w,h)
+        surface.SetDrawColor(43, 43, 43,145)
+        surface.DrawRect(0, 0, w, h)
+		surface.SetDrawColor(47, 47, 47,145)
+		surface.DrawRect(0, h-3, w, 3)
+
+        local label = buttonData[1]
+        local desc = buttonData[3]
+        
+        draw.SimpleText(label, 'ZCity_setiings_fine', 30, h / 2 -height2/2.5, clr_1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(desc, 'ZCity_setiings_tiny', 30, h / 2+height2/2, clr_2, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    end
+        
+    local textEntry = vgui.Create('DBinder', pppanel)
+        textEntry:SetSize(pppanel:GetWide()/8, pppanel:GetTall()/2)
+        textEntry:SetPos(pppanel:GetWide()-pppanel:GetWide()/8-20, pppanel:GetTall()/2-textEntry:GetTall()/2)
+        textEntry:SetValue(64) 
+        textEntry:SetFont('ZCity_Tiny')
+    
+        textEntry.Paint = function(self, w, h)
+            surface.SetDrawColor(30, 30, 30, 255)
+            surface.DrawRect(0, 0, w, h)
+            surface.SetDrawColor(60, 60, 60, 255)
+            surface.DrawOutlinedRect(0, 0, w, h)
+            
+            self:DrawTextEntryText(color_white, clr_8, color_white)
+        end
+        
+        function textEntry:OnValueChange(val)
+            if convar then
+                SetConVarValue(convar, val)
+            end
+        end
+    
+    return pppanel
+end
+
+function hg.DrawBinds(ParentPanel)
+    // generic ui panel shit
+    ParentPanel:SetAlpha(0)
+    ParentPanel.Paint = function(self,w,h)
+
+        surface.SetDrawColor(28,28,28,255)
+        surface.DrawRect(0, 0, w, h)
+
+        surface.SetDrawColor(107, 107, 107,20)
+
+        for i = 1, (ybars + 1) do
+            surface.DrawRect((sw / ybars) * i - (CurTime() * 30 % (sw / ybars)), 0, ScreenScale(1), sh)
+        end
+
+        for i = 1, (xbars + 1) do
+            surface.DrawRect(0, (sh / xbars) * (i - 1) + (CurTime() * 30 % (sh / xbars)), sw, ScreenScale(1))
+        end
+
+        local border_size = ScreenScale(2)
+
+        surface.SetDrawColor(0, 0, 0)
+        surface.SetMaterial(gradient_l)
+        surface.DrawTexturedRect(0, 0, border_size, sh)
+		surface.SetMaterial(blur)
+        surface.SetDrawColor(28,28,28,208)
+        surface.DrawRect(0, 0, w, h)
+    end
+    hg.DrawBlur(ParentPanel, 5)
+    ParentPanel:AlphaTo(255,0.15,0)
+    local pppanel3 = vgui.Create('DScrollPanel', ParentPanel)
+    pppanel3:SetSize(ParentPanel:GetWide(), ParentPanel:GetTall())
+    pppanel3:SetPos(0,0)
+    pppanel3.Paint = function()end
+
+    // content
+    local offset = 25
+
+    for i = 0, 5, 1 do
+        local categoryPanel = vgui.Create("DPanel", pppanel3)
+        categoryPanel:SetWide(ParentPanel:GetWide())
+        categoryPanel:SetTall(ParentPanel:GetTall())
+
+        categoryPanel.Paint = function() end
+
+        local category = hg.CreateCategory("Movement", ParentPanel, offset)
+
+        local optionGap = 15
+        local optionOffset = offset + category:GetTall() + optionGap
+        local btn = hg.CreateBindRow({"Toggle ragdoll", "hg_bulletholes", "Pretty self-explanatory. Press to enter and press to leave ragdoll"}, "hg_bulletholes", ParentPanel, optionOffset)
+        
+    end
+end

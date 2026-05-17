@@ -1,7 +1,7 @@
-"zcity"
+"zcity_ce"
 {
 	"base"			"base"
-	"title"			"ZCity"
+	"title"			"ZCity CE"
 	"maps"			"^hmcd_|^md_|^mu_|^murder_|^zc|^zb"
 	"menusystem"	"1"
 	"category"		"pvp"
