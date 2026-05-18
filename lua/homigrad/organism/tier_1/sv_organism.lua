@@ -105,7 +105,6 @@ local hg_unreliable_nets = ConVarExists("hg_unreliable_nets") and GetConVar("hg_
 util.AddNetworkString("organism_send")
 util.AddNetworkString("organism_sendply")
 local CurTime = CurTime
-local hg_developer = ConVarExists("hg_developer") and GetConVar("hg_developer") or CreateConVar("hg_developer", 0, FCVAR_SERVER_CAN_EXECUTE, "Toggle developer mode (enables damage traces)", 0, 1)
 local function send_organism(org, ply)
 	if not IsValid(org.owner) then return end
 	local sendtable = {}
@@ -166,7 +165,7 @@ local function send_organism(org, ply)
 	sendtable.noradrenalineActive = org.noradrenalineActive
 
 	net.Start("organism_send", hg_unreliable_nets:GetBool())
-	net.WriteTable(not hg_developer:GetBool() and sendtable or org)
+	net.WriteTable(not zb.dev.IsDeveloper() and sendtable or org)
 	net.WriteBool(org.owner.fullsend)
 	net.WriteBool(false)
 	net.WriteBool(true)
@@ -221,7 +220,7 @@ local function send_bareinfo(org)
 	if org.owner:IsPlayer() then rf:RemovePlayer(org.owner) end
 
 	net.Start("organism_send", hg_unreliable_nets:GetBool())
-	net.WriteTable(not hg_developer:GetBool() and sendtable or org)
+	net.WriteTable(not zb.dev.IsDeveloper() and sendtable or org)
 	net.WriteBool(org.owner.fullsend)
 	net.WriteBool(true)
 	net.WriteBool(false)

@@ -395,7 +395,7 @@ function hg.CreateBindRow(bindId, bindData, ParentPanel, yPos)
     end
 
     textEntry.OnChange = function(self, num)
-        DevPrint(string.format("New bind for %s = %s (key: %s)", bindId, num, input.GetKeyName(num)))
+        zb.dev.DevPrint(string.format("New bind for %s = %s (key: %s)", bindId, num, input.GetKeyName(num)))
         zb.binds.UpdateBind(bindId, num)
     end
 

@@ -296,8 +296,6 @@ hg.TPIKBonesLH = TPIKBonesLH
 local math, Vector, Angle, util, IsValid, CurTime, game, FrameTime, LerpAngle = math, Vector, Angle, util, IsValid, CurTime, game, FrameTime, LerpAngle
 local math_Clamp = math.Clamp
 
-local developer = GetConVar("developer")
-
 local PrikolModel = {
     ["models/male_09.mdl"] = true,
     ["models/player/zcity/male_04.mdl"] = true
@@ -515,7 +513,7 @@ function hg._DeprecatedDoTPIK(ply, ent, rhmat, lhmat)
         end
     end
 
-    if IsValid(self.DebugMagazineModel) and developer:GetBool() and lply:IsSuperAdmin() and self.lmagpos3 then
+    if IsValid(self.DebugMagazineModel) and zb.dev.IsDeveloper() and lply:IsSuperAdmin() and self.lmagpos3 then
         local hand = ply_l_hand_matrix
         local pos, ang = LocalToWorld(self.lmagpos3, self.lmagang3, hand:GetTranslation(), hand:GetAngles())
         self.DebugMagazineModel:SetPos(pos)

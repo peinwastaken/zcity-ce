@@ -7,7 +7,6 @@ ENT.WorldModel = "models/mmod/weapons/w_slam.mdl"
 ENT.Sound = "ambient/alarms/klaxon1.wav"
 ENT.AlarmCD = 0
 
-local developer = GetConVar("developer")
 local offsetPos, offsetAng = Vector(0, 0, 6), Angle(-90, 180, 0)
 function ENT:Think()
 	local tr = {}
@@ -19,7 +18,7 @@ function ENT:Think()
 	tr.collisiongroup = COLLISION_GROUP_PLAYER
 	local tr = util.TraceLine(tr)
 
-	if developer:GetBool() and LocalPlayer():IsAdmin() then
+	if zb.dev.IsDeveloper() and LocalPlayer():IsAdmin() then
 		debugoverlay.Line(pos, tr.HitPos, 1, color_white, true)
 	end
 

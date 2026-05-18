@@ -9,8 +9,6 @@ zb.HarmAttacked = zb.HarmAttacked or {}
 zb.GuiltSQL = zb.GuiltSQL or {}
 zb.GuiltSQL.PlayerInstances = zb.GuiltSQL.PlayerInstances or {}
 
-local hg_developer = ConVarExists("hg_developer") and GetConVar("hg_developer") or CreateConVar("hg_developer",0,FCVAR_SERVER_CAN_EXECUTE,"Toggle developer mode (enables damage traces)",0,1)
-
 hook.Add("DatabaseConnected", "GuiltCreateData", function()
 	local query
 
@@ -161,7 +159,7 @@ hook.Add("HomigradDamage", "GuiltReg", function(ply, dmgInfo, hitgroup, ent, har
         lastattacked = CurTime(),
     }
 
-    if hg_developer:GetBool() then
+    if zb.dev.IsDeveloper() then
         Attacker:ChatPrint("This harm done is: "..math.Round(harm,3))
         Attacker:ChatPrint("Overall amt done is: "..math.Round(amt,3))
         Attacker:ChatPrint("Overall harm done is: "..math.Round(newharm,3))

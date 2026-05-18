@@ -64,14 +64,14 @@ end
 function binds.SaveBinds()
   file.Write("zcity-ce/settings/binds.json", util.TableToJSON(CreateBindSave(), true))
 
-  DevPrint("Saved binds")
-  DevPrint(binds.allbinds)
+  zb.dev.DevPrint("Saved binds")
+  zb.dev.DevPrint(binds.allbinds)
 end
 
 function binds.LoadBinds()
   local bindsExists = file.Exists("zcity-ce/settings/binds.json", "DATA")
   if !bindsExists then
-    DevPrint("binds file not found, creating default")
+    zb.dev.DevPrint("binds file not found, creating default")
     binds.SaveDefaultBinds()
   end
  
@@ -88,7 +88,7 @@ function binds.LoadBinds()
     end
   end
 
-  DevPrint(string.format("Loaded %s binds", loaded))
+  zb.dev.DevPrint(string.format("Loaded %s binds", loaded))
 end
 
 function binds.GetBind(id)
@@ -103,7 +103,7 @@ end
 
 function binds.UpdateBind(id, keycode)
   if !binds.allbinds[id] then 
-    if IsDeveloper() then
+    if zb.dev.IsDeveloper() then
       print(string.format("failed to find bind with id %s", id))  
     end
 
@@ -132,7 +132,7 @@ end
 hook.Add("PlayerBindPress", "zcity.binds.press", function(ply, bind, pressed, number)
   local zcBind = binds.FindFirstBind(number)
   if zcBind and pressed then
-    if IsDeveloper() then
+    if zb.dev.IsDeveloper() then
       print(string.format("found bind %s", zcBind.label))
     end
 
@@ -142,4 +142,6 @@ hook.Add("PlayerBindPress", "zcity.binds.press", function(ply, bind, pressed, nu
   end
 end)
 
-zb.binds.LoadBinds()
+hook.Add("InitPostEntity", "zcity.binds.postentity", function()
+  zb.binds.LoadBinds()
+end)

@@ -308,9 +308,6 @@ end)
 util.AddNetworkString("hg_bloodimpact")
 util.AddNetworkString("bloodsquirt")
 
-local hg_developer = ConVarExists("hg_developer") and GetConVar("hg_developer") or CreateConVar("hg_developer",0,FCVAR_SERVER_CAN_EXECUTE,"Toggle developer mode (enables damage traces)",0,1)
-
-
 function hg.NPCDamage(ent,dmgInfo,npcdmg)
 	local tr = hg.GetTraceDamage(ent, dmgInfo:GetDamagePosition(), dmgInfo:GetDamageForce())
 	local bone = ent:GetBoneName(ent:TranslatePhysBoneToBone(tr.PhysicsBone))
@@ -337,10 +334,6 @@ function hg.AddHarmToAttacker(dmgInfo, harm, reason)
 end
 
 function hg.AddHarm(ply, harm, reason)
-	if hg_developer:GetBool() and isstring(reason) then
-		//ply:ChatPrint(reason..": harm count is "..math.Round(harm,2))
-	end
-
 	ply.harm = ply.harm + harm
 end
 
@@ -1608,7 +1601,7 @@ hg.vehicledetails = {
 }
 
 hook.Add("Think", "jajaja", function()
-	if hg_developer:GetBool() then
+	if zb.dev.IsDeveloper() then
 		for i, ent in pairs(ents.GetAll()) do
 			if !ent:IsVehicle() then continue end
 

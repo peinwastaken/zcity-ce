@@ -83,7 +83,7 @@ local IsValid, math_Clamp = IsValid, math.Clamp
 		end
 
 		if ply:GetNetVar("handcuffed", false) then hg.CuffedAnim(ent, ply) end
-
+		
 		if IsValid(wep) then
 			//if wep.isTPIKBase then hg.RenderTPIKBase(ent, ply, wep) end
 			//if wep.ismelee then hg.RenderMelees(ent, ply, wep) end

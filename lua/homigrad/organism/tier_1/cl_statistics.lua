@@ -266,7 +266,6 @@ hg.LerpVariables = LerpVariables
 local littleblack = Color(75, 75, 75, 255)
 local trahalgmod = Color(0, 0, 0, 75)
 local weight = 200
-local developer = GetConVar("developer")
 local hg_stats = GetConVar("hg_stats") or CreateClientConVar("hg_stats", 1, true, false, "show stats", 0, 1)
 hook.Add("HUDPaint", "homigrad-organism-debug", function()
 
@@ -275,7 +274,7 @@ hook.Add("HUDPaint", "homigrad-organism-debug", function()
 
 	--LerpVariables(FrameTime(),organism,new_organism)
 	if !organism then return end
-	if not developer:GetBool() then return end
+	if not zb.dev.IsDeveloper() then return end
 	if not LocalPlayer():IsAdmin() then return end
 	if !hg_stats:GetBool() then return end
 	local textList = getTextTable(organism)
