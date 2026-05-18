@@ -2,7 +2,7 @@
 BindInfo
 {
   "bind_id" = {
-    "keycode": int,
+    "key": int,
     "default": int
     "label": string,
     "description": string,
@@ -19,7 +19,7 @@ function binds.SaveBinds(bindInfo)
 end
 
 function binds.LoadBinds()
-
+  
 end
 
 function binds.GetBind(id)

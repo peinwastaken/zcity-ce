@@ -409,6 +409,13 @@ function hg.CreateBindRow(buttonData, convarName, ParentPanel, yPos)
     return pppanel
 end
 
+function hg.CreateSpacer(ySize, ParentPanel)
+    local spacer = vgui.Create("DPanel")
+    spacer:SetTall(ySize)
+    spacer.Paint = function() end
+    return spacer
+end
+
 function hg.DrawBinds(ParentPanel)
     // generic ui panel shit
     ParentPanel:SetAlpha(0)
@@ -444,10 +451,13 @@ function hg.DrawBinds(ParentPanel)
     scrollBar:SetWide(0)
     scrollBar:SetEnabled(false)
     local scrollCanvas = pppanel3:GetCanvas()
-    scrollCanvas:DockPadding(15, 0, 15, 0)
+    scrollCanvas:DockPadding(15, 15, 15, 15)
 
     // actual content
-    for _ = 0, 3, 1 do
+    local count = 2
+    for i = 0, count, 1 do
+        local isFirst = i == 0
+        local isLast = i == count
         local categoryPanel = vgui.Create("DPanel", pppanel3)
         categoryPanel:SetWide(pppanel3:GetWide())
         categoryPanel.Paint = function() end
@@ -467,7 +477,7 @@ function hg.DrawBinds(ParentPanel)
 
         categoryPanel:InvalidateLayout(true)
         categoryPanel:SizeToChildren(false, true)
-        categoryPanel:DockMargin(0, 5, 0, 0)
+        categoryPanel:DockMargin(0, isFirst and 0 or 5, 0, 0)
         categoryPanel:Dock(TOP)
     end
 end
