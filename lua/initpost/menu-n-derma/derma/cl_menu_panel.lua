@@ -166,8 +166,8 @@ function PANEL:Init()
 
 
     local bottomDock = vgui.Create("DPanel", self)
-    bottomDock:SetPos(ScreenScale(1), ScrH() - ScrH()/10)
-    bottomDock:SetSize(ScreenScale(190), ScreenScaleH(40))
+    bottomDock:SetPos(ScreenScale(1), ScrH() - ScrH()/6.7)
+    bottomDock:SetSize(ScreenScale(230), ScreenScaleH(60))
     bottomDock.Paint = function(this, w, h) end
     self.panelparrent = vgui.Create("DPanel", self)
     self.panelparrent:SetPos(bottomDock:GetWide()+bottomDock:GetX(), 0)
@@ -197,12 +197,21 @@ function PANEL:Init()
     version:SetContentAlignment(4)
     version:SizeToContents()
 
+    local ceTeam = vgui.Create("DLabel", bottomDock)
+    ceTeam:Dock(BOTTOM)
+    ceTeam:DockMargin(ScreenScale(10), 0, 0, 0)
+    ceTeam:SetFont("ZCity_Tiny")
+    ceTeam:SetTextColor(clr_gray)
+    ceTeam:SetText("CE Authors: pein, NERO2k, ChatGPT")
+    ceTeam:SetContentAlignment(4)
+    ceTeam:SizeToContents()
+
     local zteam = vgui.Create("DLabel", bottomDock)
     zteam:Dock(BOTTOM)
     zteam:DockMargin(ScreenScale(10), 0, 0, 0)
     zteam:SetFont("ZCity_Tiny")
     zteam:SetTextColor(clr_gray)
-    zteam:SetText("Authors: uzelezz, Sadsalat, \nMr.Point, Zac90, Deka, Mannytko")
+    zteam:SetText("Authors: uzelezz, Sadsalat, Mr.Point, Zac90, Deka, Mannytko")
     zteam:SetContentAlignment(4)
     zteam:SizeToContents()
 end

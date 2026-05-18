@@ -359,7 +359,7 @@ function hg.DrawSettings(ParentPanel)
     pppanel23:SetPos(0,yOffset+12)
 end
 
-function hg.CreateBindRow(bindData, ParentPanel, yPos)
+function hg.CreateBindRow(bindId, bindData, ParentPanel, yPos)
     local pppanel = vgui.Create('DPanel', ParentPanel)
     pppanel:SetSize(ParentPanel:GetWide()/1.05, 64)
 
@@ -380,19 +380,24 @@ function hg.CreateBindRow(bindData, ParentPanel, yPos)
     end
 
     local textEntry = vgui.Create('DBinder', pppanel)
-        textEntry:SetSize(pppanel:GetWide()/8, pppanel:GetTall()/2)
-        textEntry:SetPos(pppanel:GetWide()-pppanel:GetWide()/8-20, pppanel:GetTall()/2-textEntry:GetTall()/2)
-        textEntry:SetValue(bindData.key)
-        textEntry:SetFont('ZCity_Tiny')
+    textEntry:SetSize(pppanel:GetWide()/8, pppanel:GetTall()/2)
+    textEntry:SetPos(pppanel:GetWide()-pppanel:GetWide()/8-20, pppanel:GetTall()/2-textEntry:GetTall()/2)
+    textEntry:SetValue(bindData.key)
+    textEntry:SetFont('ZCity_Tiny')
 
-        textEntry.Paint = function(self, w, h)
-            surface.SetDrawColor(30, 30, 30, 255)
-            surface.DrawRect(0, 0, w, h)
-            surface.SetDrawColor(60, 60, 60, 255)
-            surface.DrawOutlinedRect(0, 0, w, h)
+    textEntry.Paint = function(self, w, h)
+        surface.SetDrawColor(30, 30, 30, 255)
+        surface.DrawRect(0, 0, w, h)
+        surface.SetDrawColor(60, 60, 60, 255)
+        surface.DrawOutlinedRect(0, 0, w, h)
 
-            self:DrawTextEntryText(color_white, clr_8, color_white)
-        end
+        self:DrawTextEntryText(color_white, clr_8, color_white)
+    end
+
+    textEntry.OnChange = function(self, num)
+        DevPrint(string.format("New bind for %s = %s (key: %s)", bindId, num, input.GetKeyName(num)))
+        zb.binds.UpdateBind(bindId, num)
+    end
 
     return pppanel
 end
@@ -453,6 +458,7 @@ function hg.DrawBinds(ParentPanel)
         if !categoryPanel then continue end
 
         local bindRow = hg.CreateBindRow(
+            id,
             bindInfo,
             categoryPanel,
             optionOffset)

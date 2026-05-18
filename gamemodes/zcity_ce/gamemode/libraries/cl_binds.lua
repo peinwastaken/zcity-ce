@@ -1,12 +1,19 @@
 /*
 BindInfo
 {
-  "bind_id" = {
-    "key": int,
-    "default": int
-    "label": string,
-    "description": string,
+  ["bind_id"] = {
+    ["key"] = KEY_T,
+    ["default"] = nil,
+    ["label"] = "Toggle ragdoll",
+    ["description"] = "Pretty self-explanatory. Press once to enter and press again to leave ragdoll.",
+    ["category"] = "movement",
+    ["command"] = "fake"
   }
+}
+
+BindConfig
+{
+  ["bind_id"] = int (keycode)
 }
 */
 
@@ -38,12 +45,50 @@ zb.binds.allbinds = {
   }
 }
 
-function binds.SaveBinds()
+local function CreateBindSave()
+  local bindSave = {}
 
+  for k,v in pairs(zb.binds.allbinds) do
+    bindSave[k] = v.key
+  end
+
+  return bindSave
+end
+
+function binds.SaveDefaultBinds()
+  local dir = file.CreateDir("zcity-ce")
+
+  file.Write("zcity-ce/settings/binds.json", util.TableToJSON(CreateBindSave(), true))
+end
+
+function binds.SaveBinds()
+  file.Write("zcity-ce/settings/binds.json", util.TableToJSON(CreateBindSave(), true))
+
+  DevPrint("Saved binds")
+  DevPrint(binds.allbinds)
 end
 
 function binds.LoadBinds()
-  
+  local bindsExists = file.Exists("zcity-ce/settings/binds.json", "DATA")
+  if !bindsExists then
+    DevPrint("binds file not found, creating default")
+    binds.SaveDefaultBinds()
+  end
+ 
+  local data = file.Read("zcity-ce/settings/binds.json", "DATA")
+  local bindConfig = util.JSONToTable(data)
+
+  local loaded = 0
+  for k,v in pairs(bindConfig) do
+    local bind = binds.allbinds[k]
+
+    if bind then
+      bind.key = v
+      loaded = loaded + 1
+    end
+  end
+
+  DevPrint(string.format("Loaded %s binds", loaded))
 end
 
 function binds.GetBind(id)
@@ -67,11 +112,11 @@ function binds.UpdateBind(id, keycode)
 
   binds.allbinds[id].key = keycode
 
-  SaveBinds()
+  binds.SaveBinds()
 end
 
 function binds.RemoveBind(id)
-  SaveBinds()
+  binds.SaveBinds()
 end
 
 function binds.FindFirstBind(keycode)
@@ -96,3 +141,5 @@ hook.Add("PlayerBindPress", "zcity.binds.press", function(ply, bind, pressed, nu
     return true
   end
 end)
+
+zb.binds.LoadBinds()
