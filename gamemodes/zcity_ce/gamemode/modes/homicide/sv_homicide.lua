@@ -17,6 +17,12 @@ MODE.LootOnTime = true
 MODE.Chance = 0.2 -- this is mostly unused
 MODE.LootDivTime = 500
 
+local TRAITOR_FAIRNESS_BASE_WEIGHT = 1 -- Every eligible player starts with this much weight.
+local TRAITOR_FAIRNESS_MISS_WEIGHT = 0.02 -- Added per eligible round missed. Higher means stronger pity and fewer repeats.
+local TRAITOR_FAIRNESS_MAX_MISSES = 6 -- Misses above this stop adding extra pity.
+local TRAITOR_FAIRNESS_MIN_KARMA_FACTOR = 0.25 -- Lowest multiplier for low-karma players; keeps them possible.
+local TRAITOR_FAIRNESS_MAX_KARMA_FACTOR = 1 -- Highest karma multiplier; 1 means normal odds.
+
 function MODE:SetupChances()
 	for name, tbl in pairs(MODE.Types) do
 		zb.ModesChances[name] = zb.ModesChances[name] or tbl.Chance
@@ -647,6 +653,8 @@ end
 
 local homicide_traitoramount = ConVarExists("homicide_traitoramount") and GetConVar("homicide_traitoramount") or CreateConVar("homicide_traitoramount", 1, FCVAR_SERVER_CAN_EXECUTE + FCVAR_ARCHIVE, "Homicide Only: Determine how many traitors should innocents face in homicide.", 1, 20)
 
+MODE.TraitorFairness = MODE.TraitorFairness or {}
+
 function MODE:Intermission()
 	game.CleanUpMap()
 
@@ -693,60 +701,86 @@ function MODE:Intermission()
 	MODE.TraitorExpectedAmt = traitors_needed
 	local main_traitor = nil
 	local traitors = {}
+	local traitor_slots = traitors_needed
+	local traitor_candidates = {}
+	local traitor_fairness_entries = {}
 
-	-- local players = {}
-	-- for i, ply in player.Iterator() do
-	-- 	if ply.isTraitor or ply:Team() == TEAM_SPECTATOR then continue end
+	MODE.TraitorFairness = MODE.TraitorFairness or {}
 
-	-- 	players[#players + 1] = {ply, ply.Karma}
-	-- end
+	for _, ply in player.Iterator() do
+		if ply:Team() == TEAM_SPECTATOR then continue end
 
-	-- -- potom
+		local key = ply:SteamID64()
 
-	for i, ply in RandomPairs(player.GetAll()) do
-		if ply.isTraitor or ply:Team() == TEAM_SPECTATOR then continue end
-		if math.random(100) > (ply.Karma or 100) then continue end
+		if not key or key == "" or key == "0" then
+			key = "ent_" .. ply:EntIndex()
+		end
 
-		if traitors_needed > 0 then
-			ply.isTraitor = true
-			traitors_needed = traitors_needed - 1
-			traitors[#traitors + 1] = ply
+		MODE.TraitorFairness[key] = MODE.TraitorFairness[key] or {
+			misses = 0,
+			streak = 0,
+			timesTraitor = 0
+		}
 
+		local fairness = MODE.TraitorFairness[key]
+		local pity = TRAITOR_FAIRNESS_BASE_WEIGHT + math.min(fairness.misses or 0, TRAITOR_FAIRNESS_MAX_MISSES) * TRAITOR_FAIRNESS_MISS_WEIGHT
+		local karma_factor = math.Clamp((ply.Karma or 100) / 100, TRAITOR_FAIRNESS_MIN_KARMA_FACTOR, TRAITOR_FAIRNESS_MAX_KARMA_FACTOR)
+		local candidate = {
+			ply = ply,
+			fairness = fairness,
+			weight = pity * karma_factor
+		}
+
+		traitor_candidates[#traitor_candidates + 1] = candidate
+		traitor_fairness_entries[#traitor_fairness_entries + 1] = candidate
+	end
+
+	while traitors_needed > 0 and #traitor_candidates > 0 do
+		local total_weight = 0
+
+		for _, candidate in ipairs(traitor_candidates) do
+			total_weight = total_weight + candidate.weight
+		end
+
+		local roll = math.Rand(0, total_weight)
+		local cursor = 0
+		local selected_index = #traitor_candidates
+
+		for idx, candidate in ipairs(traitor_candidates) do
+			cursor = cursor + candidate.weight
+
+			if roll <= cursor then
+				selected_index = idx
+				break
+			end
+		end
+
+		local selected_candidate = traitor_candidates[selected_index]
+		local ply = selected_candidate.ply
+		selected_candidate.selected = true
+		ply.isTraitor = true
+		traitors_needed = traitors_needed - 1
+		traitors[#traitors + 1] = ply
+
+		if not main_traitor then
 			main_traitor = ply
 			ply.MainTraitor = true
 		end
+
+		table.remove(traitor_candidates, selected_index)
 	end
 
-	//MODE.NextRoundMainTraitors = MODE.NextRoundMainTraitors or {}
-	for i, ply in RandomPairs(player.GetAll()) do
-		if ply.isTraitor or ply:Team() == TEAM_SPECTATOR then continue end
-		//if not MODE.NextRoundMainTraitors[ply:SteamID()] then continue end
+	if traitor_slots > 0 then
+		for _, candidate in ipairs(traitor_fairness_entries) do
+			local fairness = candidate.fairness
 
-		if traitors_needed > 0 then
-			ply.isTraitor = true
-			traitors_needed = traitors_needed - 1
-			traitors[#traitors + 1] = ply
-
-			if not main_traitor then
-				main_traitor = ply
-				ply.MainTraitor = true
-			end
-		end
-	end
-
-	if traitors_needed > 0 then
-		for i, ply in RandomPairs(player.GetAll()) do
-			if ply.isTraitor or ply:Team() == TEAM_SPECTATOR then continue end
-
-			if traitors_needed > 0 then
-				ply.isTraitor = true
-				traitors_needed = traitors_needed - 1
-				traitors[#traitors + 1] = ply
-
-				if not main_traitor then
-					main_traitor = ply
-					ply.MainTraitor = true
-				end
+			if candidate.selected then
+				fairness.misses = 0
+				fairness.streak = (fairness.streak or 0) + 1
+				fairness.timesTraitor = (fairness.timesTraitor or 0) + 1
+			else
+				fairness.misses = (fairness.misses or 0) + 1
+				fairness.streak = 0
 			end
 		end
 	end
