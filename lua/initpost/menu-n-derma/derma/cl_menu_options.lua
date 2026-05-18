@@ -113,7 +113,7 @@ hg.settings:AddOpt("Sound","hg_quietshots", "Enable/Disable Quietshoot Sounds")
 
 function hg.CreateCategory(ctgName, ParentPanel, yPos)
     local pppanel = vgui.Create('DPanel', ParentPanel)
-    pppanel:SetSize(ParentPanel:GetWide() / 1.05, ParentPanel:GetTall() * 0.07)
+    pppanel:SetSize(ParentPanel:GetWide(), 64)
     pppanel:SetPos(ParentPanel:GetWide() / 2 -pppanel:GetWide() / 2, yPos)
     --pppanel:SetText(ctgName)
     pppanel.Paint = function(self,w,h)
@@ -366,8 +366,7 @@ function hg.CreateBindRow(buttonData, convarName, ParentPanel, yPos)
         return
     end
     local pppanel = vgui.Create('DPanel', ParentPanel)
-    pppanel:SetSize(ParentPanel:GetWide()/1.05, ParentPanel:GetTall()/15)
-    pppanel:SetPos(ParentPanel:GetWide()/2-pppanel:GetWide()/2, yPos)
+    pppanel:SetSize(ParentPanel:GetWide()/1.05, 64)
 
     surface.SetFont('ZCity_setiings_fine')
     local _, height2 = surface.GetTextSize(buttonData[3])
@@ -414,7 +413,6 @@ function hg.DrawBinds(ParentPanel)
     // generic ui panel shit
     ParentPanel:SetAlpha(0)
     ParentPanel.Paint = function(self,w,h)
-
         surface.SetDrawColor(28,28,28,255)
         surface.DrawRect(0, 0, w, h)
 
@@ -442,23 +440,34 @@ function hg.DrawBinds(ParentPanel)
     local pppanel3 = vgui.Create('DScrollPanel', ParentPanel)
     pppanel3:SetSize(ParentPanel:GetWide(), ParentPanel:GetTall())
     pppanel3:SetPos(0,0)
-    pppanel3.Paint = function()end
+    local scrollBar = pppanel3:GetVBar()
+    scrollBar:SetWide(0)
+    scrollBar:SetEnabled(false)
+    local scrollCanvas = pppanel3:GetCanvas()
+    scrollCanvas:DockPadding(15, 0, 15, 0)
 
-    // content
-    local offset = 25
-
-    for _ = 0, 5, 1 do
+    // actual content
+    for _ = 0, 3, 1 do
         local categoryPanel = vgui.Create("DPanel", pppanel3)
-        categoryPanel:SetWide(ParentPanel:GetWide())
-        categoryPanel:SetTall(ParentPanel:GetTall())
-
+        categoryPanel:SetWide(pppanel3:GetWide())
         categoryPanel.Paint = function() end
 
-        local category = hg.CreateCategory("Movement", ParentPanel, offset)
+        local category = hg.CreateCategory("Movement", categoryPanel, offset)
+        category:Dock(TOP)
+        
+        for i = 0, 5, 1 do
+            local bindRow = hg.CreateBindRow(
+                {"Toggle ragdoll", "hg_bulletholes", "Pretty self-explanatory. Press to enter and press to leave ragdoll"},
+                "hg_bulletholes",
+                categoryPanel,
+                optionOffset)
+            bindRow:Dock(TOP)
+            bindRow:DockMargin(15, 5, 15, 0)
+        end
 
-        local optionGap = 15
-        local optionOffset = offset + category:GetTall() + optionGap
-        hg.CreateBindRow({"Toggle ragdoll", "hg_bulletholes", "Pretty self-explanatory. Press to enter and press to leave ragdoll"}, "hg_bulletholes", ParentPanel, optionOffset)
-
+        categoryPanel:InvalidateLayout(true)
+        categoryPanel:SizeToChildren(false, true)
+        categoryPanel:DockMargin(0, 5, 0, 0)
+        categoryPanel:Dock(TOP)
     end
 end

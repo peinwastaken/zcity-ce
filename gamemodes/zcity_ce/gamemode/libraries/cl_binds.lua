@@ -22,6 +22,16 @@ function binds.LoadBinds()
 
 end
 
+function binds.GetBind(id)
+  local bind = binds[id]
+  
+  if IsValid(bind) then
+    return bind
+  end
+
+  return nil
+end
+
 function binds.UpdateBind(id, keycode)
   SaveBinds()
 end
