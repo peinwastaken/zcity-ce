@@ -1,7 +1,3 @@
-if SERVER then
-  AddCSLuaFile()
-end
-
 local convar = CreateConVar("zc_developer", 0, FCVAR_SERVER_CAN_EXECUTE, "Enables zcity developer mode (admin only)", 0, 1)
 
 local dev = {}
