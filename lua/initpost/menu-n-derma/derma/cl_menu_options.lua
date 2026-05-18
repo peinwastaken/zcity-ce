@@ -359,27 +359,21 @@ function hg.DrawSettings(ParentPanel)
     pppanel23:SetPos(0,yOffset+12)
 end
 
-function hg.CreateBindRow(buttonData, convarName, ParentPanel, yPos)
-    local convar = GetConVar(convarName)
-
-    if not convar then
-        return
-    end
+function hg.CreateBindRow(bindData, ParentPanel, yPos)
     local pppanel = vgui.Create('DPanel', ParentPanel)
     pppanel:SetSize(ParentPanel:GetWide()/1.05, 64)
 
     surface.SetFont('ZCity_setiings_fine')
-    local _, height2 = surface.GetTextSize(buttonData[3])
+    local _, height2 = surface.GetTextSize(bindData.label)
 
-    convarType = buttonData[6] or hg.GetConVarType(convar)
     pppanel.Paint = function(self,w,h)
         surface.SetDrawColor(43, 43, 43,145)
         surface.DrawRect(0, 0, w, h)
 		surface.SetDrawColor(47, 47, 47,145)
 		surface.DrawRect(0, h-3, w, 3)
 
-        local label = buttonData[1]
-        local desc = buttonData[3]
+        local label = bindData.label
+        local desc = bindData.description
 
         draw.SimpleText(label, 'ZCity_setiings_fine', 30, h / 2 -height2/2.5, clr_1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         draw.SimpleText(desc, 'ZCity_setiings_tiny', 30, h / 2+height2/2, clr_2, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -388,7 +382,7 @@ function hg.CreateBindRow(buttonData, convarName, ParentPanel, yPos)
     local textEntry = vgui.Create('DBinder', pppanel)
         textEntry:SetSize(pppanel:GetWide()/8, pppanel:GetTall()/2)
         textEntry:SetPos(pppanel:GetWide()-pppanel:GetWide()/8-20, pppanel:GetTall()/2-textEntry:GetTall()/2)
-        textEntry:SetValue(64)
+        textEntry:SetValue(bindData.key)
         textEntry:SetFont('ZCity_Tiny')
 
         textEntry.Paint = function(self, w, h)
@@ -400,20 +394,7 @@ function hg.CreateBindRow(buttonData, convarName, ParentPanel, yPos)
             self:DrawTextEntryText(color_white, clr_8, color_white)
         end
 
-        function textEntry:OnValueChange(val)
-            if convar then
-                SetConVarValue(convar, val)
-            end
-        end
-
     return pppanel
-end
-
-function hg.CreateSpacer(ySize, ParentPanel)
-    local spacer = vgui.Create("DPanel")
-    spacer:SetTall(ySize)
-    spacer.Paint = function() end
-    return spacer
 end
 
 function hg.DrawBinds(ParentPanel)
@@ -453,31 +434,40 @@ function hg.DrawBinds(ParentPanel)
     local scrollCanvas = pppanel3:GetCanvas()
     scrollCanvas:DockPadding(15, 15, 15, 15)
 
-    // actual content
-    local count = 2
-    for i = 0, count, 1 do
-        local isFirst = i == 0
-        local isLast = i == count
+    // create category panels
+    local categoryPanels = {}
+    for _, category in ipairs(zb.binds.categories) do
         local categoryPanel = vgui.Create("DPanel", pppanel3)
         categoryPanel:SetWide(pppanel3:GetWide())
         categoryPanel.Paint = function() end
 
-        local category = hg.CreateCategory("Movement", categoryPanel, offset)
-        category:Dock(TOP)
-        
-        for i = 0, 5, 1 do
-            local bindRow = hg.CreateBindRow(
-                {"Toggle ragdoll", "hg_bulletholes", "Pretty self-explanatory. Press to enter and press to leave ragdoll"},
-                "hg_bulletholes",
-                categoryPanel,
-                optionOffset)
-            bindRow:Dock(TOP)
-            bindRow:DockMargin(15, 5, 15, 0)
-        end
+        local categoryHeading = hg.CreateCategory(category.label, categoryPanel, offset)
+        categoryHeading:Dock(TOP)
+
+        categoryPanels[category.id] = categoryPanel
+    end
+
+    // load binds
+    for id, bindInfo in pairs(zb.binds.allbinds) do
+        local categoryPanel = categoryPanels[bindInfo.category]
+        if !categoryPanel then continue end
+
+        local bindRow = hg.CreateBindRow(
+            bindInfo,
+            categoryPanel,
+            optionOffset)
+        bindRow:Dock(TOP)
+        bindRow:DockMargin(15, 5, 15, 0)
+    end
+
+    // fix layout
+    for _, categoryPanel in pairs(categoryPanels) do
+        local isFirst = i == 0
+        local isLast = i == count
 
         categoryPanel:InvalidateLayout(true)
         categoryPanel:SizeToChildren(false, true)
-        categoryPanel:DockMargin(0, isFirst and 0 or 5, 0, 0)
+        categoryPanel:DockMargin(0, 0, 0, 5)
         categoryPanel:Dock(TOP)
     end
 end

@@ -110,7 +110,7 @@ function PANEL:InitializeMarkup()
 	local gm = splasheh[math.random(#splasheh)] .. " | Playing on: " .. mapname
 
     if hg.PluvTown.Active then
-        local text = "<font=ZC_MM_Title><colour=0,228,245>    </colour>City</font>\n<font=ZCity_Tiny><colour=105,105,105>" .. gm .. "</colour></font>"
+        local text = "<font=ZC_MM_Title><colour=0,228,245></colour>City</font>\n<font=ZCity_Tiny><colour=105,105,105>" .. gm .. "</colour></font>"
 
         self.SelectedPluv = table.Random(hg.PluvTown.PluvMats)
 
@@ -146,7 +146,7 @@ function PANEL:Init()
     self.lDock = vgui.Create("DPanel", self)
     local lDock = self.lDock
     lDock:Dock(LEFT)
-    lDock:SetSize(ScrW() / 4, ScrH())
+    lDock:SetSize(ScrW() / 2, ScrH())
     lDock:DockMargin(ScreenScale(0), ScreenScaleH(90), ScreenScale(10), ScreenScaleH(90))
     lDock.Paint = function(this, w, h)
         if hg.PluvTown.Active then
