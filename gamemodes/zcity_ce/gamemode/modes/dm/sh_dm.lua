@@ -11,7 +11,7 @@ function MODE.GetZoneRadius()
 end
 
 function MODE:HG_MovementCalc_2( mul, ply, cmd, mv )
-    if (zb.ROUND_START or 0) + 20 > CurTime() and cmd then 
+    if (zb.ROUND_START or 0) + 7.5 > CurTime() and cmd then 
         cmd:RemoveKey(IN_ATTACK)
         cmd:RemoveKey(IN_ATTACK2)
         if mv then

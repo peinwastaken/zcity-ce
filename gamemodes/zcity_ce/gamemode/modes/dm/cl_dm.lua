@@ -73,8 +73,8 @@ function MODE:RenderScreenspaceEffects()
 end
 
 function MODE:HUDPaint()
-	if zb.ROUND_START + 20 > CurTime() then
-		draw.SimpleText( string.FormattedTime(zb.ROUND_START + 20 - CurTime(), "%02i:%02i:%02i"	), "ZB_HomicideMedium", sw * 0.5, sh * 0.75, Color(255,55,55), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	if zb.ROUND_START + 7.5 > CurTime() then
+		draw.SimpleText( string.FormattedTime(zb.ROUND_START + 7.5 - CurTime(), "%02i:%02i:%02i"	), "ZB_HomicideMedium", sw * 0.5, sh * 0.75, Color(255,55,55), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	else
 		LocalPlayer()
 		--if IsValid(dmmusic) then
