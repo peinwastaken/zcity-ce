@@ -499,6 +499,7 @@ if CLIENT then
 
     local function OpenAdminMenu()
         if IsValid(isMenuOpen) then return end
+        if !LocalPlayer():IsAdmin() then return end
 
         isMenuOpen = vgui.Create("ZFrame")
         local frame = isMenuOpen
@@ -556,7 +557,6 @@ if CLIENT then
         frame:SizeToChildren(false, true)
     end
 
-
     hook.Add("InitPostEntity", "RequestModeData", function()
         if LocalPlayer():IsAdmin() then
             timer.Simple(2, function()
@@ -566,11 +566,7 @@ if CLIENT then
         end
     end)
 
-    local f6Key = KEY_F6
-
-    hook.Add("PlayerButtonDown", "OpenAdminMenuF6", function(ply, key)
-        if key == f6Key and LocalPlayer():IsAdmin() and not IsValid(isMenuOpen) then
-            OpenAdminMenu()
-        end
-    end)
+    concommand.Add("adminmenu", function()
+        OpenAdminMenu()
+    end, nil, "Opens admin menu", nil)
 end
