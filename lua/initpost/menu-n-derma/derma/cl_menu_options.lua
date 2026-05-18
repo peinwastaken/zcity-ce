@@ -177,11 +177,12 @@ function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
     local convar = GetConVar(convarName)
 
     if not convar then
+        zb.dev.DevPrint(string.format("convar %s not found, skipping creating settings option", convarName))
         return
     end
+
     local pppanel = vgui.Create('DPanel', ParentPanel)
-    pppanel:SetSize(ParentPanel:GetWide()/1.05, ParentPanel:GetTall()/15)
-    pppanel:SetPos(ParentPanel:GetWide()/2-pppanel:GetWide()/2, yPos)
+    pppanel:SetSize(ParentPanel:GetWide()/1.05, 64)
 
     surface.SetFont('ZCity_setiings_fine')
     local _, height2 = surface.GetTextSize(buttonData[3])
@@ -200,7 +201,6 @@ function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
     if convarType == 'bool' then
         local toggle = vgui.Create('DButton', pppanel)
         toggle:SetSize(pppanel:GetWide() / 18, pppanel:GetTall() / 2)
-
 
         toggle:SetPos(pppanel:GetWide() - toggle:GetWide()*1.4 - pppanel:GetWide() / 20, pppanel:GetTall() / 2 - toggle:GetTall() / 2)
         toggle:SetText('')
@@ -309,54 +309,36 @@ function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
 end
 
 function hg.DrawSettings(ParentPanel)
-    ParentPanel:SetAlpha(0)
-    ParentPanel.Paint = function(self,w,h)
+    local sidePanel = hg.CreateSidePanel(ParentPanel)
 
-        surface.SetDrawColor(28,28,28,255)
-        surface.DrawRect(0, 0, w, h)
-
-        surface.SetDrawColor(107, 107, 107,20)
-
-        for i = 1, (ybars + 1) do
-            surface.DrawRect((sw / ybars) * i - (CurTime() * 30 % (sw / ybars)), 0, ScreenScale(1), sh)
-        end
-
-        for i = 1, (xbars + 1) do
-            surface.DrawRect(0, (sh / xbars) * (i - 1) + (CurTime() * 30 % (sh / xbars)), sw, ScreenScale(1))
-        end
-
-        local border_size = ScreenScale(2)
-
-        surface.SetDrawColor(0, 0, 0)
-        surface.SetMaterial(gradient_l)
-        surface.DrawTexturedRect(0, 0, border_size, sh)
-		surface.SetMaterial(blur)
-        surface.SetDrawColor(28,28,28,208)
-        surface.DrawRect(0, 0, w, h)
-    end
-    hg.DrawBlur(ParentPanel, 5)
-    ParentPanel:AlphaTo(255,0.15,0)
-    local pppanel3 = vgui.Create('DScrollPanel', ParentPanel)
-    pppanel3:SetSize(ParentPanel:GetWide(), ParentPanel:GetTall())
-    pppanel3:SetPos(0,0)
-    --pppanel3:SetAlpha(0)
-    pppanel3.Paint = function()end
-    -- :) <- best emoji
-
-    local yOffset = pppanel3:GetTall()/100
-
+    // create category panels
+    local categoryPanels = {}
     for categoryName, categoryTable in pairs(hg.settings.tbl) do
-        local category = hg.CreateCategory(categoryName, pppanel3, yOffset)
-        yOffset = yOffset + category:GetTall() + 12
+        local categoryPanel = vgui.Create("DPanel", sidePanel)
+        categoryPanel:SetWide(sidePanel:GetWide())
+        categoryPanel.Paint = function() end
+
+        local categoryHeading = hg.CreateCategory(categoryName, categoryPanel, offset)
+        categoryHeading:Dock(TOP)
+
+        categoryPanels[categoryName] = categoryPanel
+
+        // load settings
         for convarName, settingData in pairs(categoryTable) do
-            local vbv = hg.CreateButton(settingData,convarName,pppanel3,yOffset)
-            if not vbv then continue end
-            yOffset = yOffset + (vbv:GetTall()) + 12
+            local option = hg.CreateButton(settingData, convarName, sidePanel, yOffset)
+                
+            option:Dock(TOP)
+            option:DockMargin(15, 0, 15, 5)
         end
     end
-    local pppanel23 = vgui.Create('DPanel', pppanel3)
-    pppanel23:SetSize(0, 0)
-    pppanel23:SetPos(0,yOffset+12)
+
+    // fix layout
+    for _, categoryPanel in pairs(categoryPanels) do
+        categoryPanel:InvalidateLayout(true)
+        categoryPanel:SizeToChildren(false, true)
+        categoryPanel:DockMargin(0, 0, 0, 5)
+        categoryPanel:Dock(TOP)
+    end
 end
 
 function hg.CreateBindRow(bindId, bindData, ParentPanel, yPos)
@@ -403,6 +385,45 @@ function hg.CreateBindRow(bindId, bindData, ParentPanel, yPos)
 end
 
 function hg.DrawBinds(ParentPanel)
+    local sidePanel = hg.CreateSidePanel(ParentPanel)
+
+    // create category panels
+    local categoryPanels = {}
+    for _, category in ipairs(zb.binds.categories) do
+        local categoryPanel = vgui.Create("DPanel", sidePanel)
+        categoryPanel:SetWide(sidePanel:GetWide())
+        categoryPanel.Paint = function() end
+
+        local categoryHeading = hg.CreateCategory(category.label, categoryPanel, offset)
+        categoryHeading:Dock(TOP)
+
+        categoryPanels[category.id] = categoryPanel
+    end
+
+    // load binds
+    for id, bindInfo in pairs(zb.binds.allbinds) do
+        local categoryPanel = categoryPanels[bindInfo.category]
+        if !categoryPanel then continue end
+
+        local bindRow = hg.CreateBindRow(
+            id,
+            bindInfo,
+            categoryPanel,
+            optionOffset)
+        bindRow:Dock(TOP)
+        bindRow:DockMargin(15, 5, 15, 0)
+    end
+
+    // fix layout
+    for _, categoryPanel in pairs(categoryPanels) do
+        categoryPanel:InvalidateLayout(true)
+        categoryPanel:SizeToChildren(false, true)
+        categoryPanel:DockMargin(0, 0, 0, 5)
+        categoryPanel:Dock(TOP)
+    end
+end
+
+function hg.CreateSidePanel(ParentPanel)
     // generic ui panel shit
     ParentPanel:SetAlpha(0)
     ParentPanel.Paint = function(self,w,h)
@@ -439,41 +460,5 @@ function hg.DrawBinds(ParentPanel)
     local scrollCanvas = pppanel3:GetCanvas()
     scrollCanvas:DockPadding(15, 15, 15, 15)
 
-    // create category panels
-    local categoryPanels = {}
-    for _, category in ipairs(zb.binds.categories) do
-        local categoryPanel = vgui.Create("DPanel", pppanel3)
-        categoryPanel:SetWide(pppanel3:GetWide())
-        categoryPanel.Paint = function() end
-
-        local categoryHeading = hg.CreateCategory(category.label, categoryPanel, offset)
-        categoryHeading:Dock(TOP)
-
-        categoryPanels[category.id] = categoryPanel
-    end
-
-    // load binds
-    for id, bindInfo in pairs(zb.binds.allbinds) do
-        local categoryPanel = categoryPanels[bindInfo.category]
-        if !categoryPanel then continue end
-
-        local bindRow = hg.CreateBindRow(
-            id,
-            bindInfo,
-            categoryPanel,
-            optionOffset)
-        bindRow:Dock(TOP)
-        bindRow:DockMargin(15, 5, 15, 0)
-    end
-
-    // fix layout
-    for _, categoryPanel in pairs(categoryPanels) do
-        local isFirst = i == 0
-        local isLast = i == count
-
-        categoryPanel:InvalidateLayout(true)
-        categoryPanel:SizeToChildren(false, true)
-        categoryPanel:DockMargin(0, 0, 0, 5)
-        categoryPanel:Dock(TOP)
-    end
+    return pppanel3
 end
