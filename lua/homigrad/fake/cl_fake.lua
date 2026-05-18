@@ -8,7 +8,6 @@ local firstPerson
 
 local deathLocalAng = Angle(0, 0, 0)
 
-
 local hg_coolcamera = ConVarExists("hg_coolcamera") and GetConVar("hg_coolcamera") or CreateConVar("hg_coolcamera", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Cool camera movement", 0, 1)
 local hg_coolcameralerpmult = ConVarExists("hg_coolcameralerpmult") and GetConVar("hg_coolcameralerpmult") or CreateConVar("hg_coolcameralerpmult", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Cool camera movement lerp multiplier", 0, 5)
 function GetCoolCameraBool()
@@ -89,6 +88,9 @@ end
 local rollang = 0
 local ctime
 local vecUpX, vecUpY, vecUpZ = Vector(1, 0, 0), Vector(0, 1, 0), Vector(0, 0, 1)
+local isOutFake = false
+local last_isOutFake = false
+local outFakeRoll = 0
 hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 	if IsValid(follow) and ctime != CurTime() then
 		ctime = CurTime()
@@ -154,12 +156,12 @@ hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 	local oldroll = angle.roll
 	angle.roll = fucke and 0 or angle.roll - (tbl.vpangle and tbl.vpangle.roll or 0)
 
-	rollang = rollang + lean_lerp * 0.5
+	leanAng = lean_lerp * 0.5 + huy + x / 50 * math.abs(angle.pitch / 90)
 
 	local q = Quaternion():SetAngle(angle)
-    local q_pitch = Quaternion():SetAngleAxis(y / 50, vecUpY)
-    local q_yaw = Quaternion():SetAngleAxis(-x / 50, vecUpZ)
-    local q_roll = Quaternion():SetAngleAxis(lean_lerp * 0.5 + huy + x / 50 * math.abs(angle.pitch / 90), vecUpX)
+	local q_pitch = Quaternion():SetAngleAxis(y / 50, vecUpY)
+	local q_yaw = Quaternion():SetAngleAxis(-x / 50, vecUpZ)
+	local q_roll = Quaternion():SetAngleAxis(leanAng, vecUpX)
 
 	q = q * q_pitch * q_yaw * q_roll
 
@@ -170,7 +172,7 @@ hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 
 	--q = q * lerpedq
 
-    local newAng = q:Angle()
+	local newAng = q:Angle()
 
 	angle.pitch = newAng.p
     angle.yaw = newAng.y
@@ -182,6 +184,20 @@ hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 
 	if lply:InVehicle() then
 		angle.roll = 0
+	end
+
+	// while transitioning away from ragdoll then lerp lean to 0
+	// yes its jank, fix it later!
+	isOutFake = follow == lply.OldRagdoll
+	if isOutFake && !last_isOutFake then
+		// store our current camera roll so we can lerp it to 0 later
+		outFakeRoll = angle.roll
+		last_isOutFake = toFake
+	end
+
+	if isOutFake then
+		outFakeRoll = Lerp(5 * FrameTime(), outFakeRoll, 0)
+		tbl.angle.roll = outFakeRoll
 	end
 
 	tbl.override_angle = true
