@@ -52,7 +52,7 @@ function SWEP:PrimaryAttack()
 		if IsValid(tr.Entity) or tr.Entity:IsWorld() then
 			local ent = tr.Entity
 			local dmgInfo = DamageInfo()
-			dmgInfo:SetDamage((ply:GetAmmoCount("Arrow") > 0 and 15 or 9) * (ply.organism.superfighter and 5 or 1))
+			dmgInfo:SetDamage(ply:GetAmmoCount("Arrow") > 0 and 15 or 9)
 			dmgInfo:SetDamageType(ply:GetAmmoCount("Arrow") > 0 and DMG_SLASH or DMG_CLUB)
 			dmgInfo:SetAttacker(ply)
 			dmgInfo:SetInflictor(self)
@@ -73,9 +73,9 @@ function SWEP:PrimaryAttack()
 
 			local phys = ent:GetPhysicsObject()
 			if IsValid(phys) then
-				if ent:IsPlayer() then ent:SetVelocity(tr.Normal * 50 * 1.5 * (ply.organism.superfighter and 5 or 1)) end
+				if ent:IsPlayer() then ent:SetVelocity(tr.Normal * 50 * 1.5) end
 				phys:ApplyForceOffset(tr.Normal * 5000, tr.HitPos)
-				ply:SetVelocity(tr.Normal * 50 * .8 * (ply.organism.superfighter and 2 or 1))
+				ply:SetVelocity(tr.Normal * 50 * .8)
 			end
 		end
 

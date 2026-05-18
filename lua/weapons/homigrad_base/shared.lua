@@ -1232,7 +1232,7 @@ function SWEP:CoreStep()
 				if IsValid(tr.Entity) or tr.Entity:IsWorld() then
 					local ent = tr.Entity
 					local dmgInfo = DamageInfo()
-					dmgInfo:SetDamage(15 * (owner.organism.superfighter and 5 or 1))
+					dmgInfo:SetDamage(15)
                     dmgInfo:SetDamageType((ent:GetClass() == "func_breakable_surf") and DMG_SLASH or DMG_CLUB)
 					dmgInfo:SetAttacker(owner)
 					dmgInfo:SetInflictor(owner:GetWeapon("weapon_hands_sh"))
@@ -1255,9 +1255,9 @@ function SWEP:CoreStep()
 
 					local phys = ent:GetPhysicsObject()
 					if IsValid(phys) then
-						if ent:IsPlayer() then ent:SetVelocity(tr.Normal * 50 * 1.5 * (owner.organism.superfighter and 5 or 1)) end
+						if ent:IsPlayer() then ent:SetVelocity(tr.Normal * 50 * 1.5) end
 						phys:ApplyForceOffset(tr.Normal * 5000, tr.HitPos)
-						owner:SetVelocity(tr.Normal * 50 * .8 * (owner.organism.superfighter and 2 or 1))
+						owner:SetVelocity(tr.Normal * 50 * .8)
 					end
 				end
 

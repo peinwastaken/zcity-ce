@@ -32,8 +32,6 @@ local function GetSquadForCombine(ply)
 end
 
 local function AssignCombineCallsign(ply, isLeader)
-    if math.random(1, 1000) <= 1 then return "Scug" end
-
     if isLeader then return leader_callsigns[math.random(#leader_callsigns)] .. "-1" end
 
     local squadName = GetSquadForCombine(ply)

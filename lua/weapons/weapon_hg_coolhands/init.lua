@@ -86,7 +86,7 @@ function SWEP:SecondaryAttack()
 				self:GetOwner():SetVelocity(self:GetOwner():GetAimVector() * 20)
 				tr.Entity:SetVelocity((self:GetOwner():KeyDown(IN_SPEED) and 1 or -1) * self:GetOwner():GetAimVector() * 50)
 				self:SetNextSecondaryFire(CurTime() + .25)
-				if self:GetOwner().organism.superfighter or self:GetOwner().PlayerClassName == "sc_infiltrator" or self:GetOwner():IsBerserk() then
+				if self:GetOwner().PlayerClassName == "sc_infiltrator" or self:GetOwner():IsBerserk() then
 					hg.LightStunPlayer(tr.Entity, 3)
 					timer.Simple(0,function()
 						local rag = hg.GetCurrentCharacter(tr.Entity)
@@ -105,7 +105,7 @@ SWEP.Checking = 0
 -- function SWEP:AdjustMouseSensitivity()
 -- 	local owner = self:GetOwner()
 -- 	local ent = owner:GetNetVar("carryent", nil)
--- 	if IsValid(ent) and ent:IsRagdoll() and owner.PlayerClassName ~= "sc_infiltrator" and owner.PlayerClassName ~= "superfighter" then
+-- 	if IsValid(ent) and ent:IsRagdoll() and owner.PlayerClassName ~= "sc_infiltrator" then
 -- 		local entPos = ent:GetPos()
 -- 		local vecPos = owner:GetAimVector()
 
@@ -156,10 +156,6 @@ function SWEP:ApplyForce()
 		local len, mul = vec:Length(), phys:GetMass()
 
 		vec:Normalize()
-
-		if (ply.organism and ply.organism.superfighter) then
-			mul = mul * 5
-		end
 
 		if (ply.organism and ply:IsBerserk()) then
 			mul = mul * (1 + ply.organism.berserk / 5)
@@ -289,7 +285,7 @@ function SWEP:ApplyForce()
 		if SERVER then
 			local ply2 = self.CarryEnt
 			local org = ply2.organism
-			if ply:KeyDown(IN_ATTACK) and !ply.organism.superfighter and !ply:IsBerserk() then
+			if ply:KeyDown(IN_ATTACK) and !ply:IsBerserk() then
 				local bone = self.CarryEnt:GetBoneName(self.CarryEnt:TranslatePhysBoneToBone(self.CarryBone))
 
 				local tr = {}
@@ -345,7 +341,7 @@ function SWEP:ApplyForce()
 				self.firstTimePrint2 = true
 			end
 
-			if ply:KeyDown(IN_ATTACK) and (ply.organism.superfighter or ply:IsBerserk()) then
+			if ply:KeyDown(IN_ATTACK) and ply:IsBerserk() then
 				phys:ApplyForceCenter(ply:GetAimVector() * 40000 * self.Penetration * (1 + ply.organism.berserk / 10))
 				self:SetCarrying()
 			end
@@ -683,7 +679,7 @@ function SWEP:AttackFront(special_attack, rand)
 				end
 			end
 		else
-			if not owner.organism.superfighter and not havekastet and not owner:IsBerserk() and math.random(special_attack and 2 or 1, special_attack and 6 or 4) > 3 then
+			if not havekastet and not owner:IsBerserk() and math.random(special_attack and 2 or 1, special_attack and 6 or 4) > 3 then
 				owner.organism.painadd = owner.organism.painadd + (math.random(3, 6) * (special_attack and 2.5 or 1.5))
 				hg.organism.AddWoundManual(owner, math_random(6, 8) * (special_attack and 2 or 1), vector_origin, AngleRand(), owner:LookupBone("ValveBiped.Bip01_"..(rand and "R" or "L").."_Hand"), CurTime())
 			end
@@ -716,13 +712,6 @@ function SWEP:AttackFront(special_attack, rand)
 			Mul = Mul * (self:GetBlocking() and 0.5 or 1)
 		end
 
-		if owner.organism.superfighter then
-			Mul = Mul * 5 * self.Penetration
-			if Ent.organism then
-				Ent.organism.immobilization = 10
-			end
-		end
-
 		if owner:IsBerserk() then
 			Mul = Mul * (1 + owner.organism.berserk * 5) * self.Penetration
 			if Ent.organism then
@@ -748,9 +737,9 @@ function SWEP:AttackFront(special_attack, rand)
 		end
 
 		if IsValid(Phys) then
-			if Ent:IsPlayer() then Ent:SetVelocity(AimVec * SelfForce * 1.5 * (owner.organism.superfighter and 5 or 1) * (1 + owner.organism.berserk * 5)) end
+			if Ent:IsPlayer() then Ent:SetVelocity(AimVec * SelfForce * 1.5 * (1 + owner.organism.berserk * 5)) end
 			Phys:ApplyForceOffset(AimVec * 5000 * Mul, HitPos)
-			owner:SetVelocity(AimVec * SelfForce * .8 * (owner.organism.superfighter and 2 or 1) * (1 + owner.organism.berserk / 10))
+			owner:SetVelocity(AimVec * SelfForce * .8 * (1 + owner.organism.berserk / 10))
 		end
 	end
 

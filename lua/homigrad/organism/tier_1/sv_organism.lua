@@ -51,7 +51,6 @@ hook.Add("Org Clear", "Main", function(org)
 	org.legstrength = 1
 	org.meleespeed = 1
 	org.temperature = 36.7
-	org.superfighter = false
 	org.CantCheckPulse = nil
 	org.HEV = nil
 	org.bleedingmul = 1
@@ -166,8 +165,6 @@ local function send_organism(org, ply)
 	sendtable.berserkActive2 = org.berserkActive2
 	sendtable.noradrenalineActive = org.noradrenalineActive
 
-	sendtable.superfighter = org.superfighter
-
 	net.Start("organism_send", hg_unreliable_nets:GetBool())
 	net.WriteTable(not hg_developer:GetBool() and sendtable or org)
 	net.WriteBool(org.owner.fullsend)
@@ -198,7 +195,6 @@ local function send_bareinfo(org)
 	sendtable.analgesia = org.analgesia
 	sendtable.o2 = org.o2
 	sendtable.timeValue = org.timeValue
-	sendtable.superfighter = org.superfighter
 	sendtable.lungsfunction = org.lungsfunction
 	sendtable.lleg = org.lleg
 	sendtable.rleg = org.rleg

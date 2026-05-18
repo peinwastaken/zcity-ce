@@ -66,32 +66,7 @@ local function IsSoftSurface(trace)
     return false
 end
 
-local function superfightermoment(self, ent)
-    if ent.organism and ent.organism.superfighter then
-        if ent:IsPlayer() then hg.Fake(ent) end
-
-        timer.Simple(0,function()
-            local rag = hg.GetCurrentCharacter(ent)
-            if IsValid(rag) and rag ~= ent then
-                local phys = rag:GetPhysicsObject()
-                if IsValid(phys) then
-                    phys:SetMass(0)
-                end
-                rag:SetPos(self:GetPos())
-                rag:SetParent(self)
-                constraint.Weld(rag, self, 1, 0, 0, true, true)
-            end
-        end)
-
-        return true
-    end
-end
-
 function ENT:AboutToHit2(trace)
-    if superfightermoment(self, trace.Entity) then
-        return true
-    end
-    
     if trace.Hit and not trace.HitSky then
 
         if not self:CheckSafetyDistance() then
@@ -116,12 +91,7 @@ end
 
 function ENT:PhysicsCollide2(data, physobj)
     if self.toremove then return end
-    if superfightermoment(self, data.HitEntity) and not self.dragvec then
-        self.dragvec = data.OurOldVelocity:GetNormalized()
-        self.Truhst = CurTime() + 10
-        return true
-    end
-    
+
     if IsValid(physobj) then
         physobj:SetVelocity(Vector(0, 0, 0))
         physobj:SetAngleVelocity(Vector(0, 0, 0))

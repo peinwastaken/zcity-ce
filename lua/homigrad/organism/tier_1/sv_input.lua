@@ -14,7 +14,6 @@ local function Trace_Bullet(box, hit, ricochet, org, organs, dmg, dmgInfo, dir)
 	if not organ then return 0 end
 	local name = organ[1]
 	if not name then return 0 end
-	if org.superfighter and not (string.find(name,"vest") or string.find(name,"helmet")) then return 0 end
 	local bone = organ[2] or 0
 	local func = input_list[name]
 	local hook_info = {
@@ -39,7 +38,6 @@ local function Trace_Blast(box, amt, org, organs, dmg, dmgInfo)
 	if not organ then return 0 end
 	local name = organ[1]
 	if not name then return 0 end
-	if org.superfighter and not (string.find(name,"vest") or string.find(name,"helmet")) then return 0 end
 	local func = input_list[name]
 
 	local amount = amt * dmg
@@ -216,7 +214,6 @@ end
 
 function hg.organism.AddWound(ent, tr, bone, dmgInfo, dmgPos, dmgBlood, inputHole, outputHole)
 	local org = ent.organism
-	if org.superfighter then return end
 
 	local physBone = bone != -1 and bone or math.random(0, ent:GetPhysicsObjectCount() - 1)
 	local bone = ent:TranslatePhysBoneToBone(physBone)
@@ -260,7 +257,6 @@ end
 
 function hg.organism.AddWoundManual(ent,dmgBlood,localPos,localAng,bone,time)
 	local org = ent.organism
-	if org.superfighter then return end
 
 	if isnumber(bone) then bone = ent:GetBoneName(bone) end
 
@@ -512,10 +508,6 @@ hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
 		dmgInfo:SetDamageType( bullet.dmgtype )
 	end
 
-	if org.superfighter then
-		dmgInfo:ScaleDamage(1)
-	end
-
 	if dmgInfo:IsDamageType(DMG_BURN) then
 		painMul = 0.1
 		shockMul = 0.1
@@ -724,7 +716,6 @@ hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
 
 
 	--if hitbody then
-	if not org.superfighter then
 		dmgBlood = dmgBlood * 1.5
 		local bleed_add = dmgBlood * bleedMul// / (RagdollDamageBoneMul[hitgroup] or 1)
 		--org.bleed = org.bleed + bleed_add
@@ -777,16 +768,6 @@ hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
 			--org.stomach = math.min(org.stomach + math.Rand(0.0005,0.0008),1)
 			//org.trachea = math.min(org.trachea + smallRand, 1)
 		end
-	else
-		local sfd = org.fakePlayer and ent or ply
-		if not IsValid(sfd) then return true end
-		if sfd:Health() < 0 then
-			sfd:Kill()
-			return true -- coding is easy :fumo_bounce:
-		else
-			sfd:SetHealth(sfd:Health()-dmg_before * .15)
-		end
-	end
 	--end
 
 	if not org.otrub and org.adrenalineAdd >= 0 then// and dmgInfo:IsDamageType(DMG_BULLET + DMG_BLAST + DMG_BUCKSHOT + DMG_SLASH + DMG_CLUB + DMG_BURN) then
@@ -1322,7 +1303,6 @@ local function velocityDamage(ent, data)
 	if org.godmode then return end
 	org.fearadd = org.fearadd + dmg * 0.5
 
-	if not org.superfighter then
 		if hitgroup == HITGROUP_LEFTLEG and (dmg * 3 > 0.25) then hg.organism.input_list.llegup(org, bone, dmg * 1 * math.Rand(1, 2), dmgInfo) end--org.lleg = math.min(org.lleg + dmg, 1) end
 		if hitgroup == HITGROUP_RIGHTLEG and (dmg * 3 > 0.25) then hg.organism.input_list.rlegup(org, bone, dmg * 1 * math.Rand(1, 2), dmgInfo) end
 		if hitgroup == HITGROUP_LEFTARM and (dmg * 2 > 0.2) then hg.organism.input_list.larmup(org, bone, dmg * 1 * math.Rand(1, 2), dmgInfo) end
@@ -1368,16 +1348,6 @@ local function velocityDamage(ent, data)
 				hg.BreakNeck(ent)
 			end
 		end
-	else
-		local sfd = org.fakePlayer and ent or ply
-		if not IsValid(sfd) then return end
-		if sfd:Health() > 0 then
-			sfd:SetHealth(sfd:Health()-dmg * 1)
-		else
-			sfd:Kill()
-			return
-		end
-	end
 
 	hook_Run("HomigradDamage", ent, dmgInfo, hitgroup, ent, att.harm, {}, {})
 
@@ -1409,12 +1379,8 @@ local function velocityDamage(ent, data)
 
 	local dmghuy = dmg * 20
 
-	if not org.superfighter then
-		org.painadd = org.painadd + dmghuy
-		org.shock = org.shock + dmghuy
-	else
-		dmghuy = dmghuy * 0.5
-	end
+	org.painadd = org.painadd + dmghuy
+	org.shock = org.shock + dmghuy
 
 	//if dmghuy >= 1 then
 	//	ply:SetHealth(ply:Health() - dmghuy)

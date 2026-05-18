@@ -171,12 +171,7 @@ function CLASS.On(self, data)
     self.subClass = nil
     self.organism.recoilmul = 0.85
 
-    local callsign
-    if math.random(1,1000) <= 1 then
-        callsign = "Scug"
-    else
-        callsign = table.Random(callsigns) .. "-" .. math.random(1,25)
-    end
+    local callsign = table.Random(callsigns) .. "-" .. math.random(1,25)
 
     if zb.GiveRole then zb.GiveRole(self, "Officer", Color(89,230,255)) end
     self:SetNWString("PlayerName", callsign)

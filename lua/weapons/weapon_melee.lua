@@ -769,10 +769,6 @@ function SWEP:MultiplyDMG(owner, ent, vellen, mul)
     mul = mul * (ent ~= owner and 0.75 or 1)
     mul = mul * (owner.MeleeDamageMul or 1)
 
-    if owner.organism.superfighter then
-        mul = mul * 5
-    end
-
     if owner:IsBerserk() then
         mul = mul * (1 + owner.organism.berserk)
     end
@@ -936,7 +932,7 @@ function SWEP:PunchPlayer(ent, attacktype, trnormal, dmg)
             AngleRand(-5, 5)
 
             ply:ViewPunch((normal * -dot) * dmg / 30)
-			if ply:OnGround() or ply.organism.superfighter then
+			if ply:OnGround() then
            		ply:SetVelocity((trnormal:Angle() + normal):Forward() * -5 * dmg + trnormal * dmg * 10)
 			end
         end
@@ -1133,7 +1129,7 @@ function SWEP:CustomThink()
 
             owner:LagCompensation(false)
 
-            if SERVER and (owner:OnGround() or owner.organism.superfighter) then -- runboost for superfighters
+            if SERVER and owner:OnGround() then
                 local vec = owner:GetAimVector() * math.min(self.DamagePrimary * 0.5, 20)
                 vec[3] = 0
 
@@ -1300,7 +1296,7 @@ function SWEP:CustomThink()
 
             ent:PrecacheGibs()
 
-            if SERVER then -- runboost for superfighters and (ent:OnGround() or ent.organism and ent.organism.superfighter)
+            if SERVER then
                 local vec = trace.Normal * math.min(self.DamageSecondary  * 0.5, 20)
                 vec[3] = 0
 
