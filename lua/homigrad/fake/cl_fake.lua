@@ -420,13 +420,50 @@ end
 --end)
 
 local hook_Run = hook.Run
+local pendingFakeRagdolls = {}
+local pendingFakeRagdollIndexes = {}
+
+local function ClearPendingFakeRagdoll(ply)
+	local oldIndex = pendingFakeRagdollIndexes[ply]
+
+	if oldIndex then
+		pendingFakeRagdolls[oldIndex] = nil
+		pendingFakeRagdollIndexes[ply] = nil
+	end
+end
+
+local function QueuePendingFakeRagdoll(ply, ragdoll_index)
+	ClearPendingFakeRagdoll(ply)
+
+	pendingFakeRagdolls[ragdoll_index] = ply
+	pendingFakeRagdollIndexes[ply] = ragdoll_index
+end
+
+local function TryBindPendingFakeRagdoll(ply, ragdoll, ragdoll_index)
+	ply.ragdoll_index = ragdoll_index
+
+	if not IsValid(ragdoll) then
+		QueuePendingFakeRagdoll(ply, ragdoll_index)
+		return
+	end
+
+	ClearPendingFakeRagdoll(ply)
+	hook_Run("RagdollEntityCreated", ply, ragdoll, "FakeRagdoll")
+end
+
 net.Receive("Player Ragdoll", function()
 	--local ply, ragdoll_index = net.ReadEntity(), net.ReadInt(32) --,net_ReadTable()
 	local ply, ragdoll, ragdoll_index = net.ReadEntity(), net.ReadEntity2() --,net_ReadTable()
-	if not ragdoll_index then return end
+	if not ragdoll_index or not IsValid(ply) then return end
 	--print(ragdoll)
 
 	ply.ragdoll_index = ragdoll_index
+
+	if ragdoll_index > 0 then
+		TryBindPendingFakeRagdoll(ply, ragdoll, ragdoll_index)
+	else
+		ClearPendingFakeRagdoll(ply)
+	end
 end)
 
 hook.Add("NetworkEntityCreated", "HG_GiveRenderOverride", function(ragdoll)
@@ -454,6 +491,13 @@ hook.Add("NetworkEntityCreated", "HG_GiveRenderOverride", function(ragdoll)
 				hook.Run("RagdollPerdiction",ragdoll,v)
 				break
 			end
+		end
+
+		local ragdoll_index = ragdoll:EntIndex()
+		local pendingPly = pendingFakeRagdolls[ragdoll_index]
+
+		if IsValid(pendingPly) then
+			TryBindPendingFakeRagdoll(pendingPly, ragdoll, ragdoll_index)
 		end
 	end
 end)
@@ -492,6 +536,11 @@ hook.Add("RagdollEntityCreated", "RagdollFinder", function(ply, ent, key)
 
 	ragdoll = IsValid(ragdoll) and ragdoll
 
+	if ragdoll and ragdoll.HGClientFakeBound == ply then
+		if ply == lply then follow = ragdoll end
+		return
+	end
+
 	if ply == lply then
 		follow = ragdoll
 
@@ -507,6 +556,7 @@ hook.Add("RagdollEntityCreated", "RagdollFinder", function(ply, ent, key)
 	end
 
 	if ragdoll then
+		ragdoll.HGClientFakeBound = ply
 		--ragdoll:SetPredictable(true)--causes ragdoll to shake bruh lol
 		ragdoll.ply = ply
 		ragdoll.organism = ply.organism
@@ -529,7 +579,10 @@ hook.Add("RagdollEntityCreated", "RagdollFinder", function(ply, ent, key)
 		if IsValid(ply) then ply:SetNoDraw(false) end
 		ply:SetRenderMode(RENDERMODE_NORMAL)
 
-		oldrag.ply = nil
+		if IsValid(oldrag) then
+			oldrag.ply = nil
+			oldrag.HGClientFakeBound = nil
+		end
 		//ply.FakeRagdollOld = oldrag
 
 		ply.FakeRagdoll = nil
@@ -607,6 +660,17 @@ local function funcrag(ply, name, oldval, ragdoll)
 	--ragdoll = IsValid(ragdoll) and ragdoll or IsValid(ply:GetNWEntity("FakeRagdoll")) and ply:GetNWEntity("FakeRagdoll") or ply:GetNWEntity("RagdollDeath")
 	--if ply.onetime then return end
 	--ply.onetime = true
+	if name == "FakeRagdoll" then
+		local ragdoll_index = ragdoll and ragdoll.EntIndex and ragdoll:EntIndex()
+
+		if not IsValid(ragdoll) and ragdoll_index and ragdoll_index > 0 then
+			QueuePendingFakeRagdoll(ply, ragdoll_index)
+			return
+		end
+
+		ClearPendingFakeRagdoll(ply)
+	end
+
 	pcall(hook.Run, "RagdollEntityCreated", ply, ragdoll, name)
 	--ply.onetime = false
 end

@@ -318,6 +318,11 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 
 
 
+	local ragdoll = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply:GetNWEntity("FakeRagdoll")
+	if IsValid(ragdoll) then
+		follow = ragdoll
+	end
+
 	if IsValid(follow) then
 		return hg.CalcViewFake(ply, origin, angles, fov, znear, zfar)
 	end
