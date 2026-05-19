@@ -129,10 +129,9 @@ end
 function SWEP:InUse()
 	local ply = self:GetOwner()
 
-    if !IsValid(ply) then return false end
+	if !IsValid(ply) then return false end
 
-    local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
-	local org = ply.organism
+	local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
 
 	local power = ply:GetNWFloat("power", 1)
 
@@ -140,7 +139,10 @@ function SWEP:InUse()
 		return false
 	end
 
-	return ( ((not ply.InVehicle || !ply:InVehicle()) and !hg.RagdollCombatInUse(ply)) && self:KeyDown(IN_USE)) || ((ply.InVehicle && ply:InVehicle() or hg.RagdollCombatInUse(ply) or ent == ply) && not self:KeyDown(IN_USE)) || (IsValid(ply.OldRagdoll))
+	local isUseHeld = GetConVar("zc_always_ragdoll_aim"):GetBool() or ply:KeyDown(IN_USE)
+	local inUse = (((not ply.InVehicle || !ply:InVehicle()) and !hg.RagdollCombatInUse(ply)) && (isUseHeld || self:IsResting())) || ((ply.InVehicle && ply:InVehicle() or hg.RagdollCombatInUse(ply) or ent == ply) && not isUseHeld) || (self.reload and self.reload > 0) || (IsValid(ply.OldRagdoll))
+
+	return inUse
 end
 
 SWEP.modelscale = 1
@@ -1020,7 +1022,7 @@ function SWEP:CustomThink()
     local actwep = owner.GetActiveWeapon and owner:GetActiveWeapon()
 
 	local ownerOrganism = owner.organism
-	local ownerCannotSwing = ownerOrganism and (
+	local ownerCannotSwing = SERVER and ownerOrganism and (
 		not ownerOrganism.canmove
 		or (ownerOrganism.stun - CurTime()) > 0
 		or (ownerOrganism.larm == 1 and ownerOrganism.rarm == 1)
