@@ -95,7 +95,14 @@ end)
 
 hook.Add("Should Fake Up", "organism", function(ply)
 	local org = ply.organism
-	if org.otrub or org.fake or org.spine1 >= hg.organism.fake_spine1 or org.spine2 >= hg.organism.fake_spine2 or org.spine3 >= hg.organism.fake_spine3 or (org.lleg == 1 and org.rleg == 1) and org.berserk <= 0.3 or (org.blood < 2900) or org.consciousness <= 0.4 then
+	local spineTooDamaged = org.spine1 >= hg.organism.fake_spine1 or org.spine2 >= hg.organism.fake_spine2 or org.spine3 >= hg.organism.fake_spine3
+	local bothLegsDisabled = org.lleg == 1 and org.rleg == 1
+	local legsCannotSupportBody = bothLegsDisabled and org.berserk <= 0.3
+	local bloodTooLow = org.blood < 2900
+	local consciousnessTooLow = org.consciousness <= 0.4
+	local shouldBlockFakeUp = org.otrub or org.fake or spineTooDamaged or legsCannotSupportBody or bloodTooLow or consciousnessTooLow
+
+	if shouldBlockFakeUp then
 		return false
 	end
 end)
@@ -739,14 +746,24 @@ local finally_fixed = {
 }
 
 local function fixlimb(org, key, fixer)
-	if math.random(100) > (97 + (fixer != org.owner and (fixer.organism and fixer.organism.pain or 0) or 0) - (org.analgesia * 50 + org.painkiller * 15) - (fixer != org.owner and 30 or 0) - (fixer.tries or 0) * 10 - (fixer.Profession == "doctor" and 100 or 0) - (org.owner == fixer and (IsValid(org.owner.FakeRagdoll) or (org.owner.Crouching and org.owner:Crouching())) and 10 or 0)) then
+	local isSelfFix = fixer == org.owner
+	local fixerPain = (not isSelfFix and fixer.organism and fixer.organism.pain) or 0
+	local medicineBonus = org.analgesia * 50 + org.painkiller * 15
+	local assistedFixBonus = not isSelfFix and 30 or 0
+	local repeatedTryBonus = (fixer.tries or 0) * 10
+	local doctorBonus = fixer.Profession == "doctor" and 100 or 0
+	local ownerIsBraced = IsValid(org.owner.FakeRagdoll) or (org.owner.Crouching and org.owner:Crouching())
+	local selfFixPositionBonus = isSelfFix and ownerIsBraced and 10 or 0
+	local fixDifficulty = 97 + fixerPain - medicineBonus - assistedFixBonus - repeatedTryBonus - doctorBonus - selfFixPositionBonus
+
+	if math.random(100) > fixDifficulty then
 		org[key.."dislocation"] = false
 		org.painadd = org.painadd + 5 * math.random(1, 3)
 		org.fearadd = org.fearadd + 0.1
 
 		org.owner:EmitSound("physics/flesh/flesh_impact_hard6.wav", 65)
 
-		if fixer == org.owner and (fixer.tries or 0) > 3 and math.random(3) == 1 then
+		if isSelfFix and (fixer.tries or 0) > 3 and math.random(3) == 1 then
 			fixer:Notify(finally_fixed[math.random(#finally_fixed)], 1, "dislocations_unlucky", 1, nil, Color(255, 255, 255, 255))
 		end
 

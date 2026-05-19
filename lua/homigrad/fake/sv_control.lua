@@ -250,22 +250,32 @@ hook.Add("Think", "Fake", function()
 
 		ang:Set(angles)
 
-		if ishgweapon(wep) and !wep:IsPistolHoldType() then
+		local isHgWeapon = ishgweapon(wep)
+		if isHgWeapon and !wep:IsPistolHoldType() then
 			ang:RotateAroundAxis(ang:Up(), 30)
 		end
 
-		if (!ply:InVehicle() && (inUse || ((ishgweapon(wep)) && (ply:KeyDown(IN_ATTACK2) || (wep.IsResting and wep:IsResting()))) || (wep.ismelee && (ply:KeyDown(IN_ATTACK2) || ply:KeyDown(IN_ATTACK))))) || (ply:InVehicle() && not inUse) or ragdollcombat then
-			if org.canmove and (!((ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT)) and ragdoll:IsOnFire()) or ply:InVehicle()) then
+		local inVehicle = ply:InVehicle()
+		local holdingAttack2 = ply:KeyDown(IN_ATTACK2)
+		local holdingAttack = ply:KeyDown(IN_ATTACK)
+		local weaponIsResting = isHgWeapon and wep.IsResting and wep:IsResting()
+		local wantsWeaponControl = inUse or (isHgWeapon and (holdingAttack2 or weaponIsResting)) or (wep.ismelee and (holdingAttack2 or holdingAttack))
+		local shouldPoseRagdoll = (not inVehicle and wantsWeaponControl) or (inVehicle and not inUse) or ragdollcombat
+
+		if shouldPoseRagdoll then
+			local rollingWhileOnFire = (ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT)) and ragdoll:IsOnFire()
+
+			if org.canmove and (not rollingWhileOnFire or inVehicle) then
 				local angl = angZero
 				angl:Set(ang)
 				if ply:KeyDown(IN_DUCK) then
-					angl:RotateAroundAxis(angl:Right(), ishgweapon(wep) and 30 or 30)
+					angl:RotateAroundAxis(angl:Right(), isHgWeapon and 30 or 30)
 				end
 				--angl:RotateAroundAxis(angl:Right(), -90)
 				angl:RotateAroundAxis(angl:Forward(), 90)
 				angl:RotateAroundAxis(angl:Up(), 90)
-				angl:RotateAroundAxis(angl:Forward(), ishgweapon(wep) and not wep:IsPistolHoldType() and 120 or 180)
-				angl:RotateAroundAxis(angl:Up(), ishgweapon(wep) and wep:IsResting() and 50 - ply:EyeAngles().p or 0)
+				angl:RotateAroundAxis(angl:Forward(), isHgWeapon and not wep:IsPistolHoldType() and 120 or 180)
+				angl:RotateAroundAxis(angl:Up(), isHgWeapon and wep:IsResting() and 50 - ply:EyeAngles().p or 0)
 				shadowControl(ragdoll, 1, 0.1, angl, 250, 20)
 			end
 
@@ -332,11 +342,16 @@ hook.Add("Think", "Fake", function()
 
 		if not wep.RagdollFunc then
 			local force = math.max(1 - org.larm / 1.3, 0)
-			if !IsValid(ragdoll.ConsLH) and (ply:KeyDown(IN_ATTACK) and !ishgweapon(wep)) or (((ishgweapon(wep) and (!wep:IsResting() or ply:KeyDown(IN_FORWARD) or ply:KeyDown(IN_BACK))) or wep.ismelee2) and (inUse or ply:KeyDown(IN_ATTACK2))) then// || ply:InVehicle() then
+			local leftHandFree = !IsValid(ragdoll.ConsLH)
+			local leftAttackWithoutWeapon = holdingAttack and !isHgWeapon
+			local weaponCanReachWithLeftHand = (isHgWeapon and (!wep:IsResting() or forward or back)) or wep.ismelee2
+			local shouldControlLeftHand = (leftHandFree and leftAttackWithoutWeapon) or (weaponCanReachWithLeftHand and (inUse or holdingAttack2))
+
+			if shouldControlLeftHand then// || ply:InVehicle() then
 				if org.canmove then
 					//if !ply:InVehicle() then
 						ang2:Set(angles)
-						local lower = (ishgweapon(wep) and (inUse or ply:KeyDown(IN_ATTACK2)))
+						local lower = (isHgWeapon and (inUse or holdingAttack2))
 						ang2:RotateAroundAxis(angles:Right(), lower and -20 or 0)
 						ang2:RotateAroundAxis(angles:Up(), lower and 20 or 10)
 						ang2:RotateAroundAxis(angles:Forward(), -45)
@@ -447,13 +462,17 @@ hook.Add("Think", "Fake", function()
 
 			local force = math.max(1 - org.rarm / 1.3, 0)
 
-			if !IsValid(ragdoll.ConsRH) and ply:KeyDown(IN_ATTACK2) or ((ishgweapon(wep) or wep.ismelee2) and inUse) then// || ply:InVehicle() then
+			local rightHandFree = !IsValid(ragdoll.ConsRH)
+			local weaponCanReachWithRightHand = (isHgWeapon or wep.ismelee2) and inUse
+			local shouldControlRightHand = (rightHandFree and holdingAttack2) or weaponCanReachWithRightHand
+
+			if shouldControlRightHand then// || ply:InVehicle() then
 				if org.canmove then
 					--if org.shock > 1 and not ply:KeyDown(IN_ATTACK2) then angles = spine:GetAngles() end
 					//if !ply:InVehicle() then
 						ang2:Set(angles)
-						ang2:RotateAroundAxis(angles:Up(), ishgweapon(wep) and -10 or 0)
-						ang2:RotateAroundAxis(angles:Right(), ishgweapon(wep) and 10 or 0)
+						ang2:RotateAroundAxis(angles:Up(), isHgWeapon and -10 or 0)
+						ang2:RotateAroundAxis(angles:Right(), isHgWeapon and 10 or 0)
 						ang2:RotateAroundAxis(angles:Forward(), -90)
 
 						//if !ishgweapon(wep) then

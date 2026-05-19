@@ -291,12 +291,22 @@ if CLIENT then
 end
 -- WoundTBL = {dmgBlood / 2, localPos, localAng, bone, time}
 SWEP.ShouldDeleteOnFullUse = true
+local function HasBandageTarget(org)
+	return #org.wounds > 0
+		or org.lleg == 1
+		or org.rleg == 1
+		or org.skull >= 0.6
+		or org.chest == 1
+		or org.rarm == 1
+		or org.larm == 1
+end
+
 if SERVER then
 	function SWEP:CanHeal(ent)
 		local org = ent.organism
 		if not org then return end
 
-		return self.modeValues[1] >= 0 and (#org.wounds > 0 or org.lleg == 1 or org.rleg == 1 or org.skull >= 0.6 or org.chest == 1 or org.rarm == 1 or org.larm == 1)
+		return self.modeValues[1] >= 0 and HasBandageTarget(org)
 	end
 
 	function SWEP:Bandage(ent, bone)
@@ -305,7 +315,7 @@ if SERVER then
 		if not org then return end
 
 		-- If you shoot up a corpse, then blow it up with a grenade and bandage it after, the server crashes; why?
-		if self.modeValues[1] <= 0 or not (#org.wounds > 0 or org.lleg == 1 or org.rleg == 1 or org.skull >= 0.6 or org.chest == 1 or org.rarm == 1 or org.larm == 1) then return end
+		if self.modeValues[1] <= 0 or not HasBandageTarget(org) then return end
 		table.sort(org.wounds, function(a, b) return a[1] > b[1] end)
 
 		local done = false

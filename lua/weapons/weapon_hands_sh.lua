@@ -1700,7 +1700,18 @@ if SERVER then
 			local ent, ply, _, target, bone, pos, lang = tbl[1], tbl[2], tbl[3], tbl[4], tbl[5], tbl[6], tbl[7]
 			local phys = ent:GetPhysicsObjectNum(bone)
 
-			if not IsValid(phys) or not IsValid(ply) or not IsValid(ent) or not ply:Alive() or (ply:GetGroundEntity() == ent) or (ply:GetEntityInUse() == ent) or IsValid(ply.FakeRagdoll) or ply:KeyPressed(IN_RELOAD) then
+			local heldEntityInvalid = not IsValid(phys) or not IsValid(ply) or not IsValid(ent)
+			local playerCannotKeepHolding = false
+
+			if not heldEntityInvalid then
+				playerCannotKeepHolding = not ply:Alive()
+					or (ply:GetGroundEntity() == ent)
+					or (ply:GetEntityInUse() == ent)
+					or IsValid(ply.FakeRagdoll)
+					or ply:KeyPressed(IN_RELOAD)
+			end
+
+			if heldEntityInvalid or playerCannotKeepHolding then
 				hg.SetCarryEnt2(ply)
 				heldents[i] = nil
 

@@ -1019,7 +1019,14 @@ function SWEP:CustomThink()
     local owner = self:GetOwner()
     local actwep = owner.GetActiveWeapon and owner:GetActiveWeapon()
 
-	if SERVER and not owner:IsNPC() and owner.organism and (not owner.organism.canmove or ((owner.organism.stun - CurTime()) > 0) or (owner.organism.larm == 1 and owner.organism.rarm == 1)) and IsValid(actwep) and self == actwep then
+	local ownerOrganism = owner.organism
+	local ownerCannotSwing = ownerOrganism and (
+		not ownerOrganism.canmove
+		or (ownerOrganism.stun - CurTime()) > 0
+		or (ownerOrganism.larm == 1 and ownerOrganism.rarm == 1)
+	)
+
+	if SERVER and not owner:IsNPC() and ownerCannotSwing and IsValid(actwep) and self == actwep then
 		self:RemoveFake()
 
 		hg.drop(owner)
@@ -1089,7 +1096,12 @@ function SWEP:CustomThink()
 
     //if SERVER then
         local oldblocking = self:GetBlocking()
-        local blocking = ((CurTime() - self:GetStartedBlocking()) > 1 or oldblocking) and owner.organism and owner.organism.stamina[1] > 90 and !self:GetInAttack() and (self:GetAttackTime() - CurTime() - 0) < 0 and ((self:GetLastBlocked() + 3) < CurTime()) and self:CanBlock() and hg.KeyDown(owner, IN_ATTACK2)
+		local blockWarmupDone = (CurTime() - self:GetStartedBlocking()) > 1 or oldblocking
+		local hasBlockStamina = ownerOrganism and ownerOrganism.stamina[1] > 90
+		local attackFinished = !self:GetInAttack() and (self:GetAttackTime() - CurTime() - 0) < 0
+		local blockCooldownDone = (self:GetLastBlocked() + 3) < CurTime()
+		local wantsToBlock = hg.KeyDown(owner, IN_ATTACK2)
+        local blocking = blockWarmupDone and hasBlockStamina and attackFinished and blockCooldownDone and self:CanBlock() and wantsToBlock
         --if self:CutDuct() then return end
         self:SetBlocking(blocking)
 

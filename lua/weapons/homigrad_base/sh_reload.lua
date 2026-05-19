@@ -31,7 +31,12 @@ function SWEP:CanReload()
 
 	if !ply.GetAmmoCount then return true end
 
-	if self.ReloadNext or not self:CanUse() or ply:GetAmmoCount(self:GetPrimaryAmmoType()) == 0 or self:Clip1() >= self:GetMaxClip1() + (self.drawBullet and not self.OpenBolt and 1 or 0) then --shit
+	local hasReserveAmmo = ply:GetAmmoCount(self:GetPrimaryAmmoType()) > 0
+	local extraChamberRound = self.drawBullet and not self.OpenBolt and 1 or 0
+	local maxReloadClip = self:GetMaxClip1() + extraChamberRound
+	local clipIsFull = self:Clip1() >= maxReloadClip
+
+	if self.ReloadNext or not self:CanUse() or not hasReserveAmmo or clipIsFull then --shit
 		return
 	end
 

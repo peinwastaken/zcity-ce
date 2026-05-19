@@ -67,6 +67,18 @@ local weaponClasses = {
 	["gmod_camera"] = "Camera",
 }
 
+local weaponClassPatterns = {
+	{"Pistol", {"pistol", "glock", "deagle", "usp"}},
+	{"SMG", {"smg", "mp5", "mac10", "p90"}},
+	{"Rifle", {"rifle", "ak", "m4", "ar15", "galil"}},
+	{"Sniper", {"sniper", "awp", "scout"}},
+	{"Shotgun", {"shotgun", "spas", "nova", "xm1014"}},
+	{"Melee", {"knife", "melee", "crowbar", "axe"}},
+	{"Grenade", {"grenade", "flash", "smoke", "molotov"}},
+	{"Heavy", {"rpg", "rocket"}},
+	{"LMG", {"lmg", "m249", "negev"}},
+}
+
 local function GetWeaponClass(wep)
 	if !IsValid(wep) then return "None" end
 
@@ -78,24 +90,15 @@ local function GetWeaponClass(wep)
 
 	local lclass = string.lower(class)
 
-	if string.find(lclass, "pistol") or string.find(lclass, "glock") or string.find(lclass, "deagle") or string.find(lclass, "usp") then
-		return "Pistol"
-	elseif string.find(lclass, "smg") or string.find(lclass, "mp5") or string.find(lclass, "mac10") or string.find(lclass, "p90") then
-		return "SMG"
-	elseif string.find(lclass, "rifle") or string.find(lclass, "ak") or string.find(lclass, "m4") or string.find(lclass, "ar15") or string.find(lclass, "galil") then
-		return "Rifle"
-	elseif string.find(lclass, "sniper") or string.find(lclass, "awp") or string.find(lclass, "scout") then
-		return "Sniper"
-	elseif string.find(lclass, "shotgun") or string.find(lclass, "spas") or string.find(lclass, "nova") or string.find(lclass, "xm1014") then
-		return "Shotgun"
-	elseif string.find(lclass, "knife") or string.find(lclass, "melee") or string.find(lclass, "crowbar") or string.find(lclass, "axe") then
-		return "Melee"
-	elseif string.find(lclass, "grenade") or string.find(lclass, "flash") or string.find(lclass, "smoke") or string.find(lclass, "molotov") then
-		return "Grenade"
-	elseif string.find(lclass, "rpg") or string.find(lclass, "rocket") then
-		return "Heavy"
-	elseif string.find(lclass, "lmg") or string.find(lclass, "m249") or string.find(lclass, "negev") then
-		return "LMG"
+	for _, classData in ipairs(weaponClassPatterns) do
+		local weaponType = classData[1]
+		local patterns = classData[2]
+
+		for _, pattern in ipairs(patterns) do
+			if string.find(lclass, pattern) then
+				return weaponType
+			end
+		end
 	end
 
 	local printName = wep:GetPrintName()

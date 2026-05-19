@@ -702,7 +702,12 @@ function hgWreckBuildings(blaster, pos, power, range, ignoreVisChecks) -- taken 
 
 		for _, prop in ipairs(allProps) do
 			LastProcess = SysTime()
-			if not (table.HasValue(WreckBlacklist, prop:GetClass()) or hook.Run("hg_CanDestroyProp", prop, blaster, pos, power, range, ignore) == false or prop.ExplProof == true) then
+			local blacklistedProp = table.HasValue(WreckBlacklist, prop:GetClass())
+			local hookBlockedProp = hook.Run("hg_CanDestroyProp", prop, blaster, pos, power, range, ignore) == false
+			local explosionProofProp = prop.ExplProof == true
+			local canAffectProp = not (blacklistedProp or hookBlockedProp or explosionProofProp)
+
+			if canAffectProp then
 				local physObj = prop:GetPhysicsObject()
 				local propPos = prop:LocalToWorld(prop:OBBCenter())
 				local DistFrac = 1 - propPos:Distance(pos) / maxRange
@@ -1719,7 +1724,12 @@ hook.Add("SetupMove","hg_FallSound",function(ply)
 	--if not ply then return end
 	local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
 	local vel = ent:GetVelocity():Length()
-	if ent:GetVelocity():Length() > 1000 and (ent:IsRagdoll() or !ply:OnGround()) and (ent:IsRagdoll() and !ent:IsConstrained() or ply:GetMoveType() != MOVETYPE_NOCLIP) and ply:Alive() and !ply:InVehicle() then
+	local fallingFast = vel > 1000
+	local ragdollOrAirborne = ent:IsRagdoll() or !ply:OnGround()
+	local movementAllowsFallAdrenaline = ent:IsRagdoll() and !ent:IsConstrained() or ply:GetMoveType() != MOVETYPE_NOCLIP
+	local playerCanReactToFall = ply:Alive() and !ply:InVehicle()
+
+	if fallingFast and ragdollOrAirborne and movementAllowsFallAdrenaline and playerCanReactToFall then
 		if ply.organism and ply.organism.adrenaline < 2.5 then
 			ply:AddNaturalAdrenaline(0.02)
 		end

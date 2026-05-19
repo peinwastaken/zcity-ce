@@ -201,7 +201,16 @@ module[2] = function(owner, org, mulTime)
 	local canwakeup_pain = ((org.pain - 5) / (org.painlessen)) < timetouncon
 	org.timetouncon = (timetouncon ~= timetouncon) and timetouncon or Lerp(hg.lerpFrameTime2(0.01,mulTime), org.timetouncon or 10000, timetouncon)
 
-	if org.otrub and ((not bleeding_will_stop and not (canwakeup_pain and org.blood > 3000)) or (org.brain > 0.4) or (org.pulse < 15) or (org.o2[1] < 5) or (org.trachea >= 0.5) or org.heartstop or (org.spine3 >= hg.organism.fake_spine3) or (org.spine2 >= hg.organism.fake_spine2)) then
+	local bleedingWillKeepPlayerDown = not bleeding_will_stop and not (canwakeup_pain and org.blood > 3000)
+	local brainTooDamaged = org.brain > 0.4
+	local pulseTooWeak = org.pulse < 15
+	local oxygenTooLow = org.o2[1] < 5
+	local airwayTooDamaged = org.trachea >= 0.5
+	local spineTooDamaged = org.spine3 >= hg.organism.fake_spine3 or org.spine2 >= hg.organism.fake_spine2
+	local criticalVitalsCannotWake = brainTooDamaged or pulseTooWeak or oxygenTooLow or airwayTooDamaged
+	local shouldStayIncapacitated = org.otrub and (bleedingWillKeepPlayerDown or criticalVitalsCannotWake or org.heartstop or spineTooDamaged)
+
+	if shouldStayIncapacitated then
 		org.incapacitated = true
 	else
 		org.incapacitated = false

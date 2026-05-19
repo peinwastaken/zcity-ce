@@ -1184,7 +1184,14 @@ function SWEP:CoreStep()
 		end
 	end
 
-	if SERVER and not owner:IsNPC() and owner.organism and (not owner.organism.canmove or ((owner.organism.stun - CurTime()) > 0) or (owner.organism.larm == 1 and owner.organism.rarm == 1)) and IsValid(actwep) and self == actwep then
+	local ownerOrganism = owner.organism
+	local ownerCannotUseWeapon = ownerOrganism and (
+		not ownerOrganism.canmove
+		or (ownerOrganism.stun - time) > 0
+		or (ownerOrganism.larm == 1 and ownerOrganism.rarm == 1)
+	)
+
+	if SERVER and not owner:IsNPC() and ownerCannotUseWeapon and IsValid(actwep) and self == actwep then
 		self:RemoveFake()
 
 		if hg_slings:GetBool() and (zb.CROUND and zb.CROUND == "hmcd" or gamemod == "sandbox") then
@@ -1221,8 +1228,23 @@ function SWEP:CoreStep()
 		end
 	end
 
-	local stam = (owner.organism ~= nil and owner.organism.stamina and owner.organism.stamina[1]) or 180
-	if owner:GetNWFloat("InLegKick",0) <= CurTime() and (!(IsValid(owner.FakeRagdoll) or IsValid(owner.FakeRagdollOld)) or false--[[self:Clip1() <= 0]]) and self:KeyDown(IN_ATTACK) and self:KeyDown(IN_USE) and ((self:GetButtstockAttack() + 1 * ((math.max(0, (self.weight - 3)) * 0.2) + 1) * (math.Clamp((180 - stam) / 90, 1, 2))) < CurTime()) and owner:GetVelocity():LengthSqr() < 250 * 250 and (SERVER or IsFirstTimePredicted()) then
+	local stam = (ownerOrganism ~= nil and ownerOrganism.stamina and ownerOrganism.stamina[1]) or 180
+	local legKickReady = owner:GetNWFloat("InLegKick",0) <= time
+	local ownerInRagdollPose = IsValid(owner.FakeRagdoll) or IsValid(owner.FakeRagdollOld)
+	local canBashFromRagdollPose = false--[[self:Clip1() <= 0]]
+	local wantsButtstockAttack = self:KeyDown(IN_ATTACK) and self:KeyDown(IN_USE)
+	local buttstockCooldown = ((math.max(0, (self.weight - 3)) * 0.2) + 1) * math.Clamp((180 - stam) / 90, 1, 2)
+	local buttstockReady = (self:GetButtstockAttack() + buttstockCooldown) < time
+	local ownerMovingSlowEnough = owner:GetVelocity():LengthSqr() < 250 * 250
+	local predictionAllowed = SERVER or IsFirstTimePredicted()
+	local canRunButtstockAttack = legKickReady
+		and (not ownerInRagdollPose or canBashFromRagdollPose)
+		and wantsButtstockAttack
+		and buttstockReady
+		and ownerMovingSlowEnough
+		and predictionAllowed
+
+	if canRunButtstockAttack then
 		self:SetButtstockAttack(CurTime())
 		self:GetOwner():EmitSound("weapons/tfa/melee"..math.random(1,6)..".wav")
 		if SERVER then

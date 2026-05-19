@@ -453,8 +453,14 @@ function hg._DeprecatedDoTPIK(ply, ent, rhmat, lhmat)
             local lerp = ply.lerp_lh
 
             if ply.pullingTowards then
-                if not IsValid(self) or not self.GetWM or not IsValid(self:GetWM()) || self != ply.pullingTowardsWeapon || (ply.pullingTowardsStart and ((ply.pullingTowardsStart + ply.pullingTowardsTime) < CurTime())) then
-                    if ply.pullingTowardsCallback and IsValid(self) and self.GetWM and IsValid(self:GetWM()) and self == ply.pullingTowardsWeapon then
+                local weaponModel = IsValid(self) and self.GetWM and self:GetWM()
+                local weaponModelIsValid = IsValid(weaponModel)
+                local pullWeaponMatches = self == ply.pullingTowardsWeapon
+                local pullTimedOut = ply.pullingTowardsStart and ((ply.pullingTowardsStart + ply.pullingTowardsTime) < CurTime())
+                local pullTargetInvalid = not weaponModelIsValid or not pullWeaponMatches or pullTimedOut
+
+                if pullTargetInvalid then
+                    if ply.pullingTowardsCallback and weaponModelIsValid and pullWeaponMatches then
                         ply.pullingTowardsCallback(self)
                         ply.pullingTowardsCallback = nil
                     end
@@ -471,7 +477,10 @@ function hg._DeprecatedDoTPIK(ply, ent, rhmat, lhmat)
                     ply.pullingTowardsModel = nil
                     ply.pullingTowardsOffsets = nil
                 else
-                    lerp = math.ease.InOutSine(1 - math.abs(((ply.pullingTowardsStart + ply.pullingTowardsTime - CurTime()) / ply.pullingTowardsTime) * 2 - 1))
+                    local pullTimeLeft = (ply.pullingTowardsStart + ply.pullingTowardsTime - CurTime()) / ply.pullingTowardsTime
+                    local pullBalance = pullTimeLeft * 2 - 1
+
+                    lerp = math.ease.InOutSine(1 - math.abs(pullBalance))
 
                     local ang = ent:GetBoneMatrix(ent:LookupBone("ValveBiped.Bip01_Spine2")):GetAngles()
                     ang:RotateAroundAxis(ang:Right(), -90)
@@ -481,12 +490,14 @@ function hg._DeprecatedDoTPIK(ply, ent, rhmat, lhmat)
                     ply_l_hand_matrix:SetTranslation(LerpVector(lerp, ply_l_hand_matrix:GetTranslation(), (ent:GetBoneMatrix(ent:LookupBone(ply.pullingTowards)):GetTranslation() + ent:GetBoneMatrix(ent:LookupBone(ply.pullingTowards)):GetAngles():Right() * -4 + ent:GetBoneMatrix(ent:LookupBone(ply.pullingTowards)):GetAngles():Up() * 5) or pos))
                     ply_l_hand_matrix:SetAngles(LerpAngle(math.min(lerp * 2,1), ply_l_hand_matrix:GetAngles(), ang))
 
-                    if ((((ply.pullingTowardsStart + ply.pullingTowardsTime - CurTime()) / ply.pullingTowardsTime) * 2 - 1) < 0) then// || ply.pullingMagNow then
+                    if pullBalance < 0 then// || ply.pullingMagNow then
                         if IsValid(ply.pullingTowardsModel) and ply.pullingTowardsOffsets then
                             local pos2, ang2 = LocalToWorld(ply.pullingTowardsOffsets[1], ply.pullingTowardsOffsets[2], ply_l_hand_matrix:GetTranslation(), ply_l_hand_matrix:GetAngles())
-                            local lerp = math.max(((((1 - (ply.pullingTowardsStart + ply.pullingTowardsTime - CurTime()) / ply.pullingTowardsTime)) - 0.5) * 2 - 0.6) / 0.4,0)
+                            local modelReturnProgress = 1 - pullTimeLeft
+                            local lerp = math.max(((modelReturnProgress - 0.5) * 2 - 0.6) / 0.4,0)
 
-                            local pos1, ang1 = LocalToWorld(ply.pullingTowardsOffsets[4], ply.pullingTowardsOffsets[5], self:GetWM():GetBoneMatrix(ply.pullingTowardsOffsets[3]):GetTranslation(), self:GetWM():GetBoneMatrix(ply.pullingTowardsOffsets[3]):GetAngles())
+                            local weaponBoneMatrix = weaponModel:GetBoneMatrix(ply.pullingTowardsOffsets[3])
+                            local pos1, ang1 = LocalToWorld(ply.pullingTowardsOffsets[4], ply.pullingTowardsOffsets[5], weaponBoneMatrix:GetTranslation(), weaponBoneMatrix:GetAngles())
                             ang1:RotateAroundAxis(ang1:Up(),-90)
 
                             local pos = LerpVector(lerp, pos2, pos1)
@@ -1128,6 +1139,9 @@ function hg.DoTPIK(ply, ent)
 
     if lerp_lh != 0 then
         local segments = ply.segmentsl
+        local isHgWeapon = ishgweapon(self)
+        local leftArmUnusable = ply.organism and ply.organism.larm and ply.organism.larm > 0.99
+        local weaponCanUseLeftHandIk = isHgWeapon and !self.reload
 
         if shouldrebuild then
             local old = segments[2] and ((segments[2].Pos - segments[1].Pos):GetNormalized() * 2) or vector_origin
@@ -1165,9 +1179,15 @@ function hg.DoTPIK(ply, ent)
             local hand = ply_l_hand_matrix:GetTranslation()
             local add = (hand - segments[1].Pos):GetNormalized() * 5 + eyeang:Right() * -5 + eyeang:Forward() * ((ply.lerp_hand or 0) - 0.5) * 10
 
-            if ply.organism and ply.organism.larm and ply.organism.larm > 0.99 and ishgweapon(self) and !self.reload and ishgweapon(self) then
+            if leftArmUnusable and weaponCanUseLeftHandIk then
                 segments[3] = segments[3] or {Pos = hand, Len = limblength}
-                segments[3].Pos = LerpVector(!(ishgweapon(self) and self:IsPistolHoldType()) and 0.05 or 0.01, segments[3].Pos + (-vector_up * 0.6 + eyeang:Forward() * 0.4 + ((ishgweapon(self) and !self:IsPistolHoldType()) and eyeang:Right() * 0.7 or vector_origin) + ent:GetVelocity() / 400) * 0.5, hand)
+
+                local isPistolHold = self:IsPistolHoldType()
+                local blend = not isPistolHold and 0.05 or 0.01
+                local weaponOffset = not isPistolHold and eyeang:Right() * 0.7 or vector_origin
+                local targetPos = segments[3].Pos + (-vector_up * 0.6 + eyeang:Forward() * 0.4 + weaponOffset + ent:GetVelocity() / 400) * 0.5
+
+                segments[3].Pos = LerpVector(blend, targetPos, hand)
             else
                 segments[3] = {Pos = Lerp(1 - lerp_lh, ply.last_lh and ply.last_lh:GetTranslation() or segments[3].Pos, ply_l_hand_matrix_old and ply_l_hand_matrix_old:GetTranslation() or hand), Len = 12}
             end
@@ -1226,7 +1246,7 @@ function hg.DoTPIK(ply, ent)
 
         ply_l_forearm_matrix:SetAngles(ang)
 
-        if ply.organism and ply.organism.larm and ply.organism.larm > 0.99 and ishgweapon(self) and !self.reload and ishgweapon(self) then
+        if leftArmUnusable and weaponCanUseLeftHandIk then
             local ang = ang//qt:Angle()
             ang:RotateAroundAxis(ang:Forward(), 95)
             ply_l_hand_matrix:SetAngles(LerpAngle(0.5, ply_l_hand_matrix:GetAngles(), ang))
@@ -1333,19 +1353,26 @@ function hg.Solve2PartIK(start_p, end_p, length0, length1, mat0, mat1, sign, tor
     return Joint0_F, Joint1_F, prev_ang0:Angle(), prev_ang1:Angle()
 end
 
+local function RemovePlayerFlashlight(ply)
+    if IsValid(ply.flashlight) then
+        ply.flashlight:Remove()
+    end
+end
+
 function hg.FlashlightPos(ply)
     if not ply:GetNetVar("flashlight", false) then
-        if IsValid(ply.flashlight) then
-            ply.flashlight:Remove()
-        end
+        RemovePlayerFlashlight(ply)
 
         return
     end
 
-    if not ply:GetNetVar("Inventory") or not ply:GetNetVar("Inventory")["Weapons"] or not ply:GetNetVar("Inventory")["Weapons"]["hg_flashlight"] or ply.organism and ply.organism.larmamputated then
-        if IsValid(ply.flashlight) then
-            ply.flashlight:Remove()
-        end
+    local inventory = ply:GetNetVar("Inventory")
+    local weapons = inventory and inventory["Weapons"]
+    local hasFlashlight = weapons and weapons["hg_flashlight"]
+    local leftArmAmputated = ply.organism and ply.organism.larmamputated
+
+    if not hasFlashlight or leftArmAmputated then
+        RemovePlayerFlashlight(ply)
 
         if IsValid(ply.flmodel) then
             ply.flmodel:SetNoDraw(true)
@@ -1371,7 +1398,10 @@ function hg.FlashlightPos(ply)
         if attachmentData then flashlightwep = attachmentData.supportFlashlight end
     end
 
-    if flashlightwep then if IsValid(ply.flashlight) then ply.flashlight:Remove() end return end -- maybe add hooks for this kind of crap
+    if flashlightwep then
+        RemovePlayerFlashlight(ply)
+        return
+    end -- maybe add hooks for this kind of crap
 
 	local rh,lh = ply:LookupBone("ValveBiped.Bip01_R_Hand"), ply:LookupBone("ValveBiped.Bip01_L_Hand")
 

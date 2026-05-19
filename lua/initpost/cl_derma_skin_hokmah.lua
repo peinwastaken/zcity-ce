@@ -356,7 +356,12 @@ function SKIN:PaintTextEntry( panel, w, h )
 		draw.DrawText(amt .. "/" .. panel.CharactersMin .. add_text, "ZCity_Tiny", w * 1.0, h * 0, color, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 	end
 
-	if ( panel.GetPlaceholderText && panel.GetPlaceholderColor && panel:GetPlaceholderText() && panel:GetPlaceholderText():Trim() != "" && panel:GetPlaceholderColor() && ( !panel:GetText() || panel:GetText() == "" ) ) then
+	local placeholderText = panel.GetPlaceholderText and panel:GetPlaceholderText()
+	local placeholderColor = panel.GetPlaceholderColor and panel:GetPlaceholderColor()
+	local currentText = panel:GetText()
+	local shouldDrawPlaceholder = placeholderText and placeholderText:Trim() != "" and placeholderColor and (not currentText or currentText == "")
+
+	if shouldDrawPlaceholder then
 		local oldText = panel:GetText()
 
 		local str = panel:GetPlaceholderText()
