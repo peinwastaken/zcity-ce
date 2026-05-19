@@ -1,4 +1,4 @@
-local controlUseCvar = CreateConVar("zc_always_ragdoll_aim", 0, FCVAR_REPLICATED, "Enables permanent +use in fake ragdoll mode", 0, 1)
+local controlUseCvar = CreateConVar("zc_always_ragdoll_aim", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Enables permanent +use in fake ragdoll mode", 0, 1)
 local angZero = Angle(0, 0, 0)
 local shadowparams = {}
 
