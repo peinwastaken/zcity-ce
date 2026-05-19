@@ -90,7 +90,7 @@ end)
 local ent
 
 
-local hg_fake_stamina = CreateConVar("hg_fake_stamina", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY, "Enables stamina when ragdolled", 0, 1)
+local zc_fake_stamina = CreateConVar("zc_fake_stamina", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY, "Enables stamina when ragdolled", 0, 1)
 
 local util_TraceLine, util_TraceHull = util.TraceLine, util.TraceHull
 local ang, ang2 = Angle(0, 0, 0), Angle(0, 0, 0)
@@ -104,7 +104,7 @@ local forceArm_dump = 450
 local vector_zero = Vector(0,0,0)
 local vector_usehull = Vector(6, 6, 6)
 
-CreateConVar("hg_shitty_fake", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY, "enable shitty fake", 0, 1)
+CreateConVar("zc_shitty_fake", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY, "enable shitty fake", 0, 1)
 
 
 
@@ -398,7 +398,7 @@ hook.Add("Think", "Fake", function()
 						org.painadd = org.painadd + ragdoll.dtime * 5
 					end
 
-					if hg_fake_stamina:GetBool() then
+					if zc_fake_stamina:GetBool() then
 						org.stamina.subadd = org.stamina.subadd + 0.05 * (ragdoll.staminaRightModifyer or 0.5) * (on_ground and 0.25 or 1)
 					end
 				end
@@ -420,7 +420,7 @@ hook.Add("Think", "Fake", function()
 						org.painadd = org.painadd + ragdoll.dtime * 5
 					end
 
-					if hg_fake_stamina:GetBool() then
+					if zc_fake_stamina:GetBool() then
 						org.stamina.subadd = org.stamina.subadd + 0.05 * (ragdoll.staminaLeftModifyer or 0.5) * (on_ground and 0.25 or 1)
 					end
 				end
@@ -539,7 +539,7 @@ hook.Add("Think", "Fake", function()
 
 			if ply:KeyDown(IN_SPEED) and org.canmove and !org.larmamputated and (!ply.HandsStun or ply.HandsStun < CurTime()) then
 				if IsValid(ragdoll.ConsLH) then
-					if hg_fake_stamina:GetBool() then
+					if zc_fake_stamina:GetBool() then
 						org.stamina.subadd = org.stamina.subadd + 0.06 * (ragdoll.staminaLeftModifyer or 0.5) * ( IsValid(ragdoll.ConsRH) and 0.35 or 1.25) * (on_ground and 0.25 or 1)
 					end
 
@@ -621,7 +621,7 @@ hook.Add("Think", "Fake", function()
 
 			if ply:KeyDown(IN_WALK) and org.canmove and !(ishgweapon(wep) or wep.ismelee2) and !org.rarmamputated and (!ply.HandsStun or ply.HandsStun < CurTime()) then
 				if IsValid(ragdoll.ConsRH) then
-					if hg_fake_stamina:GetBool() then
+					if zc_fake_stamina:GetBool() then
 						org.stamina.subadd = org.stamina.subadd + 0.06 * (ragdoll.staminaRightModifyer or 1) * ( IsValid(ragdoll.ConsLH) and 0.35 or 1.25) * (on_ground and 0.25 or 1)
 					end
 

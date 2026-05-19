@@ -10,13 +10,13 @@ team.SetUp(2, "Players3", Color(0, 255, 0))
 DeriveGamemode("sandbox")
 
 local blur = Material("pp/blurscreen")
-local hg_potatopc -- NEED TO REWRITE THIS SHIT PROPERLY, AND ALL MENUS SHOULD BE THE SAME TOO!!!
+local zc_potatopc -- NEED TO REWRITE THIS SHIT PROPERLY, AND ALL MENUS SHOULD BE THE SAME TOO!!!
 function hg.DrawBlur(panel, amount, passes, alpha)
 	if is3d2d then return end
 	amount = amount or 5
-	hg_potatopc = hg_potatopc or hg.ConVars.potatopc
+	zc_potatopc = zc_potatopc or hg.ConVars.potatopc
 
-	if(hg_potatopc:GetBool())then
+	if(zc_potatopc:GetBool())then
 		surface.SetDrawColor(0, 0, 0, alpha or (amount * 20))
 		surface.DrawRect(0, 0, panel:GetWide(), panel:GetTall())
 	else

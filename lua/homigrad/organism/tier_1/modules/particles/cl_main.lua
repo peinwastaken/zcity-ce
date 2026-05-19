@@ -4,11 +4,11 @@ local CurTime, _ = CurTime, FrameTime
 bloodparticles_hook = bloodparticles_hook or {}
 local bloodparticles_hook = bloodparticles_hook
 
-local hg_blood_fps = ConVarExists("hg_blood_fps") and GetConVar("hg_blood_fps") or CreateClientConVar("hg_blood_fps", 24, true, nil, "fps to draw blood", 12, 165)
+local zc_blood_fps = ConVarExists("zc_blood_fps") and GetConVar("zc_blood_fps") or CreateClientConVar("zc_blood_fps", 24, true, nil, "fps to draw blood", 12, 165)
 
 hook.Add("PreDrawEffects", "bloodpartciels", function()
 	local time = CurTime()
-	local fps = 1 / hg_blood_fps:GetInt()-- / game.GetTimeScale()
+	local fps = 1 / zc_blood_fps:GetInt()-- / game.GetTimeScale()
 	if not bloodparticles_hook then return end
 	local animpos = math_min((delay - time) / fps, 1)
 	if not bloodparticles_hook[1] then return end

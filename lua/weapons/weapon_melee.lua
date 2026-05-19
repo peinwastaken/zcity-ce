@@ -1009,10 +1009,10 @@ function SWEP:AddDecal()
     net.SendPVS(self:GetPos())
 end
 
-local hg_nomeleestop
+local zc_nomeleestop
 
 if CLIENT then
-    hg_nomeleestop = ConVarExists("hg_nomeleestop") and GetConVar("hg_nomeleestop") or CreateConVar("hg_nomeleestop", 0, FCVAR_ARCHIVE, "Toggle melee stop-on-hit animation feature", 0, 1)
+    zc_nomeleestop = ConVarExists("zc_nomeleestop") and GetConVar("zc_nomeleestop") or CreateConVar("zc_nomeleestop", 0, FCVAR_ARCHIVE, "Toggle melee stop-on-hit animation feature", 0, 1)
 end
 
 function SWEP:CustomThink()
@@ -1166,7 +1166,7 @@ function SWEP:CustomThink()
                 self:AddDecal()
             end
 
-			if CLIENT and IsFirstTimePredicted() and self.weight > 0.4 and (!self.stopanim or (!soft and !self.HitWorld)) and !hg_nomeleestop:GetBool() then
+			if CLIENT and IsFirstTimePredicted() and self.weight > 0.4 and (!self.stopanim or (!soft and !self.HitWorld)) and !zc_nomeleestop:GetBool() then
 				if !soft or self.AnimAlwaysBack or self.HitWorld then
                     local mul = 5
                     self.animspeed = self.animspeed * mul

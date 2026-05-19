@@ -5,9 +5,9 @@ function hg.settings:AddOpt( strCategory, strConVar, strTitle, bDecimals, bStrin
     self.tbl[strCategory] = self.tbl[strCategory] or {}
     self.tbl[strCategory][strConVar] = { strCategory, strConVar, strTitle, bDecimals or false, bString or false, category }
 end
-CreateClientConVar("hg_firstperson_death", "0", true, false, "Toggle first-person death camera view", 0, 1)
-local hg_font = CreateClientConVar("hg_font", "Bahnschrift", true, false, "change every text font to selected because ui customization is cool")
-CreateClientConVar("hg_attachment_draw_distance", 0, true, nil, "distance to draw attachments", 0, 4096)
+CreateClientConVar("zc_firstperson_death", "0", true, false, "Toggle first-person death camera view", 0, 1)
+local zc_font = CreateClientConVar("zc_font", "Bahnschrift", true, false, "change every text font to selected because ui customization is cool")
+CreateClientConVar("zc_attachment_draw_distance", 0, true, nil, "distance to draw attachments", 0, 4096)
 
 xbars = 17
 ybars = 30
@@ -17,11 +17,11 @@ gradient_l = Material("vgui/gradient-l")
 local blur = Material("pp/blurscreen")
 local sw, sh = ScrW(), ScrH()
 
-local font = function() -- hg_coolvetica:GetBool() and "Coolvetica" or "Bahnschrift"
+local font = function() -- zc_coolvetica:GetBool() and "Coolvetica" or "Bahnschrift"
     local usefont = "Bahnschrift"
 
-    if hg_font:GetString() != "" then
-        usefont = hg_font:GetString()
+    if zc_font:GetString() != "" then
+        usefont = zc_font:GetString()
     end
 
     return usefont
@@ -46,70 +46,70 @@ surface.CreateFont("ZCity_setiings_category", {
 })
 
 
-hg.settings:AddOpt("Gameplay","hg_old_notificate", "Old Notifications")
-hg.settings:AddOpt("Gameplay","hg_cheats", "Enable Cheats")
-hg.settings:AddOpt("Gameplay","hg_showthoughts", "Show thoughts")
-hg.settings:AddOpt("Gameplay","hg_hints", "Show hints")
-hg.settings:AddOpt("Gameplay","hg_gary", "HG GARY")
-hg.settings:AddOpt("Gameplay","hg_deathfadeout", "Death fade out")
---hg_gary
---hg_deathfadeout
+hg.settings:AddOpt("Gameplay","zc_old_notificate", "Old Notifications")
+hg.settings:AddOpt("Gameplay","zc_cheats", "Enable Cheats")
+hg.settings:AddOpt("Gameplay","zc_showthoughts", "Show thoughts")
+hg.settings:AddOpt("Gameplay","zc_hints", "Show hints")
+hg.settings:AddOpt("Gameplay","zc_gary", "HG GARY")
+hg.settings:AddOpt("Gameplay","zc_deathfadeout", "Death fade out")
+--zc_gary
+--zc_deathfadeout
 if not game.IsDedicated() then
     hg.settings:AddOpt("Serverside gameplay","zc_always_ragdoll_aim", "Always aim in ragdoll")
-	hg.settings:AddOpt("Serverside gameplay","hg_toughnpcs", "Tough npcs")
-	hg.settings:AddOpt("Serverside gameplay","hg_thirdperson", "Thirdperson (WIP)")
-    hg.settings:AddOpt("Serverside gameplay","hg_legacycam", "Legacy camera")
-    hg.settings:AddOpt("Serverside gameplay","hg_ragdollcombat", "Ragdoll combat mode")
-    hg.settings:AddOpt("Serverside gameplay","hg_movement_stamina_debuff", "Movement stamina debuff")
-    hg.settings:AddOpt("Serverside gameplay","hg_appearance_access_for_all", "Appearance full access for all", nil, nil, "bool")
-	hg.settings:AddOpt("Serverside gameplay","hg_healanims", "Heal & food animations")
-	hg.settings:AddOpt("Serverside gameplay","hg_aimtoshoot", "DarkRP-like shoot system (aim to shoot)")
-	hg.settings:AddOpt("Serverside gameplay","hg_slings", "Sling system")
-    hg.settings:AddOpt("Serverside gameplay","homicide_traitoramount", "Homicide: Traitor Amount", nil, nil, "int")
+	hg.settings:AddOpt("Serverside gameplay","zc_toughnpcs", "Tough npcs")
+	hg.settings:AddOpt("Serverside gameplay","zc_thirdperson", "Thirdperson (WIP)")
+    hg.settings:AddOpt("Serverside gameplay","zc_legacycam", "Legacy camera")
+    hg.settings:AddOpt("Serverside gameplay","zc_ragdollcombat", "Ragdoll combat mode")
+    hg.settings:AddOpt("Serverside gameplay","zc_movement_stamina_debuff", "Movement stamina debuff")
+    hg.settings:AddOpt("Serverside gameplay","zc_appearance_access_for_all", "Appearance full access for all", nil, nil, "bool")
+	hg.settings:AddOpt("Serverside gameplay","zc_healanims", "Heal & food animations")
+	hg.settings:AddOpt("Serverside gameplay","zc_aimtoshoot", "DarkRP-like shoot system (aim to shoot)")
+	hg.settings:AddOpt("Serverside gameplay","zc_slings", "Sling system")
+    hg.settings:AddOpt("Serverside gameplay","zc_homicide_traitoramount", "Homicide: Traitor Amount", nil, nil, "int")
 end
---hg_appearance_access_for_all
---hg_legacycam
---hg_toughnpcs
+--zc_appearance_access_for_all
+--zc_legacycam
+--zc_toughnpcs
 
-hg.settings:AddOpt("Debug","hg_show_hitposmuzzle", "Show weapon hitpos")
-hg.settings:AddOpt("Debug","hg_setzoompos", "Edit weapon zoompos, check console for results")
-hg.settings:AddOpt("Debug","hg_show_hitbox", "Show hitboxes")
+hg.settings:AddOpt("Debug","zc_show_hitposmuzzle", "Show weapon hitpos")
+hg.settings:AddOpt("Debug","zc_setzoompos", "Edit weapon zoompos, check console for results")
+hg.settings:AddOpt("Debug","zc_show_hitbox", "Show hitboxes")
 
-hg.settings:AddOpt("Optimization","hg_potatopc", "Potato PC Mode")
-hg.settings:AddOpt("Optimization","hg_anims_draw_distance", "Animations Draw Distance", true, nil, "int")
-hg.settings:AddOpt("Optimization","hg_anim_fps", "Animations FPS", nil, nil, "int")
-hg.settings:AddOpt("Optimization","hg_attachment_draw_distance", "Attachment Draw Distance", true, nil, "int")
-hg.settings:AddOpt("Optimization","hg_maxsmoketrails", "Maximum Smoke Trails", nil, nil, "int")
-hg.settings:AddOpt("Optimization","hg_tpik_distance", "TPIK Render Distance", true, nil, "int")
+hg.settings:AddOpt("Optimization","zc_potatopc", "Potato PC Mode")
+hg.settings:AddOpt("Optimization","zc_anims_draw_distance", "Animations Draw Distance", true, nil, "int")
+hg.settings:AddOpt("Optimization","zc_anim_fps", "Animations FPS", nil, nil, "int")
+hg.settings:AddOpt("Optimization","zc_attachment_draw_distance", "Attachment Draw Distance", true, nil, "int")
+hg.settings:AddOpt("Optimization","zc_maxsmoketrails", "Maximum Smoke Trails", nil, nil, "int")
+hg.settings:AddOpt("Optimization","zc_tpik_distance", "TPIK Render Distance", true, nil, "int")
 
-hg.settings:AddOpt("Blood","hg_blood_draw_distance", "Blood Draw Distance")
-hg.settings:AddOpt("Blood","hg_blood_fps", "Blood FPS")
-hg.settings:AddOpt("Blood","hg_blood_sprites", "Blood Sprites (DISABLED FOR EVERYONE)")
-hg.settings:AddOpt("Blood","hg_old_blood", "Old blood")
+hg.settings:AddOpt("Blood","zc_blood_draw_distance", "Blood Draw Distance")
+hg.settings:AddOpt("Blood","zc_blood_fps", "Blood FPS")
+hg.settings:AddOpt("Blood","zc_blood_sprites", "Blood Sprites (DISABLED FOR EVERYONE)")
+hg.settings:AddOpt("Blood","zc_old_blood", "Old blood")
 
-hg.settings:AddOpt("UI","hg_font", "Change Custom Font", false, true)
+hg.settings:AddOpt("UI","zc_font", "Change Custom Font", false, true)
 
-hg.settings:AddOpt("Weapons","hg_weaponshotblur_enable", "Shooting Blur")
-hg.settings:AddOpt("Weapons","hg_dynamic_mags", "Dynamic Ammo Inspect")
-hg.settings:AddOpt("Weapons","hg_zoomsensitivity", "Scope sensitivity")
-hg.settings:AddOpt("Weapons","hg_highpitchgunfire", "Toggle high pitched gunfire sounds inside buildings")
+hg.settings:AddOpt("Weapons","zc_weaponshotblur_enable", "Shooting Blur")
+hg.settings:AddOpt("Weapons","zc_dynamic_mags", "Dynamic Ammo Inspect")
+hg.settings:AddOpt("Weapons","zc_zoomsensitivity", "Scope sensitivity")
+hg.settings:AddOpt("Weapons","zc_highpitchgunfire", "Toggle high pitched gunfire sounds inside buildings")
 
-hg.settings:AddOpt("View","hg_firstperson_death", "First-Person Death")
-hg.settings:AddOpt("View","hg_fov", "Field Of View")
-hg.settings:AddOpt("View","hg_newspectate", "Smooth Spectator Camera")
-hg.settings:AddOpt("View","hg_cshs_fake", "C'sHS Ragdoll Camera")
-hg.settings:AddOpt("View","hg_gun_cam", "Gun Camera (ADMIN ONLY)")
-hg.settings:AddOpt("View","hg_nofovzoom", "Disable/Enable FOV Zoom")
-hg.settings:AddOpt("View","hg_realismcam", "Realism camera (shitty)")
-hg.settings:AddOpt("View","hg_gopro", "GoPro camera")
-hg.settings:AddOpt("View","hg_newfakecam", "New fake camera")
-hg.settings:AddOpt("View","hg_leancam_mul", "Lean camera mul", true, nil, "int")
-hg.settings:AddOpt("View","hg_gun_cam", "Gun camera (WIP Admin only)")
---hg_hints
---hg_leancam_mul
-  --hg_newfakecam
-hg.settings:AddOpt("Sound","hg_dmusic", "Dynamic Music")
-hg.settings:AddOpt("Sound","hg_quietshots", "Enable/Disable Quietshoot Sounds")
+hg.settings:AddOpt("View","zc_firstperson_death", "First-Person Death")
+hg.settings:AddOpt("View","zc_fov", "Field Of View")
+hg.settings:AddOpt("View","zc_newspectate", "Smooth Spectator Camera")
+hg.settings:AddOpt("View","zc_cshs_fake", "C'sHS Ragdoll Camera")
+hg.settings:AddOpt("View","zc_gun_cam", "Gun Camera (ADMIN ONLY)")
+hg.settings:AddOpt("View","zc_nofovzoom", "Disable/Enable FOV Zoom")
+hg.settings:AddOpt("View","zc_realismcam", "Realism camera (shitty)")
+hg.settings:AddOpt("View","zc_gopro", "GoPro camera")
+hg.settings:AddOpt("View","zc_newfakecam", "New fake camera")
+hg.settings:AddOpt("View","zc_leancam_mul", "Lean camera mul", true, nil, "int")
+hg.settings:AddOpt("View","zc_gun_cam", "Gun camera (WIP Admin only)")
+--zc_hints
+--zc_leancam_mul
+  --zc_newfakecam
+hg.settings:AddOpt("Sound","zc_dmusic", "Dynamic Music")
+hg.settings:AddOpt("Sound","zc_quietshots", "Enable/Disable Quietshoot Sounds")
 
 
 function hg.CreateCategory(ctgName, ParentPanel, yPos)

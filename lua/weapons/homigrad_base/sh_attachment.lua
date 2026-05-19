@@ -1,8 +1,8 @@
 AddCSLuaFile()
 hg.attachments = hg.attachments or {}
 SWEP.availableAttachments = {}
-if not ConVarExists("hg_random_atts") then
-	CreateConVar("hg_random_atts", 0, FCVAR_SERVER_CAN_EXECUTE, "Toggle random attachments on weapon spawn", 0, 1)
+if not ConVarExists("zc_random_atts") then
+	CreateConVar("zc_random_atts", 0, FCVAR_SERVER_CAN_EXECUTE, "Toggle random attachments on weapon spawn", 0, 1)
 end
 function SWEP:ClearAttachments()
 	self.attachments = {
@@ -130,7 +130,7 @@ end
 local angZero = Angle(0, 0, 0)
 local vecZero = Vector(0, 0, 0)
 local vecadd = Vector(0,0,0)
-local hg_attachment_draw_distance = ConVarExists("hg_attachment_draw_distance") and GetConVar("hg_attachment_draw_distance") or CreateClientConVar("hg_attachment_draw_distance", 0, true, nil, "distance to draw attachments", 0, 4096)
+local zc_attachment_draw_distance = ConVarExists("zc_attachment_draw_distance") and GetConVar("zc_attachment_draw_distance") or CreateClientConVar("zc_attachment_draw_distance", 0, true, nil, "distance to draw attachments", 0, 4096)
 
 function SWEP:DrawAttachments()
 	local owner = self:GetOwner()
@@ -194,7 +194,7 @@ function SWEP:DrawAttachments()
 
 		local model = self.modelAtt[plc]
 
-		if owner ~= LocalPlayer() and hg_attachment_draw_distance:GetInt() ~= 0 and (hg_attachment_draw_distance:GetInt() ^ 2) < ((LocalPlayer():GetPos() - gun:GetPos()):LengthSqr()) and not attdata.shouldalwaysdraw then if IsValid(model) then model:Remove() end continue end
+		if owner ~= LocalPlayer() and zc_attachment_draw_distance:GetInt() ~= 0 and (zc_attachment_draw_distance:GetInt() ^ 2) < ((LocalPlayer():GetPos() - gun:GetPos()):LengthSqr()) and not attdata.shouldalwaysdraw then if IsValid(model) then model:Remove() end continue end
 
 		if not IsValid(model) and attdata[2] and attdata[2] ~= "" then
 			self.modelAtt[plc] = ClientsideModel(attdata[2])

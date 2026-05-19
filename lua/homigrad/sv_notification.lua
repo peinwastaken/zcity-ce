@@ -1,7 +1,7 @@
 util.AddNetworkString("HGNotificate")
 util.AddNetworkString("HGNotificateBerserk")
 
---local hg_old_notificate = ConVarExists("hg_old_notificate") and GetConVar("hg_old_notificate") or CreateConVar("hg_old_notificate",0,FCVAR_SERVER_CAN_EXECUTE,"enable old notifications (chatprints)",0,1)
+--local zc_old_notificate = ConVarExists("zc_old_notificate") and GetConVar("zc_old_notificate") or CreateConVar("zc_old_notificate",0,FCVAR_SERVER_CAN_EXECUTE,"enable old notifications (chatprints)",0,1)
 local hev_color = Color(255,125,0)
 local function CreateNotification(ply, msg, delay, msgKey, showTime, func, clr)
     if ply.organism and ply.organism.otrub then return end

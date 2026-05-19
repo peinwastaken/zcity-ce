@@ -15,23 +15,23 @@ util.AddNetworkString("SWARM(Bleed)")
 SWARM={}
 SWARM.Msg='You die as Swarm bursts from you'
 
-SWARM_CV_InfectionsDefault = CreateConVar("swarm_horrormode", 4, bit.bor(FCVAR_ARCHIVE), "Allow horror by default? (Will simulate C and I genes in all entities. Swarm can infect by default)\nSet to more than 1 to experience hardmode" )
-SWARM_CV_MutationMul = CreateConVar("swarm_mutationmul", 1, bit.bor(FCVAR_ARCHIVE), "Mutation multiplier(Yes, these things evolve)" )
-SWARM_CV_AllowSpeed = CreateConVar("swarm_allowspeedgenes", 1, bit.bor(FCVAR_ARCHIVE), "Allow S gene to apply speed on npcs" )
-SWARM_CV_Evolve = CreateConVar("swarm_allowevolution", 1, bit.bor(FCVAR_ARCHIVE), "Allow swarm npcs to evolve" )
-SWARM_CV_CoronationMul = CreateConVar("swarm_coronationtimemul", 1, bit.bor(FCVAR_ARCHIVE), "Life time multiplier (For 'Mother')" )
+SWARM_CV_InfectionsDefault = CreateConVar("zc_swarm_horrormode", 4, bit.bor(FCVAR_ARCHIVE), "Allow horror by default? (Will simulate C and I genes in all entities. Swarm can infect by default)\nSet to more than 1 to experience hardmode" )
+SWARM_CV_MutationMul = CreateConVar("zc_swarm_mutationmul", 1, bit.bor(FCVAR_ARCHIVE), "Mutation multiplier(Yes, these things evolve)" )
+SWARM_CV_AllowSpeed = CreateConVar("zc_swarm_allowspeedgenes", 1, bit.bor(FCVAR_ARCHIVE), "Allow S gene to apply speed on npcs" )
+SWARM_CV_Evolve = CreateConVar("zc_swarm_allowevolution", 1, bit.bor(FCVAR_ARCHIVE), "Allow swarm npcs to evolve" )
+SWARM_CV_CoronationMul = CreateConVar("zc_swarm_coronationtimemul", 1, bit.bor(FCVAR_ARCHIVE), "Life time multiplier (For 'Mother')" )
 
-SWARM.CV_MinInfections = CreateConVar("swarm_mininfections", 4, bit.bor(FCVAR_ARCHIVE), "Number of exposures to infestation before getting infected" )
-SWARM.CV_MinHealth = CreateConVar("swarm_minhealth", 40, bit.bor(FCVAR_ARCHIVE), "Critical health at which you'll get infected from physical contact" )
-SWARM.CV_InfPerSecond = CreateConVar("swarm_infprogressinsecond", 2, bit.bor(FCVAR_ARCHIVE), "Infection progress per second" )
+SWARM.CV_MinInfections = CreateConVar("zc_swarm_mininfections", 4, bit.bor(FCVAR_ARCHIVE), "Number of exposures to infestation before getting infected" )
+SWARM.CV_MinHealth = CreateConVar("zc_swarm_minhealth", 40, bit.bor(FCVAR_ARCHIVE), "Critical health at which you'll get infected from physical contact" )
+SWARM.CV_InfPerSecond = CreateConVar("zc_swarm_infprogressinsecond", 2, bit.bor(FCVAR_ARCHIVE), "Infection progress per second" )
 
-SWARM_CV_BleedDmg = CreateConVar("swarm_bleeddmg", 1, bit.bor(FCVAR_ARCHIVE), "Bleeding damage" )
-SWARM_CV_BleedCD = CreateConVar("swarm_bleedcd", 1, bit.bor(FCVAR_ARCHIVE), "Bleeding damage cooldown" )
+SWARM_CV_BleedDmg = CreateConVar("zc_swarm_bleeddmg", 1, bit.bor(FCVAR_ARCHIVE), "Bleeding damage" )
+SWARM_CV_BleedCD = CreateConVar("zc_swarm_bleedcd", 1, bit.bor(FCVAR_ARCHIVE), "Bleeding damage cooldown" )
 
-SWARM_CV_AllowDeath = CreateConVar("swarm_allowdeathtimer", 1, bit.bor(FCVAR_ARCHIVE), "Allow death timer for every spawned npc(except 'Mother')" )
-SWARM_CV_DeathTimerMul = CreateConVar("swarm_deathtimermul", 1, bit.bor(FCVAR_ARCHIVE), "Death timer multiplier" )
+SWARM_CV_AllowDeath = CreateConVar("zc_swarm_allowdeathtimer", 1, bit.bor(FCVAR_ARCHIVE), "Allow death timer for every spawned npc(except 'Mother')" )
+SWARM_CV_DeathTimerMul = CreateConVar("zc_swarm_deathtimermul", 1, bit.bor(FCVAR_ARCHIVE), "Death timer multiplier" )
 
-SWARM_CV_ExperementalModels = CreateConVar("swarm_experementalmodels", 0, bit.bor(FCVAR_ARCHIVE), "Swarm will use experemental (view)models" )
+SWARM_CV_ExperementalModels = CreateConVar("zc_swarm_experementalmodels", 0, bit.bor(FCVAR_ARCHIVE), "Swarm will use experemental (view)models" )
 
 SWARM.NextNet = 0
 SWARM.NextNetCD = 2

@@ -54,9 +54,9 @@ local ShellsSND = {
 }
 
 hg_trails = hg_trails or {}
-local hg_shouldnt_autoremove = ConVarExists("hg_shouldnt_autoremove") and GetConVar("hg_shouldnt_autoremove") or CreateConVar("hg_shouldnt_autoremove", 0, FCVAR_REPLICATED, "Toggle weapon shell disappearing", 0, 1)
-local hg_potatopc
-local hg_maxsmoketrails = GetConVar("hg_maxsmoketrails") or CreateClientConVar("hg_maxsmoketrails", "7", true, false, "Max amount of smoke trail effects (lags starts after 10)", 0, 30)
+local zc_shouldnt_autoremove = ConVarExists("zc_shouldnt_autoremove") and GetConVar("zc_shouldnt_autoremove") or CreateConVar("zc_shouldnt_autoremove", 0, FCVAR_REPLICATED, "Toggle weapon shell disappearing", 0, 1)
+local zc_potatopc
+local zc_maxsmoketrails = GetConVar("zc_maxsmoketrails") or CreateClientConVar("zc_maxsmoketrails", "7", true, false, "Max amount of smoke trail effects (lags starts after 10)", 0, 30)
 local physvec = Vector(0.5, 0.15, 0.5)
 function SWEP:MakeShell(shell, pos, ang, vel)
 	if not shell or not pos or not ang then
@@ -95,10 +95,10 @@ function SWEP:MakeShell(shell, pos, ang, vel)
 	phys:SetVelocity(vel + (((IsValid(self) and IsValid(self:GetOwner())) and self:GetOwner():GetVelocity()/1.1) or vector_origin))
     phys:SetAngleVelocity(VectorRand() * 100 - ang:Forward() * math.random(1500,3500))
 
-	hg_potatopc = hg_potatopc or hg.ConVars.potatopc
+	zc_potatopc = zc_potatopc or hg.ConVars.potatopc
 
-	if not hg_potatopc:GetBool() then
-		if #hg_trails < hg_maxsmoketrails:GetInt() then
+	if not zc_potatopc:GetBool() then
+		if #hg_trails < zc_maxsmoketrails:GetInt() then
 			local eff = ent:CreateParticleEffect("smoke_trail_wild",1,{PATTACH_ABSORIGIN_FOLLOW,ent,ent:GetPos()})
 			table.insert(hg_trails,eff)
 			eff:StartEmission()
@@ -133,7 +133,7 @@ function SWEP:MakeShell(shell, pos, ang, vel)
         end
     end)
 
-	if not hg_shouldnt_autoremove:GetBool() and (zb.CROUND and zb.CROUND ~= "hmcd" or gamemod == "sandbox") then
+	if not zc_shouldnt_autoremove:GetBool() and (zb.CROUND and zb.CROUND ~= "hmcd" or gamemod == "sandbox") then
 		ent:DrawShadow(false)
 		ent:SetModelScale(0, 10)
 		SafeRemoveEntityDelayed(ent, 10)
@@ -227,7 +227,7 @@ function hg.CreateMag( self, vel, bodygroups, bDontChangePhys )
 		end
 	end)
 
-	if not hg_shouldnt_autoremove:GetBool() and (zb.CROUND and zb.CROUND ~= "hmcd" or gamemod == "sandbox") then
+	if not zc_shouldnt_autoremove:GetBool() and (zb.CROUND and zb.CROUND ~= "hmcd" or gamemod == "sandbox") then
 		ent:DrawShadow(false)
 		ent:SetModelScale(0, 10)
 		SafeRemoveEntityDelayed(ent, 10)
@@ -237,8 +237,8 @@ function hg.CreateMag( self, vel, bodygroups, bDontChangePhys )
 end
 
 function hg.addBulletHoleEffect(pos)
-	if not hg_potatopc:GetBool() then
-		if math.random(3) == 1 and #hg_trails < hg_maxsmoketrails:GetInt() then
+	if not zc_potatopc:GetBool() then
+		if math.random(3) == 1 and #hg_trails < zc_maxsmoketrails:GetInt() then
 			local eff = CreateParticleSystemNoEntity( "smoke_trail_wild", pos )
 			table.insert(hg_trails,eff)
 			eff:StartEmission()

@@ -1,6 +1,6 @@
 if CLIENT then
-	if not ConVarExists("hg_old_notificate") then
-		CreateConVar("hg_old_notificate",0,{FCVAR_USERINFO,FCVAR_ARCHIVE},"Toggle old notifications (chatprints)",0,1)
+	if not ConVarExists("zc_old_notificate") then
+		CreateConVar("zc_old_notificate",0,{FCVAR_USERINFO,FCVAR_ARCHIVE},"Toggle old notifications (chatprints)",0,1)
 	end
 
 	surface.CreateFont("BerserkFont", {
@@ -169,7 +169,7 @@ if CLIENT then
 		if not org or not org.pain or not org.brain then return end
 		//if org.otrub and !last_message then return end
 
-		//if hg_old_notificate:GetBool() then return end
+		//if zc_old_notificate:GetBool() then return end
 		local tbl = hg.currentNotification
 
 		if tbl and istable(tbl) and not table.IsEmpty(tbl) then

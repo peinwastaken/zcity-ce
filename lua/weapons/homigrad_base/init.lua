@@ -41,16 +41,16 @@ else
 	include("cl_optics.lua")
 end
 
-local hg_npcspreadmul = CreateConVar("hg_npcspreadmul", "1", FCVAR_ARCHIVE + FCVAR_SERVER_CAN_EXECUTE, "The more this value is, the less accurate are npcs", 0, 10)
-local hg_npcfireratemul = CreateConVar("hg_npcfireratemul", "1", FCVAR_ARCHIVE + FCVAR_SERVER_CAN_EXECUTE, "The more this value is, the more time is between each shot in the npc's burst", 0, 10)
+local zc_npcspreadmul = CreateConVar("zc_npcspreadmul", "1", FCVAR_ARCHIVE + FCVAR_SERVER_CAN_EXECUTE, "The more this value is, the less accurate are npcs", 0, 10)
+local zc_npcfireratemul = CreateConVar("zc_npcfireratemul", "1", FCVAR_ARCHIVE + FCVAR_SERVER_CAN_EXECUTE, "The more this value is, the more time is between each shot in the npc's burst", 0, 10)
 
 -- NPC SHIT
 function SWEP:GetNPCBulletSpread()
-	return 10 * hg_npcspreadmul:GetFloat()
+	return 10 * zc_npcspreadmul:GetFloat()
 end
 
 function SWEP:GetNPCBurstSettings()
-	return 1, (self.Primary.Automatic and 3) or 1, self.Primary.Wait * hg_npcfireratemul:GetFloat()
+	return 1, (self.Primary.Automatic and 3) or 1, self.Primary.Wait * zc_npcfireratemul:GetFloat()
 end
 
 function SWEP:GetNPCRestTimes()

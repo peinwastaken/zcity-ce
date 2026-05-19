@@ -2,8 +2,8 @@ SWARM = {}
 _SWARM_NEWDSP = _SWARM_NEWDSP or 0
 _SWARM_NEWFR = _SWARM_NEWFR or false
 
-SWARM_CV_BleedCD = GetConVar("swarm_bleedcd")
-SWARM_CV_BleedDmg = GetConVar("swarm_bleeddmg")
+SWARM_CV_BleedCD = GetConVar("zc_swarm_bleedcd")
+SWARM_CV_BleedDmg = GetConVar("zc_swarm_bleeddmg")
 
 function SWARM:Psych(time)
 	SWARM_PsychEnd = CurTime() + time

@@ -88,7 +88,7 @@ function SWEP:OwnerChanged()
 end
 
 local math = math
-local hg_healanims = ConVarExists("hg_healanims") and GetConVar("hg_healanims") or CreateConVar("hg_healanims", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
+local zc_healanims = ConVarExists("zc_healanims") and GetConVar("zc_healanims") or CreateConVar("zc_healanims", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
 
 if SERVER then
 	function SWEP:SecondaryAttack()
@@ -102,7 +102,7 @@ if SERVER then
 	end
 
 	function SWEP:PrimaryAttack()
-		if hg_healanims:GetBool() then
+		if zc_healanims:GetBool() then
 			self:SetHolding(math.min(self:GetHolding() + 50, 100))
 
 			if self:GetHolding() < 100 then return end
@@ -131,7 +131,7 @@ if SERVER then
 		self.net_cooldown = self.net_cooldown or CurTime()
 		local owner = self:GetOwner()
 
-		if not owner:KeyDown(IN_ATTACK) and hg_healanims:GetBool() then
+		if not owner:KeyDown(IN_ATTACK) and zc_healanims:GetBool() then
 			self:SetHolding(math.max(self:GetHolding() - 12, 0))
 		end
 

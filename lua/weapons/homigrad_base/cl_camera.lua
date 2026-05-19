@@ -11,15 +11,15 @@ local gun
 local angle_spray = Angle(0,0,0)
 local fovlerp = 0
 
-local hg_setzoompos = CreateClientConVar("hg_setzoompos", "0", false, false, "settingzoom", 0, 1)
-local hg_gun_cam = CreateClientConVar("hg_gun_cam", "0", false, false, "settingzoom", 0, 1)
-local hg_realismcam = ConVarExists("hg_realismcam") and GetConVar("hg_realismcam") or CreateClientConVar("hg_realismcam", "0", true, false, "realism camera", 0, 1)
+local zc_setzoompos = CreateClientConVar("zc_setzoompos", "0", false, false, "settingzoom", 0, 1)
+local zc_gun_cam = CreateClientConVar("zc_gun_cam", "0", false, false, "settingzoom", 0, 1)
+local zc_realismcam = ConVarExists("zc_realismcam") and GetConVar("zc_realismcam") or CreateClientConVar("zc_realismcam", "0", true, false, "realism camera", 0, 1)
 
 local zoomPosSetter = Vector()
 local isSettingZoom = false
 
 hook.Add("HG.InputMouseApply", "HGZoomPositionEditor", function(tbl)
-	if IsValid(lply) and lply:IsSuperAdmin() and hg_setzoompos:GetBool() and lply:KeyDown(IN_ATTACK2) then
+	if IsValid(lply) and lply:IsSuperAdmin() and zc_setzoompos:GetBool() and lply:KeyDown(IN_ATTACK2) then
 		zoomPosSetter:Add(Vector(tbl.cmd:GetMouseWheel(), -tbl.x / 500, -tbl.y / 500))
 		local str = "SWEP.ZoomPos = Vector("..math.Round(zoomPosSetter[1], 4)..", "..math.Round(zoomPosSetter[2], 4)..", "..math.Round(zoomPosSetter[3], 4)..")"
 
@@ -48,7 +48,7 @@ function SWEP:GetZoomPos(recoilZoomPos, view, eyePos)
 		pos, ang = LocalToWorld(mat:GetTranslation(), mat:GetAngles(), gun:GetPos(), gun:GetAngles())
 	end
 
-	if LocalPlayer():IsAdmin() and hg_gun_cam:GetBool() then
+	if LocalPlayer():IsAdmin() and zc_gun_cam:GetBool() then
 		local att = self:GetWM():GetAttachment(1)
 		local mat = Matrix()
 		mat:SetTranslation(self.FakePos)
@@ -94,10 +94,10 @@ function SWEP:GetZoomValue()
 	return self.k or 0
 end
 
-local blurintens = CreateClientConVar("hg_weaponshotblur_mul", "0.03", true, false,"Sets shotblurintens",0,1)
-local shouldblur = CreateClientConVar("hg_weaponshotblur_enable", "1", true, false,"Enable shotblur",0,1)
-local hg_nofovzoom = CreateClientConVar("hg_nofovzoom", "0", true, false, "Enable fov zooming when aiming", 0, 1)
-local hg_show_hitposmuzzle = ConVarExists("hg_show_hitposmuzzle") and GetConVar("hg_show_hitposmuzzle") or CreateClientConVar("hg_show_hitposmuzzle", "0", false, false, "shows weapons crosshair, work only ведьма admin rank or sv_cheats 1")
+local blurintens = CreateClientConVar("zc_weaponshotblur_mul", "0.03", true, false,"Sets shotblurintens",0,1)
+local shouldblur = CreateClientConVar("zc_weaponshotblur_enable", "1", true, false,"Enable shotblur",0,1)
+local zc_nofovzoom = CreateClientConVar("zc_nofovzoom", "0", true, false, "Enable fov zooming when aiming", 0, 1)
+local zc_show_hitposmuzzle = ConVarExists("zc_show_hitposmuzzle") and GetConVar("zc_show_hitposmuzzle") or CreateClientConVar("zc_show_hitposmuzzle", "0", false, false, "shows weapons crosshair, work only ведьма admin rank or sv_cheats 1")
 
 function SWEP:Blur(x,y,w,z)
 	if not shouldblur:GetBool() then return nil end
@@ -119,11 +119,11 @@ hook.Add("HUDPaint","drawWeaponHUD",function()
 	end
 end)
 
-local hg_fov = ConVarExists("hg_fov") and GetConVar("hg_fov") or CreateClientConVar("hg_fov", "70", true, false, "changes fov to value", 75, 100)
-local fov = hg_fov:GetFloat()
+local zc_fov = ConVarExists("zc_fov") and GetConVar("zc_fov") or CreateClientConVar("zc_fov", "70", true, false, "changes fov to value", 75, 100)
+local fov = zc_fov:GetFloat()
 local fov_mode_lerp = 0
 
-local hg_oldsights = CreateConVar("hg_oldsights", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "No camera wobble when aiming")
+local zc_oldsights = CreateConVar("zc_oldsights", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "No camera wobble when aiming")
 
 local angZero = Angle(0,0,0)
 
@@ -169,14 +169,14 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen, ply)
 	randomPosL = LerpFT(0.05 * (inpain and 25 - (24 * painmul) or 1), randomPosL, randomPos)
 
 	scopedLerpAddvec = LerpVectorFT(((false or self.shot2 == 1) and 1 or 0.02) * (cocking and 0.25 or 1) * (inpain and 1 or 1), scopedLerpAddvec, (cocking and 1 or 1) * (justzoomed and 0.5 or 1) * (self.shot2 == 1 and 0.5 or 1) * 3 * randomPosL * slowlyZooming)
-	if !hg_oldsights:GetBool() then
-		if not (ply:IsSuperAdmin() and hg_setzoompos:GetBool()) then
+	if !zc_oldsights:GetBool() then
+		if not (ply:IsSuperAdmin() and zc_setzoompos:GetBool()) then
 			posZoom:Add(scopedLerpAddvec)
 		end
 	end
 	oldzoom = zooming
 
-	if LocalPlayer():IsAdmin() and hg_gun_cam:GetBool() then
+	if LocalPlayer():IsAdmin() and zc_gun_cam:GetBool() then
 		view.origin = posZoom
 		view.angles = angPos
 		view.angles:RotateAroundAxis(view.angles:Right(), self.GunCamAng and self.GunCamAng[1] or 90)
@@ -270,15 +270,15 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen, ply)
 
 	ply:SetLOD(0);
 
-	if hg_realismcam:GetBool() then
+	if zc_realismcam:GetBool() then
 		outputPos:Add(-(angle_difference_localvec * 150))
 		local ang = -(angle_difference * 5)
 		ang[3] = ang[3] / 2
 		outputAng:Add(ang)
 	end
 
-	if not hg_nofovzoom:GetBool() then
-		fov_mode_lerp = LerpFT(0.12, fov_mode_lerp, (self:HasAttachment("sight","optic") and not self.viewmode1 and -15 - (hg_fov:GetInt() - 75)) or - (hg_fov:GetInt() - 80))
+	if not zc_nofovzoom:GetBool() then
+		fov_mode_lerp = LerpFT(0.12, fov_mode_lerp, (self:HasAttachment("sight","optic") and not self.viewmode1 and -15 - (zc_fov:GetInt() - 75)) or - (zc_fov:GetInt() - 80))
 		fov = fovlerp + fov_mode_lerp * k
 	else
 		fov = fovlerp
@@ -326,7 +326,7 @@ local sv_cheats = GetConVar("sv_cheats")
 local pos, wep, lply
 hook.Add("HUDPaint", "homigrad-test-att", function()
 	lply = LocalPlayer()
-	if not hg_show_hitposmuzzle:GetBool() or (hg_show_hitposmuzzle:GetBool() and not (sv_cheats:GetBool() or lply:IsAdmin() or lply:IsSuperAdmin())) then return end
+	if not zc_show_hitposmuzzle:GetBool() or (zc_show_hitposmuzzle:GetBool() and not (sv_cheats:GetBool() or lply:IsAdmin() or lply:IsSuperAdmin())) then return end
 	wep = lply:GetActiveWeapon()
 	if not IsValid(wep) or not wep.GetTrace then return end
 	local tr = wep:GetTrace(true)

@@ -18,13 +18,13 @@ end)
 
 -- HG.DrawBlur is in cl_pointshop.lua... sorry for this SHIT but this is needed so it loads everywhere properly.
 
---local hg_coolvetica = ConVarExists("hg_coolvetica") and GetConVar("hg_coolvetica") or CreateClientConVar("hg_coolvetica", "0", true, false, "changes every text to coolvetica because its good", 0, 1)
-local hg_font = ConVarExists("hg_font") and GetConVar("hg_font") or CreateClientConVar("hg_font", "Bahnschrift", true, false, "change every text font to selected because ui customization is cool")
-local font = function() -- hg_coolvetica:GetBool() and "Coolvetica" or "Bahnschrift"
+--local zc_coolvetica = ConVarExists("zc_coolvetica") and GetConVar("zc_coolvetica") or CreateClientConVar("zc_coolvetica", "0", true, false, "changes every text to coolvetica because its good", 0, 1)
+local zc_font = ConVarExists("zc_font") and GetConVar("zc_font") or CreateClientConVar("zc_font", "Bahnschrift", true, false, "change every text font to selected because ui customization is cool")
+local font = function() -- zc_coolvetica:GetBool() and "Coolvetica" or "Bahnschrift"
     local usefont = "Bahnschrift"
 
-    if hg_font:GetString() != "" then
-        usefont = hg_font:GetString()
+    if zc_font:GetString() != "" then
+        usefont = zc_font:GetString()
     end
 
     return usefont

@@ -1,10 +1,10 @@
-local maxLength = CreateConVar("zchat_maxmessagelength", "256", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Maximum message length allowed")
+local maxLength = CreateConVar("zc_chat_maxmessagelength", "256", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Maximum message length allowed")
 
 if CLIENT then
-	local fontSize = CreateClientConVar("zchat_fontsize", 7, true, false, "Self explanatory", 3, 10)
-	local fontName = CreateClientConVar("zchat_font", "Bahnschrift", true, false, "Self explanatory, should be available to GMod")
-	local fontAA = CreateClientConVar("zchat_fontaa", 1, true, false, "Font anti-aliasing", 0, 1)
-	local fontWeight = CreateClientConVar("zchat_fontweight", 1000, true, false, "Font weight", 0, 1000)
+	local fontSize = CreateClientConVar("zc_chat_fontsize", 7, true, false, "Self explanatory", 3, 10)
+	local fontName = CreateClientConVar("zc_chat_font", "Bahnschrift", true, false, "Self explanatory, should be available to GMod")
+	local fontAA = CreateClientConVar("zc_chat_fontaa", 1, true, false, "Font anti-aliasing", 0, 1)
+	local fontWeight = CreateClientConVar("zc_chat_fontweight", 1000, true, false, "Font weight", 0, 1000)
 
 	local function CreateChat()
 		if (IsValid(hg.chat)) then
@@ -142,22 +142,22 @@ if CLIENT then
 		})
 	end
 
-	cvars.AddChangeCallback("zchat_fontsize", function()
+	cvars.AddChangeCallback("zc_chat_fontsize", function()
 		LoadFonts()
 		CreateChat()
 	end)
 
-	cvars.AddChangeCallback("zchat_font", function()
+	cvars.AddChangeCallback("zc_chat_font", function()
 		LoadFonts()
 		CreateChat()
 	end)
 
-	cvars.AddChangeCallback("zchat_fontaa", function()
+	cvars.AddChangeCallback("zc_chat_fontaa", function()
 		LoadFonts()
 		CreateChat()
 	end)
 
-	cvars.AddChangeCallback("zchat_fontweight", function()
+	cvars.AddChangeCallback("zc_chat_fontweight", function()
 		LoadFonts()
 		CreateChat()
 	end)

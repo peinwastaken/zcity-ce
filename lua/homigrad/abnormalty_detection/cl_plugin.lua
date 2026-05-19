@@ -2,7 +2,7 @@ hg.Abnormalties = hg.Abnormalties or {}
 local PLUGIN = hg.Abnormalties
 
 --\\
-local convar_newbie = CreateClientConVar("abnormalties_newbie", "1", true, false, "Set to 1 if you want to see a hint again")
+local convar_newbie = CreateClientConVar("zc_abnormalties_newbie", "1", true, false, "Set to 1 if you want to see a hint again")
 
 PLUGIN.MainColor = Color(150, 0, 0)
 --//

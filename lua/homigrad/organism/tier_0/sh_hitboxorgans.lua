@@ -76,11 +76,11 @@ end
 if SERVER then return end
 
 local white, red, blue, black = Color(255, 255, 255), Color(255, 0, 0), Color(0, 0, 255), Color(0, 0, 0)
-local hg_show_hitbox = ConVarExists("hg_show_hitbox") and GetConVar("hg_show_hitbox") or CreateClientConVar("hg_show_hitbox", "0", false, false, "shows custom players hitboxes, work only for admins or with sv_cheats 1 enabled")
-local hg_show_hitbox_dir = ConVarExists("hg_show_hitbox_dir") and GetConVar("hg_show_hitbox_dir") or CreateClientConVar("hg_show_hitbox_dir", "0", false, false, "work only for admins or with sv_cheats 1 enabled")
+local zc_show_hitbox = ConVarExists("zc_show_hitbox") and GetConVar("zc_show_hitbox") or CreateClientConVar("zc_show_hitbox", "0", false, false, "shows custom players hitboxes, work only for admins or with sv_cheats 1 enabled")
+local zc_show_hitbox_dir = ConVarExists("zc_show_hitbox_dir") and GetConVar("zc_show_hitbox_dir") or CreateClientConVar("zc_show_hitbox_dir", "0", false, false, "work only for admins or with sv_cheats 1 enabled")
 render_DrawWireframeBox = render.DrawWireframeBox
 hook.Add("PostDrawTranslucentRenderables", "homigrad-organism", function()
-	if not hg_show_hitbox:GetBool() then return end
+	if not zc_show_hitbox:GetBool() then return end
 	if not LocalPlayer():IsAdmin() then return end
 	for _, ply in player.Iterator() do
 		if GetViewEntity() == ply then continue end
@@ -88,8 +88,8 @@ hook.Add("PostDrawTranslucentRenderables", "homigrad-organism", function()
 		local organs = hg.organism.GetHitBoxOrgans(ply:GetModel(), ply)
 		if not organs then return end
 		local boxs, pos, sphere = hg.organism.ShootMatrix(ply, organs)
-		if hg_show_hitbox_dir:GetFloat() > 0 and hg.organism.Trace then
-			local dir = Vector(hg_show_hitbox_dir:GetFloat(), 0, 0)
+		if zc_show_hitbox_dir:GetFloat() > 0 and hg.organism.Trace then
+			local dir = Vector(zc_show_hitbox_dir:GetFloat(), 0, 0)
 			dir:Rotate(LocalPlayer():EyeAngles())
 			local distance = math_ceil(dir:Length())
 			local start = hg.eyeTrace(lply).HitPos -- Vector(1005.879456,608.151123,-77.997421)

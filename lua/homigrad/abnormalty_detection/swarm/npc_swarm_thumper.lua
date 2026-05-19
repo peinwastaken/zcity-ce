@@ -1,24 +1,24 @@
 ENT={}
 
-SWARM_CV_Thumper_AllowMelee = CreateConVar("swarm_thumper_allowmelee", 1, bit.bor(FCVAR_ARCHIVE), "Allows melee attacks for thumpers" )
-SWARM_CV_Thumper_AllowPsych = CreateConVar("swarm_thumper_allowpsych", 1, bit.bor(FCVAR_ARCHIVE), "Allows 'psych' attacks for thumpers" )
-SWARM_CV_Thumper_MeleeDmg = CreateConVar("swarm_thumper_meleedmg", 20, bit.bor(FCVAR_ARCHIVE), "Melee damage from thumpers" )
+SWARM_CV_Thumper_AllowMelee = CreateConVar("zc_swarm_thumper_allowmelee", 1, bit.bor(FCVAR_ARCHIVE), "Allows melee attacks for thumpers" )
+SWARM_CV_Thumper_AllowPsych = CreateConVar("zc_swarm_thumper_allowpsych", 1, bit.bor(FCVAR_ARCHIVE), "Allows 'psych' attacks for thumpers" )
+SWARM_CV_Thumper_MeleeDmg = CreateConVar("zc_swarm_thumper_meleedmg", 20, bit.bor(FCVAR_ARCHIVE), "Melee damage from thumpers" )
 
-SWARM_CV_Thumper_ALLOWKO = CreateConVar("swarm_thumper_allowknockdown", 1, bit.bor(FCVAR_ARCHIVE), "Allows knockdown upon melee attack for thumpers" )
-SWARM_CV_Thumper_KOTime = CreateConVar("swarm_thumper_knockdowntime", 1, bit.bor(FCVAR_ARCHIVE), "Knockdown time from thumpers" )
-SWARM_CV_Thumper_KOScaleTime = CreateConVar("swarm_thumper_knockdowntimeforscale", 2, bit.bor(FCVAR_ARCHIVE), "Knockdown time WHEN swarm_thumper_scaleknockdowntime is 1" )
-SWARM_CV_Thumper_ScaleKOTime = CreateConVar("swarm_thumper_scaleknockdowntime", 0, bit.bor(FCVAR_ARCHIVE), "Scale(using victim health) knockdown time?" )
-SWARM_CV_Thumper_AKOTime = CreateConVar("swarm_thumper_knockdownrecoverytime", 2, bit.bor(FCVAR_ARCHIVE), "Knockdown recovery time from thumpers" )
+SWARM_CV_Thumper_ALLOWKO = CreateConVar("zc_swarm_thumper_allowknockdown", 1, bit.bor(FCVAR_ARCHIVE), "Allows knockdown upon melee attack for thumpers" )
+SWARM_CV_Thumper_KOTime = CreateConVar("zc_swarm_thumper_knockdowntime", 1, bit.bor(FCVAR_ARCHIVE), "Knockdown time from thumpers" )
+SWARM_CV_Thumper_KOScaleTime = CreateConVar("zc_swarm_thumper_knockdowntimeforscale", 2, bit.bor(FCVAR_ARCHIVE), "Knockdown time WHEN zc_swarm_thumper_scaleknockdowntime is 1" )
+SWARM_CV_Thumper_ScaleKOTime = CreateConVar("zc_swarm_thumper_scaleknockdowntime", 0, bit.bor(FCVAR_ARCHIVE), "Scale(using victim health) knockdown time?" )
+SWARM_CV_Thumper_AKOTime = CreateConVar("zc_swarm_thumper_knockdownrecoverytime", 2, bit.bor(FCVAR_ARCHIVE), "Knockdown recovery time from thumpers" )
 
-SWARM_CV_Thumper_PsychDmg = CreateConVar("swarm_thumper_psychdmg", 2, bit.bor(FCVAR_ARCHIVE), "Psych attack damage from thumpers" )
-SWARM_CV_Thumper_PsychRange = CreateConVar("swarm_thumper_psychrange", 500, bit.bor(FCVAR_ARCHIVE), "Psych atttack range of thumpers" )
-SWARM_CV_Thumper_PsychCD = CreateConVar("swarm_thumper_psychcooldown", 5, bit.bor(FCVAR_ARCHIVE), "Psych cooldown of thumpers" )
-SWARM_CV_Thumper_PsychCDRand = CreateConVar("swarm_thumper_psychcooldownrandomness", 2, bit.bor(FCVAR_ARCHIVE), "Randomness of psych cooldown +math.Rand(-number,0)" )
-SWARM_CV_Thumper_PsychInvert = CreateConVar("swarm_thumper_psychtimecalcinvert", 1, bit.bor(FCVAR_ARCHIVE), "Invert psych time calculations" )
+SWARM_CV_Thumper_PsychDmg = CreateConVar("zc_swarm_thumper_psychdmg", 2, bit.bor(FCVAR_ARCHIVE), "Psych attack damage from thumpers" )
+SWARM_CV_Thumper_PsychRange = CreateConVar("zc_swarm_thumper_psychrange", 500, bit.bor(FCVAR_ARCHIVE), "Psych atttack range of thumpers" )
+SWARM_CV_Thumper_PsychCD = CreateConVar("zc_swarm_thumper_psychcooldown", 5, bit.bor(FCVAR_ARCHIVE), "Psych cooldown of thumpers" )
+SWARM_CV_Thumper_PsychCDRand = CreateConVar("zc_swarm_thumper_psychcooldownrandomness", 2, bit.bor(FCVAR_ARCHIVE), "Randomness of psych cooldown +math.Rand(-number,0)" )
+SWARM_CV_Thumper_PsychInvert = CreateConVar("zc_swarm_thumper_psychtimecalcinvert", 1, bit.bor(FCVAR_ARCHIVE), "Invert psych time calculations" )
 
-SWARM_CV_Thumper_DetectRange = CreateConVar("swarm_thumper_detectrange", 200, bit.bor(FCVAR_ARCHIVE), "Detect range of thumper(radius of echolocation circle)" )
-SWARM_CV_Thumper_ForgetRange = CreateConVar("swarm_thumper_forgetrange", 500, bit.bor(FCVAR_ARCHIVE), "Enemy forget range of thumper" )
-SWARM_CV_Thumper_ForgetTime = CreateConVar("swarm_thumper_forgettime", 5, bit.bor(FCVAR_ARCHIVE), "Enemy forget time of thumper" )
+SWARM_CV_Thumper_DetectRange = CreateConVar("zc_swarm_thumper_detectrange", 200, bit.bor(FCVAR_ARCHIVE), "Detect range of thumper(radius of echolocation circle)" )
+SWARM_CV_Thumper_ForgetRange = CreateConVar("zc_swarm_thumper_forgetrange", 500, bit.bor(FCVAR_ARCHIVE), "Enemy forget range of thumper" )
+SWARM_CV_Thumper_ForgetTime = CreateConVar("zc_swarm_thumper_forgettime", 5, bit.bor(FCVAR_ARCHIVE), "Enemy forget time of thumper" )
 
 AddCSLuaFile()
 ENT.Base = "swarm_ai_base"	--Why dont just create an NPC?

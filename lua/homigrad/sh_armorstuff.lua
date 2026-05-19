@@ -1,5 +1,5 @@
 hg.armor = {}
-local hg_gopro = ConVarExists("hg_gopro") and GetConVar("hg_gopro") or CreateClientConVar("hg_gopro", "0", true, false, "Toggle GoPro-like first-person camera view", 0, 1)
+local zc_gopro = ConVarExists("zc_gopro") and GetConVar("zc_gopro") or CreateClientConVar("zc_gopro", "0", true, false, "Toggle GoPro-like first-person camera view", 0, 1)
 
 local vecAdjust2 = Vector(5, -6.3, -5)
 local function DrawFirstPersonHelmet(ply, strModel, vecAdjust, fFov, setMat)
@@ -43,7 +43,7 @@ local function DrawFirstPersonHelmet(ply, strModel, vecAdjust, fFov, setMat)
 		mdl.matseted1 = false
 	end
 
-	local gp = hg_gopro:GetBool()
+	local gp = zc_gopro:GetBool()
 
 	local view = render.GetViewSetup()
 	cam.Start3D(view.origin,view.angles,view.fov + fFov,nil,nil,nil,nil,1,10)

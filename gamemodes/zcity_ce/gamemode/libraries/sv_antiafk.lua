@@ -17,7 +17,7 @@ end)
 
 
 timer.Create("ZB_AntiAfkThink",10,0,function()
-    if GetConVar("zb_dev"):GetBool() then return end
+    if GetConVar("zc_dev"):GetBool() then return end
 
     for _, ply in player.Iterator() do
         if not IsValid(ply) or ply:IsBot() then continue end

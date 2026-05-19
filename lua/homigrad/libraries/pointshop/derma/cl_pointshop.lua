@@ -12,13 +12,13 @@ local function AltDonate()
 end
 
 local blur = Material("pp/blurscreen")
-local hg_potatopc
+local zc_potatopc
 function hg.DrawBlur(panel, amount, passes, alpha)
 	if is3d2d then return end
 	amount = amount or 5
-	hg_potatopc = hg_potatopc or hg.ConVars.potatopc
+	zc_potatopc = zc_potatopc or hg.ConVars.potatopc
 
-	if(hg_potatopc:GetBool())then
+	if(zc_potatopc:GetBool())then
 		surface.SetDrawColor(0, 0, 0, alpha or (amount * 20))
 		surface.DrawRect(0, 0, panel:GetWide(), panel:GetTall())
 	else

@@ -178,7 +178,7 @@ hook.Add("HomigradDamage", "GuiltReg", function(ply, dmgInfo, hitgroup, ent, har
 
     local rnd, _ = CurrentRound()
 
-    if rnd.GuiltDisabled or GetConVar("zb_dev"):GetBool() then return end
+    if rnd.GuiltDisabled or GetConVar("zc_dev"):GetBool() then return end
 
     if Attacker == Victim then return end
 
@@ -445,7 +445,7 @@ end)
 hook.Add("ZC_SomeoneGetFallBy","IdiotsMustBeKilled",function(Attacker,Victim)
     local rnd = CurrentRound()
 
-    if rnd.GuiltDisabled or GetConVar("zb_dev"):GetBool() then return end
+    if rnd.GuiltDisabled or GetConVar("zc_dev"):GetBool() then return end
 
     if Attacker == Victim then return end
 

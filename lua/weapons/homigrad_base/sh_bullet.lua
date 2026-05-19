@@ -49,7 +49,7 @@ end
 
 local bulletHit
 local timer, util, math, IsValid, WorldToLocal, Vector, sound, EffectData, game = timer, util, math, IsValid, WorldToLocal, Vector, sound, EffectData, game
-local hg_bulletholes = CreateConVar("hg_bulletholes", "0", FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED, "Enable R6S bulletholes feature", 0, 1)
+local zc_bulletholes = CreateConVar("zc_bulletholes", "0", FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED, "Enable R6S bulletholes feature", 0, 1)
 
 local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 	if CLIENT then return end
@@ -145,7 +145,7 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 
 			self:FireLuaBullets( tBullet )
 
-			if hg_bulletholes:GetBool() then
+			if zc_bulletholes:GetBool() then
 				local ent = IsValid(tr.Entity) and tr.Entity or Entity(0)
 
 				local hitPos2, dir2 = WorldToLocal(hitPos, dir:Angle(), ent:GetPos(), ent:GetAngles())
@@ -279,7 +279,7 @@ function SWEP:CallbackBullet(self, tr)
 	return callbackBullet(self, tr)
 end
 
-local hg_potatopc
+local zc_potatopc
 
 local shootDecals, shootDecalRand = {}, 1
 for i = 1, 5 do
@@ -774,8 +774,8 @@ function SWEP:FireBullet()
 			else
 				ParticleEffect(self.PPSMuzzleEffectSuppress, pos, ang, self)
 			end
-			hg_potatopc = hg_potatopc or hg.ConVars.potatopc
-			if not hg_potatopc:GetBool() then
+			zc_potatopc = zc_potatopc or hg.ConVars.potatopc
+			if not zc_potatopc:GetBool() then
 				local dlight = DynamicLight(self:EntIndex())
 				dlight.pos = pos
 				dlight.r = math_random(245, 255)

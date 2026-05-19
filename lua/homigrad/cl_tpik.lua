@@ -597,8 +597,8 @@ end
 
 local cached_huy = {}
 
---local hg_coolgloves = ConVarExists("hg_coolgloves") and GetConVar("hg_coolgloves") or CreateClientConVar("hg_coolgloves", 0, true, false, "Enable cool gloves (only firstperson) (laggy)", 0, 1)
---local hg_change_gloves = ConVarExists("hg_change_gloves") and GetConVar("hg_change_gloves") or CreateClientConVar("hg_change_gloves", 1, true, false, "Change cool gloves model (only with hg_coolgloves enabled)", 0, 5)
+--local zc_coolgloves = ConVarExists("zc_coolgloves") and GetConVar("zc_coolgloves") or CreateClientConVar("zc_coolgloves", 0, true, false, "Enable cool gloves (only firstperson) (laggy)", 0, 1)
+--local zc_change_gloves = ConVarExists("zc_change_gloves") and GetConVar("zc_change_gloves") or CreateClientConVar("zc_change_gloves", 1, true, false, "Change cool gloves model (only with zc_coolgloves enabled)", 0, 5)
 
 local vector_small = Vector(0,0,0)
 local vector_small2 = Vector(0.001,0.001,0.001)
@@ -738,7 +738,7 @@ end
 end)--]]
 
 function hg.CoolGloves(ent, ply)
-    if not hg_coolgloves:GetBool() then return end
+    if not zc_coolgloves:GetBool() then return end
 
     local huy = (GetViewEntity() == ply) or (not lply:Alive() and lply:GetNWEntity("spect") == ply and lply:GetNWInt("viewmode",0) == 1)
 
@@ -747,7 +747,7 @@ function hg.CoolGloves(ent, ply)
     if not huy then return end
 
     if not IsValid(ply.c_hands) then
-        ply.c_hands = ClientsideModel(gloves[hg_change_gloves:GetInt()])
+        ply.c_hands = ClientsideModel(gloves[zc_change_gloves:GetInt()])
         ply.c_hands:SetNoDraw(true)
         ply.c_hands:SetPos(ply:EyePos())
         ply.c_hands:SetParent(ply)
@@ -759,7 +759,7 @@ function hg.CoolGloves(ent, ply)
     local mdl = ply.c_hands
     mdl:SetSequence(2)
     mdl:SetCycle(1)--TRI TOPORA
-    mdl:SetModel(gloves[hg_change_gloves:GetInt()])
+    mdl:SetModel(gloves[zc_change_gloves:GetInt()])
 	if (mdl:GetModel() == durachok and mdl:GetBodygroup(1) ~= 1) then
 		mdl:SetBodygroup(1, 1)
 		mdl:SetBodygroup(2, 1)

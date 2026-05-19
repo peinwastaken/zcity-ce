@@ -72,13 +72,13 @@ hook.Add("HUDDrawPickupHistory", "HidePickedStuff", function()
 	return false
 end)
 
---local hg_coolvetica = ConVarExists("hg_coolvetica") and GetConVar("hg_coolvetica") or CreateClientConVar("hg_coolvetica", "0", true, false, "changes every text to coolvetica because its good", 0, 1)
-local hg_font = ConVarExists("hg_font") and GetConVar("hg_font") or CreateClientConVar("hg_font", "Bahnschrift", true, false, "Change UI text font")
-local font = function() -- hg_coolvetica:GetBool() and "Coolvetica" or "Bahnschrift"
+--local zc_coolvetica = ConVarExists("zc_coolvetica") and GetConVar("zc_coolvetica") or CreateClientConVar("zc_coolvetica", "0", true, false, "changes every text to coolvetica because its good", 0, 1)
+local zc_font = ConVarExists("zc_font") and GetConVar("zc_font") or CreateClientConVar("zc_font", "Bahnschrift", true, false, "Change UI text font")
+local font = function() -- zc_coolvetica:GetBool() and "Coolvetica" or "Bahnschrift"
     local usefont = "Bahnschrift"
 
-    if hg_font:GetString() != "" then
-        usefont = hg_font:GetString()
+    if zc_font:GetString() != "" then
+        usefont = zc_font:GetString()
     end
 
     return usefont
@@ -641,12 +641,12 @@ function scare()
 end
 
 local hint
-local hg_hints = ConVarExists("hg_hints") and GetConVar("hg_hints") or CreateClientConVar("hg_hints", "1", true, false, "Toggle UI hints")
+local zc_hints = ConVarExists("zc_hints") and GetConVar("zc_hints") or CreateClientConVar("zc_hints", "1", true, false, "Toggle UI hints")
 
 local HintBackgroundColor = Color( 0, 0, 0, 200 )
 
 hook.Add("HUDPaint","EntHints",function()
-	if not hg_hints:GetBool() then return end
+	if not zc_hints:GetBool() then return end
 	if lply.organism and lply.organism.otrub then return end
 	if !lply:Alive() then return end
 

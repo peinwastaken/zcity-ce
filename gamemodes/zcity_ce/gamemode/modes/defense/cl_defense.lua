@@ -299,7 +299,7 @@ local currentMusic
 local fadeDuration = 2
 local fadeInterval = 0.1
 
-local musicConvar = CreateConVar("cl_wavemusic", "1", FCVAR_ARCHIVE, "Toggle music during enemy waves.")
+local musicConvar = CreateConVar("zc_cl_wavemusic", "1", FCVAR_ARCHIVE, "Toggle music during enemy waves.")
 
 local function FadeOutMusic(music, duration, interval)
     if not IsValid(music) then return end
@@ -365,7 +365,7 @@ net.Receive("StopWaveMusic", function()
     StopCurrentMusic(true)
 end)
 
-cvars.AddChangeCallback("cl_wavemusic", function(convar_name, old_value, new_value)
+cvars.AddChangeCallback("zc_cl_wavemusic", function(convar_name, old_value, new_value)
     if tonumber(new_value) == 0 then
         StopCurrentMusic(true)
     elseif tonumber(new_value) == 1 then

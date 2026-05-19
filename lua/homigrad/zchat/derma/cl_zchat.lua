@@ -1,9 +1,9 @@
 -- Chat UI
 
-local maxLength = GetConVar("zchat_maxmessagelength")
+local maxLength = GetConVar("zc_chat_maxmessagelength")
 
-local NoDrop = CreateClientConVar("zchat_dropcharacters", 1, true, false, "Play the character dropping animation when erasing text", 0, 1)
-local ShowTextBoxInactive = CreateClientConVar("zchat_showtextboxinactive", 1, true, false, "Showing your text in textbox while chat is turned off", 0, 1)
+local NoDrop = CreateClientConVar("zc_chat_dropcharacters", 1, true, false, "Play the character dropping animation when erasing text", 0, 1)
+local ShowTextBoxInactive = CreateClientConVar("zc_chat_showtextboxinactive", 1, true, false, "Showing your text in textbox while chat is turned off", 0, 1)
 
 local function CallbackBind(self, callback)
 	return function(_, ...)

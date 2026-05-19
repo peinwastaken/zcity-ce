@@ -55,7 +55,7 @@ local tab = {
 	["$pp_colour_colour"] = 1
 }
 
---local potatopc = GetConVar("hg_potatopc") or CreateClientConVar("hg_potatopc", "0", true, false, "enable this if you are noob", 0, 1)
+--local potatopc = GetConVar("zc_potatopc") or CreateClientConVar("zc_potatopc", "0", true, false, "enable this if you are noob", 0, 1)
 local hook_Run = hook.Run
 hook.Add("RenderScreenspaceEffects", "homigrad", function()
 	//if potatopc:GetInt() >= 1 then return end

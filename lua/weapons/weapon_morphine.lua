@@ -44,10 +44,10 @@ SWEP.modeValuesdef = {
 
 SWEP.showstats = true
 
-local hg_healanims = ConVarExists("hg_healanims") and GetConVar("hg_healanims") or CreateConVar("hg_healanims", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
+local zc_healanims = ConVarExists("zc_healanims") and GetConVar("zc_healanims") or CreateConVar("zc_healanims", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
 
 function SWEP:Think()
-	if not self:GetOwner():KeyDown(IN_ATTACK) and hg_healanims:GetBool() then
+	if not self:GetOwner():KeyDown(IN_ATTACK) and zc_healanims:GetBool() then
 		self:SetHolding(math.max(self:GetHolding() - 4, 0))
 	end
 end
@@ -88,7 +88,7 @@ if SERVER then
 		if self.modeValues[1] <= 0 then return end
 
 		local owner = self:GetOwner()
-		if ent == hg.GetCurrentCharacter(owner) and hg_healanims:GetBool() then
+		if ent == hg.GetCurrentCharacter(owner) and zc_healanims:GetBool() then
 			self:SetHolding(math.Clamp(self:GetHolding() + 100, 0, 50))
 
 			--if self:GetHolding() < 100 then return end

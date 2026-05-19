@@ -1194,7 +1194,7 @@ if CLIENT then
 	-- Used for optimization purposes
 	-- local draws = 0
 
-	hg_potatopc = hg_potatopc or hg.ConVars.potatopc
+	zc_potatopc = zc_potatopc or hg.ConVars.potatopc
 
 	function ENT:Draw()
 
@@ -1223,7 +1223,7 @@ if CLIENT then
 		local pos = self:GetPos() + self:GetForward() * 7
 		local aSqrd = a * a
 
-		local potato = hg_potatopc:GetBool()
+		local potato = zc_potatopc:GetBool()
 
 
 		if vFireEnableGlows and not potato then

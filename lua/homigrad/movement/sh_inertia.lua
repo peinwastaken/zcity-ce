@@ -40,12 +40,12 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 		hg.approach_vector = approach_vector
 	--//
 
-	local hg_movement_stamina_debuff = CreateConVar("hg_movement_stamina_debuff", "0.3", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Multiply movement debuff when having low stamina", 0, 1)
-	local hg_inertiamul = CreateConVar("hg_inertiamul", "1", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Multiply inertia for player movement", 0.01, 5)
-	local hg_inertiaenabled = CreateConVar("hg_inertiaenabled", "0", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Enable inertia", 0, 1)
-	local hg_divejump = CreateConVar("hg_divejump", "0", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Toggle dive jumps on crouch jump", 0, 1)
-	local hg_movement_speed_gain_mul = CreateConVar("hg_movement_speed_gain_mul", "1", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Multiply speed gain", 0.01, 5)
-	local hg_movement_speed_lose_mul = CreateConVar("hg_movement_speed_lose_mul", "1", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Multiply speed lose", 0.01, 5)
+	local zc_movement_stamina_debuff = CreateConVar("zc_movement_stamina_debuff", "0.3", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Multiply movement debuff when having low stamina", 0, 1)
+	local zc_inertiamul = CreateConVar("zc_inertiamul", "1", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Multiply inertia for player movement", 0.01, 5)
+	local zc_inertiaenabled = CreateConVar("zc_inertiaenabled", "0", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Enable inertia", 0, 1)
+	local zc_divejump = CreateConVar("zc_divejump", "0", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Toggle dive jumps on crouch jump", 0, 1)
+	local zc_movement_speed_gain_mul = CreateConVar("zc_movement_speed_gain_mul", "1", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Multiply speed gain", 0.01, 5)
+	local zc_movement_speed_lose_mul = CreateConVar("zc_movement_speed_lose_mul", "1", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Multiply speed lose", 0.01, 5)
 
 
 	local vomitVPAng, vecZero = Angle(1, 0, 0), Vector()
@@ -185,10 +185,10 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 		ply.FrictionLoseMul = 0.2
 
 		ply.SpeedGainMul = 240 * weightmul * (ply:GetNWInt("SpeedGainClassMul", 1) or 1)
-		ply.SpeedGainMul = ply.SpeedGainMul * hg_movement_speed_gain_mul:GetFloat()
+		ply.SpeedGainMul = ply.SpeedGainMul * zc_movement_speed_gain_mul:GetFloat()
 
 		ply.SpeedLoseMul = 10000
-		ply.SpeedLoseMul = ply.SpeedLoseMul * hg_movement_speed_lose_mul:GetFloat()
+		ply.SpeedLoseMul = ply.SpeedLoseMul * zc_movement_speed_lose_mul:GetFloat()
 
 		ply.SpeedSharpLoseMul = 0.007
 		ply.InertiaBlend = 2000 * weightmul
@@ -340,7 +340,7 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 				// ply.CurrentFrictionMul = math.Approach(ply.CurrentFrictionMul, consmul, delta_time * ply.FrictionGainMul * (consmul < ply.CurrentFrictionMul and 100 or 10))
 			//end
 
-			ply.CurrentFrictionMul = 0.5 / hg_inertiamul:GetFloat()
+			ply.CurrentFrictionMul = 0.5 / zc_inertiamul:GetFloat()
 			ply.InertiaBlend = ply.InertiaBlend * ply.CurrentFrictionMul
 
 			-- local new_inertia = LerpVector(0.5^(delta_time * ply.InertiaBlend), ply.MovementInertia, inertia_to)
@@ -376,7 +376,7 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 		k = k * math.Clamp(consmul, 0.7, 1)
 		k = k * math.Clamp((org.temperature and (1 - (org.temperature - 38) * 0.25) or 1), 0.5, 1)
 		k = k * math.Clamp((org.temperature and ((org.temperature - 35) * 0.25 + 1) or 1), 0.5, 1)
-		k = k * math.Clamp(math.Round((org.stamina and org.stamina[1] or 180), 0) / 120, hg_movement_stamina_debuff:GetFloat(), 1)
+		k = k * math.Clamp(math.Round((org.stamina and org.stamina[1] or 180), 0) / 120, zc_movement_stamina_debuff:GetFloat(), 1)
 		k = k * math.Clamp(5 / ((org.immobilization or 0) + 1), 0.25, 1)
 		k = k * math.Clamp((org.blood or 0) / 5000, 0, 1)
 		k = k * math.Clamp(10 / ((org.shock or 0) + 1), 0.25, 1)
@@ -483,7 +483,7 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 		end
 
 		--// Dive jump
-		if hg_divejump:GetBool() then
+		if zc_divejump:GetBool() then
 			ply.lastInDuck = ply:KeyPressed(IN_DUCK) and CurTime() or ply.lastInDuck or 0
 			ply.lastInJump = ply:KeyPressed(IN_JUMP) and CurTime() or ply.lastInJump or 0
 			if(SERVER && rag == ply && (ply.lastInJump + 0.1 > CurTime()) && (ply.lastInDuck + 0.1 > CurTime()))then
@@ -522,7 +522,7 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 			cmd:SetSideMove(side_move * inertia_len)
 		end
 
-		if hg_inertiaenabled:GetBool() then
+		if zc_inertiaenabled:GetBool() then
 			mv:SetForwardSpeed(forward_move * inertia_len)
 			mv:SetSideSpeed(side_move * inertia_len)
 		end

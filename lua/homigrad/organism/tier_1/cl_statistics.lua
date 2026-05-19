@@ -266,7 +266,7 @@ hg.LerpVariables = LerpVariables
 local littleblack = Color(75, 75, 75, 255)
 local trahalgmod = Color(0, 0, 0, 75)
 local weight = 200
-local hg_stats = GetConVar("hg_stats") or CreateClientConVar("hg_stats", 1, true, false, "show stats", 0, 1)
+local zc_stats = GetConVar("zc_stats") or CreateClientConVar("zc_stats", 1, true, false, "show stats", 0, 1)
 hook.Add("HUDPaint", "homigrad-organism-debug", function()
 
 	local spect = IsValid(lply:GetNWEntity("spect")) and lply:GetNWEntity("spect")
@@ -276,7 +276,7 @@ hook.Add("HUDPaint", "homigrad-organism-debug", function()
 	if !organism then return end
 	if not zb.dev.IsDeveloper() then return end
 	if not LocalPlayer():IsAdmin() then return end
-	if !hg_stats:GetBool() then return end
+	if !zc_stats:GetBool() then return end
 	local textList = getTextTable(organism)
 	local h = math.Round(ScreenScaleH(5.5))
 	local cutoff = math.floor((ScrH() - 150 - 50) / h)
@@ -372,8 +372,8 @@ local traveltime = 5
 local hitorgans = {}
 local vecFull = Vector(1,1,1)
 local bone0 = Vector()
-if not ConVarExists("hg_max_hitshow") then
-	CreateClientConVar("hg_max_hitshow", 40, true, false, "how many hits to track on your local pc (very bad idea to put this to more than 60)", 0, 150)
+if not ConVarExists("zc_max_hitshow") then
+	CreateClientConVar("zc_max_hitshow", 40, true, false, "how many hits to track on your local pc (very bad idea to put this to more than 60)", 0, 150)
 end
 --mb make userinfo?
 hg.hits = hg.hits or {}
@@ -498,7 +498,7 @@ end)
 			ricoshits[tbl[2]] = tbl[1]
 		end
 
-		if #hg.hits >= hg_max_hitshow:GetInt() then table.remove(hg.hits,1) end
+		if #hg.hits >= zc_max_hitshow:GetInt() then table.remove(hg.hits,1) end
 
 		local armors = table.Copy((hg.RagdollOwner(ent) or ent):GetNetVar("Armor"))
 

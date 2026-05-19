@@ -2,8 +2,8 @@ hg.Appearance = hg.Appearance or {}
 
 -- File manager
 
-hg.Appearance.SelectedAppearance = ConVarExists("hg_appearance_selected") and GetConVar("hg_appearance_selected") or CreateClientConVar("hg_appearance_selected","main",true,false,"name of selected appearance json file")
-hg.Appearance.ForcedRandom = ConVarExists("hg_appearance_force_random") and GetConVar("hg_appearance_force_random") or CreateClientConVar("hg_appearance_force_random","0",true,false,"forced appearance random",0,1)
+hg.Appearance.SelectedAppearance = ConVarExists("zc_appearance_selected") and GetConVar("zc_appearance_selected") or CreateClientConVar("zc_appearance_selected","main",true,false,"name of selected appearance json file")
+hg.Appearance.ForcedRandom = ConVarExists("zc_appearance_force_random") and GetConVar("zc_appearance_force_random") or CreateClientConVar("zc_appearance_force_random","0",true,false,"forced appearance random",0,1)
 
 local dir = "zcity/appearances/"
 function hg.Appearance.CreateAppearanceFile(strFile_name, tblAppearance)
@@ -73,7 +73,7 @@ local whitelist = {
 
 local islply
 
-local hg_firstperson_death = ConVarExists("hg_firstperson_death") and GetConVar("hg_firstperson_death") or CreateClientConVar("hg_firstperson_death", "0", "first person death", true, false, 0, 1)
+local zc_firstperson_death = ConVarExists("zc_firstperson_death") and GetConVar("zc_firstperson_death") or CreateClientConVar("zc_firstperson_death", "0", "first person death", true, false, 0, 1)
 
 function RenderAccessories(ply, accessories, setup)
 
@@ -89,7 +89,7 @@ function RenderAccessories(ply, accessories, setup)
 	islply = ((ply:IsRagdoll() and hg.RagdollOwner(ply)) or ply) == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer())) and GetViewEntity() == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer()))
 
 	local fountains = GetNetVar("fountains") or {}
-	if ent == follow and hg_firstperson_death:GetBool() and !fountains[ent] then islply = true end
+	if ent == follow and zc_firstperson_death:GetBool() and !fountains[ent] then islply = true end
 
 	if islply and IsValid(wep) and whitelist[wep:GetClass()] then
 		if not ent.modelAccess then return end

@@ -57,7 +57,7 @@ function DMusic:Stop()
     DMusic.threaded = 0
 end
 
-local hg_sound = ConVarExists("hg_dmusic") and GetConVar("hg_dmusic") or CreateClientConVar("hg_dmusic","1",true,false,"Enable dynamic music (Enable music in gmod settings)",0,1)
+local hg_sound = ConVarExists("zc_dmusic") and GetConVar("zc_dmusic") or CreateClientConVar("zc_dmusic","1",true,false,"Enable dynamic music (Enable music in gmod settings)",0,1)
 
 concommand.Add("hg_dmusic_skip",function()
     if not DMusic.Tracks then return end

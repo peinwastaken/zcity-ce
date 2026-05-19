@@ -1,11 +1,11 @@
 ENT={}
 
-SWARM_CV_SENTRY_ProjectileDmg = CreateConVar("swarm_sentry_projectiledmg", 6, bit.bor(FCVAR_ARCHIVE), "Projectile damage from sentries" )
+SWARM_CV_SENTRY_ProjectileDmg = CreateConVar("zc_swarm_sentry_projectiledmg", 6, bit.bor(FCVAR_ARCHIVE), "Projectile damage from sentries" )
 
 
-SWARM_CV_SENTRY_DetectRange = CreateConVar("swarm_sentry_detectrange", 600, bit.bor(FCVAR_ARCHIVE), "Detect range" )
-SWARM_CV_SENTRY_ForgetRange = CreateConVar("swarm_sentry_forgetrange", 900, bit.bor(FCVAR_ARCHIVE), "Enemy forget range" )
-SWARM_CV_SENTRY_ForgetTime = CreateConVar("swarm_sentry_forgettime", 5, bit.bor(FCVAR_ARCHIVE), "Enemy forget time" )
+SWARM_CV_SENTRY_DetectRange = CreateConVar("zc_swarm_sentry_detectrange", 600, bit.bor(FCVAR_ARCHIVE), "Detect range" )
+SWARM_CV_SENTRY_ForgetRange = CreateConVar("zc_swarm_sentry_forgetrange", 900, bit.bor(FCVAR_ARCHIVE), "Enemy forget range" )
+SWARM_CV_SENTRY_ForgetTime = CreateConVar("zc_swarm_sentry_forgettime", 5, bit.bor(FCVAR_ARCHIVE), "Enemy forget time" )
 
 AddCSLuaFile()
 ENT.Spawnable = true

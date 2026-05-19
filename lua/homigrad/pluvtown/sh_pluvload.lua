@@ -6,10 +6,10 @@ hg.PluvTown.Active = false
 
 local PLUGIN = hg.PluvTown
 
-CreateConVar("zb_pluvtown", 0, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Toggle pluvtown mode", 0, 1)
+CreateConVar("zc_pluvtown", 0, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Toggle pluvtown mode", 0, 1)
 
 if SERVER then
-    cvars.AddChangeCallback("zb_pluvtown", function(name, old, new)
+    cvars.AddChangeCallback("zc_pluvtown", function(name, old, new)
         PLUGIN.UpdateStatus()
 
         net.Start("UpdatePluvTownStatus")
@@ -28,7 +28,7 @@ hook.Add("InitPostEntity", "PluvTown", function()
 end)
 
 function PLUGIN.UpdateStatus()
-    local value = GetConVar("zb_pluvtown"):GetBool()
+    local value = GetConVar("zc_pluvtown"):GetBool()
 
     if value then
         PLUGIN.InitHooks()

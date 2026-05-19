@@ -1,11 +1,11 @@
 ENT={}
 
-SWARM_CV_SWARM_DeadPointsDiv = CreateConVar("swarm_drone_deadpointsdivider", 5, bit.bor(FCVAR_ARCHIVE), "Upon death points will randomly scatter to one nearby swarm unit and the number is the divider" )
-SWARM_CV_SWARM_MeleeDmg = CreateConVar("swarm_drone_meleedmg", 6, bit.bor(FCVAR_ARCHIVE), "Melee damage from drones" )
+SWARM_CV_SWARM_DeadPointsDiv = CreateConVar("zc_swarm_drone_deadpointsdivider", 5, bit.bor(FCVAR_ARCHIVE), "Upon death points will randomly scatter to one nearby swarm unit and the number is the divider" )
+SWARM_CV_SWARM_MeleeDmg = CreateConVar("zc_swarm_drone_meleedmg", 6, bit.bor(FCVAR_ARCHIVE), "Melee damage from drones" )
 
-SWARM_CV_SWARM_DetectRange = CreateConVar("swarm_drone_detectrange", 300, bit.bor(FCVAR_ARCHIVE), "Detect range" )
-SWARM_CV_SWARM_ForgetRange = CreateConVar("swarm_drone_forgetrange", 500, bit.bor(FCVAR_ARCHIVE), "Enemy forget range" )
-SWARM_CV_SWARM_ForgetTime = CreateConVar("swarm_drone_forgettime", 2, bit.bor(FCVAR_ARCHIVE), "Enemy forget time" )
+SWARM_CV_SWARM_DetectRange = CreateConVar("zc_swarm_drone_detectrange", 300, bit.bor(FCVAR_ARCHIVE), "Detect range" )
+SWARM_CV_SWARM_ForgetRange = CreateConVar("zc_swarm_drone_forgetrange", 500, bit.bor(FCVAR_ARCHIVE), "Enemy forget range" )
+SWARM_CV_SWARM_ForgetTime = CreateConVar("zc_swarm_drone_forgettime", 2, bit.bor(FCVAR_ARCHIVE), "Enemy forget time" )
 
 AddCSLuaFile()
 ENT.Spawnable = true

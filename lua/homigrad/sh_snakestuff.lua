@@ -82,7 +82,7 @@ if CLIENT then
 
 	local cursor
 
-	local zmeyka_legs = ConVarExists("zmeyka_legs") and GetConVar("zmeyka_legs") or CreateClientConVar("zmeyka_legs",0,true,true,"Toggle UI snake/worm legs",0,1)
+	local zc_zmeyka_legs = ConVarExists("zc_zmeyka_legs") and GetConVar("zc_zmeyka_legs") or CreateClientConVar("zc_zmeyka_legs",0,true,true,"Toggle UI snake/worm legs",0,1)
 
 	local zmeyka_lmao = function()
 		cursor = Vector(input.GetCursorPos())
@@ -100,7 +100,7 @@ if CLIENT then
 			color2 = snake[6] or color
 			local leading_part = snake[7]
 
-			segments[leading_part][4] = zmeyka_legs:GetBool() and (pos:IsEqualTol(segments[leading_part][1],20) and vector_origin or (pos - segments[leading_part][1]):GetNormalized() * FrameTime() * 500) or (pos - segments[leading_part][1]) * FrameTime() * 25
+			segments[leading_part][4] = zc_zmeyka_legs:GetBool() and (pos:IsEqualTol(segments[leading_part][1],20) and vector_origin or (pos - segments[leading_part][1]):GetNormalized() * FrameTime() * 500) or (pos - segments[leading_part][1]) * FrameTime() * 25
 			segments[leading_part][3] = segments[leading_part][4]:Angle()[2]
 			local iters = leading_part > 1 and leading_part < #segments and 2 or 2
 			local iter1 = {leading_part,#segments,1}
@@ -243,7 +243,7 @@ if CLIENT then
 		end
 	end
 
-	local zmeyka = GetConVar("zmeyka") or CreateClientConVar("zmeyka",1,true,false,"Toggle snake/worm that appears in emote menu",0,1)
+	local zc_zmeyka = GetConVar("zc_zmeyka") or CreateClientConVar("zc_zmeyka",1,true,false,"Toggle snake/worm that appears in emote menu",0,1)
 
 	local funcs = {
 		[1] = function(float) return math.ease.OutCirc(float) end,
@@ -253,25 +253,25 @@ if CLIENT then
 		[5] = function(float) return 1 end,
 	}
 
-	local zmeyka_size = ConVarExists("zmeyka_size") and GetConVar("zmeyka_size") or CreateClientConVar("zmeyka_size",30,true,true,"Modify size of UI snake/worm",10,50)
-	local zmeyka_gravity = ConVarExists("zmeyka_gravity") and GetConVar("zmeyka_gravity") or CreateClientConVar("zmeyka_gravity",0,true,true,"Modify gravity of UI snake/worm",0,30)
-	local zmeyka_func = ConVarExists("zmeyka_func") and GetConVar("zmeyka_func") or CreateClientConVar("zmeyka_func",3,true,true,"Change UI snake/worm appearance",1,5)
+	local zc_zmeyka_size = ConVarExists("zc_zmeyka_size") and GetConVar("zc_zmeyka_size") or CreateClientConVar("zc_zmeyka_size",30,true,true,"Modify size of UI snake/worm",10,50)
+	local zc_zmeyka_gravity = ConVarExists("zc_zmeyka_gravity") and GetConVar("zc_zmeyka_gravity") or CreateClientConVar("zc_zmeyka_gravity",0,true,true,"Modify gravity of UI snake/worm",0,30)
+	local zc_zmeyka_func = ConVarExists("zc_zmeyka_func") and GetConVar("zc_zmeyka_func") or CreateClientConVar("zc_zmeyka_func",3,true,true,"Change UI snake/worm appearance",1,5)
 
 	local function startZmeyka(i)
 		local color1 = Color(math.random(255),math.random(255),math.random(255))
 		local color2 = Color(math.random(255),math.random(255),math.random(255))
 
-		local len = zmeyka_size:GetFloat()
+		local len = zc_zmeyka_size:GetFloat()
 
-		local func = funcs[zmeyka_func:GetInt()]
+		local func = funcs[zc_zmeyka_func:GetInt()]
 
 		--clearSnakes()
 
 		local num = (math.random(8) + 8)
 		local detail = 4
 
-		addSnake(i,function(i,max) return {Vector(0,0),len * func(i / max),0,Vector(0,0)} end,num,detail,zmeyka_gravity:GetBool() and zmeyka_gravity:GetFloat(),function() return i ~= lply:UserID() and old_snakesposes[i] and old_snakesposes[i][1] or cursor end,color1,color2,1)--math.floor(num * detail))
-		--addSnake(0,function(i,max) return {Vector(0,0),len * func(i / max),0,Vector(0,0)} end,num,detail,zmeyka_gravity:GetBool() and zmeyka_gravity:GetFloat(),function() return old_snakesposes[i] and old_snakesposes[i][1] or cursor end,color1,color2,1)--math.floor(num * detail))
+		addSnake(i,function(i,max) return {Vector(0,0),len * func(i / max),0,Vector(0,0)} end,num,detail,zc_zmeyka_gravity:GetBool() and zc_zmeyka_gravity:GetFloat(),function() return i ~= lply:UserID() and old_snakesposes[i] and old_snakesposes[i][1] or cursor end,color1,color2,1)--math.floor(num * detail))
+		--addSnake(0,function(i,max) return {Vector(0,0),len * func(i / max),0,Vector(0,0)} end,num,detail,zc_zmeyka_gravity:GetBool() and zc_zmeyka_gravity:GetFloat(),function() return old_snakesposes[i] and old_snakesposes[i][1] or cursor end,color1,color2,1)--math.floor(num * detail))
 
 		--[[if math.random(5) == 1 then
 			local func = funcs[math.random(#funcs)]
@@ -292,11 +292,11 @@ if CLIENT then
 
 		hook.Add("HUDPaint","debildebilich",zmeyka_lmao)
 
-		if zmeyka_legs:GetBool() then hg.start_snake() end
+		if zc_zmeyka_legs:GetBool() then hg.start_snake() end
 	end
 
 	hook.Add("ContextMenuOpen","zmeyka_test",function()
-		if not zmeyka:GetBool() then return end
+		if not zc_zmeyka:GetBool() then return end
 
 		--startZmeyka(lply:UserID())
 	end)
@@ -306,7 +306,7 @@ if CLIENT then
 	end)
 
 	hook.Add("radialOptions","zmeyka_test",function()
-		if not zmeyka:GetBool() then return end
+		if not zc_zmeyka:GetBool() then return end
 
 		if not snakes[lply:UserID()] then startZmeyka(lply:UserID()) end
 	end)
@@ -356,10 +356,10 @@ if CLIENT then
 		settings[category][convarname] = {mode, optiondata}
 	end
 
-	AddOptionPanel( "zmeyka_size", "slider", {desc = "base size",min = 10, max = 50}, "general" )
-	AddOptionPanel( "zmeyka_gravity", "slider", {desc = "gravity",min = 0, max = 30}, "general" )
-	AddOptionPanel( "zmeyka_func", "slider", {desc = "func",min = 1, max = 5}, "general" )
-	AddOptionPanel( "zmeyka_legs", "switcher", {desc = "func"}, "general" )
+	AddOptionPanel( "zc_zmeyka_size", "slider", {desc = "base size",min = 10, max = 50}, "general" )
+	AddOptionPanel( "zc_zmeyka_gravity", "slider", {desc = "gravity",min = 0, max = 30}, "general" )
+	AddOptionPanel( "zc_zmeyka_func", "slider", {desc = "func",min = 1, max = 5}, "general" )
+	AddOptionPanel( "zc_zmeyka_legs", "switcher", {desc = "func"}, "general" )
 
 
 	BlurBackground = BlurBackground or hg.DrawBlur
@@ -371,7 +371,7 @@ if CLIENT then
 		local MainFrame = vgui.Create("ZFrame") -- The name of the panel we don't have to parent it.
 		MainFrame:SetPos( posX, posY ) -- Set the position to 100x by 100y.
 		MainFrame:SetSize( sizeX, sizeY ) -- Set the size to 300x by 200y.
-		MainFrame:SetTitle( "zmeyka settings" ) -- Set the title in the top left to "Derma Frame".
+		MainFrame:SetTitle( "Zmeyka settings" ) -- Set the title in the top left to "Derma Frame".
 		MainFrame:MakePopup() -- Makes your mouse be able to move around.
 		//function MainFrame:Paint( w, h )
 		//	draw.RoundedBox( 0, 2.5, 2.5, w-5, h-5, Color( 0, 0, 0, 140) )

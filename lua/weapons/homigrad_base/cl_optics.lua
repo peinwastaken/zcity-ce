@@ -70,8 +70,8 @@ end
 
 lodset = false
 
-local hg_optimise_scopes = GetConVar("hg_optimise_scopes") or CreateClientConVar("hg_optimise_scopes", "1", true, false, "Enable this if scoping makes your fps cry (1 - lowers quality of props around you, 2 - \"disables\" main render)", 0, 2)
-local hg_show_hitposmuzzle = ConVarExists("hg_show_hitposmuzzle") and GetConVar("hg_show_hitposmuzzle") or CreateClientConVar("hg_show_hitposmuzzle", "0", false, false, "shows weapons crosshair, work only ведьма admin rank or sv_cheats 1")
+local zc_optimise_scopes = GetConVar("zc_optimise_scopes") or CreateClientConVar("zc_optimise_scopes", "1", true, false, "Enable this if scoping makes your fps cry (1 - lowers quality of props around you, 2 - \"disables\" main render)", 0, 2)
+local zc_show_hitposmuzzle = ConVarExists("zc_show_hitposmuzzle") and GetConVar("zc_show_hitposmuzzle") or CreateClientConVar("zc_show_hitposmuzzle", "0", false, false, "shows weapons crosshair, work only ведьма admin rank or sv_cheats 1")
 
 local angaddhuy = Angle(0,0,0)
 local scrw, scrh = ScrW(), ScrH() --retarded
@@ -109,7 +109,7 @@ function SWEP:DoRT()
 
 	mat:SetTexture("$basetexture", rtmat)
 
-	if hg_show_hitposmuzzle:GetBool() then
+	if zc_show_hitposmuzzle:GetBool() then
 		//cam.Start3D()
 			render.DrawLine(pos,point, Color( 255, 255, 255 ))
 		//cam.End3D()
@@ -163,7 +163,7 @@ function SWEP:DoRT()
 	diffa[2] = diffa[2] * ScrH() * 2
 
 	if diffa:LengthSqr() < 10000.0 * (rtsize / 512) / (self.scope_blackout / 400) then
-		if hg_optimise_scopes:GetInt() >= 2 then
+		if zc_optimise_scopes:GetInt() >= 2 then
 			--LOW_RENDER = true
 			--render.UpdateScreenEffectTexture()
 			--render.UpdateFullScreenDepthTexture()
@@ -182,7 +182,7 @@ function SWEP:DoRT()
 			local toscreen = aimWay:ToScreen()
 			local x, y = toscreen.x, toscreen.y
 			local hitPos
-			if hg_show_hitposmuzzle:GetBool() then
+			if zc_show_hitposmuzzle:GetBool() then
 				hitPos = self:GetTrace(true).HitPos:ToScreen()
 			end
 		cam.End3D()
@@ -206,7 +206,7 @@ function SWEP:DoRT()
 		render.PushFilterMin(TEXFILTER.ANISOTROPIC)
 		render.PushFilterMag(TEXFILTER.ANISOTROPIC)
 		cam.Start2D()
-			if hg_show_hitposmuzzle:GetBool() then
+			if zc_show_hitposmuzzle:GetBool() then
 				draw.RoundedBox(0, hitPos.x / (scrw / ScrW()) - 2, hitPos.y / (scrh / ScrH()) - 2, 4, 4, color_red)
 			end
 			local blackout = self.blackoutsize * 0.75
@@ -309,7 +309,7 @@ end
 
 local blured
 // POINT, YOU ARE A TOTAL NOOB
---local hg_blur_holo = GetConVar("hg_blur_holo") or CreateClientConVar("hg_blur_holo", "1", true, false, "Disable this if holo blur makes your fps cry.", 0, 1)
+--local zc_blur_holo = GetConVar("zc_blur_holo") or CreateClientConVar("zc_blur_holo", "1", true, false, "Disable this if holo blur makes your fps cry.", 0, 1)
 
 local invcolor = Color(0,0,0,0)
 hook.Add("PostDrawTranslucentRenderables","stencil-test-holo2",function()

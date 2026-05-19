@@ -108,10 +108,10 @@ function angle:AngIsEqualTo(otherAng, huy)
 	return self:IsEqualTol(otherAng, huy)
 end
 
-if not ConVarExists("hg_anims_draw_distance") then
-	CreateClientConVar("hg_anims_draw_distance", 1024, true, nil, "Modify draw anims distance in hammer units (0 = infinite)", 0, 4096)
+if not ConVarExists("zc_anims_draw_distance") then
+	CreateClientConVar("zc_anims_draw_distance", 1024, true, nil, "Modify draw anims distance in hammer units (0 = infinite)", 0, 4096)
 end
-local hg_anim_fps = ConVarExists("hg_anim_fps") and GetConVar("hg_anim_fps") or CreateClientConVar("hg_anim_fps", 66, true, nil, "Modify bone manipulate frames amount (not tpik) (0 = maximum fps available)", 0, 250)
+local zc_anim_fps = ConVarExists("zc_anim_fps") and GetConVar("zc_anim_fps") or CreateClientConVar("zc_anim_fps", 66, true, nil, "Modify bone manipulate frames amount (not tpik) (0 = maximum fps available)", 0, 250)
 
 local function recursive_bones(ply, bone)
 	local children = ply:GetChildBones(bone)
@@ -157,7 +157,7 @@ function hg.HomigradBones(ply, dtime)
 	if CLIENT and (!ply.shouldTransmit or ply.NotSeen) then return end
 
 	local dtime2 = SysTime() - (ply.timeFrameasd or (SysTime() - 1))
-	local fps = CLIENT and (hg_anim_fps:GetInt() != 0 and hg_anim_fps:GetInt() or 99999) or 15
+	local fps = CLIENT and (zc_anim_fps:GetInt() != 0 and zc_anim_fps:GetInt() or 99999) or 15
 
 	if CLIENT and (dtime2 < 1 / fps) then return end
 	if SERVER and dtime2 < 0.2 then return end

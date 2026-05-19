@@ -15,9 +15,9 @@ local render_SetMaterial = render.SetMaterial
 local render_DrawSprite = render.DrawSprite
 local render_DrawBeam = render.DrawBeam
 
-local hg_blood_draw_distance = ConVarExists("hg_blood_draw_distance") and GetConVar("hg_blood_draw_distance") or CreateClientConVar("hg_blood_draw_distance", 1024, true, nil, "distance to draw blood", 0, 4096)
-if not ConVarExists("hg_blood_sprites") then
-	CreateClientConVar("hg_blood_sprites", 1, true, nil, "blood is sprites or trails", 0, 1)
+local zc_blood_draw_distance = ConVarExists("zc_blood_draw_distance") and GetConVar("zc_blood_draw_distance") or CreateClientConVar("zc_blood_draw_distance", 1024, true, nil, "distance to draw blood", 0, 4096)
+if not ConVarExists("zc_blood_sprites") then
+	CreateClientConVar("zc_blood_sprites", 1, true, nil, "blood is sprites or trails", 0, 1)
 end
 
 hook.Add("PostCleanupMap","removeblooddroplets",function()
@@ -30,7 +30,7 @@ local mat_huy = Material("effects/blood_core")
 local lightcolor = Color(0, 0, 0, 255)
 bloodparticles_hook[1] = function(anim_pos, mul)
 
-	local int = hg_blood_draw_distance:GetInt()
+	local int = zc_blood_draw_distance:GetInt()
 	local pos = lply:EyePos()
 	--render.OverrideBlend( true, BLEND_SRC_ALPHA, BLEND_ONE, BLENDFUNC_ADD )
 	local dstsqr = int * int
@@ -76,7 +76,7 @@ bloodparticles_hook[1] = function(anim_pos, mul)
 	--render.OverrideBlend( false )
 end
 
-local hg_old_blood = ConVarExists("hg_old_blood") and GetConVar("hg_old_blood") or CreateClientConVar("hg_old_blood", 0, true, false, "new decals, or old", 0, 1)
+local zc_old_blood = ConVarExists("zc_old_blood") and GetConVar("zc_old_blood") or CreateClientConVar("zc_old_blood", 0, true, false, "new decals, or old", 0, 1)
 
 hg.bloodpositions = hg.bloodpositions or {}
 hg.bloodcount = hg.bloodcount or 0
@@ -93,7 +93,7 @@ local function decalBlood(pos, normal, tr, artery, owner)
 	-- I do not know how big these tables can be... hopefully this will not turn out too bad
 
 	if artery then
-		if !hg_old_blood:GetBool() then
+		if !zc_old_blood:GetBool() then
 
 			//timer.Simple(0.1, function()
 				hg.bloodpositions[vec] = (hg.bloodpositions[vec] or 0) + 1
@@ -113,7 +113,7 @@ local function decalBlood(pos, normal, tr, artery, owner)
 			end
 		end
 	else
-		if !hg_old_blood:GetBool() then
+		if !zc_old_blood:GetBool() then
 
 			//timer.Simple(0.1, function()
 				hg.bloodpositions[vec] = (hg.bloodpositions[vec] or 0) + 1

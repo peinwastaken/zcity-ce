@@ -1,7 +1,7 @@
 ENT={}
 
-SWARM_CV_Sentinel_MeleeDmg = CreateConVar("swarm_sentinel_meleedmg", 15, bit.bor(FCVAR_ARCHIVE), "Melee damage" )
-SWARM_CV_Sentinel_BleedDur = CreateConVar("swarm_sentinel_bleedduration", 6, bit.bor(FCVAR_ARCHIVE), "Bleeding duration" )
+SWARM_CV_Sentinel_MeleeDmg = CreateConVar("zc_swarm_sentinel_meleedmg", 15, bit.bor(FCVAR_ARCHIVE), "Melee damage" )
+SWARM_CV_Sentinel_BleedDur = CreateConVar("zc_swarm_sentinel_bleedduration", 6, bit.bor(FCVAR_ARCHIVE), "Bleeding duration" )
 
 
 AddCSLuaFile()

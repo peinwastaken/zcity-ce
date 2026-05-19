@@ -22,11 +22,11 @@ end]]
 hg.bloodparticles1 = hg.bloodparticles1 or {}
 hg.bloodparticles2 = hg.bloodparticles2 or {}
 local vecZero = Vector(0, 0, 0)
-if not ConVarExists("hg_blood_fps") then
-	CreateClientConVar("hg_blood_fps", 24, true, nil, "fps to draw blood", 12, 165)
+if not ConVarExists("zc_blood_fps") then
+	CreateClientConVar("zc_blood_fps", 24, true, nil, "fps to draw blood", 12, 165)
 end
 local function addBloodPart(pos, vel, mat, w, h, artery, kishki, owner)
-	--local fps = 1 / hg_blood_fps:GetInt() * 1
+	--local fps = 1 / zc_blood_fps:GetInt() * 1
 	--if lastplaced + fps > SysTime() then return end
 	--lastplaced = SysTime()
 	if LocalPlayer():GetNetVar("disappearance", nil) or (IsValid(owner) and owner:GetNetVar("disappearance", nil)) then return end
@@ -65,14 +65,14 @@ hg.addBloodPart2 = addBloodPart2
 
 local Rand = math.Rand
 
-local hg_bloodimpacts = ConVarExists("hg_bloodimpacts") and GetConVar("hg_bloodimpacts") or CreateConVar("hg_bloodimpacts", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Enable custom blood impact effects spray cool kill death", 0, 1)
+local zc_bloodimpacts = ConVarExists("zc_bloodimpacts") and GetConVar("zc_bloodimpacts") or CreateConVar("zc_bloodimpacts", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Enable custom blood impact effects spray cool kill death", 0, 1)
 
 local function impact(pos,vel,mul)
 	local max = math.min(mul,8)
 	local iters = math.ceil(math.random(1, max) * 2.5)
 	local velnorm = -vel:GetNormalized() * 5
 
-	if hg_bloodimpacts:GetBool() then
+	if zc_bloodimpacts:GetBool() then
 		addBloodPart2(pos + velnorm, -vel + Vector(Rand(-10, 10), Rand(-10, 10), Rand(-10, 10)) * 5, nil, 25, 25, 0.3)
 		addBloodPart2(pos + velnorm, -vel / 2 + Vector(Rand(-10, 10), Rand(-10, 10), Rand(-10, 10)) * 5, nil, 25, 25, 0.3)
 		addBloodPart2(pos + velnorm, -vel / 3 + Vector(Rand(-10, 10), Rand(-10, 10), Rand(-10, 10)) * 5, nil, 25, 25, 0.3)

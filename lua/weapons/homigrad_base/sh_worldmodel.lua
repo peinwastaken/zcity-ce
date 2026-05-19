@@ -94,7 +94,7 @@ local math_ApproachAngle = math.ApproachAngle
 
 SWEP.prankang = Angle(0,0,0)
 
-local hg_setzoompos = CreateClientConVar("hg_setzoompos", "0", false, false, "settingzoom", 0, 1)
+local zc_setzoompos = CreateClientConVar("zc_setzoompos", "0", false, false, "settingzoom", 0, 1)
 
 local localPos = Vector()
 local localAng = Angle()
@@ -103,7 +103,7 @@ function SWEP:RestedAnim(pos, ang, dtime)
     return pos, ang
 end
 
-CreateClientConVar("hg_gary", "0", false, true, "center weapon in fake", 0, 1)
+CreateClientConVar("zc_gary", "0", false, true, "center weapon in fake", 0, 1)
 
 function SWEP:PosAngChanges(ply, desiredPos, desiredAng, bNoAdditional, closeanim, dtime)
 	desiredPos = desiredPos or vecZero
@@ -133,7 +133,7 @@ function SWEP:PosAngChanges(ply, desiredPos, desiredAng, bNoAdditional, closeani
 	local ang = wepang
 
 	if ent ~= ply then
-		local gary = math.Round(ply:GetInfoNum("hg_gary", 0)) == 1
+		local gary = math.Round(ply:GetInfoNum("zc_gary", 0)) == 1
 
 		local att_Ang = ent:GetBoneMatrix(ent:LookupBone("ValveBiped.Bip01_Head1")):GetAngles()
 		att_Ang:RotateAroundAxis(att_Ang:Up(), -90)
@@ -159,7 +159,7 @@ function SWEP:PosAngChanges(ply, desiredPos, desiredAng, bNoAdditional, closeani
 
 	local pranktime = CurTime() / 20
 
-	if not (IsValid(lply) and lply:IsSuperAdmin() and hg_setzoompos:GetBool()) then
+	if not (IsValid(lply) and lply:IsSuperAdmin() and zc_setzoompos:GetBool()) then
 		self.prankang[2] = 4 * math.cos(pranktime) * math.sin(pranktime - 2) * math.cos(pranktime + 1)
 		self.prankang[1] = 2 * math.sin(pranktime) * math.sin(pranktime - 5) * math.cos(pranktime + 15)
 	end

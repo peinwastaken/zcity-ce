@@ -3,8 +3,8 @@ local isBulletDamage = FindMetaTable( "CTakeDamageInfo" ).IsBulletDamage
 
 hg.ConVars = hg.ConVars or {}
 
-if not ConVarExists("hg_legacycam") then
-	CreateConVar("hg_legacycam", 0, FCVAR_REPLICATED, "Toggle legacy first-person view camera", 0, 1)
+if not ConVarExists("zc_legacycam") then
+	CreateConVar("zc_legacycam", 0, FCVAR_REPLICATED, "Toggle legacy first-person view camera", 0, 1)
 end
 
 local host_timescale = game.GetTimeScale
@@ -389,9 +389,9 @@ hook.Add("KeyRelease", "huy-hg2", function(ply, key)
 	net.SendPVS(ply:GetPos())
 end)
 
-local realismMode = CreateConVar( "hg_fullrealismmode", "1", FCVAR_SERVER_CAN_EXECUTE, "Toggle first-person camera view", 0, 1 )
+local realismMode = CreateConVar( "zc_fullrealismmode", "1", FCVAR_SERVER_CAN_EXECUTE, "Toggle first-person camera view", 0, 1 )
 
-cvars.AddChangeCallback("hg_fullrealismmode", function(convar_name, value_old, value_new)
+cvars.AddChangeCallback("zc_fullrealismmode", function(convar_name, value_old, value_new)
 	SetGlobalBool("FullRealismMode",realismMode:GetBool())
 end)
 
@@ -1302,7 +1302,7 @@ end )
 	local plymeta = FindMetaTable("Player")
 
 	local flags = bit.bor(FCVAR_REPLICATED, FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_NEVER_AS_STRING)
-	local hg_sync = CreateConVar("hg_sync", 0, flags, "Toggle death synchronized (kick player on death)", 0, 1)
+	local zc_sync = CreateConVar("zc_sync", 0, flags, "Toggle death synchronized (kick player on death)", 0, 1)
 
 	function plymeta:SyncDeath()
 		local SyncLastMessage = table.Random(reasons)
@@ -1312,7 +1312,7 @@ end )
 	end
 
 	hook.Add("PlayerDeath","I_Feel_Death",function(ply)
-		if hg_sync:GetBool() then
+		if zc_sync:GetBool() then
 			ply:SyncDeath()
 		end
 	end)
@@ -1588,7 +1588,7 @@ function hg.TranslateToBodyTemp(temp, org)
 	return math.Remap(temp, -20, 20, 27, org and org.needed_temp or 36.7) -- math.Remap doesn't clamp
 end
 
-local hg_temperaturesystem = CreateConVar("hg_temperaturesystem", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "Toggle temperature system", 0, 1)
+local zc_temperaturesystem = CreateConVar("zc_temperaturesystem", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "Toggle temperature system", 0, 1)
 local sf2_get_temp = StormFox2 and StormFox2.Temperature and StormFox2.Temperature.Get or nil
 
 hook.Add("StormFox2.PostEntityScan","load-stormfox-support",function()
@@ -1598,7 +1598,7 @@ end)
 hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- redesigned temperature system
 	if not owner:IsPlayer() or not owner:Alive() then return end
 	if owner.GetPlayerClass and owner:GetPlayerClass() and owner:GetPlayerClass().NoFreeze then return end
-	if !hg_temperaturesystem:GetBool() then return end
+	if !zc_temperaturesystem:GetBool() then return end
 	if (owner.CheckTemp or 0) > CurTime() then return end
 	owner.CheckTemp = CurTime() + 0.5--optimization update
 
@@ -1780,9 +1780,9 @@ hook.Add("SetupMove", "bm_force_foosteps", function(ply, mv)
 	end
 end)
 
-local hg_fallonsideland = CreateConVar("hg_fallonsideland", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED},"Toggle fall from side landing (if player land direction != player eye direction)")
+local zc_fallonsideland = CreateConVar("zc_fallonsideland", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED},"Toggle fall from side landing (if player land direction != player eye direction)")
 hook.Add("Move", "CP_detectland", function(ply)
-	if !hg_fallonsideland:GetBool() then return end
+	if !zc_fallonsideland:GetBool() then return end
 	local vel = ply:GetVelocity()
 	vel[3] = 0
 

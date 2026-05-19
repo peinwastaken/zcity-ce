@@ -331,10 +331,10 @@ hook.Add("Post Post Pre Post Processing", "ShowScreens", function()
 end)
 
 
-local hg_potatopc
+local zc_potatopc
 local old = false
 local tinnitusSoundFactor
-local hg_gopro = ConVarExists("hg_gopro") and GetConVar("hg_gopro") or CreateClientConVar("hg_gopro", "0", true, false, "Toggle GoPro-like first-person camera view", 0, 1)
+local zc_gopro = ConVarExists("zc_gopro") and GetConVar("zc_gopro") or CreateClientConVar("zc_gopro", "0", true, false, "Toggle GoPro-like first-person camera view", 0, 1)
 hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 	local spect = IsValid(lply:GetNWEntity("spect")) and lply:GetNWEntity("spect")
 	local organism = lply:Alive() and lply.organism or (viewmode == 1 and IsValid(spect) and spect.organism) or {}
@@ -389,10 +389,10 @@ hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 	end
 
 	--maybe 56, 30?
-	local normaldsp = hg_gopro:GetBool() and 55 or 0
+	local normaldsp = zc_gopro:GetBool() and 55 or 0
 	lply:SetDSP(normaldsp)
 
-	if otrub or ((fakeTimer and fakeTimer - 2 > CurTime()) and GetConVar("hg_deathfadeout"):GetBool()) then
+	if otrub or ((fakeTimer and fakeTimer - 2 > CurTime()) and GetConVar("zc_deathfadeout"):GetBool()) then
 		--if otrub or (fakeTimer and fakeTimer - 2 > CurTime()) then
 		clr_black1.a = math.Clamp(pain / 50 * 255, 250, 255)
 		//lply:ScreenFade( SCREENFADE.IN, clr_black2, 2, 0.5 )
@@ -472,8 +472,8 @@ hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 			end
 		end
 	end
-	hg_potatopc = hg_potatopc or hg.ConVars.potatopc
-	local potato = hg_potatopc:GetBool()
+	zc_potatopc = zc_potatopc or hg.ConVars.potatopc
+	local potato = zc_potatopc:GetBool()
 	if (k1 > 0) or (k2 > 0) or (k3 > 0) or brain > 0 then
 		if !potato then
 			DrawToyTown(2, (k3 * 3 + k2 * 1 + brain * 10) * ScrH() / 2)
@@ -645,14 +645,14 @@ function hg.applyFountain(pos, ang, mul, mul2, forward, ent)
 	end
 end
 
-local hg_old_blood = ConVarExists("hg_old_blood") and GetConVar("hg_old_blood") or CreateClientConVar("hg_old_blood", 0, true, false, "new decals, or old", 0, 1)
+local zc_old_blood = ConVarExists("zc_old_blood") and GetConVar("zc_old_blood") or CreateClientConVar("zc_old_blood", 0, true, false, "new decals, or old", 0, 1)
 local vecTorso = Vector(1, 1, 1)
 local checkpulsebones = {
 	["ValveBiped.Bip01_Head1"] = true,
 	["ValveBiped.Bip01_R_Hand"] = true,
 	["ValveBiped.Bip01_L_Hand"] = true,
 }
-local hg_blood_fps = ConVarExists("hg_blood_fps") and GetConVar("hg_blood_fps") or CreateClientConVar("hg_blood_fps", 24, true, nil, "fps to draw blood", 12, 165)
+local zc_blood_fps = ConVarExists("zc_blood_fps") and GetConVar("zc_blood_fps") or CreateClientConVar("zc_blood_fps", 24, true, nil, "fps to draw blood", 12, 165)
 
 local pitchAddClasses = {
 	["headcrabzombie"] = -60
@@ -661,7 +661,7 @@ local muffedClasses = {
 	["headcrabzombie"] = true
 }
 
-local hg_heartbeat_volume = ConVarExists("hg_heartbeat_volume") and GetConVar("hg_heartbeat_volume") or CreateClientConVar("hg_heartbeat_volume", 1, true, nil, "heartbeat loudness", 0, 4)
+local zc_heartbeat_volume = ConVarExists("zc_heartbeat_volume") and GetConVar("zc_heartbeat_volume") or CreateClientConVar("zc_heartbeat_volume", 1, true, nil, "heartbeat loudness", 0, 4)
 
 hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, ent, time)
 	--local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
@@ -763,7 +763,7 @@ hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, en
 	local org = ent.organism or {}
 	local owner = ent
 
-	local beatsPerSecond = math.max(min(30 / math.max(org.pulse or 70,2), 4), 0.1) * (!hg_old_blood:GetBool() and 0.3 or 1)
+	local beatsPerSecond = math.max(min(30 / math.max(org.pulse or 70,2), 4), 0.1) * (!zc_old_blood:GetBool() and 0.3 or 1)
 
 	if org.pulse and org.heartbeat > 30 and (org.lastpulse or 0) + (1 / math.Clamp(org.heartbeat, 1, 600)) * 60 < CurTime() then
 		org.lastpulse = CurTime()
@@ -779,7 +779,7 @@ hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, en
 		if dist < 64 * 64 and ((ply == lply and !checkingplayer) or checkingplayer) then
 			local vol = checkingplayer and 2 or ((pain > 60 and ply == lply) and 1 or (pulse > 200 and ((200 - 95) / 50 + 0.12 - (pulse - 200) / 1000) or pulse > 95 and (pulse - 95) / 50 + 0.12 or 0.12))
 			if not checkingplayer then
-				vol = math.Clamp(vol, 0, 0.7) * hg_heartbeat_volume:GetFloat()
+				vol = math.Clamp(vol, 0, 0.7) * zc_heartbeat_volume:GetFloat()
 			end
 
 			--ply:EmitSound("heartbeat/heartbeat_single.wav", 55, 60, vol)
@@ -866,7 +866,7 @@ hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, en
 							hg.addBloodPart(pos, VectorRand(-15, 15), nil, size, size, false, nil, ent)
 						end
 
-						wound[5] = time + (water and 2 or (math.Rand(0, 1) * (!hg_old_blood:GetBool() and 0.5 or 1) / wound[1] * 15))
+						wound[5] = time + (water and 2 or (math.Rand(0, 1) * (!zc_old_blood:GetBool() and 0.5 or 1) / wound[1] * 15))
 					else
 						local pos = ent:GetPos()
 
@@ -877,7 +877,7 @@ hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, en
 							hg.addBloodPart(pos, VectorRand(-15, 15), nil, size, size, false, nil, ent)
 						end
 
-						wound[5] = time + (water and 2 or (math.Rand(0, 1) * (!hg_old_blood:GetBool() and 0.5 or 1) / wound[1] * 15))
+						wound[5] = time + (water and 2 or (math.Rand(0, 1) * (!zc_old_blood:GetBool() and 0.5 or 1) / wound[1] * 15))
 					end
 				end
 			end
@@ -917,7 +917,7 @@ hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, en
 							hg.addBloodPart(pos, VectorRand(-1, 1) * (org.pulse or 70) / 70 + dir * 5 * (math.abs(math.sin(CurTime() * 2) + math.cos(CurTime() * (5 + i * 2)) + math.sin(CurTime() * (1 + i))) * 0.6 + math.sin(CurTime() * 2) + 4) * 0.1 + dir:Angle():Right() * 25 * math.sin(CurTime() * 2) * math.cos(CurTime() * 4) + ang:Up() * 25 * math.sin(CurTime() * 3) * math.cos(CurTime() * 1) + VectorRand(-1, 1) * (org.pulse or 70) / 70, nil, size, size, true, nil, ent)
 						end
 
-						wound[5] = time + (water and 2 or (0.5 * 1 / hg_blood_fps:GetInt()))
+						wound[5] = time + (water and 2 or (0.5 * 1 / zc_blood_fps:GetInt()))
 					else
 						local pos = ent:GetPos()
 

@@ -1,6 +1,6 @@
 local MODE = MODE
 
-local deathmatch_nozone = ConVarExists("deathmatch_nozone") and GetConVar("deathmatch_nozone") or CreateConVar("deathmatch_nozone", 0, FCVAR_REPLICATED, "Allows to disable deathmatch mode zone.", 0, 1)
+local zc_deathmatch_nozone = ConVarExists("zc_deathmatch_nozone") and GetConVar("zc_deathmatch_nozone") or CreateConVar("zc_deathmatch_nozone", 0, FCVAR_REPLICATED, "Allows to disable deathmatch mode zone.", 0, 1)
 
 MODE.name = "dm"
 MODE.PrintName = "Deathmatch"
@@ -223,7 +223,7 @@ hook.Add("Think","bober",function(ply)
 	if not rnd or rnd.name != "dm" then return end
 	if (zb.ROUND_START or CurTime()) + 20 > CurTime() then return end
 	if cooldown > CurTime() then return end
-	if deathmatch_nozone:GetBool() then return end
+	if zc_deathmatch_nozone:GetBool() then return end
 	cooldown = CurTime() + 0.5
 
 	local pos = zonepoint

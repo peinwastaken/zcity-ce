@@ -30,9 +30,9 @@ local tab2 = {
 
 local cc = Material( "effects/shaders/merc_chromaticaberration" )
 
-local offset = CreateClientConVar("berserk_offset", "0.85", true, false, "Set berserk music offset from start", 0, 5)
-local bpm = CreateClientConVar("berserk_bpm", "70", true, false, "Set berserk effect bpm", 1, 280)
-local path = CreateClientConVar("berserk_path", "sound/zbattle/pharmacia.mp3", true, false, "Set berserk effect music path")
+local offset = CreateClientConVar("zc_berserk_offset", "0.85", true, false, "Set berserk music offset from start", 0, 5)
+local bpm = CreateClientConVar("zc_berserk_bpm", "70", true, false, "Set berserk effect bpm", 1, 280)
+local path = CreateClientConVar("zc_berserk_path", "sound/zbattle/pharmacia.mp3", true, false, "Set berserk effect music path")
 
 hook.Add("RenderScreenspaceEffects", "berserkEffect", function()
 	local organism = lply:Alive() and lply.organism

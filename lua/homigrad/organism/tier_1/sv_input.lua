@@ -299,10 +299,10 @@ local headcrabsmodels = {
 	["npc_headcrab_black"] = "models/headcrabblack.mdl",
 }
 
-local hg_norespawn = ConVarExists("hg_norespawn") and GetConVar("hg_norespawn") or CreateConVar("hg_norespawn",0,FCVAR_SERVER_CAN_EXECUTE,"Disable respawns in any gamemode (useful for hg_sync)",0,1)
+local zc_norespawn = ConVarExists("zc_norespawn") and GetConVar("zc_norespawn") or CreateConVar("zc_norespawn",0,FCVAR_SERVER_CAN_EXECUTE,"Disable respawns in any gamemode (useful for zc_sync)",0,1)
 
 hook.Add("PlayerDeathThink","stoprespawning",function()
-	if hg_norespawn:GetBool() then return true end
+	if zc_norespawn:GetBool() then return true end
 end)
 
 util.AddNetworkString("hg_bloodimpact")
@@ -361,8 +361,8 @@ function hg.ExplodeHead(ent)
 	end)
 end
 
-if not ConVarExists("hg_bloodimpacts") then
-	CreateConVar("hg_bloodimpacts", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Enable custom blood impact effects spray cool kill death", 0, 1)
+if not ConVarExists("zc_bloodimpacts") then
+	CreateConVar("zc_bloodimpacts", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Enable custom blood impact effects spray cool kill death", 0, 1)
 end
 
 local net, math, hg, IsValid = net, math, hg, IsValid
@@ -961,7 +961,7 @@ hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
 	if org.isPly then
 		hook.Run("Org Think Call", ply, org)
 
-		if (not ply:Alive() or not org.alive) and (math.Round(ply:GetInfoNum("hg_deathfadeout", 1)) == 1) then// or org.otrub or hg.organism.paincheck(org) or (ply:Health() <= 0) then
+		if (not ply:Alive() or not org.alive) and (math.Round(ply:GetInfoNum("zc_deathfadeout", 1)) == 1) then// or org.otrub or hg.organism.paincheck(org) or (ply:Health() <= 0) then
 			if org.skull == 1 then
 				//ent:SetNWString("PlayerName", "Unidentifiable person")
 			end
@@ -1347,7 +1347,7 @@ local function velocityDamage(ent, data)
 	if org.isPly and ply then
 		hook.Run("Org Think Call", ply, org)
 
-		if (not ply:Alive() or not org.alive) and (math.Round(ply:GetInfoNum("hg_deathfadeout", 1)) == 1) then// or org.otrub or hg.organism.paincheck(org) or (ply:Health() <= 0) then
+		if (not ply:Alive() or not org.alive) and (math.Round(ply:GetInfoNum("zc_deathfadeout", 1)) == 1) then// or org.otrub or hg.organism.paincheck(org) or (ply:Health() <= 0) then
 			if org.skull == 1 then
 				//ent:SetNWString("PlayerName", "Unidentifiable person")
 			end

@@ -48,9 +48,9 @@ local math_random = math.random
 		["npc_citizen"] = {"Refugee", Vector(255, 155, 0) / 255}
 	}
 
-	local hg_noorganismnpcs = CreateConVar("hg_noorganismnpcs", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "NPCs will NOT have organism system like the players", 0, 1)
+	local zc_noorganismnpcs = CreateConVar("zc_noorganismnpcs", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "NPCs will NOT have organism system like the players", 0, 1)
 	hook.Add("OnEntityCreated", "npcorg", function(ent)
-		if hg_noorganismnpcs:GetBool() then return end
+		if zc_noorganismnpcs:GetBool() then return end
 		if not IsValid(ent) then return end
 
 		local class = ent:GetClass()
@@ -166,7 +166,7 @@ local math_random = math.random
 	-- 	return startValue + (endValue - startValue) * progress
 	-- end
 
-	-- local hg_zombtwitching = CreateConVar("hg_zombtwitching", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "Zombies & barnacle will twitch and deformate", 0, 1)
+	-- local zc_zombtwitching = CreateConVar("zc_zombtwitching", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "Zombies & barnacle will twitch and deformate", 0, 1)
 	-- local function applySmoothLerp(npc, boneID, startAngles, endAngles, startPosition, endPosition, startScale, endScale, duration)
 	-- 	local startTime = CurTime()
 	-- 	if not IsValid(npc) then return end
@@ -303,7 +303,7 @@ local math_random = math.random
 	-- 	applyTwitchEffect(npc, params)
 
 	-- 	timer.Create("ZombTwitch_" .. npc:EntIndex(), math_random(12) / 4, 0, function()
-	-- 		if not IsValid(npc) or not hg_zombtwitching:GetBool() then
+	-- 		if not IsValid(npc) or not zc_zombtwitching:GetBool() then
 	-- 			timer.Remove("ZombTwitch_" .. npc:EntIndex())
 	-- 			return
 	-- 		end
@@ -313,7 +313,7 @@ local math_random = math.random
 	-- end
 
 	-- hook.Add("OnEntityCreated", "ZombTwitch", function(ent)
-	-- 	if IsValid(ent) and ent:IsNPC() and hg_zombtwitching:GetBool() then
+	-- 	if IsValid(ent) and ent:IsNPC() and zc_zombtwitching:GetBool() then
 	-- 		timer.Simple(0, function()
 	-- 			handleNPCSpawn(ent)
 	-- 		end)
@@ -322,7 +322,7 @@ local math_random = math.random
 --\\
 
 --\\ Tough NPCs
-	local hg_toughnpcs = CreateConVar("hg_toughnpcs", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "Toggle more health for npcs", 0, 1)
+	local zc_toughnpcs = CreateConVar("zc_toughnpcs", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "Toggle more health for npcs", 0, 1)
 	local npcToBuff = {
 		["npc_metropolice"] = 100,
 		["npc_combine_s"] = 150,
@@ -344,7 +344,7 @@ local math_random = math.random
 	}
 	hook.Add("OnEntityCreated", "toughnpcs", function(ent)
 		timer.Simple(0.2, function()
-			if hg_toughnpcs:GetBool() and IsValid(ent) and ent:IsNPC() and npcToBuff[ent:GetClass()] then
+			if zc_toughnpcs:GetBool() and IsValid(ent) and ent:IsNPC() and npcToBuff[ent:GetClass()] then
 				ent:SetHealth(npcToBuff[ent:GetClass()])
 				ent:SetMaxHealth(npcToBuff[ent:GetClass()])
 				ent:SetPlaybackRate(2)
@@ -357,7 +357,7 @@ local math_random = math.random
 --\\ Fall damage for NPCs
 	local vecforce = Vector(5000, 5000, -30000)
 	hook.Add("Think", "NPCFallDamageTracker", function()
-		if hg_noorganismnpcs:GetBool() then return end
+		if zc_noorganismnpcs:GetBool() then return end
 		for _, npc in ipairs(ents.GetAll()) do
 			if not IsValid(npc) then continue end
 			if not npc:IsNPC() or not lootNPCs[npc:GetClass()] then continue end

@@ -116,10 +116,10 @@ end
 function SWEP:SecondaryAttack()
 end
 
-local hg_healanims = ConVarExists("hg_healanims") and GetConVar("hg_healanims") or CreateConVar("hg_healanims", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
+local zc_healanims = ConVarExists("zc_healanims") and GetConVar("zc_healanims") or CreateConVar("zc_healanims", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
 
 function SWEP:Think()
-	if (not self:GetOwner():KeyDown(IN_ATTACK) or self.CDEating > CurTime()) and hg_healanims:GetBool() then
+	if (not self:GetOwner():KeyDown(IN_ATTACK) or self.CDEating > CurTime()) and zc_healanims:GetBool() then
 		self:SetHolding(math.max(self:GetHolding() - 10, 0))
 	end
 end
@@ -161,7 +161,7 @@ if SERVER then
 		if self.CDEating > CurTime() then return end
 
 		local owner = self:GetOwner()
-		if ent == hg.GetCurrentCharacter(owner) and hg_healanims:GetBool() then
+		if ent == hg.GetCurrentCharacter(owner) and zc_healanims:GetBool() then
 			self:SetHolding(math.min(self:GetHolding() + 10, 100))
 
 			if self:GetHolding() < 100 then

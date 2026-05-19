@@ -2,8 +2,8 @@ zb = zb or {}
 include("shared.lua")
 include("loader.lua")
 
-if not ConVarExists("hg_newspectate") then
-    CreateClientConVar("hg_newspectate", "1", true, false, "Enables smooth spectator camera transitions", 0, 1)
+if not ConVarExists("zc_newspectate") then
+    CreateClientConVar("zc_newspectate", "1", true, false, "Enables smooth spectator camera transitions", 0, 1)
 end
 
 function CurrentRound()
@@ -46,15 +46,15 @@ end)
 
 local blur = Material("pp/blurscreen")
 local blursettings = {}
-local hg_potatopc
+local zc_potatopc
 hg = hg or {}
 function hg.DrawBlur(panel, amount, passes, alpha)
 	if is3d2d then return end
 	amount = amount or 5
-	hg_potatopc = hg_potatopc or hg.ConVars.potatopc
+	zc_potatopc = zc_potatopc or hg.ConVars.potatopc
 
 	// old blur
-	if(hg_potatopc:GetBool())then
+	if(zc_potatopc:GetBool())then
 		surface.SetDrawColor(0, 0, 0, alpha or (amount * 20))
 		surface.DrawRect(0, 0, panel:GetWide(), panel:GetTall())
 	else
@@ -219,8 +219,8 @@ hook.Add("HG_CalcView", "ZCityDeathSpectateView", function(ply, pos, angles, fov
 		ang[3] = 0
 
 		local view
-		local hg_newspectate = GetConVar("hg_newspectate")
-		if hg_newspectate and hg_newspectate:GetBool() then
+		local zc_newspectate = GetConVar("zc_newspectate")
+		if zc_newspectate and zc_newspectate:GetBool() then
 			if not lply.spectLastPos then
 				lply.spectLastPos = pos
 				lply.spectLastAng = ang
@@ -309,13 +309,13 @@ hook.Add("Player Disconnected","retrymenu",function(data)
 	end
 end)
 
---local hg_coolvetica = ConVarExists("hg_coolvetica") and GetConVar("hg_coolvetica") or CreateClientConVar("hg_coolvetica", "0", true, false, "changes every text to coolvetica because its good", 0, 1)
-local hg_font = ConVarExists("hg_font") and GetConVar("hg_font") or CreateClientConVar("hg_font", "Bahnschrift", true, false, "Change UI text font")
-local font = function() -- hg_coolvetica:GetBool() and "Coolvetica" or "Bahnschrift"
+--local zc_coolvetica = ConVarExists("zc_coolvetica") and GetConVar("zc_coolvetica") or CreateClientConVar("zc_coolvetica", "0", true, false, "changes every text to coolvetica because its good", 0, 1)
+local zc_font = ConVarExists("zc_font") and GetConVar("zc_font") or CreateClientConVar("zc_font", "Bahnschrift", true, false, "Change UI text font")
+local font = function() -- zc_coolvetica:GetBool() and "Coolvetica" or "Bahnschrift"
     local usefont = "Bahnschrift"
 
-    if hg_font:GetString() != "" then
-        usefont = hg_font:GetString()
+    if zc_font:GetString() != "" then
+        usefont = zc_font:GetString()
     end
 
     return usefont
@@ -841,7 +841,7 @@ function GM:ScoreboardHide()
 		scoreBoardMenu = nil
 	end
 end
-local AdminShowVoiceChat = CreateClientConVar("zb_admin_show_voicechat","0",false,false,"Show voicechat panels for admins",0,1)
+local AdminShowVoiceChat = CreateClientConVar("zc_admin_show_voicechat","0",false,false,"Show voicechat panels for admins",0,1)
 hook.Add("PlayerStartVoice", "showVoicePanels", function(ply)
 	if !IsValid(ply) then return end
 	if LocalPlayer():IsAdmin() and AdminShowVoiceChat:GetBool() then return end

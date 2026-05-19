@@ -6,9 +6,9 @@ MODE.ROUND_TIME = 9000
 hg.NextMap = ""
 
 
-local coop_rts = CreateConVar("zb_coop_rts", "1", FCVAR_PROTECTED, "Toggle NPC rebel possess in Half-Life 2 CO-OP mode", 0, 1)
-local coop_rts_cmb = CreateConVar("zb_coop_rts_cmb", "1", FCVAR_PROTECTED, "Toggle NPC combine possess in Half-Life 2 CO-OP mode if zb_coop_rts is enabled", 0, 1)
-local coop_rts_zmb = CreateConVar("zb_coop_rts_zmb", "0", FCVAR_PROTECTED, "Toggle NPC zombie possess in Half-Life 2 CO-OP mode if zb_coop_rts is enabled", 0, 1) --!! WIP
+local coop_rts = CreateConVar("zc_coop_rts", "1", FCVAR_PROTECTED, "Toggle NPC rebel possess in Half-Life 2 CO-OP mode", 0, 1)
+local coop_rts_cmb = CreateConVar("zc_coop_rts_cmb", "1", FCVAR_PROTECTED, "Toggle NPC combine possess in Half-Life 2 CO-OP mode if zc_coop_rts is enabled", 0, 1)
+local coop_rts_zmb = CreateConVar("zc_coop_rts_zmb", "0", FCVAR_PROTECTED, "Toggle NPC zombie possess in Half-Life 2 CO-OP mode if zc_coop_rts is enabled", 0, 1) --!! WIP
 
 MODE.LootSpawn = false
 
@@ -202,7 +202,7 @@ end
 function MODE:ZB_OnEntCreated( ent )
 end
 
-CreateConVar("zb_coop_autochangelevel", "1", FCVAR_PROTECTED, "Toggle auto changelevel in Half-Life 2 CO-OP mode", 0, 1)
+CreateConVar("zc_coop_autochangelevel", "1", FCVAR_PROTECTED, "Toggle auto changelevel in Half-Life 2 CO-OP mode", 0, 1)
 
 function MODE:ShouldRoundEnd()
 
@@ -502,14 +502,14 @@ local zombieNPCClasses = {
     ["npc_zombie"] = true,
 }
 
-local zb_coop_maxpossesses = ConVarExists("zb_coop_maxpossesses") and GetConVar("zb_coop_maxpossesses") or CreateConVar("zb_coop_maxpossesses",3,FCVAR_SERVER_CAN_EXECUTE,"Max NPC possession amount in Half-Life 2 CO-OP round",1,100)
+local zc_coop_maxpossesses = ConVarExists("zc_coop_maxpossesses") and GetConVar("zc_coop_maxpossesses") or CreateConVar("zc_coop_maxpossesses",3,FCVAR_SERVER_CAN_EXECUTE,"Max NPC possession amount in Half-Life 2 CO-OP round",1,100)
 
 local function CanPossessNPC(ply, npc)
     if not IsValid(ply) or not IsValid(npc) then return false end
     if ply:Alive() then return false end
     if CurrentRound().name ~= "coop" then return false end
     if not coop_rts:GetBool() then return false end
-    if (ply.RTSUses or 0) >= zb_coop_maxpossesses:GetInt() and not ply:IsAdmin() then return false end
+    if (ply.RTSUses or 0) >= zc_coop_maxpossesses:GetInt() and not ply:IsAdmin() then return false end
 
     local npcClass = npc:GetClass()
     if friendlyNPCClasses[npcClass] then return true end
@@ -616,7 +616,7 @@ hook.Add("PlayerButtonDown", "checks", function(ply, button)
     if CurrentRound().name ~= "coop" then return end
     if not coop_rts:GetBool() then return end
     if ply:Alive() then return end
-    if (ply.RTSUses or 0) >= zb_coop_maxpossesses:GetInt() and not ply:IsAdmin() then return end
+    if (ply.RTSUses or 0) >= zc_coop_maxpossesses:GetInt() and not ply:IsAdmin() then return end
 
     local observeTarget = ply:GetObserverTarget()
     local searchPos

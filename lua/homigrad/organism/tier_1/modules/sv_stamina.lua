@@ -1,5 +1,5 @@
 local min, max = math.min, math.max
-local hg_organism_stamina_sprint_mul = CreateConVar("hg_organism_stamina_sprint_mul","1",{FCVAR_ARCHIVE,FCVAR_NOTIFY,FCVAR_NEVER_AS_STRING},"Multiply stamina drain when sprinting",0,10)
+local zc_organism_stamina_sprint_mul = CreateConVar("zc_organism_stamina_sprint_mul","1",{FCVAR_ARCHIVE,FCVAR_NOTIFY,FCVAR_NEVER_AS_STRING},"Multiply stamina drain when sprinting",0,10)
 hg.organism.module.stamina = {}
 local module = hg.organism.module.stamina
 module[1] = function(org)
@@ -25,7 +25,7 @@ module[1] = function(org)
 	org.moveMaxSpeed = IsValid(owner) and owner:IsPlayer() and owner:GetMaxSpeed() or 250
 end
 
-local hg_infstamina = CreateConVar("hg_infstamina", "0", FCVAR_ARCHIVE + FCVAR_NOTIFY, "Toggle infinite stamina (excausts only from other organism effects, not from running/attacking)", 0, 1)
+local zc_infstamina = CreateConVar("zc_infstamina", "0", FCVAR_ARCHIVE + FCVAR_NOTIFY, "Toggle infinite stamina (excausts only from other organism effects, not from running/attacking)", 0, 1)
 module[2] = function(owner, org, timeValue)
 	local stamina = org.stamina
 
@@ -33,7 +33,7 @@ module[2] = function(owner, org, timeValue)
 	local velLen = 0
 	if owner:IsPlayer() then
 		local walk = owner:KeyDown(IN_FORWARD) or owner:KeyDown(IN_BACK) or owner:KeyDown(IN_MOVELEFT) or owner:KeyDown(IN_MOVERIGHT)
-		velLen = max(min(owner:GetVelocity():Length(), org.moveMaxSpeed), 0) / (owner:GetRunSpeed() / hg_organism_stamina_sprint_mul:GetFloat())
+		velLen = max(min(owner:GetVelocity():Length(), org.moveMaxSpeed), 0) / (owner:GetRunSpeed() / zc_organism_stamina_sprint_mul:GetFloat())
 		if (owner:OnGround() or owner:WaterLevel() >= 2) and walk and not owner:InVehicle() and owner:IsSprinting() and org.stamina[1] > 20 then
 			stamina.sub = (owner:WaterLevel() >= 2 and 2 or 1) * (velLen ^ 0.5)
 		end
@@ -66,7 +66,7 @@ module[2] = function(owner, org, timeValue)
 		org.adrenalineStorage = math.Approach(org.adrenalineStorage, 5, timeValue / 60 * (org.satiety * 0.01 + 1))
 	end
 
-	if hg_infstamina:GetBool() then
+	if zc_infstamina:GetBool() then
 		stamina.sub = 0
 		stamina[1] = stamina.max
 	end

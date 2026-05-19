@@ -2,12 +2,7 @@ MODE.name = "dm"
 
 local MODE = MODE
 
-
-
-
-local deathmatch_nozone = ConVarExists("deathmatch_nozone") and GetConVar("deathmatch_nozone") or CreateConVar("deathmatch_nozone", 0, FCVAR_REPLICATED, "Allows to disable deathmatch mode zone.", 0, 1)
-
-
+local zc_deathmatch_nozone = ConVarExists("zc_deathmatch_nozone") and GetConVar("zc_deathmatch_nozone") or CreateConVar("zc_deathmatch_nozone", 0, FCVAR_REPLICATED, "Allows to disable deathmatch mode zone.", 0, 1)
 
 net.Receive("dm_start",function()
 	roundend = false
@@ -35,7 +30,7 @@ hook.Add("Think", "ZoneSoundThink", function()
 	if CurrentRound() and CurrentRound().name ~= "dm" then return end
 	local station = zb.SoundStation
 	if not IsValid(station) then return end
-	if deathmatch_nozone:GetBool() then return end
+	if zc_deathmatch_nozone:GetBool() then return end
 	local radius = MODE.GetZoneRadius()
 	local volume = math.Clamp((LocalPlayer():GetPos():Distance(ZonePos) - radius) + 200,0,200) / 200
 	station:SetVolume(volume)
@@ -55,7 +50,7 @@ local mat = Material("hmcd_dmzone")
 
 
 function MODE:PostDrawTranslucentRenderables(bDepth, bSkybox, isDraw3DSkybox)
-	if(!bSkybox and !isDraw3DSkybox) and !deathmatch_nozone:GetBool() then
+	if(!bSkybox and !isDraw3DSkybox) and !zc_deathmatch_nozone:GetBool() then
 		local radius = MODE.GetZoneRadius()
 		render.SetMaterial(mat)
 		render.DrawSphere( ZonePos, -radius, 60, 60, color_white )

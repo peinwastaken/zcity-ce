@@ -2,13 +2,13 @@ if CLIENT then
     hg.GunPositions = hg.GunPositions or {}
     hg.GunPositions[LocalPlayer()] = hg.GunPositions[LocalPlayer()] or {}
 
-    cvars.AddChangeCallback("hg_gunorigin_x", function(convar_name, value_old, value_new)
+    cvars.AddChangeCallback("zc_gunorigin_x", function(convar_name, value_old, value_new)
         hg.GunPositions[LocalPlayer()][1] = value_new
     end,"cback1")
-    cvars.AddChangeCallback("hg_gunorigin_y", function(convar_name, value_old, value_new)
+    cvars.AddChangeCallback("zc_gunorigin_y", function(convar_name, value_old, value_new)
         hg.GunPositions[LocalPlayer()][2] = value_new
     end,"cback2")
-    cvars.AddChangeCallback("hg_gunorigin_z", function(convar_name, value_old, value_new)
+    cvars.AddChangeCallback("zc_gunorigin_z", function(convar_name, value_old, value_new)
         hg.GunPositions[LocalPlayer()][3] = value_new
     end,"cback3")
 end
@@ -25,9 +25,9 @@ if SERVER then
         local NetworkingTable = {}
 
         for _, ply in player.Iterator() do
-            local v1 = math.Clamp(ply:GetInfoNum("hg_gunorigin_x",0),-4,4)
-            local v2 = math.Clamp(ply:GetInfoNum("hg_gunorigin_y",0),-4,4)
-            local v3 = math.Clamp(ply:GetInfoNum("hg_gunorigin_z",0),-4,4)
+            local v1 = math.Clamp(ply:GetInfoNum("zc_gunorigin_x",0),-4,4)
+            local v2 = math.Clamp(ply:GetInfoNum("zc_gunorigin_y",0),-4,4)
+            local v3 = math.Clamp(ply:GetInfoNum("zc_gunorigin_z",0),-4,4)
             local changedtable = hg.GunPositions[ply].ChangedTable or {}
             local gunpostable = {v1,v2,v3,ChangedTable = changedtable}
             hg.GunPositions[ply] = gunpostable
@@ -47,7 +47,7 @@ if SERVER then
     end)
 
     hook.Add("PlayerInitialSpawn", "SendGunPos", function(ply)
-        hg.GunPositions[ply] = {ply:GetInfoNum("hg_gunorigin_x",0),ply:GetInfoNum("hg_gunorigin_y",0),ply:GetInfoNum("hg_gunorigin_z",0)}
+        hg.GunPositions[ply] = {ply:GetInfoNum("zc_gunorigin_x",0),ply:GetInfoNum("zc_gunorigin_y",0),ply:GetInfoNum("zc_gunorigin_z",0)}
         timer.Simple(1, function()
             net.Start("send_positioning")
                 net.WriteTable(hg.GunPositions)

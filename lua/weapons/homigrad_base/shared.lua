@@ -286,14 +286,14 @@ function SWEP:OnRemove()
 	end
 end
 
-local hg_aimtoshoot = ConVarExists("hg_aimtoshoot") and GetConVar("hg_aimtoshoot") or CreateConVar("hg_aimtoshoot", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Toggle DarkRP-like shooting system (aim to shoot)", 0, 1)
+local zc_aimtoshoot = ConVarExists("zc_aimtoshoot") and GetConVar("zc_aimtoshoot") or CreateConVar("zc_aimtoshoot", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Toggle DarkRP-like shooting system (aim to shoot)", 0, 1)
 
 local CurTime = CurTime
 function SWEP:IsZoom()
 	local owner = self:GetOwner()
 	--print( (owner.armors and (hg.armor.head[owner.armors["head"]] and not hg.armor.head[owner.armors["head"]].cantsight)))
 	return self:CanUse() and
-		(!hg_aimtoshoot:GetBool() or self:GetNWBool("aiming")) and
+		(!zc_aimtoshoot:GetBool() or self:GetNWBool("aiming")) and
 		(self:GetButtstockAttack() - CurTime() < -1) and
 		(self:GetOwner():IsPlayer() and self:KeyDown(IN_ATTACK2) and not self:IsSprinting()) and
 		!(self:IsSprinting() and !IsValid(owner.FakeRagdoll)) and
@@ -315,7 +315,7 @@ end
 
 function SWEP:IsSprinting()
 	local ply = self:GetOwner()
-	if hg_aimtoshoot:GetBool() then
+	if zc_aimtoshoot:GetBool() then
 		return not ply:IsNPC() and (self:KeyDown(IN_SPEED) and ply:GetVelocity():LengthSqr() > 150 * 150) or not self:KeyDown(IN_ATTACK2) and not IsValid(ply.FakeRagdoll)
 	else
 		return not ply:IsNPC() and self:KeyDown(IN_SPEED) and ply:GetVelocity():LengthSqr() > 150 * 150 and not IsValid(ply.FakeRagdoll)
@@ -330,12 +330,12 @@ function SWEP:IsLocal2()
 	return CLIENT and self:GetOwner() == LocalPlayer() and LocalPlayer() == GetViewEntity()
 end
 
-local hg_quietshots = GetConVar("hg_quietshots") or CreateClientConVar("hg_quietshots", "0", true, false, "Toggle quieter gun sounds", 0, 1)
-local hg_gunshotvolume = GetConVar("hg_gunshotvolume") or CreateClientConVar("hg_gunshotvolume", "1", true, false, "Modify volume of gun sounds", 0, 1)
-CreateConVar("hg_oldsights", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Disable camera wobble when aiming")
-local hg_coolcamera = ConVarExists("hg_coolcamera") and GetConVar("hg_coolcamera") or CreateConVar("hg_coolcamera", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Cool camera movement", 0, 5)
-if not ConVarExists("hg_coolcameralerpmult") then
-	CreateConVar("hg_coolcameralerpmult", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Cool camera movement lerp multiplier", 0, 5)
+local zc_quietshots = GetConVar("zc_quietshots") or CreateClientConVar("zc_quietshots", "0", true, false, "Toggle quieter gun sounds", 0, 1)
+local zc_gunshotvolume = GetConVar("zc_gunshotvolume") or CreateClientConVar("zc_gunshotvolume", "1", true, false, "Modify volume of gun sounds", 0, 1)
+CreateConVar("zc_oldsights", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Disable camera wobble when aiming")
+local zc_coolcamera = ConVarExists("zc_coolcamera") and GetConVar("zc_coolcamera") or CreateConVar("zc_coolcamera", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Cool camera movement", 0, 5)
+if not ConVarExists("zc_coolcameralerpmult") then
+	CreateConVar("zc_coolcameralerpmult", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Cool camera movement lerp multiplier", 0, 5)
 end
 
 if CLIENT then
@@ -345,8 +345,8 @@ if CLIENT then
 		EmitSound = hg.EmitSound
 	end)
 end
-local hg_gopro = ConVarExists("hg_gopro") and GetConVar("hg_gopro") or CreateClientConVar("hg_gopro", "0", true, false, "Toggle GoPro-like first-person camera view", 0, 1)
-local hg_distortedsounds = ConVarExists("hg_distortedsounds") and GetConVar("hg_distortedsounds") or CreateClientConVar("hg_distortedsounds", "0", true, false, "Toggle distorted sounds for the gunshots", 0, 1)
+local zc_gopro = ConVarExists("zc_gopro") and GetConVar("zc_gopro") or CreateClientConVar("zc_gopro", "0", true, false, "Toggle GoPro-like first-person camera view", 0, 1)
+local zc_distortedsounds = ConVarExists("zc_distortedsounds") and GetConVar("zc_distortedsounds") or CreateClientConVar("zc_distortedsounds", "0", true, false, "Toggle distorted sounds for the gunshots", 0, 1)
 
 local math_random = math.random
 function SWEP:PlaySnd(snd, server, chan, vol, pitch, entity, tripleaffirmative)
@@ -354,7 +354,7 @@ function SWEP:PlaySnd(snd, server, chan, vol, pitch, entity, tripleaffirmative)
 	local owner = self:GetOwner()
 	owner = IsValid(owner) and owner or self
 
-	local dsproom = (hg_distortedsounds:GetBool() or hg_gopro:GetBool()) and 18 or nil
+	local dsproom = (zc_distortedsounds:GetBool() or zc_gopro:GetBool()) and 18 or nil
 	if CLIENT then
 		local view = render.GetViewSetup(true)
 		local time = owner:GetPos():Distance(view.origin) / 17836
@@ -364,7 +364,7 @@ function SWEP:PlaySnd(snd, server, chan, vol, pitch, entity, tripleaffirmative)
 			if type(snd) == "table" then
 				local rand = math.random(-5,5)
 				EmitSound( snd[1], owner:GetPos(), (entity or owner:EntIndex()) + owner:EntIndex(), CHAN_WEAPON, vol, snd[2] or (self.Supressor and 75 or 75), nil, (pitch or 100) + rand, dsproom)
-				if tripleaffirmative and !hg_quietshots:GetBool() then
+				if tripleaffirmative and !zc_quietshots:GetBool() then
 					EmitSound( snd[1], owner:GetPos()-vector_up, (entity or owner:EntIndex()) + 1 + owner:EntIndex(), CHAN_WEAPON, vol, snd[2] or (self.Supressor and 75 or 75), nil, (pitch or 100) + rand, dsproom)
 					EmitSound( snd[1], owner:GetPos(), (entity or owner:EntIndex()) + 2 + owner:EntIndex(), CHAN_WEAPON, vol, (snd[2] or (self.Supressor and 75 or 75)) + 1, nil, (pitch or 100) + rand, dsproom)
 				end
@@ -372,7 +372,7 @@ function SWEP:PlaySnd(snd, server, chan, vol, pitch, entity, tripleaffirmative)
 			else
 				local rand = math.random(-5,5)
 				EmitSound( snd, owner:GetPos(), (entity or owner:EntIndex()) + owner:EntIndex(), CHAN_WEAPON, vol, (self.Supressor and 75 or 75), nil, (pitch or 100) + rand, dsproom)
-				if tripleaffirmative and !hg_quietshots:GetBool() then
+				if tripleaffirmative and !zc_quietshots:GetBool() then
 					EmitSound( snd, owner:GetPos()-vector_up, (entity or owner:EntIndex()) + 1 + owner:EntIndex(), CHAN_WEAPON, vol, (self.Supressor and 75 or 75), nil, (pitch or 100) + rand, dsproom)
 					EmitSound( snd, owner:GetPos(), (entity or owner:EntIndex()) + 2 + owner:EntIndex(), CHAN_WEAPON, vol, ((self.Supressor and 75 or 75)) + 1, nil, (pitch or 100) + rand, dsproom)
 				end
@@ -584,11 +584,11 @@ if SERVER then
 		net.Send(ply)
 	end)
 
-	hg_shoot_tinnitus = ConVarExists("hg_shoot_tinnitus") and GetConVar("hg_shoot_tinnitus") or CreateConVar("hg_shoot_tinnitus","0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Toggle shooting tinnitus")
-	SetGlobalBool("hg_shoot_tinnitus",hg_shoot_tinnitus:GetBool())
+	zc_shoot_tinnitus = ConVarExists("zc_shoot_tinnitus") and GetConVar("zc_shoot_tinnitus") or CreateConVar("zc_shoot_tinnitus","0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Toggle shooting tinnitus")
+	SetGlobalBool("zc_shoot_tinnitus",zc_shoot_tinnitus:GetBool())
 
-	cvars.AddChangeCallback("hg_shoot_tinnitus", function(convar_name, value_old, value_new)
-		SetGlobalBool("hg_shoot_tinnitus",hg_shoot_tinnitus:GetBool())
+	cvars.AddChangeCallback("zc_shoot_tinnitus", function(convar_name, value_old, value_new)
+		SetGlobalBool("zc_shoot_tinnitus",zc_shoot_tinnitus:GetBool())
 	end)
 else
 	net.Receive("resettinnitus", function(len, ply)
@@ -603,12 +603,12 @@ else
 	end)
 end
 
-local hg_highpitchgunfire = ConVarExists("hg_highpitchgunfire") and GetConVar("hg_highpitchgunfire") or CreateClientConVar("hg_highpitchgunfire", "0", true, false, "Toggle high pitched gunfire sounds inside buildings", 0, 1)
+local zc_highpitchgunfire = ConVarExists("zc_highpitchgunfire") and GetConVar("zc_highpitchgunfire") or CreateClientConVar("zc_highpitchgunfire", "0", true, false, "Toggle high pitched gunfire sounds inside buildings", 0, 1)
 
 function SWEP:EmitShoot()
 	if SERVER then return end
 
-	local vol = hg_gunshotvolume:GetFloat()
+	local vol = zc_gunshotvolume:GetFloat()
 	local ply = self:GetOwner()
 	ply = IsValid(ply) and ply or self
 
@@ -645,7 +645,7 @@ function SWEP:EmitShoot()
 		self:PlaySnd("zcitysnd/sound/weapons/firearms/hndg_colt1911/colt_1911_fire1.wav", nil, nil, vol * (insideVal / 16), 150, 51256, true)
 		self:PlaySnd("zcitysnd/sound/weapons/firearms/hndg_colt1911/colt_1911_fire1.wav", nil, nil, vol * (insideVal / 16), 80, 50256, true)
 
-		if hg_highpitchgunfire:GetBool() or hg_gopro:GetBool() then
+		if zc_highpitchgunfire:GetBool() or zc_gopro:GetBool() then
 			self:PlaySnd("grenades/grenade_flash_start_indoor_distant.wav", nil, nil, vol * (insideVal / 16), 80, 50257, true)
 		end
 
@@ -653,7 +653,7 @@ function SWEP:EmitShoot()
 	end
 	local nearDist = (GetViewEntity() == ply or GetViewEntity():GetPos():Distance( self:GetPos() ) < 150)
 
-	if GetGlobalBool("hg_shoot_tinnitus", false) and nearDist and !self.Supressor and !hadEarProtection then
+	if GetGlobalBool("zc_shoot_tinnitus", false) and nearDist and !self.Supressor and !hadEarProtection then
 		local result = hook.Run("ZC_DisableShootTinnitus",lply,insideVal)
 		if !result then
 			lply.TinnitusFactor = (lply.TinnitusFactor or 0) + ( (self.Primary.Force * (self.NumBullet or 1) ) / 3) + insideVal
@@ -716,8 +716,8 @@ if CLIENT then
 		antialias = true
 	})
 
-	dynamicmags = CreateClientConVar("hg_dynamic_mags", "0", true, false, "Enables dynamic ammo show when shooting",0,1)
-	instructions = CreateClientConVar("hg_instructions","1", true, false, "Enables gun instructions",0,1)
+	dynamicmags = CreateClientConVar("zc_dynamic_mags", "0", true, false, "Enables dynamic ammo show when shooting",0,1)
+	instructions = CreateClientConVar("zc_instructions","1", true, false, "Enables gun instructions",0,1)
 end
 
 function SWEP:DrawHUDAdd()
@@ -1058,7 +1058,7 @@ if SERVER then
 	end)
 end
 
-local hg_slings = ConVarExists("hg_slings") and GetConVar("hg_slings") or CreateConVar("hg_slings", 0, FCVAR_SERVER_CAN_EXECUTE + FCVAR_ARCHIVE, "Toggle sling system", 0, 1)
+local zc_slings = ConVarExists("zc_slings") and GetConVar("zc_slings") or CreateConVar("zc_slings", 0, FCVAR_SERVER_CAN_EXECUTE + FCVAR_ARCHIVE, "Toggle sling system", 0, 1)
 
 local vpang1 = Angle(1, -1.5, 2) / 2
 local bashvpang = Angle(-10, 0, 0)
@@ -1148,7 +1148,7 @@ function SWEP:CoreStep()
 		--self:WorldModel_Transform()
 	end]]
 
-	if owner:IsPlayer() and hg_slings:GetBool() and (zb.CROUND and zb.CROUND == "hmcd" or gamemod == "sandbox") then
+	if owner:IsPlayer() and zc_slings:GetBool() and (zb.CROUND and zb.CROUND == "hmcd" or gamemod == "sandbox") then
 		local inv = owner:GetNetVar("Inventory")
 		local noSling = inv and (not inv["Weapons"] or not inv["Weapons"]["hg_sling"])
 
@@ -1194,7 +1194,7 @@ function SWEP:CoreStep()
 	if SERVER and not owner:IsNPC() and ownerCannotUseWeapon and IsValid(actwep) and self == actwep then
 		self:RemoveFake()
 
-		if hg_slings:GetBool() and (zb.CROUND and zb.CROUND == "hmcd" or gamemod == "sandbox") then
+		if zc_slings:GetBool() and (zb.CROUND and zb.CROUND == "hmcd" or gamemod == "sandbox") then
 			local inv = owner:GetNetVar("Inventory",{})
 			if not (inv["Weapons"] and inv["Weapons"]["hg_sling"] and not self:IsPistolHoldType()) then
 				hg.drop(owner, self)
@@ -1658,7 +1658,7 @@ function SWEP:GetAdditionalValues()
 		self.AdditionalPosPreLerp[1] = self.AdditionalPosPreLerp[1] + math.ease.InOutBack(self.ZoomAnimLerp) * 3
 		self.AdditionalAngPreLerp[3] = self.AdditionalAngPreLerp[3] + math.ease.InOutBack(self.ZoomAnimLerp) * 2
 		if self.k > 0.7 and self.k < 0.75 then
-			local punchAng = Angle(math.Rand(-0.5, 0.5), math.Rand(-0.5, 0.5), math.Rand(-1, 1)) * (hg_coolcamera:GetBool() and 1 or 0.2)
+			local punchAng = Angle(math.Rand(-0.5, 0.5), math.Rand(-0.5, 0.5), math.Rand(-1, 1)) * (zc_coolcamera:GetBool() and 1 or 0.2)
 			ViewPunch(punchAng)
 			ViewPunch2(-punchAng)
 		end
@@ -1799,7 +1799,7 @@ function SWEP:GetAdditionalValues()
 	local lena = vellen / 150 * (ply:OnGround() and 1 or 0.1)
 	local x, y = math.cos(huy) * math.sin(huy) * walk * (antiMeta and 1 or 1) * 1.5, math.sin(huy) * walk * (antiMeta and 1 or 1) * 1.5
 
-	if hg_gopro:GetBool() then
+	if zc_gopro:GetBool() then
 		x = x * 2
 	end
 

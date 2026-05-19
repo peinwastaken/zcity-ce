@@ -335,7 +335,7 @@ players : 1 humans, 0 bots (20 max)
 
 			local badass = lply.organism and lply.organism.recoilmul or 1
 			local bulletdmg = math.max(bullet.Damage / 15,1)
-			if hg_suppression_viewpunch and hg_suppression_viewpunch:GetBool() then
+			if zc_suppression_viewpunch and zc_suppression_viewpunch:GetBool() then
 				ViewPunch(anguse * badass * bulletdmg)
 				ViewPunch2((anguse * badass * bulletdmg)/-2)
 			end
@@ -362,9 +362,9 @@ players : 1 humans, 0 bots (20 max)
 			[ "$pp_colour_mulb" ] = 0
 		}
 
-		local hg_potatopc = GetConVar("hg_potatopc") or CreateClientConVar("hg_potatopc", "0", true, false, "Toggle potato (low-end pc) mode", 0, 1)
+		local zc_potatopc = GetConVar("zc_potatopc") or CreateClientConVar("zc_potatopc", "0", true, false, "Toggle potato (low-end pc) mode", 0, 1)
 
-		hg.ConVars.potatopc = hg_potatopc
+		hg.ConVars.potatopc = zc_potatopc
 
 		local vignetteMat = Material( "effects/shaders/zb_vignette" )
 		hook.Add("RenderScreenspaceEffects","SIB_Suppresss",function()
@@ -390,7 +390,7 @@ players : 1 humans, 0 bots (20 max)
 				DrawColorModify(colormodify)
 			end
 
-			if !hg_potatopc:GetBool() and fraction > 0.1 then DrawToyTown(2,math.min(math.ease.InBack(fraction),0.85) * ScrH() * force / 10) end
+			if !zc_potatopc:GetBool() and fraction > 0.1 then DrawToyTown(2,math.min(math.ease.InBack(fraction),0.85) * ScrH() * force / 10) end
 
 		end)
 
@@ -496,7 +496,7 @@ players : 1 humans, 0 bots (20 max)
 --//
 
 --\\ custom sens
-	local hg_zoomsensitivity = ConVarExists("hg_zoomsensitivity") and GetConVar("hg_zoomsensitivity") or CreateConVar("hg_zoomsensitivity", 1, FCVAR_ARCHIVE, "Multiply aiming zoom sensivity", 0, 3)
+	local zc_zoomsensitivity = ConVarExists("zc_zoomsensitivity") and GetConVar("zc_zoomsensitivity") or CreateConVar("zc_zoomsensitivity", 1, FCVAR_ARCHIVE, "Multiply aiming zoom sensivity", 0, 3)
 
 	hook.Add("AdjustMouseSensitivity", "AdjustRunSensivityHUY", function(defaultSensitivity)
 		if not lply:Alive() then return end--kakoy sencivity NOOB
@@ -508,7 +508,7 @@ players : 1 humans, 0 bots (20 max)
 		local eyeAngles = lply:EyeAngles()
 		local self = lply:GetActiveWeapon()
 		self = IsValid(self) and self
-		local wepMul = self and self.IsZoom and self:IsZoom() and ((self:HasAttachment("sight", "optic")) and not self.viewmode1 and math.min(self.ZoomFOV / 60, 0.5) or 0.4) * hg_zoomsensitivity:GetFloat() or 1
+		local wepMul = self and self.IsZoom and self:IsZoom() and ((self:HasAttachment("sight", "optic")) and not self.viewmode1 and math.min(self.ZoomFOV / 60, 0.5) or 0.4) * zc_zoomsensitivity:GetFloat() or 1
 		local weaponAdjust = 1
 
 		if IsValid(self) and self.AdjustMouseSensitivity then
@@ -568,7 +568,7 @@ players : 1 humans, 0 bots (20 max)
 	LocalPlayerSeen = true
 	hg.seenents = {}
 	hg.seenents2 = {}
-	local hg_fov = GetConVar("hg_fov")
+	local zc_fov = GetConVar("zc_fov")
 	local math_cos = math.cos
 	local math_rad = math.rad
 	local util_DistanceToLine = util.DistanceToLine
@@ -616,7 +616,7 @@ players : 1 humans, 0 bots (20 max)
 			local vSize = (point - vPos):GetNormalized() * len
 			local diff = (vPos + vSize - origin):GetNormalized()
 
-			if !v.shouldTransmit or (angles:Forward():Dot(diff) <= math_cos(math_rad(hg_fov:GetInt()))) then
+			if !v.shouldTransmit or (angles:Forward():Dot(diff) <= math_cos(math_rad(zc_fov:GetInt()))) then
 				if not nochange then v.NotSeen = true end
 				if v == lply then LocalPlayerSeen = false end
 			else

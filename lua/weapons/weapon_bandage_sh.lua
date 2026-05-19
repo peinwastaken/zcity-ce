@@ -38,7 +38,7 @@ SWEP.WorkWithFake = true
 SWEP.offsetVec = Vector(4, -3.5, 0)
 SWEP.offsetAng = Angle(90, 90, 0)
 
-local hg_healanims = CreateConVar("hg_healanims", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
+local zc_healanims = CreateConVar("zc_healanims", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
 
 modelshuy = modelshuy or {}
 
@@ -142,7 +142,7 @@ function SWEP:Think()
 		self.ModelScale = math.Clamp(self.modeValues[1] / (self.modeValuesdef[1][1] * 0.8), 0.5, 1)
 	end
 
-	if not self:GetOwner():KeyDown(IN_ATTACK) and hg_healanims:GetBool() then
+	if not self:GetOwner():KeyDown(IN_ATTACK) and zc_healanims:GetBool() then
 		self:SetHolding(math.max(self:GetHolding() - 12, 0))
 	end
 
@@ -457,16 +457,6 @@ end
 -- WoundTBL = {dmgBlood / 2, localPos, localAng, bone, time}
 SWEP.ShouldDeleteOnFullUse = true
 
-local function HasBandageTarget(org)
-	return #org.wounds > 0
-		or org.lleg == 1
-		or org.rleg == 1
-		or org.skull >= 0.6
-		or org.chest == 1
-		or org.rarm == 1
-		or org.larm == 1
-end
-
 if SERVER then
 	function SWEP:Bandage(ent, bone)
 		local org = ent.organism
@@ -474,7 +464,7 @@ if SERVER then
 		if not org then return end
 
 		-- If you shoot up a corpse, then blow it up with a grenade and bandage it after, the server crashes; why?
-		if self.modeValues[1] <= 0 or not HasBandageTarget(org) then return end
+		if self.modeValues[1] <= 0 or not hg.medicine.HasBandageTarget(org) then return end
 		table.sort(org.wounds, function(a, b) return a[1] > b[1] end)
 
 		local done = false
@@ -621,7 +611,7 @@ if SERVER then
 		if not org then return end
 
 		local owner = self:GetOwner()
-		if ent == hg.GetCurrentCharacter(owner) and hg_healanims:GetBool() then
+		if ent == hg.GetCurrentCharacter(owner) and zc_healanims:GetBool() then
 			self:SetHolding(math.min(self:GetHolding() + 10, 100))
 
 			if self:GetHolding() < 100 then return end

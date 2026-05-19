@@ -600,12 +600,12 @@ function hg.Fake(ply, huyragdoll, no_freemove, force)
 	end
 end
 
-local hg_ragdollcombat = ConVarExists("hg_ragdollcombat") and GetConVar("hg_ragdollcombat") or CreateConVar("hg_ragdollcombat", 0, FCVAR_REPLICATED, "Toggle ragdoll combat-like ragdoll mode (walking, running in ragdoll, etc.)", 0, 1)
+local zc_ragdollcombat = ConVarExists("zc_ragdollcombat") and GetConVar("zc_ragdollcombat") or CreateConVar("zc_ragdollcombat", 0, FCVAR_REPLICATED, "Toggle ragdoll combat-like ragdoll mode (walking, running in ragdoll, etc.)", 0, 1)
 
 function hg.SetFreemove(ply, set)
 	if ply:InVehicle() or IsValid(ply.OldRagdoll) then return end
 	if set then
-		ply.lastFakeTime = hg_ragdollcombat:GetBool() and 9999 or 1
+		ply.lastFakeTime = zc_ragdollcombat:GetBool() and 9999 or 1
 		ply.lastFake = CurTime() + ply.lastFakeTime
 		//ply:SetNetVar("lastFake", ply.lastFake)
 		ply:SetMoveType(MOVETYPE_WALK)
@@ -913,9 +913,9 @@ hook.Add("CanPlayerEnterVehicle","fake_enterveh",function(ply, veh)
 
 	return true//not IsValid(ply.FakeRagdoll)// or IsValid(ply.wasveh)
 end)
-local hg_no_fake_in_cars = CreateConVar("hg_no_fake_in_cars","0",FCVAR_ARCHIVE + FCVAR_REPLICATED, "disables fake in cars", 0, 1)
+local zc_no_fake_in_cars = CreateConVar("zc_no_fake_in_cars","0",FCVAR_ARCHIVE + FCVAR_REPLICATED, "disables fake in cars", 0, 1)
 hook.Add("PlayerEnteredVehicle","allowweapons",function(ply,veh,role)
-	if hg_no_fake_in_cars:GetBool() then return end
+	if zc_no_fake_in_cars:GetBool() then return end
 	ply:SetEyeAngles(angle_zero)
 	//local veh2 = veh:GetParent()
 
@@ -1189,8 +1189,8 @@ hook.Add("Ragdoll Collide", "FallSounds", function(rag, data)
 	rag.NextSND = data.DeltaTime + 1
 end)
 
-local hg_shitty_fake = CreateConVar("hg_shitty_fake", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY, "enable shitty fake", 0, 1)
-SetGlobalBool("hg_shitty_fake", hg_shitty_fake:GetBool())
-cvars.AddChangeCallback("hg_shitty_fake", function(convar_name, value_old, value_new)
-	SetGlobalBool("hg_shitty_fake", hg_shitty_fake:GetBool())
+local zc_shitty_fake = CreateConVar("zc_shitty_fake", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY, "enable shitty fake", 0, 1)
+SetGlobalBool("zc_shitty_fake", zc_shitty_fake:GetBool())
+cvars.AddChangeCallback("zc_shitty_fake", function(convar_name, value_old, value_new)
+	SetGlobalBool("zc_shitty_fake", zc_shitty_fake:GetBool())
 end)

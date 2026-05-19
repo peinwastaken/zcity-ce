@@ -8,11 +8,11 @@ local timershit = 0
 
 hg.ConVars = hg.ConVars or {}
 
-local hg_bulletholesfps = CreateConVar("hg_bulletholesfps", "0", FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED, "How much fps should the view inside bullet holes be (0 = max)", 0, 300)
-local hg_bulletholes = CreateConVar("hg_bulletholes", "0", FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED, "Enable R6S bulletholes feature", 0, 1)
+local zc_bulletholesfps = CreateConVar("zc_bulletholesfps", "0", FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED, "How much fps should the view inside bullet holes be (0 = max)", 0, 300)
+local zc_bulletholes = CreateConVar("zc_bulletholes", "0", FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED, "Enable R6S bulletholes feature", 0, 1)
 
-hook.Add("PostRender", "sadasdsad", function()
-    if !hg_bulletholes:GetBool() then return end
+hook.Add("PostRender", "ZCity.BulletHoles.UpdateRenderTarget", function()
+    if !zc_bulletholes:GetBool() then return end
     local holes = GetNetVar("BulletHoles")
     local view = render.GetViewSetup()
 
@@ -37,7 +37,7 @@ hook.Add("PostRender", "sadasdsad", function()
     end
 
     if any and timershit < CurTime() then
-        timershit = CurTime() + ((hg_bulletholesfps:GetInt() == 0) and 0 or (1 / hg_bulletholesfps:GetInt()))
+        timershit = CurTime() + ((zc_bulletholesfps:GetInt() == 0) and 0 or (1 / zc_bulletholesfps:GetInt()))
 
         local tr = {
             start = view.origin,
@@ -77,7 +77,7 @@ hook.Add("PostRender", "sadasdsad", function()
 end)
 
 hook.Add("PreDrawEffects","bulletholes-test",function()
-    if !hg_bulletholes:GetBool() then return end
+    if !zc_bulletholes:GetBool() then return end
     local holes = GetNetVar("BulletHoles")
 
     if !holes then return end

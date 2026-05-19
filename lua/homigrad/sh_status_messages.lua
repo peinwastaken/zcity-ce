@@ -236,8 +236,8 @@ local heatvomit_phraselist = {
 	"Fuck.. Ugh.. I don't feel-"
 }
 
-if not ConVarExists("hg_showthoughts") then
-	CreateClientConVar("hg_showthoughts", "1", true, true, "Toggle thoughts of your character", 0, 1)
+if not ConVarExists("zc_showthoughts") then
+	CreateClientConVar("zc_showthoughts", "1", true, true, "Toggle thoughts of your character", 0, 1)
 end
 
 function string.Random(length)
@@ -303,7 +303,7 @@ local function get_status_message(ply)
 	local nomessage = hook.Run("HG_CanThoughts", ply) --ply.PlayerClassName == "Gordon" || ply.PlayerClassName == "Combine"
 	if nomessage ~= nil and nomessage == false then return "" end
 
-    if ply:GetInfoNum("hg_showthoughts", 1) == 0 then return "" end
+    if ply:GetInfoNum("zc_showthoughts", 1) == 0 then return "" end
 
 	local org = ply.organism
 
@@ -403,7 +403,7 @@ function hg.get_phraselist(ply, type)
 	local nomessage = ply.PlayerClassName == "Gordon" || ply.PlayerClassName == "Combine"
 
 	if nomessage then return "" end
-    if ply:GetInfoNum("hg_showthoughts", 1) == 0 then return "" end
+    if ply:GetInfoNum("zc_showthoughts", 1) == 0 then return "" end
 
 	local org = ply.organism
 	if not org or not org.brain then return "" end

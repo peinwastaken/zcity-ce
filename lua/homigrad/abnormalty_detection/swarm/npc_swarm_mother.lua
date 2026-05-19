@@ -1,7 +1,7 @@
 ENT={}
 
-SWARM_CV_MOTHER_PointsMul = CreateConVar("swarm_mother_pointsmul", 1, bit.bor(FCVAR_ARCHIVE), "Point yield multiplier" )
-SWARM_CV_MOTHER_ReservePointsMul = CreateConVar("swarm_mother_reservepointsmul", 1, bit.bor(FCVAR_ARCHIVE), "Reserve points(Used for determening if ready for coronaion) yield multiplier" )
+SWARM_CV_MOTHER_PointsMul = CreateConVar("zc_swarm_mother_pointsmul", 1, bit.bor(FCVAR_ARCHIVE), "Point yield multiplier" )
+SWARM_CV_MOTHER_ReservePointsMul = CreateConVar("zc_swarm_mother_reservepointsmul", 1, bit.bor(FCVAR_ARCHIVE), "Reserve points(Used for determening if ready for coronaion) yield multiplier" )
 
 AddCSLuaFile()
 ENT.Spawnable = true

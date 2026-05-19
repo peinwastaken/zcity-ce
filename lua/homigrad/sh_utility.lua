@@ -403,7 +403,7 @@ hg.ConVars = hg.ConVars or {}
 		--"hl_coop",
 		"splinter_cell",
 	}
-	local hg_sandboxmusic = ConVarExists("hg_sandboxmusic") and GetConVar("hg_sandboxmusic") or CreateConVar("hg_sandboxmusic", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle dynamic music in sandbox gamemode", 0, 1)
+	local zc_sandboxmusic = ConVarExists("zc_sandboxmusic") and GetConVar("zc_sandboxmusic") or CreateConVar("zc_sandboxmusic", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle dynamic music in sandbox gamemode", 0, 1)
 	local gamemod = engine.ActiveGamemode()
 	hook.Add("player_spawn", "homigrad-spawn3", function(data)
 		local ply = Player(data.userid)
@@ -487,7 +487,7 @@ hg.ConVars = hg.ConVars or {}
 
 			if CLIENT and not ply:IsLocal() and gamemod == "sandbox" then
 				if hg.DynaMusic then
-					if hg_sandboxmusic:GetBool() then
+					if zc_sandboxmusic:GetBool() then
 						hg.DynaMusic:Stop()
 						hg.DynaMusic:Start(music_packs[math.random(#music_packs)])
 					else
@@ -1809,5 +1809,5 @@ end
 --//
 
 --\\
-	hg_suppression_viewpunch = CreateConVar("hg_suppression_viewpunch", "1", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Enable viewpunching when you on suppressed", 0, 1)
+	zc_suppression_viewpunch = CreateConVar("zc_suppression_viewpunch", "1", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Enable viewpunching when you on suppressed", 0, 1)
 --//

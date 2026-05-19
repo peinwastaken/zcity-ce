@@ -448,10 +448,10 @@ function ENT:OnPostThink( dt, selfTbl )
 end
 
 local ExpDecay = Glide.ExpDecay
-local hg_glide_steering_realism = CreateConVar("hg_glide_steering_realism","1",{FCVAR_ARCHIVE,FCVAR_NOTIFY},"Enables realistic steering on glide cars", 0, 1)
+local zc_glide_steering_realism = CreateConVar("zc_glide_steering_realism","1",{FCVAR_ARCHIVE,FCVAR_NOTIFY},"Enables realistic steering on glide cars", 0, 1)
 function ENT:UpdateSteering( dt )
     -- Z-City cant steer when reloading
-    if hg_glide_steering_realism:GetBool() then
+    if zc_glide_steering_realism:GetBool() then
         local wep = IsValid(self:GetDriver()) and self:GetDriver():GetActiveWeapon()
         local cantsteer = IsValid(self:GetDriver()) and IsValid(wep) and ishgweapon(wep) and wep.reload
         self.customSteering = cantsteer and (self.customSteering or 0) or self:GetInputFloat( 1, "steer" )
@@ -469,7 +469,7 @@ function ENT:UpdateSteering( dt )
         self.oldInputSteer = math.min(math.max(self.oldInputSteer,-1),1)
     end
 
-    local inputSteer = hg_glide_steering_realism:GetBool() and self.oldInputSteer or self:GetInputFloat( 1, "steer" )
+    local inputSteer = zc_glide_steering_realism:GetBool() and self.oldInputSteer or self:GetInputFloat( 1, "steer" )
     local absInputSteer = Abs( inputSteer )
 
     local sideSlip = Clamp( self.avgSideSlip, -1, 1 )
@@ -664,7 +664,7 @@ function ENT:WheelThink( dt )
             groundedCount = groundedCount + 1
         end
         
-        if hg_glide_steering_realism:GetBool() and w.isFrontWheel and badMaterials[w:GetContactSurface()] then
+        if zc_glide_steering_realism:GetBool() and w.isFrontWheel and badMaterials[w:GetContactSurface()] then
             self.steeringNeedNoise = CurTime() + 0.1
         end
     end
