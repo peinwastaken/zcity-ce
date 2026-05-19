@@ -184,6 +184,11 @@ hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 		angle.roll = 0
 	end
 
+	if (lply.bGetUp) then
+		local speed = 4 * FrameTime()
+		tbl.angle.roll = Lerp(speed, tbl.angle.roll, 0)
+	end
+
 	tbl.override_angle = true
 	tbl.angle = angle
 end)

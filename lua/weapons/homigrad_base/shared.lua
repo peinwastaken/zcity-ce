@@ -1185,7 +1185,7 @@ function SWEP:CoreStep()
 	end
 
 	local ownerOrganism = owner.organism
-	local ownerCannotUseWeapon = ownerOrganism and (
+	local ownerCannotUseWeapon = SERVER and ownerOrganism and (
 		not ownerOrganism.canmove
 		or (ownerOrganism.stun - time) > 0
 		or (ownerOrganism.larm == 1 and ownerOrganism.rarm == 1)
