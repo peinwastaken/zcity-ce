@@ -7,69 +7,52 @@ local allowedchars = {
 }
 
 local audible_pain = {
-	"AAAAAGH..FUCK.. IT HURTS.",
+	"AH FUCK! THAT FUCKING HURTS!",
 	"I CAN'T TAKE THIS ANYMORE!",
-    "Make it STOP make it STOP MAKE IT STOP",
-    "Why won't IT STOP",
-    "Make me unconscious. PLEASE",
-    "Why was I born to feel this why...",
-    "I'd do anything for it to stop... ANYTHING.",
-    "This isn't living this is being TORTURED",
-    "I don't care anymore just STOP the PAIN",
-    "Nothing matters EXCEPT MAKING IT STOP...",
-    "Every second is an eternity of FIRE.",
-    "DEATH WOULD BE MERCY NOW...",
-    "Just one moment without the pain..",
-	"I WISH I HAD SOME PAINKILLERS NOW. FUCK.",
+    "Jesus Christ, make it STOP!",
+    "Why won't IT STOP!?",
+    "I need to pass out - right fucking now.",
+    "Why did I have to be the one to endure this...",
+    "I'd do anything for this to stop...",
+    "I can't bear this torture any longer.",
+    "I don't care anymore, just STOP the PAIN!",
+    "I can't focus on anything except for this pain.",
+    "Every second is excruciating.",
+    "Just fucking kill me...",
+    "Just one moment without this pain...",
+	"I need some god-damn painkillers.",
 }
 
 local sharp_pain = {
-	"AAAHH",
-	"AAAH",
-	"AAaaAH",
-	"AAaaAH",
-	"AAaaAAAGH",
-	"AAaaAH",
-	"AAaAaaH",
-	"AAAAAaaH",
-	"AAaaAHHHH",
-	"AAaAA",
-	"AAAAAa",
-	"AAAAaAAAaaaaghh",
-	"AAAaaAa",
-	"AaaAAaghf",
-	"aaAaaAaff",
-	"aaahhh",
-	"AAAaaGHHH",
-	"AAAaaAAHH",
-	"AAAaaAAAAAaGHHHH",
-	"AAAaaAAAAAaGHAAAHHH",
-	"AAAaaAAAAAaGHHAAAAAAHH",
-	"AAAaaAAAAAaGHHHH",
-	"AAAaaAAAaaAAAaGHHHH",
-	"AAAaaAAAaaAAAaAAAAAAAGHHHH",
-	"AAAaaAAAAAaGHHHH",
-	"AAAaaAAAAAAAAAHHH",
-	"AAAaaAAAAAaGHAaaaHH",
-	"AAAaaAAAAAaAaaaaaAAAAHH",
-	"AAAaaAAAAAaAAAAAAAADGHHHH",
-	"AAAaaAAAaaAAAaAAAAAAAAAAAAGGGGGGAGHHHH",
-	"AAAaaAAAaaAAAaAAAAAAAAAAAAAAAAAAH",
+	"AAAHH!!",
+	"AAAH!",
+	"AAaaAH!",
+	"AAaaAH!! SHIT!",
+	"AAaaAAAGH FUCK!",
+	"AAaaAH!",
+	"AAaAaaH!",
+	"AAAAAaaH!",
+	"AAaaAHHHH!",
+	"AAaAA!",
+	"AAAAAa!",
+	"AAAaaAa!",
+	"AAAaaGHHH!!",
+	"AAAaaAAHH!!",
 }
 
 hg.sharp_pain = sharp_pain
 
 local random_phrase = {
-	"It's kinda chilly in here...",
+	"*yawn*",
 	"Everything seems too quiet...",
-	"Breathing feels oddly satisfying right now.",
+	"Just another day...",
 	"What if this quiet lasts forever?",
-	"Why isn't anything happening?",
+	"Man, I'm bored.",
 }
 
 local fear_hurt_ironic = {
 	"I bet there's a lesson in this... if I survive.",
-	"My future biographer won't believe this part.",
+	"If only my dad could see me now...",
 	"Well, this is a stupid way to go.",
 	"At least my life wasn't boring.",
 	"Note to self: Never do this again.",
@@ -116,13 +99,13 @@ local is_aimed_at_phrases = {
 
 local near_death_poetic = {
 	"Trying to stand... but I just can't...",
-	"Breathing's just shallow sips of nothing...",
+	"Breathing's just performative at this point...",
 	"Can't tell if my eyes are open or not anymore...",
-	"Last thing I'll taste is my own blood and copper.",
-	"Eyes keep sliding off things.",
-	"Can't remember how standing works.",
+	"Last thing I'll taste is my own blood.",
+	"My eyes can't focus any more.",
+	"Can't remember how to keep myself upright.",
 	"Everything echoes inside my skull.",
-	"Blinking takes too long to come back.",
+	"An eternity passes with each blink.",
 	"Fingers won't close around anything.",
 	"Lungs refuse to be full.",
 	"Regrets are pointless now.",
@@ -130,48 +113,50 @@ local near_death_poetic = {
 
 
 local broken_limb = {
-	"FUCK. FUCK. ITS DEFINITELY BROKEN!",
-	"I CAN FEEL THE BONE PIECES MOVING!",
-	"IT'S FUCKING BROKEN. I THINK..",
+	"FUCK. IT'S DEFINITELY BROKEN!",
+	"I CAN FEEL THE SHARDS OF BONE MOVING!",
+	"IT'S FUCKING BROKEN. I THINK...",
 	"It hurts just thinking about it. Definitely broken.",
 	"I don't think it should bend here.",
-	"Oh fuck. It is snapped.",
-	"I don't see any open fracture, but I feel like I broke something",
+	"Oh fuck. It's snapped.",
+	"I don't see anything wrong, but I feel like I broke something.",
 }
 
 local dislocated_limb = {
-	"Yeah that shouldn't be bending like that.",
+	"Yeah, that shouldn't be bending like that.",
 	"I have to get this bone back in.",
 	"No... I have to move it back in place.",
-	"It just hurts so much there. I might need a check up.",
-	"My limb is out of place.",
+	"Something popped out. I need to take a look at it.",
+	"One of my limbs is fucked up.",
 }
 
 local hungry_a_bit = {
-    "Mgh, I'm hungry...",
-    "Some food would be great...",
+    "Hmm, I'm hungry...",
+    "Some food would be great.",
     "I'm hungry...",
     "I should eat something.",
 }
 
 local very_hungry = {
-    "My stomach... Ugh...",
-    "If I don't eat, I'll feel even worse...",
-    "Stomach... Damn it... I feel sick",
+    "My stomach... Ugh.",
+    "If I don't eat, I'll feel even worse.",
+    "My stomach... fuck... I feel sick",
 }
 
 local after_unconscious = {
+	"Jesus, how long was I out for?",
+	"Everything's blurry...",
+	"Fuck, that's not good.",
     "What happened? It hurts...",
 	"Where am I? Why does it hurt...",
-	"I-I thought I was going to die...",
+	"I thought I was going to die...",
 	"My head... What happened?",
 	"Did I almost die a second ago?",
 	"It felt like I died.",
-	"The heavens didn't take me?",
-	"Ohh-fuck... my head is aching...",
-	"Oh it's gonna be hard to get up right now... but I have to...",
-	"I don't recognize this place at all... or do I?",
-	"I don't want to experience this EVER AGAIN!",
+	"Oh fuck... my head is aching...",
+	"Man, it's going to be a pain to get up again.",
+	"I don't recognize this place at all.",
+	"I don't want to experience this ever again.",
 }
 
 local slight_braindamage_phraselist = {
@@ -181,7 +166,7 @@ local slight_braindamage_phraselist = {
 	"Huh? What is this..?",
 	"I don't know what is happening...",
 	"Hello?",
-	"Ughhh ohhhh...      huh...",
+	"Ughhh, ohhhh...      huh...",
 	"What... is happening?",
 }
 
@@ -202,53 +187,53 @@ local braindamage_phraselist = {
 local cold_phraselist = {
 	"It's getting very cold..",
 	"Too cold for me.",
-	"I'm shivering, fucking hell, man.",
-	"Extremely chilly out here..",
-	"Need something to heat up...",
+	"God damn, it's fucking freezing.",
+	"Way too fucking cold out here..",
+	"Need something to warm myself up...",
 	"I feel pretty cold...",
-	"I feel sick from that cold, fuck."
+	"I can't feel my fingers, it's too cold."
 }
 
 local freezing_phraselist = {
 	"I.. ca.. can't feel m-my b-body..",
 	"I can't.. f-feel my legs...",
 	"I'm f-fuck-king fre-ezing..",
-	"I-I think-k my face is num-mb..",
-	"Cold-d..",
-	"I.. can't feel any-ythi-ing..",
+	"M-My face is num-mb..",
+	"C-cold..",
+	"I.. can't feel a-ny-t-thing..",
 }
 
 local numb_phraselist = {
 	"It's not.. cold anymore..",
 	"Why... does it feel warm..?",
 	"I think I'm okay... I think...",
-	"Finally some warmth...",
-	"I'm warm again... Somehow...",
+	"Finally, some warmth...",
+	"I'm warm again...",
 	"I was just freezing... Where did this heat come from..?",
 }
 
 local hot_phraselist = {
-	"I'm so sweaty..",
+	"I'm so sweaty, need to cool off.",
 	"This heat is killing me..",
-	"My clothing is covered in sweat, fuck.",
-	"My sweat fucking reeks. I should really cool down...",
-	"It's a bit too hot, fuck, man.",
-	"I'm heating up real bad...",
+	"I'm drenched with sweat.",
+	"I should really cool down...",
+	"It's a bit too hot.",
+	"I'm too warm right now.",
 	"Why is it so hot in here?",
 }
 
 local heatstroke_phraselist = {
-	"I NEED WATER!!",
+	"My head feels like it's going to explode.",
 	"Please... water...",
-	"I feel dizzy... Fuuck-",
-	"MY HEAD!- It hurts..",
+	"I feel dizzy.",
+	"So this is a migraine...",
 	"My head is aching..",
 }
 
 local heatvomit_phraselist = {
-	"That heat..- I'm gonna vomit-",
-	"Ugghhh... I'm about to puke-",
-	"Fuuck.. Oughhh.. I don't feel-"
+	"That heat.. I'm gonna vomit-",
+	"Ugh... I'm about to puke-",
+	"Fuck.. Ugh.. I don't feel-"
 }
 
 if not ConVarExists("hg_showthoughts") then
