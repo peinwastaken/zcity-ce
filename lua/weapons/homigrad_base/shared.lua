@@ -1963,7 +1963,10 @@ function SWEP:InUse()
 		return false
 	end
 
-	return ( ((not ply.InVehicle || !ply:InVehicle()) and !hg.RagdollCombatInUse(ply)) && (self:KeyDown(IN_USE) || self:IsResting())) || ((ply.InVehicle && ply:InVehicle() or hg.RagdollCombatInUse(ply) or ent == ply) && not self:KeyDown(IN_USE)) || (self.reload and self.reload > 0) || (IsValid(ply.OldRagdoll))
+	local isUseHeld = GetConVar("zc_always_ragdoll_aim"):GetBool() or ply:KeyDown(IN_USE)
+	local inUse = (((not ply.InVehicle || !ply:InVehicle()) and !hg.RagdollCombatInUse(ply)) && (isUseHeld || self:IsResting())) || ((ply.InVehicle && ply:InVehicle() or hg.RagdollCombatInUse(ply) or ent == ply) && not isUseHeld) || (self.reload and self.reload > 0) || (IsValid(ply.OldRagdoll))
+
+	return inUse
 end
 
 local veczero = Vector(0, 0, 0)

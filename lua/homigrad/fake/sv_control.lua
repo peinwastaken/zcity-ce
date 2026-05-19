@@ -1,3 +1,4 @@
+local controlUseCvar = CreateConVar("zc_always_ragdoll_aim", 0, FCVAR_REPLICATED, "Enables permanent +use in fake ragdoll mode", 0, 1)
 local angZero = Angle(0, 0, 0)
 local shadowparams = {}
 
@@ -114,6 +115,7 @@ hook.Add("Think", "Fake", function()
 
 	//for ply, ragdoll in pairs(hg.ragdollFake) do
 	for _, ply in player.Iterator() do
+		local inUse = controlUseCvar:GetBool() or ply:KeyDown(IN_USE)
 		local ragdoll = hg.ragdollFake[ply]//ply.FakeRagdoll
 		if not IsValid(ragdoll) then
 			//hg.ragdollFake[ply] = nil
@@ -252,7 +254,7 @@ hook.Add("Think", "Fake", function()
 			ang:RotateAroundAxis(ang:Up(), 30)
 		end
 
-		if (!ply:InVehicle() && (ply:KeyDown(IN_USE) || ((ishgweapon(wep)) && (ply:KeyDown(IN_ATTACK2) || (wep.IsResting and wep:IsResting()))) || (wep.ismelee && (ply:KeyDown(IN_ATTACK2) || ply:KeyDown(IN_ATTACK))))) || (ply:InVehicle() && not ply:KeyDown(IN_USE)) or ragdollcombat then
+		if (!ply:InVehicle() && (inUse || ((ishgweapon(wep)) && (ply:KeyDown(IN_ATTACK2) || (wep.IsResting and wep:IsResting()))) || (wep.ismelee && (ply:KeyDown(IN_ATTACK2) || ply:KeyDown(IN_ATTACK))))) || (ply:InVehicle() && not inUse) or ragdollcombat then
 			if org.canmove and (!((ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT)) and ragdoll:IsOnFire()) or ply:InVehicle()) then
 				local angl = angZero
 				angl:Set(ang)
@@ -316,7 +318,7 @@ hook.Add("Think", "Fake", function()
 						shadowControl(ragdoll, 7, 0.001, nil, nil, nil, pos - (pos - rhand:GetPos()):GetNormalized() * 2, 100, 10)
 					end
 
-					if not ply:KeyDown(IN_USE) then
+					if not inUse then
 						shadowControl(ragdoll, 10, 0.001, nil, nil, nil, ragdoll:GetPhysicsObjectNum(realPhysNum(ragdoll,8)):GetPos(), 40, 10)
 						shadowControl(ragdoll, 1, 0.001, nil, nil, nil, ragdoll:GetPhysicsObjectNum(realPhysNum(ragdoll,8)):GetPos(), 00, 10)
 						shadowControl(ragdoll, 2, 0.001, nil, nil, nil, ragdoll:GetPhysicsObjectNum(realPhysNum(ragdoll,8)):GetPos(), 0, 10)
@@ -330,11 +332,11 @@ hook.Add("Think", "Fake", function()
 
 		if not wep.RagdollFunc then
 			local force = math.max(1 - org.larm / 1.3, 0)
-			if !IsValid(ragdoll.ConsLH) and (ply:KeyDown(IN_ATTACK) and !ishgweapon(wep)) or (((ishgweapon(wep) and (!wep:IsResting() or ply:KeyDown(IN_FORWARD) or ply:KeyDown(IN_BACK))) or wep.ismelee2) and (ply:KeyDown(IN_USE) or ply:KeyDown(IN_ATTACK2))) then// || ply:InVehicle() then
+			if !IsValid(ragdoll.ConsLH) and (ply:KeyDown(IN_ATTACK) and !ishgweapon(wep)) or (((ishgweapon(wep) and (!wep:IsResting() or ply:KeyDown(IN_FORWARD) or ply:KeyDown(IN_BACK))) or wep.ismelee2) and (inUse or ply:KeyDown(IN_ATTACK2))) then// || ply:InVehicle() then
 				if org.canmove then
 					//if !ply:InVehicle() then
 						ang2:Set(angles)
-						local lower = (ishgweapon(wep) and (ply:KeyDown(IN_USE) or ply:KeyDown(IN_ATTACK2)))
+						local lower = (ishgweapon(wep) and (inUse or ply:KeyDown(IN_ATTACK2)))
 						ang2:RotateAroundAxis(angles:Right(), lower and -20 or 0)
 						ang2:RotateAroundAxis(angles:Up(), lower and 20 or 10)
 						ang2:RotateAroundAxis(angles:Forward(), -45)
@@ -445,7 +447,7 @@ hook.Add("Think", "Fake", function()
 
 			local force = math.max(1 - org.rarm / 1.3, 0)
 
-			if !IsValid(ragdoll.ConsRH) and ply:KeyDown(IN_ATTACK2) or ((ishgweapon(wep) or wep.ismelee2) and ply:KeyDown(IN_USE)) then// || ply:InVehicle() then
+			if !IsValid(ragdoll.ConsRH) and ply:KeyDown(IN_ATTACK2) or ((ishgweapon(wep) or wep.ismelee2) and inUse) then// || ply:InVehicle() then
 				if org.canmove then
 					--if org.shock > 1 and not ply:KeyDown(IN_ATTACK2) then angles = spine:GetAngles() end
 					//if !ply:InVehicle() then

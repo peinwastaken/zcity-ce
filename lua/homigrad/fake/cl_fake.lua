@@ -300,8 +300,9 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		angEye = att_Ang
 	end
 
-	local cshs_fake = hg_cshs_fake:GetBool() or (ply.organism and ply.organism.otrub) or (!hg.KeyDown(ply, IN_USE) and !ply:InVehicle()) or (follow:GetVelocity():Length() > 350 and !ply:InVehicle())
-
+	local inUse = GetConVar("zc_always_ragdoll_aim"):GetBool() or hg.KeyDown(ply, IN_USE)
+	local cshs_fake = hg_cshs_fake:GetBool() or (ply.organism and ply.organism.otrub) or (!inUse and !ply:InVehicle()) or (follow:GetVelocity():Length() > 350 and !ply:InVehicle())
+	
 	if IsValid(ply.OldRagdoll) then DrawPlayerRagdoll(follow, ply) end
 
 	local pos = hg.eye(ply, 10, follow, att_Ang)
