@@ -1,6 +1,7 @@
 local PANEL = {}
 local curent_panel
-local red_select = Color(0,154,192)
+local uiColors = zc.colors.ui
+local red_select = uiColors.mainMenuSelect
 
 DISCORD_URL = "https://discord.gg/475EmEdTgH"
 
@@ -19,10 +20,10 @@ local Selects = {
         btn:SetTall( ScreenScale( 15 ) )
         btn:Dock(BOTTOM)
         btn:DockMargin(ScreenScale(20),ScreenScale(10),0,0)
-        btn:SetTextColor(Color(255,255,255))
+        btn:SetTextColor(uiColors.white)
         btn:InvalidateParent()
-        btn.RColor = Color(225, 225, 225, 0)
-        btn.WColor = Color(225, 225, 225, 255)
+        btn.RColor = Color(uiColors.mainMenuTextTransparent:Unpack())
+        btn.WColor = Color(uiColors.mainMenuText:Unpack())
         btn.x = btn:GetX()
 
         function btn:DoClick()
@@ -47,10 +48,10 @@ local Selects = {
         btn:SetTall( ScreenScale( 15 ) )
         btn:Dock(BOTTOM)
         btn:DockMargin(0,ScreenScale(2),0,0)
-        btn:SetTextColor(Color(255,255,255))
+        btn:SetTextColor(uiColors.white)
         btn:InvalidateParent()
-        btn.RColor = Color(225, 225, 225, 0)
-        btn.WColor = Color(225, 225, 225, 255)
+        btn.RColor = Color(uiColors.mainMenuTextTransparent:Unpack())
+        btn.WColor = Color(uiColors.mainMenuText:Unpack())
         btn.x = btn:GetX()
 
         function btn:DoClick()
@@ -121,8 +122,8 @@ function PANEL:InitializeMarkup()
     return markup.Parse(text)
 end
 
-local clr_gray = Color(255,255,255,25)
-local clr_verygray = Color(10,10,19,235)
+local clr_gray = uiColors.mainMenuFooterText
+local clr_verygray = uiColors.mainMenuBackground
 
 function PANEL:Init()
     self:SetAlpha(0)
@@ -150,7 +151,7 @@ function PANEL:Init()
     lDock:DockMargin(ScreenScale(0), ScreenScaleH(90), ScreenScale(10), ScreenScaleH(90))
     lDock.Paint = function(this, w, h)
         if hg.PluvTown.Active then
-            surface.SetDrawColor(color_white)
+            surface.SetDrawColor(uiColors.white)
             surface.SetMaterial(self.SelectedPluv or Pluv)
             surface.DrawTexturedRect(0, ScreenScale(27), ScreenScale(35), ScreenScale(27))
         end
@@ -224,7 +225,7 @@ local gradient_d = surface.GetTextureID("vgui/gradient-d")
 surface.GetTextureID("vgui/gradient-u")
 local gradient_l = surface.GetTextureID("vgui/gradient-l")
 
-local clr_1 = Color(0,36,102,35)
+local clr_1 = uiColors.mainMenuGradient
 function PANEL:Paint(w,h)
     draw.RoundedBox( 0, 0, 0, w, h, self.ColorBG )
     hg.DrawBlur(self, 5)
@@ -251,7 +252,7 @@ function PANEL:AddSelect( pParent, strTitle, tbl )
     btn.HoveredFunc = tbl.HoveredFunc
     local luaMenu = self
     if tbl.CreatedFunc then tbl.CreatedFunc(btn, self, luaMenu) end
-    btn.RColor = Color(225,225,225)
+    btn.RColor = Color(uiColors.mainMenuText:Unpack())
     function btn:DoClick()
         -- ,kz needs optimization, but there is an error(cache luaMenu.panelparrent instead of calling it every time)
         if curent_panel == string.lower(strTitle) then

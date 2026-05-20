@@ -35,7 +35,7 @@ local FrameTime = FrameTime
 local DrawRect = StyledTheme.DrawRect
 local DrawIcon = StyledTheme.DrawIcon
 
-local COLOR_INDICATOR = Color( 200, 0, 0, 255 )
+local COLOR_INDICATOR = colors.notificationIndicator
 
 function TAB_BUTTON:Paint( w, h )
     self.animHover = Lerp( FrameTime() * 10, self.animHover, self:IsHovered() and 1 or 0 )

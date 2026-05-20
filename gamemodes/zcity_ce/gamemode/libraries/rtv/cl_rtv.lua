@@ -7,6 +7,7 @@ local VoteCD = 0
 
 -- RTV CL Functions
 local BlurBackground = hg.DrawBlur
+local uiColors = zc.colors.ui
 
 function zb.RTVMenu()
     system.FlashWindow()
@@ -78,13 +79,13 @@ function zb.RTVMenu()
     function button:Paint(w, h)
         BlurBackground(self)
 
-        surface.SetDrawColor(255, 0, 0, 128)
+        surface.SetDrawColor(uiColors.frameOutline)
         surface.DrawOutlinedRect(0, 0, w, h, 2.5)
 
         local x, y = w / 2, h / 2
         local txt = "Exit"
         surface.SetFont("HomigradFont")
-        surface.SetTextColor(255, 255, 255, 255)
+        surface.SetTextColor(uiColors.white)
         local tw, th = surface.GetTextSize(txt)
         surface.SetTextPos(x - tw / 2, y - th / 2)
         surface.DrawText(txt)

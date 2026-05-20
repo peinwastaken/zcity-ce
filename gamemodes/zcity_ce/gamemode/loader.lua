@@ -1,4 +1,9 @@
+local loadedFiles = {}
+
 local function IncluderFunc(fileName)
+	if loadedFiles[fileName] then return end
+	loadedFiles[fileName] = true
+
 	if (fileName:find("sv_")) then
 		include(fileName)
 	elseif (fileName:find("shared.lua") or fileName:find("sh_")) then
@@ -29,6 +34,7 @@ local function LoadFromDir(directory)
 	end
 end
 
+LoadFromDir("zcity_ce/gamemode/libraries/globals")
 LoadFromDir("zcity_ce/gamemode/libraries")
 
 zb.modesHooks = {}

@@ -1,8 +1,10 @@
 --\\
+	local uiColors = zc.colors.ui
+
 	HOKMAH_VGUI = HOKMAH_VGUI or {}
-	HOKMAH_VGUI.MainColor = Color(130, 130 ,130)
-	HOKMAH_VGUI.SecondaryColor = Color(155,0,0,240)
-	HOKMAH_VGUI.BackgroundColor = Color(165,165,165)
+	HOKMAH_VGUI.MainColor = uiColors.hokmahPrimaryColor
+	HOKMAH_VGUI.SecondaryColor = uiColors.secondaryColor
+	HOKMAH_VGUI.BackgroundColor = uiColors.hokmahBackgroundColor
 --//
 
 --; Adapted from Helix
@@ -13,7 +15,7 @@ local gradient = surface.GetTextureID("vgui/gradient-d")
 local gradientUp = surface.GetTextureID("vgui/gradient-u")
 local gradientLeft = surface.GetTextureID("vgui/gradient-l")
 -- local gradientRadial = Material("helix/gui/radial-gradient.png")
-local defaultBackgroundColor = Color(30, 30, 30, 200)
+local defaultBackgroundColor = uiColors.defaultPanelBackground
 
 local SKIN = {}
 derma.DefineSkin("Hokmah", "Hokmah skin.", SKIN)
@@ -24,41 +26,41 @@ SKIN.fontSegmentedProgress = "ZCity_Fixed_Medium_Light"
 
 SKIN.Colours = table.Copy(derma.SkinList.Default.Colours)
 
-SKIN.Colours.Info = Color(100, 185, 255)
-SKIN.Colours.Success = Color(64, 185, 85)
-SKIN.Colours.Error = Color(255, 100, 100)
-SKIN.Colours.Warning = Color(230, 180, 0)
-SKIN.Colours.MenuLabel = color_white
-SKIN.Colours.DarkerBackground = Color(0, 0, 0, 77)
+SKIN.Colours.Info = uiColors.info
+SKIN.Colours.Success = uiColors.success
+SKIN.Colours.Error = uiColors.error
+SKIN.Colours.Warning = uiColors.warning
+SKIN.Colours.MenuLabel = uiColors.white
+SKIN.Colours.DarkerBackground = uiColors.blackSoft
 
-SKIN.Colours.Outline = Color(155, 0, 0, 255)
-SKIN.Colours.Background = Color(0, 0, 0, 205)
+SKIN.Colours.Outline = uiColors.outlineColor
+SKIN.Colours.Background = uiColors.blackPanel
 
 SKIN.Colours.SegmentedProgress = {}
-SKIN.Colours.SegmentedProgress.Bar = Color(64, 185, 85)
-SKIN.Colours.SegmentedProgress.Text = color_white
+SKIN.Colours.SegmentedProgress.Bar = uiColors.success
+SKIN.Colours.SegmentedProgress.Text = uiColors.white
 
 SKIN.Colours.Area = {}
 
-SKIN.Colours.Window.TitleActive = Color(0, 0, 0)
-SKIN.Colours.Window.TitleInactive = color_white
+SKIN.Colours.Window.TitleActive = uiColors.black
+SKIN.Colours.Window.TitleInactive = uiColors.white
 
-SKIN.Colours.Button.Normal = color_white
-SKIN.Colours.Button.Hover = color_white
-SKIN.Colours.Button.Down = Color(180, 180, 180)
-SKIN.Colours.Button.Disabled = Color(0, 0, 0, 100)
+SKIN.Colours.Button.Normal = uiColors.white
+SKIN.Colours.Button.Hover = uiColors.white
+SKIN.Colours.Button.Down = uiColors.mutedText
+SKIN.Colours.Button.Disabled = uiColors.blackOverlay
 
-SKIN.Colours.Label.Default = color_white
+SKIN.Colours.Label.Default = uiColors.white
 
 function SKIN.tex.Menu_Strip(x, y, width, height, color)
-	surface.SetDrawColor(0, 0, 0, 200)
+	surface.SetDrawColor(uiColors.blackHeavyOverlay)
 	surface.DrawRect(x, y, width, height)
 
 	surface.SetDrawColor(ColorAlpha(color or HOKMAH_VGUI.MainColor, 175))
 	surface.SetTexture(gradient)
 	surface.DrawTexturedRect(x, y, width, height)
 
-	surface.SetTextColor(color_white)
+	surface.SetTextColor(uiColors.white)
 end
 
 function SKIN:PaintFrame(panel)
@@ -69,7 +71,7 @@ function SKIN:PaintFrame(panel)
 	surface.SetDrawColor(HOKMAH_VGUI.BackgroundColor)
 	surface.DrawRect(0, 0, panel:GetWide(), panel:GetTall())
 
-	surface.SetDrawColor(30, 30, 30, 150)
+	surface.SetDrawColor(uiColors.darkPanel)
 	surface.DrawRect(0, 0, panel:GetWide(), panel:GetTall())
 
 	if (panel:GetTitle() != "" or panel.btnClose:IsVisible()) then
@@ -92,7 +94,7 @@ function SKIN:PaintBaseFrame(panel, width, height)
 	surface.SetDrawColor(HOKMAH_VGUI.BackgroundColor)
 	surface.DrawRect(0, 0, width, height)
 
-	surface.SetDrawColor(30, 30, 30, 150)
+	surface.SetDrawColor(uiColors.darkPanel)
 	surface.DrawRect(0, 0, width, height)
 
 	surface.SetDrawColor(HOKMAH_VGUI.MainColor)
@@ -135,7 +137,7 @@ end
 function SKIN:PaintMenuBackground(panel, width, height, alphaFraction)
 	alphaFraction = alphaFraction or 1
 
-	surface.SetDrawColor(ColorAlpha(color_black, alphaFraction * 255))
+	surface.SetDrawColor(ColorAlpha(uiColors.black, alphaFraction * 255))
 	surface.SetTexture(gradient)
 	surface.DrawTexturedRect(0, 0, width, height)
 
@@ -150,7 +152,7 @@ function SKIN:PaintPlaceholderPanel(panel, width, height, barWidth, padding)
 
 	for i = 1, segments do
 		surface.SetTexture(-1)
-		surface.SetDrawColor(0, 0, 0, 88)
+		surface.SetDrawColor(uiColors.placeholderStripe)
 		surface.DrawTexturedRectRotated(i * barWidth, i * barWidth, barWidth, size * 2, -45)
 	end
 end
@@ -165,17 +167,17 @@ function SKIN:PaintCategoryPanel(panel, text, color)
 	textHeight = textHeight + 6
 	local width, height = panel:GetSize()
 
-	surface.SetDrawColor(0, 0, 0, 100)
+	surface.SetDrawColor(uiColors.blackOverlay)
 	surface.DrawRect(0, textHeight, width, height - textHeight)
 
 	self:DrawImportantBackground(0, 0, width, textHeight, color)
 
-	surface.SetTextColor(color_black)
+	surface.SetTextColor(uiColors.black)
 	surface.SetTextPos(4, 4)
 	surface.DrawText(text)
 
 	surface.SetFont(self.fontCategory)
-	surface.SetTextColor(color_white)
+	surface.SetTextColor(uiColors.white)
 	surface.SetTextPos(4, 4)
 	surface.DrawText(text)
 
@@ -199,17 +201,17 @@ function SKIN:PaintButton(panel)
 		end
 
 		if (panel:GetParent() and panel:GetParent():GetName() == "DListView_Column") then
-			surface.SetDrawColor(color_white)
+			surface.SetDrawColor(uiColors.white)
 			surface.DrawRect(0, 0, w, h)
 		end
 
-		surface.SetDrawColor(30, 30, 30, alpha)
+		surface.SetDrawColor(uiColors.buttonFill.r, uiColors.buttonFill.g, uiColors.buttonFill.b, alpha)
 		surface.DrawRect(0, 0, w, h)
 
-		surface.SetDrawColor(0, 0, 0, 180)
+		surface.SetDrawColor(uiColors.buttonOutline)
 		surface.DrawOutlinedRect(0, 0, w, h)
 
-		surface.SetDrawColor(180, 180, 180, 2)
+		surface.SetDrawColor(uiColors.buttonInnerOutline)
 		surface.DrawOutlinedRect(1, 1, w - 2, h - 2)
 
 		if(panel.IsOn)then
@@ -217,11 +219,11 @@ function SKIN:PaintButton(panel)
 			local draw_on = false
 
 			if(!panel.IsOn(panel))then
-				surface.SetDrawColor(165, 165, 165, 255)
+				surface.SetDrawColor(uiColors.toggleOffBackground)
 
 				text = panel.TextOn or "Switch On"
 			else
-				surface.SetDrawColor(130, 130, 130, 255)
+				surface.SetDrawColor(uiColors.toggleOnBackground)
 
 				text = panel.TextOff or "Switch Off"
 				draw_on = true
@@ -262,25 +264,25 @@ function SKIN:PaintButton(panel)
 			draw.NoTexture()
 
 			if(!panel.IsOn(panel))then
-				surface.SetDrawColor(255,255,255,20)
+				surface.SetDrawColor(uiColors.toggleLightFace)
 			else
-				surface.SetDrawColor(20,20,20,20)
+				surface.SetDrawColor(uiColors.toggleShadowFace)
 			end
 
 			surface.DrawPoly(poly_top)
 
 			if(!panel.IsOn(panel))then
-				surface.SetDrawColor(255,255,255,20)
+				surface.SetDrawColor(uiColors.toggleLightFace)
 			else
-				surface.SetDrawColor(20,20,20,20)
+				surface.SetDrawColor(uiColors.toggleShadowFace)
 			end
 
 			surface.DrawPoly(poly_right)
 
-			surface.SetDrawColor(20,20,20,20)
+			surface.SetDrawColor(uiColors.toggleShadowFace)
 			surface.DrawPoly(poly_bottom)
 
-			surface.SetDrawColor(20,20,20,20)
+			surface.SetDrawColor(uiColors.toggleShadowFace)
 			surface.DrawPoly(poly_left)
 			-- surface.SetDrawColor(color_black)
 			-- surface.DrawOutlinedRect(0, 0, w, h)
@@ -289,9 +291,9 @@ function SKIN:PaintButton(panel)
 			if(draw_on)then
 				local width = 5
 
-				surface.SetDrawColor(255, 153, 0, 255)
+				surface.SetDrawColor(uiColors.toggleAccent)
 				surface.DrawRect(0, 0, width, h)
-				surface.SetDrawColor(255,255,255,20)
+				surface.SetDrawColor(uiColors.toggleLightFace)
 				surface.DrawRect(0, 0, width, h * 0.25)
 			end
 
@@ -301,26 +303,26 @@ function SKIN:PaintButton(panel)
 
 			local tw, th = surface.GetTextSize(text)
 			surface.SetTextPos(w / 2 - tw / 2, h / 2 - th / 2)
-			surface.SetTextColor(255, 255, 255)
+			surface.SetTextColor(uiColors.white)
 			surface.DrawText(text)
 		end
 	end
 end
 
-local color_red = Color(50, 50, 50)
+local color_red = uiColors.textEntryInvalid
 
 function SKIN:PaintTextEntry( panel, w, h )
 	if ( panel.m_bBackground ) then
 		if ( panel:GetDisabled() ) then
-			surface.SetDrawColor(30, 30, 30, 100)
+			surface.SetDrawColor(uiColors.textEntryDisabledBackground)
 		elseif ( panel:HasFocus() ) then
-			surface.SetDrawColor(150, 150, 150, 100)
+			surface.SetDrawColor(uiColors.textEntryFocusedBackground)
 		else
-			surface.SetDrawColor(130, 130, 130, 100)
+			surface.SetDrawColor(uiColors.textEntryBackground)
 		end
 
 		surface.DrawRect(0, 0, w, h)
-		surface.SetDrawColor(0, 0, 0, 150)
+		surface.SetDrawColor(uiColors.blackMediumOverlay)
 		surface.DrawOutlinedRect(0, 0, w, h)
 	end
 
@@ -347,7 +349,7 @@ function SKIN:PaintTextEntry( panel, w, h )
 		end
 
 		local amt = utf8.len(panel:GetValue())
-		local color = color_white
+		local color = uiColors.white
 
 		if(!panel:TextEntryConditionsMet(amt))then
 			color = color_red
@@ -425,13 +427,13 @@ function SKIN:PaintSegmentedProgress(panel, width, height)
 end
 
 function SKIN:PaintCharacterCreateBackground(panel, width, height)
-	surface.SetDrawColor(40, 40, 40, 255)
+	surface.SetDrawColor(uiColors.characterBackground)
 	surface.SetTexture(gradient)
 	surface.DrawTexturedRect(0, 0, width, height)
 end
 
 function SKIN:PaintCharacterLoadBackground(panel, width, height)
-	surface.SetDrawColor(40, 40, 40, panel:GetBackgroundFraction() * 255)
+	surface.SetDrawColor(uiColors.characterBackground.r, uiColors.characterBackground.g, uiColors.characterBackground.b, panel:GetBackgroundFraction() * 255)
 	surface.SetTexture(gradient)
 	surface.DrawTexturedRect(0, 0, width, height)
 end
@@ -450,7 +452,7 @@ function SKIN:PaintAreaEntry(panel, width, height)
 end
 
 function SKIN:PaintListRow(panel, width, height)
-	surface.SetDrawColor(0, 0, 0, 150)
+	surface.SetDrawColor(uiColors.blackMediumOverlay)
 	surface.DrawRect(0, 0, width, height)
 end
 
@@ -459,7 +461,7 @@ function SKIN:PaintSettingsRowBackground(panel, width, height)
 	local bReset = panel:GetShowReset()
 
 	if (index == 0) then
-		surface.SetDrawColor(30, 30, 30, 45)
+		surface.SetDrawColor(uiColors.settingsRowBackground)
 		surface.DrawRect(0, 0, width, height)
 	end
 
@@ -479,9 +481,9 @@ function SKIN:PaintScrollBarGrip(panel, width, height)
 
 	DisableClipping(true)
 		if is3d2d then
-			surface.SetDrawColor(255, 255, 255, 200)
+			surface.SetDrawColor(uiColors.scrollbarGrip3D)
 		else
-			surface.SetDrawColor(30, 30, 30, 200)
+			surface.SetDrawColor(uiColors.scrollbarGrip)
 		end
 		surface.DrawRect(4, -upButtonHeight, width - 8, height + upButtonHeight + downButtonHeight)
 	DisableClipping(false)
@@ -521,10 +523,10 @@ function SKIN:PaintPropertySheet( panel, width, height )
 
 	hg.DrawBlur(panel)
 
-	surface.SetDrawColor(30, 30, 30, 150)
+	surface.SetDrawColor(uiColors.darkPanel)
 	surface.DrawRect(0, 0, width, height)
 
-	surface.SetDrawColor(255, 0, 0, 150)
+	surface.SetDrawColor(uiColors.propertySheetOutline)
 	surface.DrawOutlinedRect(0, 0, width, height)
 end
 
@@ -539,9 +541,9 @@ end
 
 function SKIN:PaintActiveTab( panel, w, h )
 
-	surface.SetDrawColor(30, 30, 30, 150)
+	surface.SetDrawColor(uiColors.darkPanel)
 	surface.DrawRect(0, 0, w, h*0.8)
-	surface.SetDrawColor(255, 0, 0, 150)
+	surface.SetDrawColor(uiColors.propertySheetOutline)
 	surface.DrawOutlinedRect(0, 0, w, h*0.8,1)
 
 end
@@ -549,7 +551,7 @@ end
 function SKIN:PaintMenu(panel, width, height)
 	hg.DrawBlur(panel)
 
-	surface.SetDrawColor(30, 30, 30, 150)
+	surface.SetDrawColor(uiColors.darkPanel)
 	surface.DrawRect(0, 0, width, height)
 end
 
@@ -561,10 +563,10 @@ end
 
 function SKIN:PaintChatboxTabButton(panel, width, height)
 	if (panel:GetActive()) then
-		surface.SetDrawColor(HOKMAH_VGUI.MainColor or Color(75, 119, 190, 255))
+		surface.SetDrawColor(HOKMAH_VGUI.MainColor or uiColors.styledAccent)
 		surface.DrawRect(0, 0, width, height)
 	else
-		surface.SetDrawColor(0, 0, 0, 100)
+		surface.SetDrawColor(uiColors.blackOverlay)
 		surface.DrawRect(0, 0, width, height)
 
 		if (panel:GetUnread()) then
@@ -575,15 +577,15 @@ function SKIN:PaintChatboxTabButton(panel, width, height)
 	end
 
 	-- border
-	surface.SetDrawColor(color_black)
+	surface.SetDrawColor(uiColors.black)
 	surface.DrawRect(width - 1, 0, 1, height) -- right
 end
 
 function SKIN:PaintChatboxTabs(panel, width, height, alpha)
-	surface.SetDrawColor(0, 0, 0, 33)
+	surface.SetDrawColor(uiColors.chatboxTabsBackground)
 	surface.DrawRect(0, 0, width, height)
 
-	surface.SetDrawColor(0, 0, 0, 100)
+	surface.SetDrawColor(uiColors.blackOverlay)
 	surface.SetTexture(gradient)
 	surface.DrawTexturedRect(0, height * 0.5, width, height * 0.5)
 
@@ -594,7 +596,7 @@ function SKIN:PaintChatboxTabs(panel, width, height, alpha)
 		local x, _ = button:GetPos()
 
 		-- outline
-		surface.SetDrawColor(0, 0, 0, 200)
+		surface.SetDrawColor(uiColors.blackHeavyOverlay)
 		surface.DrawRect(0, height - 1, x, 1) -- left
 		surface.DrawRect(x + button:GetWide(), height - 1, width - x - button:GetWide(), 1) -- right
 	end
@@ -609,17 +611,17 @@ function SKIN:PaintChatboxBackground(panel, width, height)
 		surface.DrawTexturedRect(0, panel.tabs.buttons:GetTall(), width, height * 0.25)
 	end
 
-	surface.SetDrawColor(color_black)
+	surface.SetDrawColor(uiColors.black)
 	surface.DrawOutlinedRect(0, 0, width, height)
 end
 
 function SKIN:PaintChatboxEntry(panel, width, height)
-	surface.SetDrawColor(0, 0, 0, 66)
+	surface.SetDrawColor(uiColors.chatboxEntryBackground)
 	surface.DrawRect(0, 0, width, height)
 
-	panel:DrawTextEntryText(color_white, HOKMAH_VGUI.MainColor, color_white)
+	panel:DrawTextEntryText(uiColors.white, HOKMAH_VGUI.MainColor, uiColors.white)
 
-	surface.SetDrawColor(color_black)
+	surface.SetDrawColor(uiColors.black)
 	surface.DrawOutlinedRect(0, 0, width, height)
 end
 
@@ -634,7 +636,7 @@ function SKIN:DrawChatboxPreviewBox(x, y, text, color)
 	surface.DrawRect(x, y, width, height)
 
 	-- text
-	surface.SetTextColor(color_white)
+	surface.SetTextColor(uiColors.white)
 	surface.SetTextPos(x + width * 0.5 - textWidth * 0.5, y + height * 0.5 - textHeight * 0.5)
 	surface.DrawText(text)
 
@@ -665,7 +667,7 @@ function SKIN:PaintChatboxAutocompleteEntry(panel, width, height)
 	end
 
 	-- lower border
-	surface.SetDrawColor(200, 200, 200, 33)
+	surface.SetDrawColor(uiColors.chatboxAutocompleteBorder)
 	surface.DrawRect(0, height - 1, width, 1)
 end
 
@@ -681,13 +683,13 @@ function SKIN:PaintInfoBar(panel, width, height, color)
 	surface.DrawRect(0, 0, width, height)
 
 	-- gradient overlay
-	surface.SetDrawColor(230, 230, 230, 8)
+	surface.SetDrawColor(uiColors.infoBarGradient)
 	surface.SetTexture(gradientUp)
 	surface.DrawTexturedRect(0, 0, width, height)
 end
 
 function SKIN:PaintInfoBarBackground(panel, width, height)
-	surface.SetDrawColor(230, 230, 230, 15)
+	surface.SetDrawColor(uiColors.infoBarBackground)
 	surface.DrawRect(0, 0, width, height)
 	surface.DrawOutlinedRect(0, 0, width, height)
 
@@ -699,15 +701,15 @@ function SKIN:PaintInfoBarBackground(panel, width, height)
 end
 
 function SKIN:PaintInventorySlot(panel, width, height)
-	surface.SetDrawColor(35, 35, 35, 85)
+	surface.SetDrawColor(uiColors.inventorySlotBackground)
 	surface.DrawRect(1, 1, width - 2, height - 2)
 
-	surface.SetDrawColor(0, 0, 0, 250)
+	surface.SetDrawColor(uiColors.inventorySlotOutline)
 	surface.DrawOutlinedRect(1, 1, width - 2, height - 2)
 end
 
 function SKIN:PaintDeathScreenBackground(panel, width, height, progress)
-	surface.SetDrawColor(0, 0, 0, (progress / 0.3) * 255)
+	surface.SetDrawColor(uiColors.black.r, uiColors.black.g, uiColors.black.b, (progress / 0.3) * 255)
 	surface.DrawRect(0, 0, width, height)
 end
 

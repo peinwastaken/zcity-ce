@@ -1,5 +1,6 @@
 hg.settings = hg.settings or {}
 hg.settings.tbl = hg.settings.tbl or {}
+local uiColors = zc.colors.ui
 
 function hg.settings:AddOpt( strCategory, strConVar, strTitle, bDecimals, bString, category )
     self.tbl[strCategory] = self.tbl[strCategory] or {}
@@ -118,9 +119,9 @@ function hg.CreateCategory(ctgName, ParentPanel, yPos)
     pppanel:SetPos(ParentPanel:GetWide() / 2 -pppanel:GetWide() / 2, yPos)
     --pppanel:SetText(ctgName)
     pppanel.Paint = function(self,w,h)
-        surface.SetDrawColor(60,60,60,145)
+        surface.SetDrawColor(uiColors.settingsCategoryBackground)
         surface.DrawRect(0, 0, w, h)
-		surface.SetDrawColor(42, 42, 42, 184)
+		surface.SetDrawColor(uiColors.settingsCategoryAccent)
 		surface.DrawRect(0, h-5, w, 5)
 
         draw.SimpleText(ctgName, 'ZCity_setiings_category', w / 2, h / 2, color3, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -166,14 +167,14 @@ local function SetConVarValue(convar, value)
     RunConsoleCommand(name, tostring(value))
 end
 
-local clr_1 = Color(255,255,255,104)
-local clr_2 = Color(122,122,122,104)
-local clr_3 = Color(28,28,28)
-local clr_4 = Color(0, 0, 0, 30)
-local clr_5 = Color(30, 29, 29, 30)
-local clr_6 = Color(255, 255, 255, 100)
-local clr_7 = Color(255, 255, 255, 200)
-local clr_8 = Color(70, 130, 180)
+local clr_1 = uiColors.settingsTextPrimary
+local clr_2 = uiColors.settingsTextSecondary
+local clr_3 = uiColors.settingsToggleTrack
+local clr_4 = uiColors.settingsToggleShadow
+local clr_5 = uiColors.settingsToggleInner
+local clr_6 = uiColors.settingsToggleGloss
+local clr_7 = uiColors.settingsValueText
+local clr_8 = uiColors.settingsTextHighlight
 function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
     local convar = GetConVar(convarName)
 
@@ -190,9 +191,9 @@ function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
 
     convarType = buttonData[6] or hg.GetConVarType(convar)
     pppanel.Paint = function(self,w,h)
-        surface.SetDrawColor(43, 43, 43,145)
+        surface.SetDrawColor(uiColors.settingsRowBackgroundStrong)
         surface.DrawRect(0, 0, w, h)
-		surface.SetDrawColor(47, 47, 47,145)
+		surface.SetDrawColor(uiColors.settingsRowDivider)
 		surface.DrawRect(0, h-3, w, 3)
 
         draw.SimpleText(buttonData[3], 'ZCity_setiings_fine', 30, h / 2 -height2/2.5, clr_1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -215,12 +216,17 @@ function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
             end
 
             local bgColor = Color(
-                Lerp(animProgress, 180, 80),
-                Lerp(animProgress, 30, 120),
-                Lerp(animProgress, 30, 50)
+                Lerp(animProgress, uiColors.settingsToggleOffKnob.r, uiColors.settingsToggleOnKnob.r),
+                Lerp(animProgress, uiColors.settingsToggleOffKnob.g, uiColors.settingsToggleOnKnob.g),
+                Lerp(animProgress, uiColors.settingsToggleOffKnob.b, uiColors.settingsToggleOnKnob.b)
             )
 
-            local shadowColor = Color(0, 0, 0, Lerp(animProgress, 150, 40))
+            local shadowColor = Color(
+                uiColors.black.r,
+                uiColors.black.g,
+                uiColors.black.b,
+                Lerp(animProgress, uiColors.blackMediumOverlay.a, uiColors.settingsToggleShadowLight.a)
+            )
             surface.SetDrawColor(clr_3)
             draw.RoundedBox(0, 0, 0, w, h, clr_3)
 
@@ -291,12 +297,12 @@ function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
 
 
         textEntry.Paint = function(self, w, h)
-            surface.SetDrawColor(30, 30, 30, 255)
+            surface.SetDrawColor(uiColors.settingsInputBackground)
             surface.DrawRect(0, 0, w, h)
-            surface.SetDrawColor(60, 60, 60, 255)
+            surface.SetDrawColor(uiColors.settingsInputOutline)
             surface.DrawOutlinedRect(0, 0, w, h)
 
-            self:DrawTextEntryText(color_white, clr_8, color_white)
+            self:DrawTextEntryText(uiColors.white, clr_8, uiColors.white)
         end
 
         function textEntry:OnValueChange(val)
@@ -350,9 +356,9 @@ function hg.CreateBindRow(bindId, bindData, ParentPanel, yPos)
     local _, height2 = surface.GetTextSize(bindData.label)
 
     pppanel.Paint = function(self,w,h)
-        surface.SetDrawColor(43, 43, 43,145)
+        surface.SetDrawColor(uiColors.settingsRowBackgroundStrong)
         surface.DrawRect(0, 0, w, h)
-		surface.SetDrawColor(47, 47, 47,145)
+		surface.SetDrawColor(uiColors.settingsRowDivider)
 		surface.DrawRect(0, h-3, w, 3)
 
         local label = bindData.label
@@ -369,12 +375,12 @@ function hg.CreateBindRow(bindId, bindData, ParentPanel, yPos)
     textEntry:SetFont('ZCity_Tiny')
 
     textEntry.Paint = function(self, w, h)
-        surface.SetDrawColor(30, 30, 30, 255)
+        surface.SetDrawColor(uiColors.settingsInputBackground)
         surface.DrawRect(0, 0, w, h)
-        surface.SetDrawColor(60, 60, 60, 255)
+        surface.SetDrawColor(uiColors.settingsInputOutline)
         surface.DrawOutlinedRect(0, 0, w, h)
 
-        self:DrawTextEntryText(color_white, clr_8, color_white)
+        self:DrawTextEntryText(uiColors.white, clr_8, uiColors.white)
     end
 
     textEntry.OnChange = function(self, num)
@@ -428,10 +434,10 @@ function hg.CreateSidePanel(ParentPanel)
     // generic ui panel shit
     ParentPanel:SetAlpha(0)
     ParentPanel.Paint = function(self,w,h)
-        surface.SetDrawColor(28,28,28,255)
+        surface.SetDrawColor(uiColors.settingsSideBackground)
         surface.DrawRect(0, 0, w, h)
 
-        surface.SetDrawColor(107, 107, 107,20)
+        surface.SetDrawColor(uiColors.settingsSideGrid)
 
         for i = 1, (ybars + 1) do
             surface.DrawRect((sw / ybars) * i - (CurTime() * 30 % (sw / ybars)), 0, ScreenScale(1), sh)
@@ -443,11 +449,11 @@ function hg.CreateSidePanel(ParentPanel)
 
         local border_size = ScreenScale(2)
 
-        surface.SetDrawColor(0, 0, 0)
+        surface.SetDrawColor(uiColors.black)
         surface.SetMaterial(gradient_l)
         surface.DrawTexturedRect(0, 0, border_size, sh)
 		surface.SetMaterial(blur)
-        surface.SetDrawColor(28,28,28,208)
+        surface.SetDrawColor(uiColors.settingsSideOverlay)
         surface.DrawRect(0, 0, w, h)
     end
     hg.DrawBlur(ParentPanel, 5)

@@ -1,5 +1,6 @@
 --
 local PANEL = {}
+local uiColors = zc.colors.ui
 
 
 BlurBackground = BlurBackground or hg.DrawBlur
@@ -16,7 +17,7 @@ function PANEL:Init()
     self:SetFont("ZB_ScrappersMedium")
 	self:SetPaintBackground(false)
 	self:SetContentAlignment(5)
-    self:SetTextColor(color_white)
+    self:SetTextColor(uiColors.white)
 
     self.disabled = false
     self.selected = false
@@ -26,26 +27,26 @@ end
 function PANEL:Paint(w, h)
     if self.disabled then return end
 
-    surface.SetDrawColor(255,255,255,255)
+    surface.SetDrawColor(uiColors.white)
     surface.SetMaterial(self.MapIcon)
     surface.DrawTexturedRect(0,-w/2,w+15,w+15)
 
     BlurBackground(self)
 
-    surface.SetDrawColor(0, 0, 0, 50)
+    surface.SetDrawColor(uiColors.blackLightOverlay)
     surface.DrawRect(0, 0, w, h)
 
     if self.disabled then
-        surface.SetDrawColor(255, 255, 255, 50)
+        surface.SetDrawColor(uiColors.whiteDisabled)
     else
-        surface.SetDrawColor(239, 47, 47)
+        surface.SetDrawColor(uiColors.rtvBorder)
     end
 
     surface.DrawOutlinedRect(0, 0, w, h, ScreenScale(0.5))
 
     self.lerp = Lerp( FrameTime() * 5, self.lerp, w * (self.Votes / player.GetCount()) )
 
-    surface.SetDrawColor(169, 0, 0, 100)
+    surface.SetDrawColor(uiColors.rtvVoteBar)
     surface.DrawRect( 0, 0, self.lerp, h )
 
     if self.Win and self.BipCD < CurTime() then
@@ -62,7 +63,7 @@ function PANEL:Paint(w, h)
         })
     end
 
-    surface.SetDrawColor(239, 47, 47, self.alpha)
+    surface.SetDrawColor(uiColors.rtvBorder.r, uiColors.rtvBorder.g, uiColors.rtvBorder.b, self.alpha)
     surface.DrawRect(0, 0, w, h)
 
 end
@@ -103,10 +104,10 @@ end
 function PANEL:Disabled(bool)
     self.disabled = bool
     if bool then
-        self:SetTextColor(Color(255, 255, 255, 50))
+        self:SetTextColor(uiColors.whiteDisabled)
         self:SetCursor("arrow")
     else
-        self:SetTextColor(color_white)
+        self:SetTextColor(uiColors.white)
         self:SetCursor("hand")
     end
 end

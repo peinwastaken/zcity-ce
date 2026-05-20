@@ -15,14 +15,15 @@ local gradient_u = Material("vgui/gradient-u")
 
 
 BlurBackground = hg.DrawBlur
+local uiColors = zc.colors.ui
 
 local function PaintFrame(self,w,h)
 	BlurBackground(self)
-    surface.SetDrawColor(155, 0, 0, 155)
+    surface.SetDrawColor(uiColors.frameTint)
     surface.SetMaterial(gradient_u)
     surface.DrawTexturedRect( 0, 0, w, h )
 
-	surface.SetDrawColor( 255, 0, 0, 128)
+	surface.SetDrawColor(uiColors.frameOutline)
     surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 end
 

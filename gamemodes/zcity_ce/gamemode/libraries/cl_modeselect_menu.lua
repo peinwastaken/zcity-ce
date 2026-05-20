@@ -1,4 +1,5 @@
 if CLIENT then
+    local uiColors = zc.colors.ui
     local isMenuOpen = nil
     zb.availableModes = zb.availableModes or {}
 
@@ -24,26 +25,26 @@ if CLIENT then
     net.Receive("ZB_NotifyRoundListChange", function()
         local playerName = net.ReadString()
 
-        chat.AddText(Color(180, 180, 255), playerName, Color(255, 255, 255), " has modified the game mode queue")
+        chat.AddText(uiColors.menuChatName, playerName, uiColors.white, " has modified the game mode queue")
 
         net.Start("ZB_RequestRoundList")
         net.SendToServer()
     end)
 
     local function StyleElement(element, bgColor)
-        bgColor = bgColor or Color(40, 40, 40, 200)
+        bgColor = bgColor or uiColors.menuBackground
 
         element.Paint = function(self, w, h)
             draw.RoundedBox(6, 0, 0, w, h, bgColor)
 
             if self:IsHovered() and self.Selectable then
-                draw.RoundedBox(6, 1, 1, w-2, h-2, Color(60, 60, 60, 100))
-                surface.SetDrawColor(0, 0, 0, 150)
+                draw.RoundedBox(6, 1, 1, w-2, h-2, uiColors.menuHoverOverlay)
+                surface.SetDrawColor(uiColors.blackMediumOverlay)
                 surface.DrawOutlinedRect(1, 1, w-2, h-2, 1)
             end
 
             if self.Selected then
-                surface.SetDrawColor(0, 255, 0, 150)
+                surface.SetDrawColor(uiColors.successOutline)
                 surface.DrawOutlinedRect(0, 0, w, h, 2)
             end
         end
@@ -59,12 +60,12 @@ if CLIENT then
         modePanel.Selectable = true
         modePanel.Selected = selectedModes[mode.key] or false
 
-        StyleElement(modePanel, Color(50, 50, 50, 200))
+        StyleElement(modePanel, uiColors.menuItemBackground)
 
         local title = vgui.Create("DLabel", modePanel)
         title:SetFont("DermaDefaultBold")
         title:SetText(mode.name)
-        title:SetTextColor(Color(255, 255, 255))
+        title:SetTextColor(uiColors.white)
         title:Dock(LEFT)
         title:DockMargin(10, 0, 0, 0)
         title:SizeToContents()
@@ -73,7 +74,7 @@ if CLIENT then
             local posLabel = vgui.Create("DLabel", modePanel)
             posLabel:SetFont("DermaDefault")
             posLabel:SetText("#" .. index)
-            posLabel:SetTextColor(Color(180, 180, 180))
+            posLabel:SetTextColor(uiColors.mutedText)
             posLabel:Dock(LEFT)
             posLabel:DockMargin(5, 0, 0, 0)
             posLabel:SizeToContents()
@@ -150,14 +151,14 @@ if CLIENT then
         queuePanel:SetSize(frame:GetWide() / 2 - 10, frame:GetTall())
         queuePanel:Dock(RIGHT)
         queuePanel:DockMargin(5, 5, 5, 5)
-        StyleElement(queuePanel, Color(30, 30, 30, 200))
+        StyleElement(queuePanel, uiColors.menuPanelBackground)
 
         queuePanelInstance = queuePanel
 
         local titleLabel = vgui.Create("DLabel", queuePanel)
         titleLabel:SetText("Game Mode Queue")
         titleLabel:SetFont("DermaLarge")
-        titleLabel:SetTextColor(Color(255, 200, 0))
+        titleLabel:SetTextColor(uiColors.titleText)
         titleLabel:Dock(TOP)
         titleLabel:DockMargin(0, 5, 0, 5)
         titleLabel:SetContentAlignment(5)
@@ -179,9 +180,9 @@ if CLIENT then
                     net.WriteTable(tbl)
                 net.SendToServer()
 
-                chat.AddText(Color(0, 255, 0), "Game mode queue has been set!")
+                chat.AddText(uiColors.successBright, "Game mode queue has been set!")
             //else
-                //chat.AddText(Color(255, 0, 0), "Game mode queue is empty!")
+                //chat.AddText(uiColors.errorBright, "Game mode queue is empty!")
             //end
         end
 
@@ -199,7 +200,7 @@ if CLIENT then
                 net.WriteBool(false)
             net.SendToServer()*/
 
-            chat.AddText(Color(255, 165, 0), "Game mode queue cleared!")
+            chat.AddText(uiColors.warningOrange, "Game mode queue cleared!")
         end
 
         function queuePanel:QueueUpdate()
@@ -209,7 +210,7 @@ if CLIENT then
                 local nextRoundLabel = vgui.Create("DLabel", queueScroll)
                 nextRoundLabel:SetText("Next Mode: " .. zb.nextround)
                 nextRoundLabel:SetFont("DermaDefaultBold")
-                nextRoundLabel:SetTextColor(Color(100, 255, 100))
+                nextRoundLabel:SetTextColor(uiColors.successText)
                 nextRoundLabel:Dock(TOP)
                 nextRoundLabel:DockMargin(5, 0, 0, 10)
                 nextRoundLabel:SizeToContents()
@@ -252,12 +253,12 @@ if CLIENT then
         leftPanel:SetSize(frame:GetWide() / 2 - 10, frame:GetTall())
         leftPanel:Dock(LEFT)
         leftPanel:DockMargin(5, 5, 5, 5)
-        StyleElement(leftPanel, Color(30, 30, 30, 200))
+        StyleElement(leftPanel, uiColors.menuPanelBackground)
 
         local titleLabel = vgui.Create("DLabel", leftPanel)
         titleLabel:SetText("Available Game Modes")
         titleLabel:SetFont("DermaLarge")
-        titleLabel:SetTextColor(Color(255, 200, 0))
+        titleLabel:SetTextColor(uiColors.titleText)
         titleLabel:Dock(TOP)
         titleLabel:DockMargin(0, 5, 0, 5)
         titleLabel:SetContentAlignment(5)
@@ -319,23 +320,23 @@ if CLIENT then
             local indicator = vgui.Create("DPanel", modeBtn)
             indicator:SetSize(16, 7)
             indicator:SetPos(8, 4)
-            indicator.IndiColor = Color(0, 0, 0, 0)
+            indicator.IndiColor = uiColors.blackTransparent
             indicator.Paint = function(self, w, h)
                 draw.RoundedBox(0, 0, 0, w, h, indicator.IndiColor)
             end
 
             if mode.canlaunch == 1 then
-                indicator.IndiColor = Color(0,255,34)
+                indicator.IndiColor = uiColors.successBright
                 indicator:SetTooltip("This mode can launch")
             end
 
             if inQueue then
-                indicator.IndiColor = Color(255, 155, 0, 255)
+                indicator.IndiColor = uiColors.warningOrange
                 indicator:SetTooltip("This mode is already in queue")
             end
 
             if mode.canlaunch == 0 then
-                indicator.IndiColor = Color(255,0,0,255)
+                indicator.IndiColor = uiColors.errorBright
                 indicator:SetTooltip("This mode can't launch")
             end
 
@@ -361,12 +362,12 @@ if CLIENT then
         batchPanel:Dock(BOTTOM)
         batchPanel:DockMargin(5, 5, 5, 5)
         batchPanel:SetTall(160)
-        StyleElement(batchPanel, Color(40, 40, 40, 200))
+        StyleElement(batchPanel, uiColors.menuBatchBackground)
 
         local batchTitle = vgui.Create("DLabel", batchPanel)
         batchTitle:SetText("Batch Operations")
         batchTitle:SetFont("DermaDefaultBold")
-        batchTitle:SetTextColor(Color(255, 255, 255))
+        batchTitle:SetTextColor(uiColors.white)
         batchTitle:Dock(TOP)
         batchTitle:DockMargin(0, 5, 0, 5)
         batchTitle:SetContentAlignment(5)
@@ -399,9 +400,9 @@ if CLIENT then
                     net.WriteBool(false)
                 net.SendToServer()*/
 
-                chat.AddText(Color(0, 255, 0), "Added " .. selectedCount .. " modes to beginning of queue!")
+                chat.AddText(uiColors.successBright, "Added " .. selectedCount .. " modes to beginning of queue!")
             else
-                chat.AddText(Color(255, 0, 0), "No modes selected!")
+                chat.AddText(uiColors.errorBright, "No modes selected!")
             end
         end
 
@@ -428,9 +429,9 @@ if CLIENT then
                     net.WriteBool(false)
                 net.SendToServer()*/
 
-                chat.AddText(Color(0, 255, 0), "Added " .. selectedCount .. " modes to end of queue!")
+                chat.AddText(uiColors.successBright, "Added " .. selectedCount .. " modes to end of queue!")
             else
-                chat.AddText(Color(255, 0, 0), "No modes selected!")
+                chat.AddText(uiColors.errorBright, "No modes selected!")
             end
         end
 
@@ -460,9 +461,9 @@ if CLIENT then
                     item.Selected = false
                 end
 
-                chat.AddText(Color(0, 255, 0), "Cleared selected modes!")
+                chat.AddText(uiColors.successBright, "Cleared selected modes!")
             else
-                chat.AddText(Color(255, 0, 0), "No modes selected!")
+                chat.AddText(uiColors.errorBright, "No modes selected!")
             end
         end
 

@@ -7,6 +7,10 @@
 
 StyledTheme = StyledTheme or {}
 
+if not ( zc and zc.colors and zc.colors.ui ) then
+    include( "zcity_ce/gamemode/libraries/globals/sh_colors.lua" )
+end
+
 --[[
     Setup color constants
 ]]
@@ -14,26 +18,29 @@ do
     StyledTheme.colors = StyledTheme.colors or {}
 
     local colors = StyledTheme.colors or {}
+    local uiColors = zc.colors.ui
 
-    colors.accent = Color( 56, 113, 179 )
-    colors.panelBackground = Color( 46, 46, 46, 240 )
-    colors.panelDisabledBackground = Color( 90, 90, 90, 255 )
-    colors.scrollBackground = Color( 0, 0, 0, 200 )
+    colors.accent = uiColors.styledAccent
+    colors.panelBackground = uiColors.styledPanelBackground
+    colors.panelDisabledBackground = uiColors.styledPanelDisabledBackground
+    colors.scrollBackground = uiColors.styledScrollBackground
 
-    colors.labelText = Color( 255, 255, 255, 255 )
-    colors.labelTextDisabled = Color( 180, 180, 180, 255 )
+    colors.labelText = uiColors.white
+    colors.labelTextDisabled = uiColors.mutedText
 
-    colors.buttonHover = Color( 150, 150, 150, 50 )
+    colors.buttonHover = uiColors.styledButtonHover
     colors.buttonPress = colors.accent
-    colors.buttonBorder = Color( 32, 32, 32, 255 )
-    colors.buttonText = Color( 255, 255, 255, 255 )
-    colors.buttonTextDisabled = Color( 180, 180, 180, 255 )
+    colors.buttonBorder = uiColors.styledButtonBorder
+    colors.buttonText = uiColors.white
+    colors.buttonTextDisabled = uiColors.mutedText
 
-    colors.entryBackground = Color( 20, 20, 20, 255 )
-    colors.entryBorder = Color( 80, 80, 80, 255 )
+    colors.entryBackground = uiColors.styledEntryBackground
+    colors.entryBorder = uiColors.styledEntryBorder
     colors.entryHighlight = colors.accent
-    colors.entryPlaceholder = Color( 150, 150, 150, 255 )
-    colors.entryText = Color( 255, 255, 255, 255 )
+    colors.entryPlaceholder = uiColors.styledEntryPlaceholder
+    colors.entryText = uiColors.white
+
+    colors.notificationIndicator = uiColors.styledNotificationIndicator
 end
 
 --[[
@@ -152,7 +159,8 @@ do
 
     --- Blur the background of a panel.
     function StyledTheme.BlurPanel( panel, alpha, density )
-        SetDrawColor( 255, 255, 255, alpha or panel:GetAlpha() )
+        local white = zc.colors.ui.white
+        SetDrawColor( white.r, white.g, white.b, alpha or panel:GetAlpha() )
         SetMaterial( MAT_BLUR )
 
         MAT_BLUR:SetFloat( "$blur", density or 4 )
@@ -179,7 +187,7 @@ do
 
     local GetMaterial = StyledTheme.GetMaterial
     local DrawTexturedRect = surface.DrawTexturedRect
-    local COLOR_WHITE = Color( 255, 255, 255, 255 )
+    local COLOR_WHITE = zc.colors.ui.white
 
     --- Draw a icon, using the specified image file path and color.
     --- It allows overriding the alpha while keeping the supplied color table intact.

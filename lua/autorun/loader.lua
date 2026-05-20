@@ -71,11 +71,21 @@ local function IncludeDir(dir)
 	end
 end
 
+local function IncludeSharedGlobals()
+	local dir = "zcity_ce/gamemode/libraries/globals/"
+	local fileName = "sh_colors.lua"
+
+	if file.Exists(dir .. fileName, "LUA") then
+		AddFile(fileName, dir)
+	end
+end
+
 local function Run()
 	local time = SysTime()
 	print("Loading zcity...") -- Loading homigrad :]
 	hg.loaded = false
 	if engine.ActiveGamemode() == "ixhl2rp" then return end
+	IncludeSharedGlobals()
 	IncludeDir("homigrad")
 	hg.loaded = true
 	print("Loaded zcity, " .. tostring(math.Round(SysTime() - time, 5)) .. " seconds needed")
