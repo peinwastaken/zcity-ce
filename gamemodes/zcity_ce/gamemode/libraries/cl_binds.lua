@@ -21,6 +21,8 @@ local binds = {}
 
 zb.binds = binds or {}
 
+local BIND_SAVE_PATH = "zcity-ce/settings/binds.json"
+
 zb.binds.categories = {
   { ["id"] = "movement", ["label"] = "Movement" },
   { ["id"] = "admin", ["label"] = "Admin" }
@@ -55,28 +57,44 @@ local function CreateBindSave()
   return bindSave
 end
 
-function binds.SaveDefaultBinds()
-  local dir = file.CreateDir("zcity-ce")
+local function EnsureBindSaveDir()
+  file.CreateDir("zcity-ce")
+  file.CreateDir("zcity-ce/settings")
+end
 
-  file.Write("zcity-ce/settings/binds.json", util.TableToJSON(CreateBindSave(), true))
+function binds.SaveDefaultBinds()
+  EnsureBindSaveDir()
+  file.Write(BIND_SAVE_PATH, util.TableToJSON(CreateBindSave(), true))
 end
 
 function binds.SaveBinds()
-  file.Write("zcity-ce/settings/binds.json", util.TableToJSON(CreateBindSave(), true))
+  EnsureBindSaveDir()
+  file.Write(BIND_SAVE_PATH, util.TableToJSON(CreateBindSave(), true))
 
   zb.dev.DevPrint("Saved binds")
   zb.dev.DevPrint(binds.allbinds)
 end
 
 function binds.LoadBinds()
-  local bindsExists = file.Exists("zcity-ce/settings/binds.json", "DATA")
+  local bindsExists = file.Exists(BIND_SAVE_PATH, "DATA")
   if !bindsExists then
     zb.dev.DevPrint("binds file not found, creating default")
     binds.SaveDefaultBinds()
   end
  
-  local data = file.Read("zcity-ce/settings/binds.json", "DATA")
-  local bindConfig = util.JSONToTable(data)
+  local data = file.Read(BIND_SAVE_PATH, "DATA")
+  local bindConfig = nil
+
+  if data then
+    local parsed, result = pcall(util.JSONToTable, data)
+    bindConfig = parsed and result or nil
+  end
+
+  if type(bindConfig) != "table" then
+    zb.dev.DevPrint("binds file could not be loaded, restoring default")
+    binds.SaveDefaultBinds()
+    bindConfig = CreateBindSave()
+  end
 
   local loaded = 0
   for k,v in pairs(bindConfig) do

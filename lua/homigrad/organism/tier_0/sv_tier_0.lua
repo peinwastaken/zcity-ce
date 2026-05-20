@@ -75,6 +75,11 @@ hook.Add("Think", "ZC_UpdateOrganismThinkLoop", function()
 
 	start = SysTime()
 	for owner, org in pairs(hg.organism.list) do -- now it is clear why corpses cause lag...
+		if not IsValid(owner) then
+			hg.organism.list[owner] = nil
+			continue
+		end
+
 		if org.godmode then continue end
 		hook_Run("ZC_OrganismThink", owner, org, mulTime)
 	end
@@ -82,6 +87,12 @@ end)
 
 local lastcall = SysTime()
 hook.Add("ZC_OrganismThinkCall", "ZC_RunOrganismThink", function(owner, org)
+	if not IsValid(owner) then
+		if owner ~= nil then hg.organism.list[owner] = nil end
+		return
+	end
+	if not org then return end
+
 	if (SysTime() - lastcall) < tickrate then return end
 	lastcall = SysTime()
 	hook_Run("ZC_OrganismThink", owner, org, 0.00001)

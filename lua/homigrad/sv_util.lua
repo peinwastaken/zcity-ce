@@ -1596,6 +1596,7 @@ hook.Add("StormFox2.PostEntityScan","ZC_LoadStormfoxSupport",function()
 end)
 
 hook.Add("ZC_OrganismThink", "ZC_BodyTemperature", function(owner, org, timeValue) -- redesigned temperature system
+	if not IsValid(owner) then return end
 	if not owner:IsPlayer() or not owner:Alive() then return end
 	if owner.GetPlayerClass and owner:GetPlayerClass() and owner:GetPlayerClass().NoFreeze then return end
 	if !zc_temperaturesystem:GetBool() then return end
