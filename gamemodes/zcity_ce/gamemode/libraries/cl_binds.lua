@@ -44,6 +44,14 @@ zb.binds.allbinds = {
     ["description"] = "for admin abusers",
     ["category"] = "admin",
     ["command"] = "adminmenu"
+  },
+  ["open_admin_config"] = {
+    ["key"] = KEY_F7,
+    ["default"] = KEY_F7,
+    ["label"] = "Open gamemode config menu",
+    ["description"] = "Opens gamemode config menu for the current gamemode (if the gamemode has configs set up)",
+    ["category"] = "admin",
+    ["command"] = "adminmenu_modeconfig"
   }
 }
 
@@ -97,13 +105,19 @@ function binds.LoadBinds()
   end
 
   local loaded = 0
-  for k,v in pairs(bindConfig) do
-    local bind = binds.allbinds[k]
+  local needsUpdate = false
+  for id, bind in pairs(binds.allbinds) do
+    local configBind = bindConfig[id]
 
-    if bind then
-      bind.key = v
-      loaded = loaded + 1
+    if !configBind then
+      needsUpdate = true
+    else
+      bind.key = configBind
     end
+  end
+  
+  if needsUpdate then
+    binds.SaveBinds()
   end
 
   zb.dev.DevPrint(string.format("Loaded %s binds", loaded))
