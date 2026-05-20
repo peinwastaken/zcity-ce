@@ -10,6 +10,7 @@ function PANEL:Init()
     self.Itensens = {}
     self:SetAlpha( 0 )
     self:SetTitle( "" )
+    self.lblTitle:SetTextColor(zc.colors.ui.white)
 
     self.DrawBorder = true
 
