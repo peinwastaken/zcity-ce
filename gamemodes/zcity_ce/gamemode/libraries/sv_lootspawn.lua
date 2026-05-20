@@ -481,7 +481,11 @@ local function MakeRandomSpawns(basepoints,iterations,maxiterations,tbl)
 		mask = bit.bor(MASK_SOLID, MASK_WATER)
 	} )
 
-	if tr.Hit and not tr.HitSky and not tr.StartedSolid and not (tr.HitTexture == "**studio**" or tr.HitTexture == "**empty**" or tr.HitTexture == "TOOLS/TOOLSNODRAW") and not (tr.MatType == MAT_SLOSH) then
+	local hitSpawnSurface = tr.Hit and not tr.HitSky and not tr.StartedSolid
+	local blockedTexture = tr.HitTexture == "**studio**" or tr.HitTexture == "**empty**" or tr.HitTexture == "TOOLS/TOOLSNODRAW"
+	local hitWater = tr.MatType == MAT_SLOSH
+
+	if hitSpawnSurface and not blockedTexture and not hitWater then
 
 		local pos = tr.HitPos + vector_up * 16
 

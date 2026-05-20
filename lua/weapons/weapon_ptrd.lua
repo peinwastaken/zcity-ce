@@ -182,12 +182,16 @@ function SWEP:ThinkAdd()
 
 	local israg = hg.GetCurrentCharacter(owner):IsRagdoll()
 
-	if self.reload and self.FakePos ~= reloadPos and self.FakeAng ~= reloadAng then
+	local hasReloadOffset = self.FakePos ~= reloadPos and self.FakeAng ~= reloadAng
+	local hasIdleOffset = (self.FakePos ~= idlePos and self.FakeAng ~= idleAng) or self.FakeAng == angle_zero
+	local shouldReturnToIdle = not self.reload and (hasIdleOffset or israg) and not self:IsResting()
+
+	if self.reload and hasReloadOffset then
 		if not israg then
 			self.FakePos = LerpVector(ft * 2, self.FakePos, reloadPos)
 		end
 		self.FakeAng = LerpAngle(ft * 4, self.FakeAng, israg and angle_zero or reloadAng)
-	elseif (not self.reload and (self.FakePos ~= idlePos and self.FakeAng ~= idleAng or self.FakeAng == angle_zero) or not self.reload and israg) and not self:IsResting() then
+	elseif shouldReturnToIdle then
 		self.FakePos = LerpVector(ft * 2, self.FakePos, idlePos)
 		self.FakeAng = LerpAngle(ft * 2, self.FakeAng, idleAng)
 	end

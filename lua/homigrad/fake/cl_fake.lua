@@ -290,7 +290,11 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	end
 
 	local inUse = GetConVar("zc_always_ragdoll_aim"):GetBool() or hg.KeyDown(ply, IN_USE)
-	local cshs_fake = zc_cshs_fake:GetBool() or (ply.organism and ply.organism.otrub) or (!inUse and !ply:InVehicle()) or (follow:GetVelocity():Length() > 350 and !ply:InVehicle())
+	local inVehicle = ply:InVehicle()
+	local unconscious = ply.organism and ply.organism.otrub
+	local freeRagdollView = not inUse and not inVehicle
+	local movingTooFastForControl = follow:GetVelocity():Length() > 350 and not inVehicle
+	local cshs_fake = zc_cshs_fake:GetBool() or unconscious or freeRagdollView or movingTooFastForControl
 	
 	if IsValid(ply.OldRagdoll) then DrawPlayerRagdoll(follow, ply) end
 

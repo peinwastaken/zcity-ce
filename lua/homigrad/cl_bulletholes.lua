@@ -112,9 +112,15 @@ hook.Add("PreDrawEffects","bulletholes-test",function()
         if !(IsValid(ent) or (ent and ent:IsWorld())) then continue end
         local pos, dir, pen, hitnormal, pen2 = tbl[1], tbl[2], tbl[3], tbl[4], tbl[5]
 
-        if (!ent:IsWorld() and ((!tbl.lastpos or !tbl.lastpos:IsEqualTol(ent:GetPos(), 0.1)) or (!tbl.lastang or !tbl.lastang:IsEqualTol(ent:GetAngles(), 0.1)))) or !tbl.pos1 then
-            local pos, dir = LocalToWorld(pos, dir, ent:GetPos(), ent:GetAngles())
-            local _, hitnormal = LocalToWorld(vector_origin, hitnormal, vector_origin, ent:GetAngles())
+        local entPos = ent:GetPos()
+        local entAng = ent:GetAngles()
+        local positionChanged = not tbl.lastpos or not tbl.lastpos:IsEqualTol(entPos, 0.1)
+        local angleChanged = not tbl.lastang or not tbl.lastang:IsEqualTol(entAng, 0.1)
+        local shouldRebuildHole = not tbl.pos1 or (not ent:IsWorld() and (positionChanged or angleChanged))
+
+        if shouldRebuildHole then
+            local pos, dir = LocalToWorld(pos, dir, entPos, entAng)
+            local _, hitnormal = LocalToWorld(vector_origin, hitnormal, vector_origin, entAng)
 
             local up, right = dir:Up() * pen2, -dir:Right() * pen2
             local pos1 = pos + up * 0.5 - right * 0.5
@@ -127,8 +133,8 @@ hook.Add("PreDrawEffects","bulletholes-test",function()
 
             local pos5, pos6, pos7, pos8 = pos1 + dir:Forward() * pen, pos2 + dir:Forward() * pen, pos3 + dir:Forward() * pen, pos4 + dir:Forward() * pen
 
-            tbl.lastpos = ent:GetPos()
-            tbl.lastang = ent:GetAngles()
+            tbl.lastpos = entPos
+            tbl.lastang = entAng
 
             if !pos1 or !pos2 or !pos3 or !pos4 then
                 tbl.pos1 = nil

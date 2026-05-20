@@ -827,8 +827,14 @@ players : 1 humans, 0 bots (20 max)
 			end
 			return
 		end
-		local vel = ent:GetVelocity():Length()
-		if -ent:GetVelocity().z > 700 and (ent:IsRagdoll() or !ply:OnGround()) and (ent:IsRagdoll() and !ent:IsConstrained() or ply:GetMoveType() == MOVETYPE_WALK) and ply:Alive() then
+		local entVelocity = ent:GetVelocity()
+		local vel = entVelocity:Length()
+		local fallingFast = -entVelocity.z > 700
+		local ragdollOrAirborne = ent:IsRagdoll() or not ply:OnGround()
+		local movementAllowsFallPunch = ent:IsRagdoll() and not ent:IsConstrained() or ply:GetMoveType() == MOVETYPE_WALK
+		local playerCanReactToFall = ply:Alive()
+
+		if fallingFast and ragdollOrAirborne and movementAllowsFallPunch and playerCanReactToFall then
 			if not fallsnd then
 				fallsnd = true
 			end
@@ -847,7 +853,12 @@ players : 1 humans, 0 bots (20 max)
 			fallsnd = false
 		end
 
-		if vel > 250 and ply:Alive() and IsValid(windSndStation) and (ent:IsRagdoll() or ply:GetMoveType() == MOVETYPE_WALK) then
+		local shouldPlayWind = vel > 250
+			and ply:Alive()
+			and IsValid(windSndStation)
+			and (ent:IsRagdoll() or ply:GetMoveType() == MOVETYPE_WALK)
+
+		if shouldPlayWind then
 			if not windsnd then
 				windsnd = true
 			end

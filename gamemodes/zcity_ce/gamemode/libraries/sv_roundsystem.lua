@@ -47,7 +47,16 @@ function NextRound(round)
 end
 
 function zb:PreRound()
-	if ((((zb.Roundscount or 0) > 15) and !GetConVar("zc_dev"):GetBool()) or ( (player.GetCount() > 1) and zb.ROUND_STATE == 0 and zb.CheckRTVVotes() )) and !(zb.RoundsLeft and zb.CROUND == "cstrike") then
+	local roundCountReachedMapVote = (zb.Roundscount or 0) > 15 and not GetConVar("zc_dev"):GetBool()
+	local playersCanVote = false
+
+	if not roundCountReachedMapVote then
+		playersCanVote = player.GetCount() > 1 and zb.ROUND_STATE == 0 and zb.CheckRTVVotes()
+	end
+
+	local cstrikeRoundLimitActive = zb.RoundsLeft and zb.CROUND == "cstrike"
+
+	if (roundCountReachedMapVote or playersCanVote) and not cstrikeRoundLimitActive then
 		zb.StartRTV(20)
 		zb.ROUND_STATE = 0
 		return

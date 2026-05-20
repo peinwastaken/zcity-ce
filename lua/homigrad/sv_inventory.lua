@@ -419,7 +419,13 @@ hook.Add("Player Think", "loot-fellows",function(ply)
     ply.keypressed = ply.keypressed or false
     --if not ply:GetLookTrace() then return end
 
-    local use = IsValid(ply.FakeRagdoll) and (ply:KeyDown(IN_WALK) and ply:KeyDown(IN_SPEED) and not ply:KeyDown(IN_ATTACK) and not ply:KeyDown(IN_ATTACK2)) or (not IsValid(ply.FakeRagdoll) and (ply:KeyDown(IN_ATTACK2) and ply:KeyDown(IN_USE)))
+    local inFakeRagdoll = IsValid(ply.FakeRagdoll)
+    local ragdollLootInput = ply:KeyDown(IN_WALK)
+        and ply:KeyDown(IN_SPEED)
+        and not ply:KeyDown(IN_ATTACK)
+        and not ply:KeyDown(IN_ATTACK2)
+    local standingLootInput = ply:KeyDown(IN_ATTACK2) and ply:KeyDown(IN_USE)
+    local use = (inFakeRagdoll and ragdollLootInput) or (not inFakeRagdoll and standingLootInput)
 
     if use then
         local trace = hg.eyeTrace(ply, 60)

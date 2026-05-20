@@ -1986,7 +1986,14 @@ function SWEP:InUse()
 	end
 
 	local isUseHeld = GetConVar("zc_always_ragdoll_aim"):GetBool() or ply:KeyDown(IN_USE)
-	local inUse = (((not ply.InVehicle || !ply:InVehicle()) and !hg.RagdollCombatInUse(ply)) && (isUseHeld || self:IsResting())) || ((ply.InVehicle && ply:InVehicle() or hg.RagdollCombatInUse(ply) or ent == ply) && not isUseHeld) || (self.reload and self.reload > 0) || (IsValid(ply.OldRagdoll))
+	local inVehicle = ply.InVehicle and ply:InVehicle()
+	local ragdollCombatInUse = hg.RagdollCombatInUse(ply)
+	local canAimRagdoll = not inVehicle and not ragdollCombatInUse
+	local wantsAimControl = isUseHeld or self:IsResting()
+	local forcedAimControl = (inVehicle or ragdollCombatInUse or ent == ply) and not isUseHeld
+	local reloading = self.reload and self.reload > 0
+	local hasOldRagdoll = IsValid(ply.OldRagdoll)
+	local inUse = (canAimRagdoll and wantsAimControl) or forcedAimControl or reloading or hasOldRagdoll
 
 	return inUse
 end

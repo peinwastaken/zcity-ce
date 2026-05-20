@@ -155,7 +155,12 @@ if CLIENT then
 		local tr = ply:GetEyeTrace()
 
 		if not tr.Hit or tr.HitSky or not tr.HitPos or not InPlacementRadius(ply, tr) then return end
-		if tr.Entity and tr.Entity:IsPlayer() or not (IsValid(tr.Entity) and doors[tr.Entity:GetClass()]) then return end
+
+		local target = tr.Entity
+		local targetIsPlayer = target and target:IsPlayer()
+		local targetIsDoor = IsValid(target) and doors[target:GetClass()]
+
+		if targetIsPlayer or not targetIsDoor then return end
 
 		local pos, ang = tr.HitPos, tr.HitNormal:Angle()
 		ang:RotateAroundAxis(ang:Right(), -90)
@@ -177,7 +182,10 @@ function SWEP:PrimaryAttack()
 
 	if not self:GetPlaced() then
 		local tr = ply:GetEyeTrace()
-		if not tr.Hit or tr.HitSky or not InPlacementRadius(ply, tr) or not (IsValid(tr.Entity) and doors[tr.Entity:GetClass()]) then return end
+		local validPlacementTrace = tr.Hit and not tr.HitSky and InPlacementRadius(ply, tr)
+		local targetIsDoor = IsValid(tr.Entity) and doors[tr.Entity:GetClass()]
+
+		if not validPlacementTrace or not targetIsDoor then return end
 
 		self:SetHolding(math.min(self:GetHolding() + 5, 100))
 
