@@ -54,6 +54,46 @@ function IsReasonable( pos )
 	return true
 end
 
+function hg.QueueCollisionRulesChanged(ent, relatedEnt, enableCustomCheck)
+	if !IsValid(ent) then return end
+
+	if enableCustomCheck then
+		ent.ZC_QueuedCustomCollisionCheck = true
+	end
+
+	if IsValid(relatedEnt) then
+		ent.ZC_QueuedCollisionRulesRelated = ent.ZC_QueuedCollisionRulesRelated or {}
+		ent.ZC_QueuedCollisionRulesRelated[relatedEnt] = true
+	end
+
+	if ent.ZC_PendingCollisionRulesChanged then return end
+
+	ent.ZC_PendingCollisionRulesChanged = true
+
+	timer.Simple(0, function()
+		local relatedEnts = ent.ZC_QueuedCollisionRulesRelated
+		local queuedCustomCheck = ent.ZC_QueuedCustomCollisionCheck
+
+		ent.ZC_PendingCollisionRulesChanged = nil
+		ent.ZC_QueuedCollisionRulesRelated = nil
+		ent.ZC_QueuedCustomCollisionCheck = nil
+
+		if IsValid(ent) then
+			if queuedCustomCheck and !ent:GetCustomCollisionCheck() then
+				ent:SetCustomCollisionCheck(true)
+			end
+
+			ent:CollisionRulesChanged()
+		end
+
+		for otherEnt in pairs(relatedEnts or {}) do
+			if IsValid(otherEnt) then
+				otherEnt:CollisionRulesChanged()
+			end
+		end
+	end)
+end
+
 hook.Add("ZC_OnCrazyPhysics","ZC_HandleCrazyPhysics",function(ent, physobj)--function(a,msg,c,d, r,g,b)
 	ent:CollisionRulesChanged()
 

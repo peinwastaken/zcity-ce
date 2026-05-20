@@ -24,6 +24,15 @@ hook.Add("ZC_PlayerCollide", "ZC_HandleFakeRagdollPropCollision", function(ply, 
 	end
 end)
 
+-- LightStunPlayer may create a ragdoll, so defer it out of hit-ground contact handling.
+local function LightStunPlayerNextTick(ply, time)
+	timer.Simple(0, function()
+		if IsValid(ply) and ply:IsPlayer() then
+			hg.LightStunPlayer(ply, time)
+		end
+	end)
+end
+
 hook.Add("OnPlayerHitGround","ZC_FallStun",function(ply,inwater,onfloater,speed)
 	if IsValid(ply.FakeRagdoll) then return true end
 	local tr = {}
@@ -47,14 +56,15 @@ hook.Add("OnPlayerHitGround","ZC_FallStun",function(ply,inwater,onfloater,speed)
 		return
 	end
 
-	if speed > 250 and tr.Entity:IsPlayer() then
-		hg.drop(tr.Entity)
-		hg.LightStunPlayer(tr.Entity,2)
+	local hitPlayer = tr.Entity
+	if speed > 250 and IsValid(hitPlayer) and hitPlayer:IsPlayer() then
+		hg.drop(hitPlayer)
+		LightStunPlayerNextTick(hitPlayer,2)
 		--tr.Entity:TakeDamage(speed / 5,ply,ply)
 	end
 
 	if speed > 600 then
-		hg.LightStunPlayer(ply,2)
+		LightStunPlayerNextTick(ply,2)
 	end
 end)
 

@@ -1114,13 +1114,11 @@ function SWEP:SetCarrying(ent, bone, pos, dist)
 		end
 
 		if not self.CarryEnt:GetCustomCollisionCheck() then
-			self.CarryEnt:SetCustomCollisionCheck(true)
-			self.CarryEnt:CollisionRulesChanged()
-			owner:CollisionRulesChanged()
+			hg.QueueCollisionRulesChanged(self.CarryEnt, owner, true)
 
 			self.CarryEnt:CallOnRemove("removenarsla",function()
 				if not IsValid(owner) then return end
-				owner:CollisionRulesChanged()
+				hg.QueueCollisionRulesChanged(owner)
 				owner:SetNetVar("carryent",nil)
 				owner:SetNetVar("carrybone",nil)
 				owner:SetNetVar("carrymass",nil)
@@ -1131,8 +1129,7 @@ function SWEP:SetCarrying(ent, bone, pos, dist)
 		end
 	else
 		if IsValid(self.CarryEnt) and self.CarryEnt:GetCustomCollisionCheck() then
-			self.CarryEnt:CollisionRulesChanged()
-			owner:CollisionRulesChanged()
+			hg.QueueCollisionRulesChanged(self.CarryEnt, owner)
 			//self.CarryEnt:SetCustomCollisionCheck(false)
 		end
 
@@ -1637,8 +1634,7 @@ function hg.SetCarryEnt2(ply, ent, bone, mass, carrypos, targetpos, targetang, d
 			ply:SetNetVar("carrypos2", carrypos)
 
 			if not ent:GetCustomCollisionCheck() then
-				ent:SetCustomCollisionCheck(true)
-				ent:CollisionRulesChanged()
+				hg.QueueCollisionRulesChanged(ent, ply, true)
 			end
 
 			local dist = dist or phys:GetPos():Distance(ply:EyePos())
@@ -1832,7 +1828,7 @@ function SWEP:DoBFSAnimation(anim,time)
 		self.animtime = CurTime() + time
 	end
 	if SERVER then
-		net.Start("play_anim")
+		net.Start("ZC_PlayAnimation")
 		net.WriteEntity(self)
 		net.WriteString(anim)
 		net.WriteFloat(time)
@@ -1841,7 +1837,7 @@ function SWEP:DoBFSAnimation(anim,time)
 end
 
 if CLIENT then
-	net.Receive("play_anim",function()
+	net.Receive("ZC_PlayAnimation",function()
 		local self = net.ReadEntity()
 		local anim = net.ReadString()
 		if not IsValid(self) then return end
@@ -1859,7 +1855,7 @@ if CLIENT then
 		end
 	end)
 else
-	util.AddNetworkString("play_anim")
+	util.AddNetworkString("ZC_PlayAnimation")
 end
 
 function SWEP:UpdateNextIdle()
