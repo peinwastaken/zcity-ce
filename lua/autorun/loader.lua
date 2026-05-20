@@ -3,13 +3,14 @@ hg.Version = "Release 1.0.0"
 hg.GitHub_ReposOwner = "peinwastaken"
 hg.GitHub_ReposName = "zcity-ce" -- please add your real git fork!
 
-if SERVER then
-	resource.AddWorkshop("3657285193") -- main addon
-	resource.AddWorkshop("3657897364") -- main content addon
-	resource.AddWorkshop("3657294321") -- first content addon
-	resource.AddWorkshop("3544105055") -- second content addon
-	resource.AddWorkshop("3257937532") -- distac content
-end
+-- TODO: Add new content pack
+-- if SERVER then
+-- 	resource.AddWorkshop("3657285193") -- main addon
+-- 	resource.AddWorkshop("3657897364") -- main content addon
+-- 	resource.AddWorkshop("3657294321") -- first content addon
+-- 	resource.AddWorkshop("3544105055") -- second content addon
+-- 	resource.AddWorkshop("3257937532") -- distac content
+-- end
 -- if hg.GitHub_ReposOwner and hg.GitHub_ReposOwner != "" then
 -- 	http.Fetch( "https://api.github.com/repos/" .. hg.GitHub_ReposOwner .. "/" .. hg.GitHub_ReposName .. "/commits?sha=" .. hg.GitHub_Branch .. "&per_page=1",
 -- 		function( body, length, headers, code )
@@ -78,11 +79,11 @@ local function Run()
 	IncludeDir("homigrad")
 	hg.loaded = true
 	print("Loaded zcity, " .. tostring(math.Round(SysTime() - time, 5)) .. " seconds needed")
-	hook.Run("HomigradRun")
+	hook.Run("ZC_OnLoaded")
 end
 
 local initpost
-hook.Add("InitPostEntity", "zcity", function()
+hook.Add("InitPostEntity", "ZC_LoadInitPostFiles", function()
 	initpost = true
 	IncludeDir("initpost")
 	print("Loading initpost...")
