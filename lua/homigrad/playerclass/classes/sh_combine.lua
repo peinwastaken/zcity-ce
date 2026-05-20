@@ -722,7 +722,7 @@ if SERVER then
     hook.Add("HomigradDamage","Combine_painsounds",function(ply, dmgInfo, hitgroup, ent)
         --[[if ply.PlayerClassName == "Combine" then
             ply.painCD = ply.painCD or 0
-            if hitgroups_sounds[hitgroup] and ply.painCD < CurTime() and ply.organism and not ply.organism.otrub and ply:Alive() then
+            if hitgroups_sounds[hitgroup] and ply.painCD < CurTime() and ply.organism and not ply.organism.unconscious and ply:Alive() then
                 local snd = "npc/combine_soldier/pain" .. math.random(1,3) .. ".wav"
                 ent:EmitSound(snd,80,ply.VoicePitch)
                 ply.painCD = CurTime() + SoundDuration(snd)
@@ -737,7 +737,7 @@ if SERVER then
         local nearPlayers = ents.FindInSphere(ply:GetPos(),300)
         for _,mate in ipairs(nearPlayers) do
             if mate:IsPlayer() and mate ~= ply and mate:Alive() and mate.PlayerClassName == "Combine" then
-                if ply:Alive() and not ply.organism.otrub and ply.PlayerClassName == "Combine" and wep.ShellEject ~= "ShotgunShellEject" then
+                if ply:Alive() and not ply.organism.unconscious and ply.PlayerClassName == "Combine" and wep.ShellEject ~= "ShotgunShellEject" then
                     local phrase = (math.random(1,2) == 2) and "npc/combine_soldier/vo/coverme.wav" or "npc/combine_soldier/vo/coverhurt.wav"
                     ply:EmitSound(phrase,75,ply.VoicePitch)
                     ply.phrCld = CurTime() + (SoundDuration(phrase) or 0)
@@ -759,7 +759,7 @@ if SERVER then
     end)
 
     hook.Add("HG_PlayerSay","CombineChatMessage",function(ply, txtTbl, text)
-        if ply.PlayerClassName == "Combine" and ply:Alive() and not ply.organism.otrub then
+        if ply.PlayerClassName == "Combine" and ply:Alive() and not ply.organism.unconscious then
             ply:EmitSound("npc/metropolice/vo/on1.wav")
         end
     end)

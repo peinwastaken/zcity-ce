@@ -13,7 +13,7 @@ end
 module[2] = function(owner, org, timeValue)
     if org.satiety <= 0 and zc_hungersystem:GetBool() then
         org.hungry = min(max(org.hungry + timeValue * 0.01, 0),100)
-        //if org.isPly and not org.otrub and org.hungry > 25 and org.hungry < 45 then org.owner:Notify(table.Random(pharse),60,"hungry",6) end
+        //if org.isPly and not org.unconscious and org.hungry > 25 and org.hungry < 45 then org.owner:Notify(table.Random(pharse),60,"hungry",6) end
         org.hungryDmgCd = org.hungryDmgCd or 0
         if org.alive and org.hungryDmgCd < CurTime() and org.hungry > 45 then
             //org.owner:Notify(table.Random(veryPharse),20,"hungry",6,nil,colorRed)
@@ -36,7 +36,7 @@ module[2] = function(owner, org, timeValue)
     end
     org.hungry = Round(org.hungry or 0,3)
 
-    if (org.intestines > 0.5 or org.stomach > 0.5) and not org.otrub and owner:IsPlayer() and org.satiety > 1 then
+    if (org.intestines > 0.5 or org.stomach > 0.5) and not org.unconscious and owner:IsPlayer() and org.satiety > 1 then
         if not org.randomPainSound or org.randomPainSound < CurTime() then
             org.randomPainSound = CurTime() + math.random(20,45)
             owner:EmitSound("zcitysnd/"..(ThatPlyIsFemale(owner) and "female" or "male").."/pain_"..math.random(1,8)..".mp3")

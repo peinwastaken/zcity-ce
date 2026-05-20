@@ -2978,7 +2978,7 @@ if CLIENT then
 
 	hook.Add("radialOptions", "hg-ammomenu", function()
 		local organism = LocalPlayer().organism or {}
-		if not organism.otrub and table.Count(LocalPlayer():GetAmmo()) > 0 and lply:KeyDown(IN_WALK) then
+		if not organism.unconscious and table.Count(LocalPlayer():GetAmmo()) > 0 and lply:KeyDown(IN_WALK) then
 			hg.radialOptions[#hg.radialOptions + 1] = {
 				function()
 					RunConsoleCommand("hg_ammomenu")
@@ -2995,7 +2995,7 @@ if SERVER then
     util.AddNetworkString( "drop_ammo" )
 
     net.Receive( "drop_ammo", function( len, ply )
-        if !ply:Alive() or ply.organism.otrub or !ply.organism.canmove then return end
+        if !ply:Alive() or ply.organism.unconscious or !ply.organism.canmove then return end
         local ammotype = net.ReadFloat()
         local count = net.ReadFloat()
         local pos = ply:EyePos()+ply:EyeAngles():Forward()*15

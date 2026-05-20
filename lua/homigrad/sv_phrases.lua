@@ -256,7 +256,7 @@ local mClamp, mRandom = math.Clamp, math.random
 
 local function PlayClassPhrase(ply, phraseType)
 	if !IsValid(ply) or !ply:Alive() then return end
-	if ply.organism and ply.organism.otrub then return end
+	if ply.organism and ply.organism.unconscious then return end
 	if (ply.phrCld or 0) > CurTime() then return end
 
 	local classPhrases = GetPlayerClassPhrases(ply, phraseType)
@@ -381,7 +381,7 @@ hook.Add("PlayerDeath", "StopPhrOnDeath",function(ply)
 	ply.phrCld = 0
 end)
 
-hook.Add("HG_OnOtrub", "StopPhrOnOtrub", function( ply )
+hook.Add("HG_OnUnconscious", "StopPhrOnUnconscious", function( ply )
 	local ent = hg.GetCurrentCharacter(ply)
 	ent:StopSound(ply.lastPhr or "")
 	ply.phrCld = 0
@@ -395,7 +395,7 @@ hook.Add("PreHomigradDamage","BurnScream", function( ent, dmgInfo )
 	local ply = ent:IsRagdoll() and hg.RagdollOwner(ent) or ent
 
 	if dmgInfo:IsDamageType(DMG_BURN) and IsValid(ply) and ply:IsPlayer()
-	and ply.organism and !ply.organism.otrub and ply:Alive() then
+	and ply.organism and !ply.organism.unconscious and ply:Alive() then
 		local phrase = "zcitysnd/"..(ThatPlyIsFemale(ply) and "fe" or "").."male/burn/death_burn"..mRandom(1,ThatPlyIsFemale(ply) and femaleCount or maleCount)..".mp3"
 
 		-- overrides
@@ -416,7 +416,7 @@ hook.Add("PreHomigradDamage","BurnScream", function( ent, dmgInfo )
 end)
 
 hook.Add("Org Think", "WhatsSoFunny",function(owner, org, timeValue)
-	if (owner.lastBerserkLaughSoundCD or 0) < CurTime() and !org.otrub and owner:IsBerserk() and mRandom(1, 50) == 1 then
+	if (owner.lastBerserkLaughSoundCD or 0) < CurTime() and !org.unconscious and owner:IsBerserk() and mRandom(1, 50) == 1 then
 		local phrase = (ThatPlyIsFemale(owner) and table.Random(f_laugh)) or table.Random(laugh)
 
 		local muffed = owner.armors["face"] == "mask2"
@@ -465,7 +465,7 @@ hook.Add("HG_CanDoPhrase", "Pharse_Check", function(ply, cmd, args)
 	if !IsValid(ply) or !ply:Alive() or ply:WaterLevel() >= 3 then return true end
 	local org = ply.organism
 	if !org then return true end
-	if org.otrub then return true end
+	if org.unconscious then return true end
 	if org.o2[1] < 15 then return true end
 	if org.holdingbreath then return true end
 	--if ply.PlayerClassName and ply:GetPlayerClass() and !ply:GetPlayerClass().CanUseDefaultPhrase then return true end
@@ -548,7 +548,7 @@ hook.Add("HGReloading", "Perezaryad", function(wep)
 	ply.ClassReloadSND_CD = ply.ClassReloadSND_CD or 0
 	if ply.ClassReloadSND_CD > CurTime() then return end
 
-	if ply:Alive() and !ply.organism.otrub and mRandom(1, 100) <= 25 then
+	if ply:Alive() and !ply.organism.unconscious and mRandom(1, 100) <= 25 then
 		PlayClassPhrase(ply, "reload")
 		ply.ClassReloadSND_CD = CurTime() + 3
 	end

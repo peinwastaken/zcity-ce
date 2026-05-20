@@ -5,7 +5,7 @@ local vecAdjust2 = Vector(5, -6.3, -5)
 local function DrawFirstPersonHelmet(ply, strModel, vecAdjust, fFov, setMat)
 	if ply:GetNetVar("headcrab") then return end
 	if not ply:Alive() then return end
-	if ply.organism and ply.organism.otrub then return end
+	if ply.organism and ply.organism.unconscious then return end
 
 	if not IsValid(ply.FirstPersonHelmetModel) then
 		ply.FirstPersonHelmetModel = ClientsideModel(strModel)

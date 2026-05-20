@@ -165,7 +165,7 @@ if CLIENT then
 		local wep = lply:GetActiveWeapon()
 		local organism = lply.organism or {}
 		
-		if !lply:Alive() or !organism or organism.otrub or !organism.canmove then return end
+		if !lply:Alive() or !organism or organism.unconscious or !organism.canmove then return end
 		
 		local attmenu = {
 			[1] = function()

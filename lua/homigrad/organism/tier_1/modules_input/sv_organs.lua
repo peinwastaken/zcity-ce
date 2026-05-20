@@ -168,7 +168,7 @@ local function hitArtery(artery, org, dmg, dmgInfo, boneindex, dir, hit)
 	if artery ~= "arteria" then
 		hg.AddHarmToAttacker(dmgInfo, 4, "Random artery punctured harm")//((1 - org[artery]) - math.max((1 - org[artery]) - dmg,0)) / 4
 	else
-		if org.isPly and not org.otrub then
+		if org.isPly and not org.unconscious then
 			org.owner:Notify(table.Random(arteryMessages), true, "arteria", 0)
 		end
 

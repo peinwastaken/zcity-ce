@@ -195,7 +195,7 @@ function SWEP:CanSecondaryAttack()
                 if org and not org.holdingbreath then
                     org.o2[1] = math.max(0,org.o2[1] - 0.5 * (0.1 / 0.25))
                     org.is_sprayed_at = true
-                    if not org.otrub and math.random(1, 8) == 1 then
+                    if not org.unconscious and math.random(1, 8) == 1 then
                         ent:Notify("", 5, "coughing", nil, function() hg.organism.module.random_events.TriggerRandomEvent(ent,"Cough") end, color_white)
                     end
                 end

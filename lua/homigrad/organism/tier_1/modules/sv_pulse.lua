@@ -23,12 +23,12 @@ module[2] = function(owner, org, timeValue)
 	local o2 = org.o2
 	local o2 = halfValue2(o2[1], o2.range, o2.k)
 
-	//if org.isPly and not org.otrub and (heart == 0) then org.owner:Notify("My torso hurts.",true,"heart",6) end
-	//if org.isPly and not org.otrub and org.heartstop then org.owner:Notify("",true,"heartstop",6) end
+	//if org.isPly and not org.unconscious and (heart == 0) then org.owner:Notify("My torso hurts.",true,"heart",6) end
+	//if org.isPly and not org.unconscious and org.heartstop then org.owner:Notify("",true,"heartstop",6) end
 
 
 	local pulse = 70-- + 120 * ((stamina.max or 180) - stamina[1]) / (stamina.max or 180) * (org.lungsfunction and 1 or 0)
-	--pulse = pulse + math.min(org.adrenaline, 2) * 40 + (!org.otrub and math.max(org.fear * 50, 0) or 0)
+	--pulse = pulse + math.min(org.adrenaline, 2) * 40 + (!org.unconscious and math.max(org.fear * 50, 0) or 0)
 	pulse = org.alive and pulse or 0
 	pulse = math.Clamp(pulse, 0, 200)
 
@@ -67,7 +67,7 @@ module[2] = function(owner, org, timeValue)
 		org.heartbeat = 0
 	end
 
-	org.fear = math.Approach(org.fear, (org.otrub and 0 or (org.fearadd > 0 and 1 or -1)), org.otrub and timeValue * 0.5 or (org.fearadd > 0 and (org.fear < 0 and timeValue * 5 * org.fearadd or timeValue / 5 * org.fearadd) or (org.fear <= 0 and timeValue / 240 or timeValue / 50)))
+	org.fear = math.Approach(org.fear, (org.unconscious and 0 or (org.fearadd > 0 and 1 or -1)), org.unconscious and timeValue * 0.5 or (org.fearadd > 0 and (org.fear < 0 and timeValue * 5 * org.fearadd or timeValue / 5 * org.fearadd) or (org.fear <= 0 and timeValue / 240 or timeValue / 50)))
 	-- less time to start fearing, more time to become calm again
 	-- if no fear, in 3 minutes become slightly talkative, so would say random phrases to calm themselves in a current situation
 	local gainfear = hg.organism.should_gain_fear(org)
@@ -119,7 +119,7 @@ module[2] = function(owner, org, timeValue)
 		org.heartstoptime = nil
 	end
 
-	if org.alive and org.heartstoptime and org.heartstoptime + 30 < CurTime() and (org.lastsoundtime or 0) < CurTime() and org.otrub then
+	if org.alive and org.heartstoptime and org.heartstoptime + 30 < CurTime() and (org.lastsoundtime or 0) < CurTime() and org.unconscious then
 		org.owner:EmitSound("breathing/agonalbreathing_"..math.random(13)..".wav", 60)
 		--org.owner:EmitSound("breathing/agonalbreathing_"..math.random(13)..".wav", 50)
 
@@ -127,7 +127,7 @@ module[2] = function(owner, org, timeValue)
 	end
 end
 
---if org.heartstop then org.needotrub = true end --not quite...
+--if org.heartstop then org.needunconscious = true end --not quite...
 util.AddNetworkString("pulse")
 function hg.organism.Pulse(owner, org, timeValue)
 	if org.o2[1] > 1 and org.alive and org.heart < 1 and org.brain < 0.6 then

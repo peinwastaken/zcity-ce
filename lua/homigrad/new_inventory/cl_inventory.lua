@@ -1,7 +1,7 @@
 local clr_inv, clr_inv_selected = Color(20, 0, 0, 200), Color(90, 0, 0, 200)
 local type = type
 hook.Add("PlayerButtonDown", "NI_PlayerButtonDown", function(ply, key)
-	if GetGlobalBool("RadialInventory", false) and key == KEY_1 and ply.organism and not ply.organism.otrub then
+	if GetGlobalBool("RadialInventory", false) and key == KEY_1 and ply.organism and not ply.organism.unconscious then
 		local tbl1 = {}
 		local weps = ply:GetWeapons()
 		for i = 1, #weps do

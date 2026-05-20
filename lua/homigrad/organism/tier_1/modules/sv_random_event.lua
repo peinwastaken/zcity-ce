@@ -60,7 +60,7 @@ module[2] = function(owner, org, timeValue)
 			return
 		end
 
-        if not org.otrub then
+        if not org.unconscious then
             table.Random(RandomEvents)(owner,org)
         end
 
@@ -80,7 +80,7 @@ hook.Add("Org Think", "VirusRandomEvents", function(owner, org, timeValue)
 end)
 
 hook.Add("Org Think", "TemperatureSounds", function(owner, org, timeValue) -- added sounds at low temperature lol))
-    if not owner:IsPlayer() or not owner:Alive() or org.otrub then return end
+    if not owner:IsPlayer() or not owner:Alive() or org.unconscious then return end
     if owner:IsPlayer() and org.temperature > 24 and org.temperature < 35 then
         if not owner.ColdRandomEventTime or CurTime() >= owner.ColdRandomEventTime then
             local event = math.random(1, 2) == 1 and "Cough" or "Sneeze"

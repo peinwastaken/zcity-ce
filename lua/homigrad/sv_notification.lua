@@ -4,7 +4,7 @@ util.AddNetworkString("HGNotificateBerserk")
 --local zc_old_notificate = ConVarExists("zc_old_notificate") and GetConVar("zc_old_notificate") or CreateConVar("zc_old_notificate",0,FCVAR_SERVER_CAN_EXECUTE,"enable old notifications (chatprints)",0,1)
 local hev_color = Color(255,125,0)
 local function CreateNotification(ply, msg, delay, msgKey, showTime, func, clr)
-    if ply.organism and ply.organism.otrub then return end
+    if ply.organism and ply.organism.unconscious then return end
     if ply.PlayerClassName and ply.PlayerClassName == "Gordon" and clr != hev_color then return end
     if msg == "" then return end
     if not IsValid(ply) or not ply:IsPlayer() then error("player is not valid!") return false end
@@ -44,7 +44,7 @@ local function CreateNotification(ply, msg, delay, msgKey, showTime, func, clr)
         if !IsValid(ply) then return end
         if !ply.msgs[msgKey] then return end
 
-        if (ply.organism and ply.organism.otrub) or !ply:Alive() then
+        if (ply.organism and ply.organism.unconscious) or !ply:Alive() then
             return
         end
 
@@ -68,7 +68,7 @@ end
 
 //erm it's ass but i don't care enough
 local function CreateNotificationBerserk(ply, msg, delay, msgKey, showTime, func, clr)
-    if ply.organism and ply.organism.otrub then return end
+    if ply.organism and ply.organism.unconscious then return end
     if ply.PlayerClassName and ply.PlayerClassName == "Gordon" and clr != hev_color then return end
     if msg == "" then return end
     if not IsValid(ply) or not ply:IsPlayer() then error("player is not valid!") return false end
@@ -111,7 +111,7 @@ local function CreateNotificationBerserk(ply, msg, delay, msgKey, showTime, func
         if !IsValid(ply) then return end
         if !ply.msgs[msgKey] then return end
 
-        if (ply.organism and ply.organism.otrub) or !ply:Alive() then
+        if (ply.organism and ply.organism.unconscious) or !ply:Alive() then
             return
         end
 
@@ -140,7 +140,7 @@ hook.Add("Player Spawn","removeNotifications",function(ply)
     ply.msgs = {}
 end)
 
-hook.Add("HG_OnOtrub","removeNotifications",function(ply)
+hook.Add("HG_OnUnconscious","removeNotifications",function(ply)
     ply.msgs = {}
 end)
 

@@ -289,7 +289,7 @@ hook.Add("radialOptions", "CommanderSupportOptions", function()
     local ply = LocalPlayer()
     local organism = ply.organism or {}
 
-    if ply:GetNWString("PlayerRole") == "Commander" and not organism.otrub then
+    if ply:GetNWString("PlayerRole") == "Commander" and not organism.unconscious then
         local tbl = {createSupportMenu, "Request support"}
         hg.radialOptions[#hg.radialOptions + 1] = tbl
     end

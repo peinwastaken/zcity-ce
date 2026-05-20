@@ -558,7 +558,7 @@ if CLIENT then
         if !lply:Alive() and #queen > 0 then queen = {} return end
         if not armors then return end
         if armors["head"] ~= "gordon_helmet" then return end
-        if inPlaying < CurTime() - 0.1 and queen[#queen] and !lply.organism.otrub then
+        if inPlaying < CurTime() - 0.1 and queen[#queen] and !lply.organism.unconscious then
             inPlaying = CurTime() + SoundDuration(queen[#queen])
             surface.PlaySound(queen[#queen])
             queen[#queen] = nil

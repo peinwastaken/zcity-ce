@@ -494,7 +494,7 @@ hook.Add("PostEntityFireBullets","bulletsuppression",function(ent,bullet)
 			hg.DynaMusic:AddPanic(ent:GetOwner(),0.5)
 		end
 
-		if !org.otrub then
+		if !org.unconscious then
 			--print(1 * dmg / math.max(dist / 2,10) / 1)
 			ply:AddNaturalAdrenaline(0.05 * dmg / math.max(dist / 2,10) / 1)
 			org.fearadd = org.fearadd + 0.2
@@ -1674,7 +1674,7 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- rede
 	org.temperature = math.Approach(org.temperature, hg.TranslateToBodyTemp(temp, org), org.tempchanging)
 
 	-- When cold
-	if owner:Alive() and not org.otrub and org.temperature < 36 then
+	if owner:Alive() and not org.unconscious and org.temperature < 36 then
 		org.FreezeSndCD = org.FreezeSndCD or CurTime() + math.random(5, 15)
 
 		if org.FreezeSndCD < CurTime() then
@@ -1705,7 +1705,7 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- rede
 	end
 
 	org.HeatDMGCd = org.HeatDMGCd or CurTime()
-	if org.temperature > 38 and org.HeatDMGCd < CurTime() and not org.otrub then
+	if org.temperature > 38 and org.HeatDMGCd < CurTime() and not org.unconscious then
 		org.painadd = org.painadd + math.Rand(0.5, 1) * ((org.temperature - 38) / 38 * 6 + 1)
 		org.HeatDMGCd = CurTime() + 0.5
 	end

@@ -184,7 +184,7 @@ if CLIENT then
 		function plyMenu:Think()
 			local ent = self.ent
 			if not IsValid(ent) then self:Close() return end
-			if LocalPlayer().organism.otrub or not LocalPlayer():Alive() then self:Remove() return end
+			if LocalPlayer().organism.unconscious or not LocalPlayer():Alive() then self:Remove() return end
 			if (ent:GetPos() - LocalPlayer():GetPos()):LengthSqr() > 125^2 then self:Remove() return end
 			if ent:IsPlayer() and not IsValid(ent.FakeRagdoll) then self:Remove() return end
 			if input.IsKeyDown(KEY_R) then

@@ -267,9 +267,9 @@ function SWEP:ApplyForce()
 								ply:ChatPrint("Breathing.")
 							end
 
-							ply:ChatPrint(org.otrub and "No reaction." or "Reaction present.")
+							ply:ChatPrint(org.unconscious and "No reaction." or "Reaction present.")
 
-							if org.isPly and not org.otrub then
+							if org.isPly and not org.unconscious then
 								org.owner:ChatPrint("You were checked for reaction.")
 							end
 						end

@@ -22,7 +22,7 @@ timer.Create("ZB_AntiAfkThink",10,0,function()
     for _, ply in player.Iterator() do
         if not IsValid(ply) or ply:IsBot() then continue end
 
-        if ply:Alive() and not ply.organism.otrub then --Deka, write in Russian ZZZZZZZZZZ
+        if ply:Alive() and not ply.organism.unconscious then --Deka, write in Russian ZZZZZZZZZZ
           ply.afkTime = ply.afkTime + 10
         end
 
@@ -30,7 +30,7 @@ timer.Create("ZB_AntiAfkThink",10,0,function()
           ply.afkTime2 = ply.afkTime2 + 10
         end
 
-        if ply.organism.otrub then ply.afkTime = 0 end
+        if ply.organism.unconscious then ply.afkTime = 0 end
 
         if ply.afkTime > AfkToSpectTime and ply:Team() ~= TEAM_SPECTATOR and ply:Alive() then
             if ply:Alive() then ply:Kill() end

@@ -298,7 +298,7 @@ local function HandleMouseInput( ply, active, dt )
 end
 
 hook.Add( "PlayerButtonDown", "Glide.VehicleInput", function( ply, button )
-    if ply.organism and ply.organism.otrub then return end
+    if ply.organism and ply.organism.unconscious then return end
     local active = activeData[ply]
     if active then
         HandleInput( ply, button, active, true )
@@ -306,7 +306,7 @@ hook.Add( "PlayerButtonDown", "Glide.VehicleInput", function( ply, button )
 end )
 
 hook.Add( "PlayerButtonUp", "Glide.VehicleInput", function( ply, button )
-    if ply.organism and ply.organism.otrub then return end
+    if ply.organism and ply.organism.unconscious then return end
     local active = activeData[ply]
     if active then
         HandleInput( ply, button, active, false )
@@ -314,7 +314,7 @@ hook.Add( "PlayerButtonUp", "Glide.VehicleInput", function( ply, button )
 end )
 
 hook.Add( "StartCommand", "Glide.MouseWheelInput", function( ply, cmd )
-    if ply.organism and ply.organism.otrub then return end
+    if ply.organism and ply.organism.unconscious then return end
     if cmd:GetMouseWheel() ~= 0 then
         local active = activeData[ply]
 
@@ -330,7 +330,7 @@ hook.Add( "Think", "Glide.ProcessMouseInput", function()
     local dt = FrameTime()
 
     for ply, active in pairs( activeData ) do
-        if ply.organism and ply.organism.otrub then continue end
+        if ply.organism and ply.organism.unconscious then continue end
         HandleMouseInput( ply, active, dt )
     end
 end )

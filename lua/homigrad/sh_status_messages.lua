@@ -322,7 +322,7 @@ local function get_status_message(ply)
 
 	local broken_notify = (org.rarm == 1) or (org.larm == 1) or (org.rleg == 1) or (org.lleg == 1)
 	local dislocated_notify = (org.rarm == 0.5) or (org.larm == 0.5) or (org.rleg == 0.5) or (org.lleg == 0.5)
-	local after_unconscious_notify = org.after_otrub
+	local after_unconscious_notify = org.after_unconscious
 
 	if not isnumber(pain) then return "" end
 

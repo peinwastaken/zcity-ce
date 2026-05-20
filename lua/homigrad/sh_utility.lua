@@ -1005,7 +1005,7 @@ local IsValid = IsValid
 	-- 		local ply = LocalPlayer()
 	-- 		local organism = ply.organism or {}
 	-- 		local wep = ply:GetActiveWeapon()
-	-- 		if IsValid(wep) and wep:GetClass() == "weapon_hands_sh" and not wep:GetFists() and not organism.otrub then
+	-- 		if IsValid(wep) and wep:GetClass() == "weapon_hands_sh" and not wep:GetFists() and not organism.unconscious then
 	-- 			local tbl = {changePosture, "Change Stand Posture"}
 	-- 			hg.radialOptions[#hg.radialOptions + 1] = tbl
 	-- 			--local tbl = {resetPosture, "Reset Stand Posture"}

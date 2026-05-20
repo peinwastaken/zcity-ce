@@ -83,7 +83,7 @@ end
 hook.Add("radialOptions", "CMB_Airstrike", function()
 	local org = lply.organism
 
-    if lply:GetNWString("PlayerRole") == "Elite" and not org.otrub then -- that's a feature apparently
+    if lply:GetNWString("PlayerRole") == "Elite" and not org.unconscious then -- that's a feature apparently
 		local tbl = {
 			function()
 				net.Start("ZB_RequestAirStrike")

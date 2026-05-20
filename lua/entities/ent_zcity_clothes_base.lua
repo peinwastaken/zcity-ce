@@ -320,7 +320,7 @@ end
     if SERVER then
         concommand.Add("hg_drop_clothes", function(ply, cmd, args)
             if !IsValid(ply) then return end
-            if !ply:Alive() or !ply.organism or ply.organism.otrub then return end
+            if !ply:Alive() or !ply.organism or ply.organism.unconscious then return end
             if !args[1] or !tonumber(args[1]) then return end
             local Clothes = ply:GetNetVar("zc_clothes", {})
 
@@ -341,7 +341,7 @@ end
         local ply = LocalPlayer()
         local organism = ply.organism or {}
 
-        if ply:Alive() and !organism.otrub and hg.GetCurrentCharacter(ply) == ply and ply:KeyDown(IN_WALK) then
+        if ply:Alive() and !organism.unconscious and hg.GetCurrentCharacter(ply) == ply and ply:KeyDown(IN_WALK) then
             local Clothes = ply:GetNetVar("zc_clothes", {})
             if !Clothes or #Clothes < 1 then return end
             local tbl = {function()

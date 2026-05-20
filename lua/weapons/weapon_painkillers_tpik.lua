@@ -79,7 +79,7 @@ if SERVER then
 	function SWEP:Heal(ent, mode)
 		local org = ent.organism
 		if not org then return end
-		if ent ~= self:GetOwner() and not ent.organism.otrub then return end
+		if ent ~= self:GetOwner() and not ent.organism.unconscious then return end
 		self:SetBodygroup(1, 1)
 		local owner = self:GetOwner()
 		local entOwner = IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or owner

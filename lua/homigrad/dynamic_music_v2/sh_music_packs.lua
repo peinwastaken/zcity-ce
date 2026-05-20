@@ -219,7 +219,7 @@ AddTrack(
     function(ply)
         local intens = 0
         local org = ply.organism
-        if (!org or org.otrub) or !ply:Alive() then return -1 end
+        if (!org or org.unconscious) or !ply:Alive() then return -1 end
         if org.fear > 0.1 then
             intens = intens + 1
         end
@@ -302,7 +302,7 @@ AddTrack(
     function(ply)
         local intens = 0
         local org = ply.organism
-        if (!org or org.otrub) or !ply:Alive() then return -1 end
+        if (!org or org.unconscious) or !ply:Alive() then return -1 end
 
         if org.noradrenaline and org.noradrenaline > 0 then
             local timediff = SysTime() - hg.noradrenalineStartTime
@@ -389,7 +389,7 @@ AddTrack(
     },
     function(ply)
         local org = ply.organism
-        if (!org or org.otrub) or !ply:Alive() then return -1 end
+        if (!org or org.unconscious) or !ply:Alive() then return -1 end
 
         return 2
     end,

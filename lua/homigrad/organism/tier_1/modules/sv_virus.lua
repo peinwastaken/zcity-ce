@@ -52,10 +52,10 @@ function VirusModule.UpdateVirusStage(ply)
             virus.LungDamage = 0.3
             virus.InternalBleeding = true
             ply.organism.internalBleed = 10 
-            ply.organism.otrub = true
+            ply.organism.unconscious = true
             timer.Simple(math.random(10, 20), function()
                 if IsValid(ply) then
-                    ply.organism.otrub = false
+                    ply.organism.unconscious = false
                 end
             end)
         elseif virus.Stage == 5 then
@@ -64,7 +64,7 @@ function VirusModule.UpdateVirusStage(ply)
             virus.LungDamage = 0.5
             virus.BrainDamage = 0.03
             ply.organism.internalBleed = 20 
-            ply.organism.otrub = true
+            ply.organism.unconscious = true
         end
 
         net.Start("VirusStageUpdate")
@@ -106,10 +106,10 @@ function VirusModule.ApplyVirusEffects(ply)
     end
 
     if virus.Convulsions and math.random(1, 100) <= 5 then
-        ply.organism.otrub = true
+        ply.organism.unconscious = true
         timer.Simple(math.random(10, 20), function()
             if IsValid(ply) then
-                ply.organism.otrub = false
+                ply.organism.unconscious = false
             end
         end)
     end
@@ -125,7 +125,7 @@ end
 
 function VirusModule.ApplyVirusConvulsions(ply)
     local virus = ply.Virus
-    if virus and virus.Convulsions and virus.Stage == 5 and ply.organism.otrub then
+    if virus and virus.Convulsions and virus.Stage == 5 and ply.organism.unconscious then
         local character = hg.GetCurrentCharacter(ply) or ply
         local mul = (60 - CurTime()) / 60
         if mul > 0 then

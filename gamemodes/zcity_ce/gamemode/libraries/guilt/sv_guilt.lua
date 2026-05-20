@@ -323,7 +323,7 @@ local seizuremsgs = {
     "zzzzblzzzmzzzzz",
 }
 hook.Add("Org Think", "Its_Karma_Bro",function(owner, org, timeValue)
-    if not owner or not owner:IsPlayer() or org.otrub or not org.isPly then return end
+    if not owner or not owner:IsPlayer() or org.unconscious or not org.isPly then return end
     if not owner:IsPlayer() or not owner:Alive() then return end
 
     local ply = owner

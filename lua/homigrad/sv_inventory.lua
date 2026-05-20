@@ -189,7 +189,7 @@ hook.Add("PlayerDropWeapon", "homigrad-inventory", function(ply)
             end)
         end
 
-        local enta = ply:Alive() and (ply.organism and !ply.organism.otrub) and ply or ent
+        local enta = ply:Alive() and (ply.organism and !ply.organism.unconscious) and ply or ent
         local inv = enta:GetNetVar("Inventory",{})
         if not inv["Weapons"] then return end
         if inv["Weapons"]["hg_sling"] and ishgweapon(wep) and not wep:IsPistolHoldType() then

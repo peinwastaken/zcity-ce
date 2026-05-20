@@ -121,8 +121,8 @@ function CLASS.On(self)
 			self.organism.temperature = 41
 			self.organism.brain = 0.05
 			self.organism.disorientation = 2
-			self.organism.otrub = false
-			self.organism.needotrub = false
+			self.organism.unconscious = false
+			self.organism.needunconscious = false
 			self.organism.painadd = -10
 		end
 
@@ -246,7 +246,7 @@ function CLASS.Think(self)
 	org.stamina["max"] = 200
 	org.stamina["range"] = 200
 
-	if org.otrub then
+	if org.unconscious then
 		org.consciousness = 1
 		org.adrenalineAdd = 4
 		org.analgesia = 0.4
@@ -268,7 +268,7 @@ function CLASS.Think(self)
 
 	if org.consciousness <= 0.3 then
 		org.consciousness = 1
-		org.needotrub = false
+		org.needunconscious = false
 	end
 
 	org.jawdislocation = false
@@ -476,7 +476,7 @@ else
 	end
 
 	hook.Add("Post Pre Post Processing", "ZombDrawHeadcrab", function()
-		if lply.PlayerClassName == "headcrabzombie" and lply:Alive() and lply.organism and not lply.organism.otrub and GetViewEntity() == lply then
+		if lply.PlayerClassName == "headcrabzombie" and lply:Alive() and lply.organism and not lply.organism.unconscious and GetViewEntity() == lply then
 			DrawHeadcrab(lply, "models/nova/w_headcrab.mdl", vector_origin, -50)
 		end
 	end)

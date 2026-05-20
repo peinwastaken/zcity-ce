@@ -164,7 +164,7 @@ end
 
 if SERVER then
 	concommand.Add("hg_tape_shard", function(ply)
-		if ply:Alive() and not ply.organism.otrub then
+		if ply:Alive() and not ply.organism.unconscious then
 			local have_tape = ply:HasWeapon("weapon_ducttape")
 			local have_shard = ply:HasWeapon("weapon_hg_glassshard")
 
@@ -187,7 +187,7 @@ end
 hook.Add("radialOptions","tape_shard",function()
     local ply = LocalPlayer()
 	local organism = ply.organism or {}
-	if organism.otrub then return end
+	if organism.unconscious then return end
 
 	local have_tape = ply:HasWeapon("weapon_ducttape")
 	local have_shard = ply:HasWeapon("weapon_hg_glassshard")

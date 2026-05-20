@@ -366,7 +366,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 	local o2 = org.o2[1] or 0
 	o2 = o2 + (org.CO or 0)
 	local brain = org.brain or 0
-	O2Lerp = LerpFT(0.01, O2Lerp, (30 - o2) * (org.otrub and 2 or 10) + (brain * 100) * (org.otrub and 1 or 5))
+	O2Lerp = LerpFT(0.01, O2Lerp, (30 - o2) * (org.unconscious and 2 or 10) + (brain * 100) * (org.unconscious and 1 or 5))
 
 	tempLerp = LerpFT(0.01, tempLerp, org.temperature)
 
@@ -389,7 +389,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 	shockLerp = LerpFT(0.01, shockLerp or 0, shock + (lply.suiciding and math.max(0, org.heartbeat - 90) or 0))
 	consciousnessLerp = LerpFT(org.consciousness < (consciousnessLerp or 1) and 1 or 0.01, consciousnessLerp or 1, org.consciousness)
 	-- local immobilization = org.immobilization
-	PainLerp = LerpFT(0.05, PainLerp, math.max(pain * (org.otrub and 0.2 or 1), 0))
+	PainLerp = LerpFT(0.05, PainLerp, math.max(pain * (org.unconscious and 0.2 or 1), 0))
 
 	if (org.consciousness or 0) < 1 then
 		local consciousness = 1 - consciousnessLerp
@@ -423,15 +423,15 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		render.DrawScreenQuad()
 	end
 
-	if (PainLerp > 0.001 or shockLerp > 5) or org.otrub then
+	if (PainLerp > 0.001 or shockLerp > 5) or org.unconscious then
 		local strobe = math.ease.InOutSine(math.abs(math.cos(CurTime() * 2))) * PainLerp / 2
 		pain = PainLerp + strobe
 		shock = shockLerp
 		render.UpdateScreenEffectTexture()
 
 		vignetteMat:SetFloat("$c2_x", CurTime() + 10000) //Time
-		vignetteMat:SetFloat("$c0_z", org.otrub and 5 or (pain / 40 + math.max(shock - 5, 0) / 3)) //ColorIntensity
-		vignetteMat:SetFloat("$c1_y", org.otrub and 10 or (pain / 40 + math.max(shock - 5, 0) / 3)) //Vignette
+		vignetteMat:SetFloat("$c0_z", org.unconscious and 5 or (pain / 40 + math.max(shock - 5, 0) / 3)) //ColorIntensity
+		vignetteMat:SetFloat("$c1_y", org.unconscious and 10 or (pain / 40 + math.max(shock - 5, 0) / 3)) //Vignette
 
 		render.SetMaterial(vignetteMat)
 		render.DrawScreenQuad()
@@ -447,7 +447,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		render.SetMaterial(painMat)
 		render.DrawScreenQuad()
 
-		if org.otrub then
+		if org.unconscious then
 			DrawMotionBlur(0.1, 1., 0.01)
 			lply:ScreenFade( SCREENFADE.IN, Color(0,0,0), 2, 0.5 )
 		end
@@ -495,7 +495,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		end
 
 		if IsValid(BrainTraumaStation) then
-			BrainTraumaStation:SetVolume(math.Clamp(!org.otrub and brain * 2 or 0, 0, 1))
+			BrainTraumaStation:SetVolume(math.Clamp(!org.unconscious and brain * 2 or 0, 0, 1))
 		end
 	else
 		if IsValid(BrainTraumaStation) then
@@ -504,7 +504,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		end
 	end
 
-	//if brain > 0.1 and not org.otrub and show_some_images_time > 0 and false then
+	//if brain > 0.1 and not org.unconscious and show_some_images_time > 0 and false then
 	if lply.tinnitus and lply.tinnitus > CurTime() and lply:Alive() then
 		if !IsValid(Tinnitus) or Tinnitus:GetState() != GMOD_CHANNEL_PLAYING  then
 			sound.PlayFile("sound/zcitysnd/real_sonar/tinnitus"..math.random(3)..".mp3", "noblock noplay", function(station, err)
@@ -527,7 +527,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		end
 	end
 
-	if brain > 0.1 and not org.otrub then
+	if brain > 0.1 and not org.unconscious then
 		if show_some_images_time > 0 then
 			brain_motionblur = true
 			DrawMotionBlur(0.1, 1., 0.1)
@@ -566,13 +566,13 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		noiseMat:SetFloat("$c0_y", 1 - o2 / 200) //Gate
 		noiseMat:SetFloat("$c0_z", 1) //ColorIntensity
 		noiseMat:SetFloat("$c1_x", math.Clamp(o2 / 200, 0, 2)) //Lerp
-		noiseMat:SetFloat("$c1_y", o2 * (!org.otrub and 0.05 or 1)) //Vignette
+		noiseMat:SetFloat("$c1_y", o2 * (!org.unconscious and 0.05 or 1)) //Vignette
 		noiseMat:SetFloat("$c2_x", CurTime() + 10000) //Time
 
 		render.SetMaterial(noiseMat)
 		render.DrawScreenQuad()
 
-		if o2 > 50 and !org.otrub then
+		if o2 > 50 and !org.unconscious then
 			if !IsValid(NoiseStation2) or NoiseStation2:GetState() != GMOD_CHANNEL_PLAYING then
 				sound.PlayFile("sound/zbattle/conscioustypebeat.ogg", "noblock noplay", function(station)
 					if IsValid(station) then
@@ -594,7 +594,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 			end
 		end
 
-		if o2 > 20 and org.otrub then
+		if o2 > 20 and org.unconscious then
 			if !IsValid(NoiseStation) or NoiseStation:GetState() != GMOD_CHANNEL_PLAYING then
 				sound.PlayFile("sound/zbattle/unconscious_type_beat.ogg", "noblock noplay", function(station)
 					if IsValid(station) then

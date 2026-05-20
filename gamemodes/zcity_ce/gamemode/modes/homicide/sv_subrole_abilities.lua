@@ -24,7 +24,7 @@ util.AddNetworkString("HMCD_UpdateChemicalResistance")
 
 hook.Add("PlayerPostThink", "HMCD_SubRoles_Abilities", function(ply)
 	if(MODE.RoleChooseRoundTypes[MODE.Type])then
-		if(ply:Alive() and ply.organism and not ply.organism.otrub)then
+		if(ply:Alive() and ply.organism and not ply.organism.unconscious)then
 			if(ply.SubRole == "traitor_infiltrator" or ply.SubRole == "traitor_infiltrator_soe")then
 				if(ply:KeyDown(IN_WALK))then
 					if(ply:KeyPressed(IN_RELOAD))then

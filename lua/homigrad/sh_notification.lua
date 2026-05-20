@@ -54,7 +54,7 @@ if CLIENT then
 		hg.notifications = {}
 	end)
 
-	hook.Add("HG_OnOtrub","removeNotificationsb",function(ply)
+	hook.Add("HG_OnUnconscious","removeNotificationsb",function(ply)
 		if ply != lply then return end
 
 		//hg.currentNotification = nil
@@ -123,7 +123,7 @@ if CLIENT then
 		if #hg.notifications == 0 then return end
 		if hg.currentNotification then return end
 		if !lply:Alive() then hg.notifications = {} return end
-		if lply.organism and lply.organism.otrub then return end
+		if lply.organism and lply.organism.unconscious then return end
 		local tbl = hg.notifications[1]
 
 		if tbl and istable(tbl) and not table.IsEmpty(tbl) then
@@ -167,7 +167,7 @@ if CLIENT then
 		lply = LocalPlayer()
 		local org = lply.organism
 		if not org or not org.pain or not org.brain then return end
-		//if org.otrub and !last_message then return end
+		//if org.unconscious and !last_message then return end
 
 		//if zc_old_notificate:GetBool() then return end
 		local tbl = hg.currentNotification
@@ -202,7 +202,7 @@ if CLIENT then
 				coloruse.g = math.min(math.Clamp(((90 - org.pain) / 90) * 255, 0, 255), clr.g)
 				coloruse.b = math.min(math.Clamp(((90 - org.pain) / 90) * 255, 0, 255), clr.g)
 
-				if (org.otrub or !lply:Alive()) then
+				if (org.unconscious or !lply:Alive()) then
 					if not last_message then
 						txt = utf8.sub(txt, utf8.len(txt), utf8.len(txt)) == utf8.force(" ") and utf8.sub(txt, 1, utf8.len(txt) - 1) or txt
 						last_message = txt..(click != utf8.len(msg) and "-" or "")

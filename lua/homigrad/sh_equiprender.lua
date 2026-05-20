@@ -300,7 +300,7 @@ if CLIENT then
 				surface.SetMaterial(custommat or mat)
 				surface.DrawTexturedRect(-1, -1, ScrW()+1, ScrH()+1)
 
-				if lply:GetNetVar("zableval_masku", false) and lply.organism and not lply.organism.otrub then
+				if lply:GetNetVar("zableval_masku", false) and lply.organism and not lply.organism.unconscious then
 					draw.NoTexture()
 					surface.SetDrawColor(100,0,0,240)
 					surface.DrawTexturedRect(0, 0, ScrW(), ScrH())
@@ -395,7 +395,7 @@ if CLIENT then
 			tbl["hg_brassknuckles"] = inventory["Weapons"]["hg_brassknuckles"]
 		end
 
-		if not organism.otrub and table.Count(tbl) > 0 and lply:KeyDown(IN_WALK) then
+		if not organism.unconscious and table.Count(tbl) > 0 and lply:KeyDown(IN_WALK) then
 			hg.radialOptions = hg.radialOptions or {}
 			local newEntry = {equipmentMenu, "Drop Equipment"}
 			hg.radialOptions[#hg.radialOptions + 1] = newEntry
@@ -574,7 +574,7 @@ if CLIENT then
 		local organism = ply.organism or {}
 		local armors = ply.armors
 		if !armors or !armors["face"] or !hg.armor.face[armors["face"]].NVGRender then return end
-		if ply:Alive() and not organism.otrub then
+		if ply:Alive() and not organism.unconscious then
 			local tbl = {function(mouseClick)
 				RunConsoleCommand("hg_enable_nvg")
 			end, ply:GetNWBool("NVG_Enabled", false) and "Disable NVG" or "Enable NVG"}

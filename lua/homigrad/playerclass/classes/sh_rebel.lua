@@ -364,7 +364,7 @@ if SERVER then
     hook.Add("HomigradDamage", "Rebels_painsounds", function(ply, dmgInfo, hitgroup, ent)
         if rebel_classes[ply.PlayerClassName] then
             ply.painCD = ply.painCD or 0
-            if paintable[hitgroup] and (ply.painCD < CurTime()) and ply.organism and not ply.organism.otrub and ply:Alive() and not ply.organism.holdingbreath then
+            if paintable[hitgroup] and (ply.painCD < CurTime()) and ply.organism and not ply.organism.unconscious and ply:Alive() and not ply.organism.holdingbreath then
                 --paintable[hitgroup](ply,ent)
             end
         end
@@ -380,7 +380,7 @@ if SERVER then
         local nearby = ents.FindInSphere(ply:GetPos(), 300)
         for _, mate in ipairs(nearby) do
             if mate:IsPlayer() and mate ~= ply and mate:Alive() and rebel_classes[mate.PlayerClassName] then
-                if ply:Alive() and not ply.organism.otrub and rebel_classes[ply.PlayerClassName] and wep.ShellEject ~= "ShotgunShellEject" then
+                if ply:Alive() and not ply.organism.unconscious and rebel_classes[ply.PlayerClassName] and wep.ShellEject ~= "ShotgunShellEject" then
                     local base_folder = "vo/npc/"..(ThatPlyIsFemale(ply) and "female" or "male").."01/"
                     local phrase = (math.random(1,2) == 2) and (base_folder.."coverwhilereload01.wav") or (base_folder.."coverwhilereload02.wav")
                     ply:EmitSound(phrase, 75, ply.VoicePitch)

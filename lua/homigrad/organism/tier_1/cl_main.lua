@@ -74,8 +74,8 @@ local function plyCommand(ply,cmd)
 		if IsValid(hg.chat) then
 			hg.chat:SetRealAlpha(0)
 
-			timer.Create("otrubhuy", 1, 1, function()
-				if lply.organism and not lply.organism.otrub then lply:ConCommand("soundfade 0 1") end
+			timer.Create("unconscioushuy", 1, 1, function()
+				if lply.organism and not lply.organism.unconscious then lply:ConCommand("soundfade 0 1") end
 				hg.chat:AnimateRealAlpha(255)
 			end)
 		end
@@ -101,7 +101,7 @@ hook.Add("HUDShouldDraw", "hg.HUDShouldDraw", function(id)
 	end
 end)
 
-hook.Add("HG_OnOtrub", "adsadsadhuy!!", function(ply)
+hook.Add("HG_OnUnconscious", "adsadsadhuy!!", function(ply)
 	if ply == LocalPlayer() then
 		lply:SetDSP(17)
 		plyCommand(lply,"soundfade 100 99999")
@@ -164,7 +164,7 @@ hook.Add("Player Disconnected", "removeshits", function()
 end)
 
 hook.Add("radialOptions", "DislocatedJoint", function()
-    if !lply:Alive() or !lply.organism or lply.organism.otrub then return end
+    if !lply:Alive() or !lply.organism or lply.organism.unconscious then return end
 	if (lply.tried_fixing_limb or 0) > CurTime() then return end
 	local org = lply.organism
 	if org.pain > 60 then return end
@@ -195,7 +195,7 @@ hook.Add("radialOptions", "DislocatedJoint", function()
 end)
 
 hook.Add("radialOptions", "DislocatedJoint2", function()
-    if !lply:Alive() or !lply.organism or lply.organism.otrub then return end
+    if !lply:Alive() or !lply.organism or lply.organism.unconscious then return end
 	if (lply.tried_fixing_limb or 0) > CurTime() then return end
 	local org = lply.organism
 	if org.pain > 60 then return end
@@ -226,7 +226,7 @@ hook.Add("radialOptions", "DislocatedJoint2", function()
 end)
 
 hook.Add("radialOptions", "DislocatedJaw", function()
-    if !lply:Alive() or !lply.organism or lply.organism.otrub then return end
+    if !lply:Alive() or !lply.organism or lply.organism.unconscious then return end
 	if (lply.tried_fixing_limb or 0) > CurTime() then return end
 	local org = lply.organism
 	if org.pain > 60 then return end
@@ -259,7 +259,7 @@ end)
 hook.Add("PostRender", "screenshot_think", function()
 	local org = lply.organism
 
-	if not org or not org.brain or org.otrub or !lply:Alive() then return end
+	if not org or not org.brain or org.unconscious or !lply:Alive() then return end
 
 	local part = CurTime() - alivestart
 	//print(part)
@@ -304,7 +304,7 @@ hook.Add("Post Post Pre Post Processing", "ShowScreens", function()
 
 	local part = CurTime() - braindeathstart
 
-	local show_multiki = org.brain > 0.1 and org.otrub
+	local show_multiki = org.brain > 0.1 and org.unconscious
 
 	if show_multiki then
 		lerpedbrain = LerpFT(0.05, lerpedbrain, org.brain)
@@ -343,11 +343,11 @@ hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 	//hg.DrawAffliction(0, 0, 100, 100, 1, "pale")
 
 	if organism.owner == LocalPlayer() then
-		if new_organism.otrub and !old then
-			hook.Run("HG_OnOtrub", new_organism.owner)
+		if new_organism.unconscious and !old then
+			hook.Run("HG_OnUnconscious", new_organism.owner)
 		end
 
-		old = new_organism.otrub
+		old = new_organism.unconscious
 	end
 
 	--LerpVariables(FrameTime(),organism,new_organism)
@@ -371,7 +371,7 @@ hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 	local bleed = org.bleed or 0
 	local o2 = org.o2 and org.o2[1] or 30
 	local brain = org.brain or 0
-	local otrub = lply:Alive() and org.otrub or false
+	local unconscious = lply:Alive() and org.unconscious or false
 	local analgesia = organism.analgesia or 0
 	local health = health
 	local disorientation = org.disorientation or 0
@@ -383,7 +383,7 @@ hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 
 	--print(lply.tinnitus)
 
-	if org.otrub then
+	if org.unconscious then
 		//DrawMotionBlur(0.1, 1., 0.1)
 		//lply:ScreenFade( SCREENFADE.IN, clr_black2, 2, 0.5 )
 	end
@@ -392,8 +392,8 @@ hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 	local normaldsp = zc_gopro:GetBool() and 55 or 0
 	lply:SetDSP(normaldsp)
 
-	if otrub or ((fakeTimer and fakeTimer - 2 > CurTime()) and GetConVar("zc_deathfadeout"):GetBool()) then
-		--if otrub or (fakeTimer and fakeTimer - 2 > CurTime()) then
+	if unconscious or ((fakeTimer and fakeTimer - 2 > CurTime()) and GetConVar("zc_deathfadeout"):GetBool()) then
+		--if unconscious or (fakeTimer and fakeTimer - 2 > CurTime()) then
 		clr_black1.a = math.Clamp(pain / 50 * 255, 250, 255)
 		//lply:ScreenFade( SCREENFADE.IN, clr_black2, 2, 0.5 )
 		--lply:ScreenFade( SCREENFADE.IN, Color(0,0,0,255), 2, 0.5 )
@@ -510,7 +510,7 @@ hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 	tabblood["$pp_colour_colour"] = Lerp(FrameTime() * 30, tabblood["$pp_colour_colour"], (blood / 5000) * (potato and (blood / 5000) or 1) + (math.max(org.analgesia - 1, 0) * math.sin(CurTime()) * 5))
 	//tabblood["$pp_colour_contrast"] = Lerp(FrameTime() * 30, tabblood["$pp_colour_contrast"], health < 80 and math.max(1.5 * ( 1 - math.min(health / 50, 1) ), 1 ) or 1)
 	tabblood["$pp_colour_brightness"] = Lerp(FrameTime() * 30, tabblood["$pp_colour_brightness"], (potato and (blood / 5000 - 1) / 2 or 0) )
-	tabblood["$pp_colour_addb"] = !org.otrub and ((potato and k2 / 5 or 0)) or 0
+	tabblood["$pp_colour_addb"] = !org.unconscious and ((potato and k2 / 5 or 0)) or 0
 	//tabblood["$pp_colour_addg"] = k2 / 15
 	//tabblood["$pp_colour_addr"] = k2 / 15
 	--tab["$pp_colour_brightness"] = k1 > 1 and -(k1 - 1) / 20 or 0
@@ -522,12 +522,12 @@ hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 
 	local ent = IsValid(lply.FakeRagdoll) and lply.FakeRagdoll or lply
 
-	if otrub then
+	if unconscious then
 		--[[render.PushFilterMag( TEXFILTER.ANISOTROPIC )
 		render.PushFilterMin( TEXFILTER.ANISOTROPIC )
 
-		local textOtrub = "You are unconscious. "
-		local textOtrub2 =
+		local textUnconscious = "You are unconscious. "
+		local textUnconscious2 =
 			( critical and "You can't be saved." ) or
 			( incapacitated and "You will not get up without someone's help." ) or
 			(
@@ -541,9 +541,9 @@ hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 
 		local parsed = markup.Parse(
 			"<font=HomigradFontMedium>"..
-			( critical and "You're criticaly injured." or textOtrub )..
+			( critical and "You're criticaly injured." or textUnconscious )..
 			"\n<colour=255,"..( critical and 25 or 255 )..","..( critical and 25 or 255 ) ..",255>"..
-			( textOtrub2 ).."</colour></font>"
+			( textUnconscious2 ).."</colour></font>"
 		)
 		--((critical and "You can not be saved.") or
 		--(incapacitated and "You will not get up without someone's help.") or
@@ -552,9 +552,9 @@ hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 
 		--surface.SetTextColor(255,255,255,255)
 		--surface.SetFont("HomigradFontMedium")
-		--local txtSizeX, txtSizeY = surface.GetTextSize(textOtrub)
+		--local txtSizeX, txtSizeY = surface.GetTextSize(textUnconscious)
 		--surface.SetTextPos(ScrW()/2 - (txtSizeX/2),ScrH()/1.1 - (txtSizeY/2))
-		--surface.DrawText(textOtrub)
+		--surface.DrawText(textUnconscious)
 
 		parsed:Draw( ScrW()/2, ScrH()/1.1, TEXT_ALIGN_CENTER, nil, nil, TEXT_ALIGN_CENTER )
 

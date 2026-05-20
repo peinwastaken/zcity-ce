@@ -529,7 +529,7 @@ net.Receive("RequestSupport", function(len, ply)
         return
     end
 
-    if ply.organism and ply.organism.otrub then
+    if ply.organism and ply.organism.unconscious then
         ply:ChatPrint("wtf")
         return
     end
@@ -574,7 +574,7 @@ net.Receive("defense_commander_purchase", function(len, ply)
 
     if not IsValid(ply) or ply:GetNWString("PlayerRole") ~= "Commander" or not ply:Alive() then return end
 
-    if ply.organism and ply.organism.otrub then
+    if ply.organism and ply.organism.unconscious then
         net.Start("defense_commander_notification")
         net.WriteString("You cannot place orders in your current condition!")
         net.WriteInt(0, 16)

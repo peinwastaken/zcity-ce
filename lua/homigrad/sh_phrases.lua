@@ -309,7 +309,7 @@ if CLIENT then
 	hook.Add("radialOptions", "4", function()
 		local organism = lply.organism or {}
 
-		if lply:Alive() and not organism.otrub and lply.PlayerClassName ~= "Gordon" then
+		if lply:Alive() and not organism.unconscious and lply.PlayerClassName ~= "Gordon" then
 			hg.radialOptions[#hg.radialOptions + 1] = {
 				[1] = function(mouseClick)
 					if mouseClick == 1 or organism.pain > 60 then

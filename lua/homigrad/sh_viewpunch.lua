@@ -128,7 +128,7 @@ local IsValid = IsValid
 			local consmulrev = 1 - consmul
 			if vp_punch_angle:IsZero() and vp_punch_angle_velocity:IsZero() and vp_punch_angle2:IsZero() and vp_punch_angle_velocity2:IsZero() and vp_punch_angle3:IsZero() and vp_punch_angle_velocity3:IsZero() and  vp_punch_angle4:IsZero() and vp_punch_angle_velocity4:IsZero() then return end
 			local add = vp_punch_angle - vp_punch_angle_last + vp_punch_angle2 - vp_punch_angle_last2 + vp_punch_angle3 - vp_punch_angle_last3 + vp_punch_angle4 * consmulrev - vp_punch_angle_last4 * consmulrev
-			if lply.organism and lply.organism.otrub then add:Zero() end
+			if lply.organism and lply.organism.unconscious then add:Zero() end
 
 			if hg.InGame() then
 				lastplyroll = lply:EyeAngles()[3]

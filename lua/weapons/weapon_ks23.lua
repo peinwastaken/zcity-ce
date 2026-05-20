@@ -364,7 +364,7 @@ if CLIENT then
 	hook.Add("PostEntityFireBullets","zvezdapatron",function(self,bullet)
 		if bullet.AmmoType ~= "23x75 Zvezda" then return end
 		if not lply:Alive() then return end
-		if lply.organism and lply.organism.otrub then return end
+		if lply.organism and lply.organism.unconscious then return end
 
 		local tr = bullet.Trace
 

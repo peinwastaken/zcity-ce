@@ -100,7 +100,7 @@ local list = {
 	0,
 	"likely_phrase",
 	{"alive", true},
-	{"otrub", true, true},
+	{"unconscious", true, true},
 	{"health", 100, false},
 	{"incapacitated",true,true},
 	{"critical",true,true}, false,

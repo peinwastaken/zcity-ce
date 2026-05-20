@@ -71,7 +71,7 @@ hook.Add("PlayerPostThink", "HMCD_Professions_Abilities", function(ply)
 end)
 
 concommand.Add("hg_create_pipebomb", function(ply)
-	if ply:Alive() and not ply.organism.otrub and ply.Profession == "engineer" then
+	if ply:Alive() and not ply.organism.unconscious and ply.Profession == "engineer" then
 		local have_ammo
 		local have_nails
 
@@ -101,7 +101,7 @@ concommand.Add("hg_create_pipebomb", function(ply)
 end)
 
 concommand.Add("hg_create_molotov", function(ply)
-	if ply:Alive() and not ply.organism.otrub and ply.Profession == "engineer" then
+	if ply:Alive() and not ply.organism.unconscious and ply.Profession == "engineer" then
 		local have_barrel_nearby
 		local have_bandage = ply:HasWeapon("weapon_bandage_sh") or ply:HasWeapon("weapon_bigbandage_sh")
 		local have_bottle = ply:HasWeapon("weapon_hg_bottle")

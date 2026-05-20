@@ -21,7 +21,7 @@ if CLIENT then
 	hook.Add("PlayerStartVoice","RemoveVoicePanles",function(ply)
 		if !IsValid(ply) then return end
 
-		local other_alive = (ply:Alive() and LocalPlayer() != ply) or (ply.organism and (ply.organism.otrub or (ply.organism.brain and ply.organism.brain > 0.05)))
+		local other_alive = (ply:Alive() and LocalPlayer() != ply) or (ply.organism and (ply.organism.unconscious or (ply.organism.brain and ply.organism.brain > 0.05)))
 
 		return other_alive or nil
 	end)
@@ -227,14 +227,14 @@ else
 
 		if text == "" then return end
 
-		if ply:Alive() and ply.organism and ply.organism.otrub then return end
+		if ply:Alive() and ply.organism and ply.organism.unconscious then return end
 
 		ply.ChatWhisper = ply:Alive() and ply.ChatWhisper or false
 
 		local rf = RecipientFilter()
 		-- local checkdist = ply.ChatWhisper and 128 * 128 or 1024 * 1024
 		for _, plya in player.Iterator() do
-			if plya:Alive() and plya.organism and plya.organism.otrub then continue end
+			if plya:Alive() and plya.organism and plya.organism.unconscious then continue end
 			if plya:Alive() and !ply:Alive() then continue end
 
 			if (hook.Run("PlayerCanSeePlayersChat", text, false, plya, ply)) then

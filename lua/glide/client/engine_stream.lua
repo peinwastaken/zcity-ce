@@ -232,7 +232,7 @@ function EngineStream:Think( dt, eyePos, eyeRight )
     dist = dir:Length()
 
     -- Attenuate depending on distance
-    vol = vol * ( 1 - Clamp( dist / self.fadeDist, 0, 1 ) ) * (lply.organism and lply.organism.otrub and 0 or 1)
+    vol = vol * ( 1 - Clamp( dist / self.fadeDist, 0, 1 ) ) * (lply.organism and lply.organism.unconscious and 0 or 1)
 
     -- Pan to make the sound have a fake position
     -- in the world, but only in 3rd person camera.

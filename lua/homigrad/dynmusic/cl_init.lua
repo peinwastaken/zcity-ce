@@ -91,7 +91,7 @@ hook.Add( "Think", "DMusic.Think", function()
         if DMusic.threaded < ( Keys[i+1] or 5 ) and
             DMusic.threaded >= adr and
             ply:Alive() and not
-            ply.organism.otrub and
+            ply.organism.unconscious and
             hg_sound:GetBool() and
             (song[3])
         then

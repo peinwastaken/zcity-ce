@@ -148,7 +148,7 @@ hook.Add("RenderScreenspaceEffects", "berserkEffect", function()
 	end
 
 	if IsValid(hg.berserkStation) then
-		hg.berserkStation:SetVolume(math.min(1, (organism.otrub and 0) or berserkClamped))
+		hg.berserkStation:SetVolume(math.min(1, (organism.unconscious and 0) or berserkClamped))
 	end
 end)
 

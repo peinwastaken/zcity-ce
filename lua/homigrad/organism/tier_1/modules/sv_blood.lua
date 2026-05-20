@@ -79,7 +79,7 @@ module[2] = function(owner, org, mulTime)
 		end
 	end
 
-	if org.isPly and not org.otrub and org.blood < 2900 then org.owner:Notify(math.random(2) == 1 and "I cant feel anything..." or (math.random(2) == 1 and "I think I'm gonna faint right now...") or "I dont feel so good...",60,"blood2",0) end
+	if org.isPly and not org.unconscious and org.blood < 2900 then org.owner:Notify(math.random(2) == 1 and "I cant feel anything..." or (math.random(2) == 1 and "I think I'm gonna faint right now...") or "I dont feel so good...",60,"blood2",0) end
 
 	if org.internalBleed < 0.5 and org.bleed < 0.05 and org.pulse > 5 then
 		org.blood = min(org.blood + mulTime * 5 * (adrenaline * 1.5 + 1) * (org.satiety / 100 + 1) * org.pulse / 70, 5000)
@@ -166,7 +166,7 @@ module[2] = function(owner, org, mulTime)
 	end
 	bleedoutspeed2 = bleedoutspeed2 / next_arterypump
 
-	if org.blood < (2400 / (adrenaline / 3 + 1)) * ((math.cos(CurTime()/2) + 1) / 2 * 0.1 + 1) then org.needotrub = true end
+	if org.blood < (2400 / (adrenaline / 3 + 1)) * ((math.cos(CurTime()/2) + 1) / 2 * 0.1 + 1) then org.needunconscious = true end
 
 	local bleed = org.internalBleed / 14 -- + org.lungsR[3] + org.lungsL[3]
 	org.internalBleed = math.Approach(org.internalBleed, 0, org.internalBleedHeal > 0 and mulTime / 2 or mulTime / 55)
@@ -208,7 +208,7 @@ module[2] = function(owner, org, mulTime)
 	local airwayTooDamaged = org.trachea >= 0.5
 	local spineTooDamaged = org.spine3 >= hg.organism.fake_spine3 or org.spine2 >= hg.organism.fake_spine2
 	local criticalVitalsCannotWake = brainTooDamaged or pulseTooWeak or oxygenTooLow or airwayTooDamaged
-	local shouldStayIncapacitated = org.otrub and (bleedingWillKeepPlayerDown or criticalVitalsCannotWake or org.heartstop or spineTooDamaged)
+	local shouldStayIncapacitated = org.unconscious and (bleedingWillKeepPlayerDown or criticalVitalsCannotWake or org.heartstop or spineTooDamaged)
 
 	if shouldStayIncapacitated then
 		org.incapacitated = true

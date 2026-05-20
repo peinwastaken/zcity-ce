@@ -76,7 +76,7 @@ if SERVER then
 			return
 		end
 
-        if(not output:Alive() or output.organism.otrub or not input:Alive() or input.organism.otrub)then
+        if(not output:Alive() or output.organism.unconscious or not input:Alive() or input.organism.unconscious)then
 			return false
 		end
 
@@ -115,7 +115,7 @@ if SERVER then
 
                 wep:BippSound(input, 100)
 
-				if input:GetPos():DistToSqr(output:GetPos()) < 600000 and not output.organism.otrub and not input.organism.otrub then
+				if input:GetPos():DistToSqr(output:GetPos()) < 600000 and not output.organism.unconscious and not input.organism.unconscious then
 					return true
 				else
                     input:ChatPrint("Walkie Talkie: " .. text)

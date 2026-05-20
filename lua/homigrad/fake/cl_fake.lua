@@ -285,13 +285,13 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		angEye = angles
 	end
 
-	if ply.organism and ply.organism.otrub then
+	if ply.organism and ply.organism.unconscious then
 		angEye = att_Ang
 	end
 
 	local inUse = GetConVar("zc_always_ragdoll_aim"):GetBool() or hg.KeyDown(ply, IN_USE)
 	local inVehicle = ply:InVehicle()
-	local unconscious = ply.organism and ply.organism.otrub
+	local unconscious = ply.organism and ply.organism.unconscious
 	local freeRagdollView = not inUse and not inVehicle
 	local movingTooFastForControl = follow:GetVelocity():Length() > 350 and not inVehicle
 	local cshs_fake = zc_cshs_fake:GetBool() or unconscious or freeRagdollView or movingTooFastForControl
@@ -396,7 +396,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		wep:DrawAttachments()
 	end--]]
 
-	if ply.organism and ply.organism.otrub then view.angles = att_Ang end
+	if ply.organism and ply.organism.unconscious then view.angles = att_Ang end
 
 	if zc_gopro:GetBool() then
 		return SpecCam(follow, origin, angles, fov, znear, zfar)

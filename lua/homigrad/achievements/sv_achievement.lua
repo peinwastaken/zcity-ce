@@ -247,7 +247,7 @@ hook.Add("HomigradDamage","hg_illbeback_Acchivment",function(ply, dmgInfo, hitgr
     end
 end)
 
-hook.Add("HG_OnOtrub","hg_illbeback_Acchivment",function(ply)
+hook.Add("HG_OnUnconscious","hg_illbeback_Acchivment",function(ply)
     if ply:IsRagdoll() then
         ply = hg.RagdollOwner(ply)
     end
@@ -269,7 +269,7 @@ hook.Add("PlayerSilentDeath","hg_illbeback_Acchivment",function(ply)
     end
 end)
 
-hook.Add("HG_OnWakeOtrub","hg_illbeback_Acchivment",function(ply)
+hook.Add("HG_OnWakeUnconscious","hg_illbeback_Acchivment",function(ply)
     if ply:IsRagdoll() then
         ply = hg.RagdollOwner(ply)
     end

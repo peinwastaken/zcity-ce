@@ -934,7 +934,7 @@ hook.Add("PlayerEnteredVehicle","allowweapons",function(ply,veh,role)
 	end
 end)
 
-hook.Add("HG_OnWakeOtrub", "enterveh", function(ply)
+hook.Add("HG_OnWakeUnconscious", "enterveh", function(ply)
 	//if Glide and IsValid(ply.glideveh) then
 	//	Glide.ActivateInput(ply, ply.glideveh, ply.seat)
 	//
@@ -945,7 +945,7 @@ hook.Add("HG_OnWakeOtrub", "enterveh", function(ply)
 	//end
 end)
 
-hook.Add("HG_OnOtrub", "leaveveh", function(ply)
+hook.Add("HG_OnUnconscious", "leaveveh", function(ply)
 	if ply:InVehicle() then
 		local veh = ply:GetVehicle()
 
@@ -1181,7 +1181,7 @@ hook.Add("Ragdoll Collide", "FallSounds", function(rag, data)
 	end
 
 	--[[local ply = rag:GetNWEntity("ply")
-	if IsValid(ply) and ply:Alive() and not ply.organism.otrub then
+	if IsValid(ply) and ply:Alive() and not ply.organism.unconscious then
 		local mul = math.Clamp(data.OurOldVelocity:LengthSqr() / 240000, 0.25, 1.2)
 		ply:ViewPunch(AngleRand(-20 * mul, 20 * mul))
 	end]]

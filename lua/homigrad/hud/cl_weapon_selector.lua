@@ -217,7 +217,7 @@ end
 
 function WS.ChangeSelectionWep( ply, key )
     if not IsValid( ply ) or not ply:Alive() or GetGlobalBool("RadialInventory", false) then return end
-    if ply.organism and ply.organism.otrub then return end
+    if ply.organism and ply.organism.unconscious then return end
     if canUseSelector( ply ) then return end
     --print(canUseSelector( ply ))
     --print("Table")

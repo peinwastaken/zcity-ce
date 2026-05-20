@@ -310,7 +310,7 @@ function SWEP:CanUse()
 	if not IsValid(owner) then return true end
     if owner:IsNPC() then return true end
 	if owner.organism and owner.organism.rarmamputated and !self:IsPistolHoldType() then return false end
-	return not (self.reload or self.deploy or (owner:IsPlayer() and (self:IsSprinting() or (owner.organism and owner.organism.otrub))))
+	return not (self.reload or self.deploy or (owner:IsPlayer() and (self:IsSprinting() or (owner.organism and owner.organism.unconscious))))
 end
 
 function SWEP:IsSprinting()

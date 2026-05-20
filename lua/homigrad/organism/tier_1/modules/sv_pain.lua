@@ -36,27 +36,27 @@ module[2] = function(owner, org, timeValue)
 	local analgesiaMul = (org.analgesia * 4 + 1)
 	local painkillerMul = (org.painkiller * 0.5 + 1)
 
-	org.shock_turn = 10 * (!org.otrub and 1 or 0.1)
+	org.shock_turn = 10 * (!org.unconscious and 1 or 0.1)
 
 	if org.shock > org.shock_turn * 1.5 * analgesiaMul * painkillerMul then
 		--org.needfake = true
 	end
 
-	org.pain_turn = org.otrub and adrenalineMul * 80 or adrenalineMul * 90
+	org.pain_turn = org.unconscious and adrenalineMul * 80 or adrenalineMul * 90
 
 
-	if !org.lasthit or org.lasthit + 1.5 < CurTime() then org.shock = max(org.shock - timeValue * 4 * (org.otrub and 1 or 0.5), 0) end
+	if !org.lasthit or org.lasthit + 1.5 < CurTime() then org.shock = max(org.shock - timeValue * 4 * (org.unconscious and 1 or 0.5), 0) end
 	org.immobilization = max(org.immobilization - timeValue * 2 * adrenalineMul, 0)
 
 	local add = math.min(timeValue * 20, org.painadd)
-	local sub = (add <= 0.2) and (timeValue * 2 * (org.otrub and 2 or 1) + timeValue * (org.painkiller * 2) + timeValue * (org.analgesia * 4)) or (0)
+	local sub = (add <= 0.2) and (timeValue * 2 * (org.unconscious and 2 or 1) + timeValue * (org.painkiller * 2) + timeValue * (org.analgesia * 4)) or (0)
 
 	if adrenaline > 0.5 then
 		sub = sub * math.max(1 - adrenaline, 0.05) / 1.5// / (adrenaline >= 2 and 16 or 8)
 		add = add * math.max(1 - adrenaline, 0.05) / 1.5// / (adrenaline >= 2 and 16 or 8)
 	end
 
-	if org.pain > 60 and not org.otrub then
+	if org.pain > 60 and not org.unconscious then
 		add = add / 5
 		if org.pain > 70 and add > 0.01 then
 			sub = sub / 20
@@ -74,7 +74,7 @@ module[2] = function(owner, org, timeValue)
 		org.shock = math.Approach(org.shock, 70, timeValue * 4)
 	end
 
-	if (org.shock > (30 * analgesiaMul)) or org.otrub then
+	if (org.shock > (30 * analgesiaMul)) or org.unconscious then
 		org.consciousness = math.Approach(org.consciousness, 0.1, timeValue / 5)
 	end
 
@@ -87,7 +87,7 @@ module[2] = function(owner, org, timeValue)
 	end
 
 	if org.consciousness < 0.1 then
-		org.needotrub = true
+		org.needunconscious = true
 	end
 
 	if org.consciousness < 0.4 then
@@ -105,7 +105,7 @@ module[2] = function(owner, org, timeValue)
 	//org.painkiller = Approach(org.painkiller, 0, timeValue / 240 * (org.naloxone * 25 + 1))
 
 	if hg.organism.paincheck(org) then
-		org.needotrub = true
+		org.needunconscious = true
 	end
 
 	org.analgesia =  Approach(org.analgesia, 0, timeValue / 240 * (org.naloxone * 25 + 1))

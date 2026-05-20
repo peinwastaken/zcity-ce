@@ -421,7 +421,7 @@ local firstTime6 = true
 
 -- first time?..
 
-hook.Add("HG_OnOtrub", "resetshit", function(ply)
+hook.Add("HG_OnUnconscious", "resetshit", function(ply)
 	if ply == lply then
 		hook_Run("RadialMenuPressed")
 
@@ -434,7 +434,7 @@ end)
 hook.Add( "PlayerBindPress", "PlayerBindPressExample2huy", function( ply, bind, pressed )
 	if string.find(bind, "+menu") then
 
-		if (lply.organism and lply.organism.otrub) then
+		if (lply.organism and lply.organism.unconscious) then
 			return (bind == "+menu") or nil
 		end
 
@@ -453,7 +453,7 @@ hook.Add( "PlayerBindPress", "PlayerBindPressExample2huy", function( ply, bind, 
 end)
 
 hook.Add("Think", "hg-radial-menu", function()
-	if (lply.organism and lply.organism.otrub) then
+	if (lply.organism and lply.organism.unconscious) then
 
 		if IsValid(menuPanel) then
 			hook_Run("RadialMenuPressed")
@@ -520,7 +520,7 @@ end
 
 hook.Add("radialOptions", "77", function()
 	local organism = lply.organism or {}
-	if not organism.otrub and IsValid(lply:GetActiveWeapon()) and lply:GetActiveWeapon():GetClass() ~= "weapon_hands_sh" and lply:KeyDown(IN_WALK) then
+	if not organism.unconscious and IsValid(lply:GetActiveWeapon()) and lply:GetActiveWeapon():GetClass() ~= "weapon_hands_sh" and lply:KeyDown(IN_WALK) then
 		local tbl = {dropWeapon, "Drop Weapon"}
 		hg.radialOptions[#hg.radialOptions + 1] = tbl
 	end
@@ -548,7 +548,7 @@ hook.Add("radialOptions", "7", function()
     local ply = LocalPlayer()
     local organism = ply.organism or {}
 
-    if ply:Alive() and not organism.otrub and hg.GetCurrentCharacter(ply) == ply then
+    if ply:Alive() and not organism.unconscious and hg.GetCurrentCharacter(ply) == ply then
         if ply.GetPlayerClass and ply:GetPlayerClass() and ply:GetPlayerClass().CanUseGestures ~= nil and not ply:GetPlayerClass().CanUseGestures then return end
 		local tbl = {function(mouseClick)
 			if mouseClick == 1 then
@@ -598,7 +598,7 @@ surface.CreateFont("HG_font", {
 --end)
 
 hook.Add("HUDPaint","Identifier",function()
-	if lply.organism and lply.organism.otrub then return end
+	if lply.organism and lply.organism.unconscious then return end
 	if !lply:Alive() then return end
 	if lply:GetNetVar("disappearance", nil) then return end
 
@@ -647,7 +647,7 @@ local HintBackgroundColor = Color( 0, 0, 0, 200 )
 
 hook.Add("HUDPaint","EntHints",function()
 	if not zc_hints:GetBool() then return end
-	if lply.organism and lply.organism.otrub then return end
+	if lply.organism and lply.organism.unconscious then return end
 	if !lply:Alive() then return end
 
 	local trace = hg.eyeTrace(lply)
@@ -684,7 +684,7 @@ end
 
 
 hook.Add("HUDPaint","afflictionlist",function()
-	--[[if lply.organism and lply.organism.otrub then return end
+	--[[if lply.organism and lply.organism.unconscious then return end
 	if !lply:Alive() then return end
 
 	local org = lply.organism

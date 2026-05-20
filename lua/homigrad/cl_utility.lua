@@ -238,7 +238,7 @@ players : 1 humans, 0 bots (20 max)
 		suppressionDistAdd = 0
 		net.Receive("add_supression", function()
 			if not IsValid(lply) or not lply:IsPlayer() then return end
-			if !lply:Alive() or !lply.organism or lply.organism.otrub then return end
+			if !lply:Alive() or !lply.organism or lply.organism.unconscious then return end
 
 			local pos = net.ReadVector()
 			local eyePos = LocalPlayer():EyePos()
@@ -262,7 +262,7 @@ players : 1 humans, 0 bots (20 max)
 		hook.Add("PostEntityFireBullets","bulletsuppression2",function(ent,bullet)
 			if not lply:Alive() then return end
 			if not IsValid(lply) or not lply:IsPlayer() then return end
-			if !lply:Alive() or !lply.organism or lply.organism.otrub then return end
+			if !lply:Alive() or !lply.organism or lply.organism.unconscious then return end
 			local CustomAmmoType = false
 			if hg.ammotypeshuy[bullet.AmmoType] then
 				CustomAmmoType = hg.ammotypeshuy[bullet.AmmoType]
@@ -726,7 +726,7 @@ players : 1 humans, 0 bots (20 max)
 			local org = ent.organism
 			if not org then return end
 
-			if ply:IsPlayer() and ply:Alive() and not org.otrub then
+			if ply:IsPlayer() and ply:Alive() and not org.unconscious then
 				ent.Blink = ent.Blink or 0
 				ent.Blink = ent.Blink + 0.25
 				ent.LastBlinking = ent.Blinking or 0
@@ -803,7 +803,7 @@ players : 1 humans, 0 bots (20 max)
 
 	hook.Add("SetupMove","hg_FallSound",function()
 		local ply = LocalPlayer()
-		if not ply:Alive() or not ply.organism or ply.organism.otrub then
+		if not ply:Alive() or not ply.organism or ply.organism.unconscious then
 			if fallsnd and IsValid(fallSndStation) then
 				fallSndStation:SetVolume(0)
 				fallSnd_Volume = 0

@@ -101,7 +101,7 @@ hook.Add("Think", "NPCAutoSeekPlayer", function()
             local ply = plys[i]
 
             if not ply:Alive() then continue end
-            if ply.organism and ply.organism.otrub then table.insert(dobeyte_vyzhivshih, i) continue end
+            if ply.organism and ply.organism.unconscious then table.insert(dobeyte_vyzhivshih, i) continue end
 
             if (npc:Disposition(ply) == D_HT) then
                 local plyPos = ply:GetPos()

@@ -4,7 +4,7 @@ local module = hg.organism.module
 hg.organism.lastindex = hg.organism.lastindex or 1000000
 hook.Add("Org Clear", "Main", function(org)
 	org.alive = true
-	org.otrub = false
+	org.unconscious = false
 	org.entindex = IsValid(org.owner) and org.owner:EntIndex() or hg.organism.lastindex + 1
 	module.pulse[1](org)
 	module.blood[1](org)
@@ -100,7 +100,7 @@ hook.Add("Should Fake Up", "organism", function(ply)
 	local legsCannotSupportBody = bothLegsDisabled and org.berserk <= 0.3
 	local bloodTooLow = org.blood < 2900
 	local consciousnessTooLow = org.consciousness <= 0.4
-	local shouldBlockFakeUp = org.otrub or org.fake or spineTooDamaged or legsCannotSupportBody or bloodTooLow or consciousnessTooLow
+	local shouldBlockFakeUp = org.unconscious or org.fake or spineTooDamaged or legsCannotSupportBody or bloodTooLow or consciousnessTooLow
 
 	if shouldBlockFakeUp then
 		return false
@@ -117,7 +117,7 @@ local function send_organism(org, ply)
 	local sendtable = {}
 
 	sendtable.alive = org.alive
-	sendtable.otrub = org.otrub
+	sendtable.unconscious = org.unconscious
 	sendtable.owner = org.owner
 	sendtable.stamina = org.stamina
 	sendtable.immobilization = org.immobilization
@@ -192,7 +192,7 @@ local function send_bareinfo(org)
 	local sendtable = {}
 
 	sendtable.alive = org.alive
-	sendtable.otrub = org.otrub
+	sendtable.unconscious = org.unconscious
 	sendtable.owner = org.owner
 	sendtable.bloodtype = org.bloodtype
 	sendtable.pulse = org.pulse
@@ -328,7 +328,7 @@ hook.Add("Org Think", "Main", function(owner, org, timeValue)
 		org.alive = false
 	end
 
-	org.needotrub = false
+	org.needunconscious = false
 	org.needfake = false
 	if isPly then
 		org.ownerFake = org.FakeRagdoll and true
@@ -420,25 +420,25 @@ hook.Add("Org Think", "Main", function(owner, org, timeValue)
 	end--]]
 	--bullshit
 
-	if org.otrub then
+	if org.unconscious then
 		org.uncon_timer = org.uncon_timer or 0
 		org.uncon_timer = org.uncon_timer + timeValue
 	else
 		org.uncon_timer = 0
 	end
 
-	local just_went_uncon = not org.otrub and org.needotrub
-	local just_woke_up = not org.needotrub and org.otrub and (org.uncon_timer or 0) > 6
-	if isPly and just_went_uncon then hook.Run("HG_OnOtrub", owner); hook.Run("PlayerDropWeapon", owner) end
-	if isPly and just_woke_up then hook.Run("HG_OnWakeOtrub", owner) end
+	local just_went_uncon = not org.unconscious and org.needunconscious
+	local just_woke_up = not org.needunconscious and org.unconscious and (org.uncon_timer or 0) > 6
+	if isPly and just_went_uncon then hook.Run("HG_OnUnconscious", owner); hook.Run("PlayerDropWeapon", owner) end
+	if isPly and just_woke_up then hook.Run("HG_OnWakeUnconscious", owner) end
 
-	org.canmove = (org.spine2 < hg.organism.fake_spine2 and org.spine3 < hg.organism.fake_spine3) and not org.otrub
-	org.canmovehead = (org.spine3 < hg.organism.fake_spine3) and not org.otrub
+	org.canmove = (org.spine2 < hg.organism.fake_spine2 and org.spine3 < hg.organism.fake_spine3) and not org.unconscious
+	org.canmovehead = (org.spine3 < hg.organism.fake_spine3) and not org.unconscious
 
 	if not (org.canmove and org.canmovehead and (org.stun - CurTime()) < 0) then org.needfake = true end
 	if (org.blood < 2700) then org.needfake = true end
 
-	local just_went_uncon = not org.otrub and org.needotrub
+	local just_went_uncon = not org.unconscious and org.needunconscious
 
 	if org.posturing then //-- the decerebrate one
 		local ent = hg.GetCurrentCharacter(org.owner)
@@ -473,12 +473,12 @@ hook.Add("Org Think", "Main", function(owner, org, timeValue)
 		if org.lungsL[1] < 1 then org.lungsL[1] = math.Approach(org.lungsL[1], 0, naturalHeal) end
 	end
 
-	if org.otrub and isPly and org.owner:Alive() then
+	if org.unconscious and isPly and org.owner:Alive() then
 		//org.owner:ScreenFade(SCREENFADE.PURGE, color_black, 0.5, 0)
 		//org.owner:ConCommand("soundfade 100 99999")
 	end
 
-	if not org.otrub and isPly and org.owner:Alive() then
+	if not org.unconscious and isPly and org.owner:Alive() then
 		--org.owner:ConCommand("soundfade 0 1")
 	end
 
@@ -492,7 +492,7 @@ hook.Add("Org Think", "Main", function(owner, org, timeValue)
 		end
 	end
 
-	org.otrub = org.needotrub
+	org.unconscious = org.needunconscious
 	org.fake = org.needfake
 
 	if org.needfake and owner:IsNPC() then
@@ -511,11 +511,11 @@ hook.Add("Org Think", "Main", function(owner, org, timeValue)
 	local rag = owner:IsPlayer() and owner.FakeRagdoll or owner
 	if IsValid(rag) and rag:IsRagdoll() and (not owner.lastFake or owner.lastFake == 0) then rag:SetCollisionGroup((rag:GetVelocity():LengthSqr() > (200*200)) and COLLISION_GROUP_NONE or COLLISION_GROUP_WEAPON) end
 	if isPly then
-		if org.otrub or org.fake then hg.Fake(owner,nil,true) end
+		if org.unconscious or org.fake then hg.Fake(owner,nil,true) end
 		if not org.alive and owner:Alive() then owner:Kill() end
 	end
 
-	if not org.otrub and isPly then
+	if not org.unconscious and isPly then
 		local mul = hg.likely_to_phrase(owner)
 
 		if not org.likely_phrase then org.likely_phrase = 0 end
@@ -532,7 +532,7 @@ hook.Add("Org Think", "Main", function(owner, org, timeValue)
 		end
 	end
 
-	if !org.alive then org.otrub = true end
+	if !org.alive then org.unconscious = true end
 
 	if !org.alive then
 		org.lungsfunction = false
@@ -690,7 +690,7 @@ end)
 hook.Add("SetupMove", "hg-speed", function(ply, mv) end) --mv:SetMaxClientSpeed(100) --mv:SetMaxSpeed(100)
 
 hook.Add("StartCommand","hg_lol",function(ply,cmd)
-	if ply.organism.otrub and ply:Alive() then
+	if ply.organism.unconscious and ply:Alive() then
 		cmd:ClearMovement()
 	end
 end)
@@ -699,10 +699,10 @@ hook.Add("PlayerDeath","next-respawn-full",function(ply)
 	ply.fullsend = true
 end)
 
-hook.Add("HG_OnWakeOtrub", "afterOtrub", function( owner )
-	owner.organism.after_otrub = true
+hook.Add("HG_OnWakeUnconscious", "afterUnconscious", function( owner )
+	owner.organism.after_unconscious = true
 	local str = hg.get_status_message(owner)
-	owner.organism.after_otrub = nil
+	owner.organism.after_unconscious = nil
 	//print(str)
 	-- (msg, delay, msgKey, showTime, func, clr)
 	timer.Simple(0.1,function()
@@ -715,7 +715,7 @@ hook.Add("HG_OnWakeOtrub", "afterOtrub", function( owner )
 	owner:SendLua("system.FlashWindow()")
 end)
 
-hook.Add("HG_OnOtrub", "fearful", function( plya )// WHAT
+hook.Add("HG_OnUnconscious", "fearful", function( plya )// WHAT
 	local ent = hg.GetCurrentCharacter(plya)
 	for _,ply in ipairs(ents.FindInSphere(ent:GetPos(),256)) do
 		if not ply:IsPlayer() or not ply.organism or plya == ply then continue end
@@ -801,7 +801,7 @@ concommand.Add("hg_fixdislocation", function(ply, cmd, args)
 	ply = ply.organism.owner
 
 	local org = ply.organism
-	if !fixer:Alive() or !org or fixer.organism.otrub then return end
+	if !fixer:Alive() or !org or fixer.organism.unconscious then return end
 	if (fixer.tried_fixing_limb or 0) > CurTime() then return end
 	if !fixer.organism.canmove or !fixer.organism.canmovehead or fixer.organism.pain > 60 then return end
 	fixer.tried_fixing_limb = CurTime() + fixer.organism.pain / 30

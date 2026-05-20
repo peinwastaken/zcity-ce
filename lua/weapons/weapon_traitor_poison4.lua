@@ -215,7 +215,7 @@ if SERVER then
 
 	net.Receive("choose_poison", function(len, ply)
 		local wep = net.ReadEntity()
-		if not IsValid(ply) or not ply:Alive() or ply.organism.otrub then return end
+		if not IsValid(ply) or not ply:Alive() or ply.organism.unconscious then return end
 
 		local weps = ply:GetWeapons()
 		for _, wep in ipairs(ents.FindInSphere(ply:GetPos(), 64)) do

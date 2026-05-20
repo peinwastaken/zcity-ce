@@ -240,7 +240,7 @@ hook.Add("Think", "Fake", function()
 		LocalAng[1] = math.Clamp(LocalAng[1], -30, 30)
 		LocalAng[2] = math.Clamp(LocalAng[2], -30, 30)
 
-		if ragdoll.organism and not ragdoll.organism.otrub then
+		if ragdoll.organism and not ragdoll.organism.unconscious then
 			ragdoll.LastAng = LocalAng
 		else
 			LocalAng = ragdoll.LastAng or LocalAng
@@ -721,7 +721,7 @@ hook.Add("Think", "Fake", function()
 					hook.Run("HomigradDamage", org.owner, dmgInfo, HITGROUP_RIGHTARM, hg.GetCurrentCharacter(org.owner), ragdoll.dtime * ((zb.MaximumHarm or 10) / 50) )
 				end
 
-				if org.otrub then
+				if org.unconscious then
 					ply:Notify("They seem unresponsive.", 60, "choked"..(org.owner:EntIndex()))
 				end
 			end
@@ -756,7 +756,7 @@ hook.Add("Think", "Fake", function()
 		end
 
 		if ply:KeyDown(IN_MOVERIGHT) and ragdoll:IsOnFire() and not inmove and !ply:InVehicle() then
-			if org.canmove and not org.otrub then
+			if org.canmove and not org.unconscious then
 				local angle = spine:GetAngles()
 				angle[3] = angle[3] + 20 * (ragdoll:IsOnFire() and 1.5 or 1)
 				shadowControl(ragdoll, 1, 0.001, angle, 490, 90)

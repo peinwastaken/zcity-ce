@@ -109,7 +109,7 @@ if SERVER then
 	function SWEP:Heal(ent, mode)
 		local org = ent.organism
 		if not org then return end
-		if ent ~= self:GetOwner() and not ent.organism.otrub then return end
+		if ent ~= self:GetOwner() and not ent.organism.unconscious then return end
 		local owner = self:GetOwner()
 		ent:EmitSound( self.WaterModel[self.WorldModel] and "snd_jack_hmcd_drink"..math.random(3)..".wav" or "snd_jack_hmcd_eat"..math.random(4)..".wav", 60, math.random(95, 105))
 		org.satiety = org.satiety + 25/5

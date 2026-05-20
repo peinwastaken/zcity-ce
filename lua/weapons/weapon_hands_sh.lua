@@ -628,7 +628,7 @@ else
 				add_x = add_x + w + add
 			end
 
-			if org.pain and org.pain > 20 and not org.otrub then
+			if org.pain and org.pain > 20 and not org.unconscious then
 				hg.DrawAffliction(posx + add_x, posy - h, w, h, (org.pain - 20) / 30, hg.afflictions.pain, lerpalpha, "Pain")
 
 				add_x = add_x + w + add
@@ -976,9 +976,9 @@ function SWEP:ApplyForce()
 								--ply:ChatPrint("Breathing.")
 							end
 
-							--ply:ChatPrint(org.otrub and "No reaction." or "Reaction present.")
+							--ply:ChatPrint(org.unconscious and "No reaction." or "Reaction present.")
 
-							if org.isPly and not org.otrub then
+							if org.isPly and not org.unconscious then
 								org.owner:ChatPrint("You were checked for reaction.")
 							end
 						end
