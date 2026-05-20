@@ -259,13 +259,13 @@ function SWEP:CreateMenu()
         end
     end
 
-    hook.Add("OnShowZCityPause","CloseDerma",function()
+    hook.Add("ZC_OnShowPause","ZC_CloseDerma",function()
         if self.MouseHasControl then
             gui.EnableScreenClicker(false)
             self.menu:SetMouseInputEnabled( false )
             self.menu:SetKeyboardInputEnabled( false )
             self.MouseHasControl = false
-            --hook.Remove("OnPauseMenuShow","CloseDerma")
+            --hook.Remove("OnPauseMenuShow","ZC_CloseDerma")
             return false
         end
     end)

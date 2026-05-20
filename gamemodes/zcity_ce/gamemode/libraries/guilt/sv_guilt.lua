@@ -9,7 +9,7 @@ zb.HarmAttacked = zb.HarmAttacked or {}
 zb.GuiltSQL = zb.GuiltSQL or {}
 zb.GuiltSQL.PlayerInstances = zb.GuiltSQL.PlayerInstances or {}
 
-hook.Add("DatabaseConnected", "GuiltCreateData", function()
+hook.Add("ZC_OnDatabaseConnected", "ZC_GuiltCreateData", function()
 	local query
 
 	query = mysql:Create("zb_guilt")
@@ -22,7 +22,7 @@ hook.Add("DatabaseConnected", "GuiltCreateData", function()
     zb.GuiltSQL.Active = true
 end)
 
-hook.Add( "PlayerInitialSpawn","ZB_GuiltSQL", function( ply )
+hook.Add( "PlayerInitialSpawn","ZC_GuiltSQL", function( ply )
     local name = ply:Name()
 	local steamID64 = ply:SteamID64()
 
@@ -108,7 +108,7 @@ local function IsLookingAt(ply, targetVec)
     return ply:GetAimVector():Dot(diff) / diff:Length() >= 0.8
 end
 
-hook.Add("HomigradDamage", "GuiltReg", function(ply, dmgInfo, hitgroup, ent, harm)
+hook.Add("ZC_OnOrganismDamage", "ZC_RegisterGuiltDamage", function(ply, dmgInfo, hitgroup, ent, harm)
     local Attacker, Victim = dmgInfo:GetAttacker(), ply
 
     --[[if !IsValid(Attacker) and dmgInfo:GetInflictor().steamid then
@@ -167,7 +167,7 @@ hook.Add("HomigradDamage", "GuiltReg", function(ply, dmgInfo, hitgroup, ent, har
         Attacker:ChatPrint(" ")
     end
 
-    hook.Run("HarmDone", Attacker, Victim, amt)
+    hook.Run("ZC_OnHarmDone", Attacker, Victim, amt)
 
     if newharm >= maxharm and oldharmdone < newharm then
         //Attacker:AddFrags(1) -- better make it a system that counts kills and gives frags at the end of the round
@@ -280,11 +280,11 @@ function zb.ForcesAttackedInnocent(self, Victim)
     return 1 * ((!Victim.LastAttacked or (Victim.LastAttacked + 10 > CurTime())) and 0 or 1) + 1 * (Victim:IsPlayer() and ((IsLookingAt(Victim, self:EyePos()) and (victimWep and (ishgweapon(victimWep) or ((victimWep:GetClass() == "weapon_hands_sh" and victimWep:GetFists() or victimWep.ismelee2) and Victim:GetPos():DistanceSqr(self:GetPos()) <= (72 * 72))))) and 0 or 1) or 1)
 end
 
-hook.Add("PlayerDisconnected","GuiltSaveOnDisconect",function(ply)
+hook.Add("PlayerDisconnected","ZC_SaveGuiltOnDisconnect",function(ply)
     ply:guilt_SetValue( ply.Karma or 100 )
 end)
 
-hook.Add("Player Spawn","SlowlyRestoreKarma",function(ply)
+hook.Add("ZC_PlayerSpawn","ZC_RestoreKarmaOnSpawn",function(ply)
     if OverrideSpawn then return end
 
     ply.lastwarning = nil
@@ -296,7 +296,7 @@ hook.Add("Player Spawn","SlowlyRestoreKarma",function(ply)
     ply.Guilt = 0
 end)
 
-hook.Add("Player Think", "karmagain", function(ply)
+hook.Add("ZC_PlayerThink", "ZC_RestoreKarmaOverTime", function(ply)
     if (ply.KarmaGainThink or 0) > CurTime() then return end
     ply.KarmaGainThink = CurTime() + 120
 
@@ -306,11 +306,11 @@ hook.Add("Player Think", "karmagain", function(ply)
     //ply:guilt_SetValue( ply.Karma or 100 )
 end)
 
-hook.Add("Org Clear","removekarmashaking",function(org)
+hook.Add("ZC_OrganismClear","ZC_ClearKarmaShake",function(org)
     org.start_shaking = nil
 end)
 
-hook.Add("Should Fake Up", "karma", function(ply)
+hook.Add("ZC_ShouldRestorePlayerFromFake", "ZC_BlockFakeUpForKarma", function(ply)
     if ply.organism and ply.organism.start_shaking then return false end
 end)
 
@@ -322,7 +322,7 @@ local seizuremsgs = {
     "hhel-bbbphphpppph",
     "zzzzblzzzmzzzzz",
 }
-hook.Add("Org Think", "Its_Karma_Bro",function(owner, org, timeValue)
+hook.Add("ZC_OrganismThink", "ZC_UpdateKarmaEffects",function(owner, org, timeValue)
     if not owner or not owner:IsPlayer() or org.unconscious or not org.isPly then return end
     if not owner:IsPlayer() or not owner:Alive() then return end
 
@@ -360,13 +360,13 @@ hook.Add("Org Think", "Its_Karma_Bro",function(owner, org, timeValue)
     end
 end)
 
-hook.Add("ZB_EndRound","savevalues",function()
+hook.Add("ZC_EndRound","ZC_SaveRoundValues",function()
     for _,ply in player.Iterator() do
         ply:guilt_SetValue( ply.Karma or 100 )
     end
 end)
 
-hook.Add("ZB_StartRound","NO_HARM",function()
+hook.Add("ZC_StartRound","ZC_ResetRoundHarm",function()
     for _,ply in player.Iterator() do
         if (ply.Guilt or 0) < 1 then
             ply.KarmaGain = math.Clamp((ply.KarmaGain or 0.75) + 0.25, 0.75, 1.5)
@@ -436,13 +436,13 @@ net.Receive("forgive_player", function(len, ply)
     net.Send(ply)
 end)
 
-hook.Add("Player Spawn", "GuiltKnown",function(ply)
+hook.Add("ZC_PlayerSpawn", "ZC_MarkKnownGuilt",function(ply)
     if ply.Karma then
         ply:ChatPrint("Your current karma is "..tostring(math.Round(ply.Karma)).."")
     end
 end)
 
-hook.Add("ZC_SomeoneGetFallBy","IdiotsMustBeKilled",function(Attacker,Victim)
+hook.Add("ZC_OnPlayerKnockedDownBy","ZC_PunishFallAttack",function(Attacker,Victim)
     local rnd = CurrentRound()
 
     if rnd.GuiltDisabled or GetConVar("zc_dev"):GetBool() then return end

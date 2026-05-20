@@ -145,7 +145,7 @@ if CLIENT then
         */
     end
     
-    hook.Add("InitPostEntity", "decalFunc", function()
+    hook.Add("InitPostEntity", "ZC_InitDecals", function()
         func()
     end)
 

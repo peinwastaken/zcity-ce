@@ -143,7 +143,7 @@ end
 if CLIENT then
 	function SWEP:ReloadStart()
 		if not self or not IsValid(self:GetOwner()) then return end
-		hook.Run("HGReloading", self)
+		hook.Run("ZC_OnWeaponReloading", self)
 		self:SetHold(self.ReloadHold or self.HoldType)
 		self:GetOwner():SetAnimation(PLAYER_RELOAD)
 		if self.ReloadSound then self:GetOwner():EmitSound(self.ReloadSound, 60, 100, 0.8, CHAN_AUTO) end

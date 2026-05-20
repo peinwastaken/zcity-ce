@@ -17,11 +17,11 @@
 	PLUGIN.ID = "PhysBullet"
 
 	function PLUGIN:AddHook(id, func)
-		hook.Add(id, "HG.Plugin.List[" .. self.ID .. "].Hooks[" .. id .. "]", func)
+		hook.Add("ZC_PluginHook" .. self.ID .. id, "ZC_PluginHook" .. self.ID .. id, func)
 	end
 
 	function PLUGIN:RunHook(id, ...)
-		return hook.Run("HG.Plugin.List[" .. self.ID .. "].Hooks[" .. id .. "]", ...)
+		return hook.Run("ZC_PluginHook" .. self.ID .. id, ...)
 	end
 --//
 
@@ -976,14 +976,14 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 --//
 
 --\\Hooks
-	PLUGIN:AddHook("Think", function()
+	hook.Add("Think", "ZC_UpdatePhysBullets", function()
 		for key, bullet in pairs(PLUGIN.BulletsTable) do
 			bullet:Think()
 		end
 	end)
 
 	if(CLIENT)then
-		PLUGIN:AddHook("PostDrawTranslucentRenderables", function(bDepth, bSkybox)
+		hook.Add("PostDrawTranslucentRenderables", "ZC_DrawPhysBullets", function(bDepth, bSkybox)
 			if(not bSkybox)then
 				for key, bullet in pairs(PLUGIN.BulletsTable) do
 					bullet:Draw()	--; I wasn't able to do the think part and render part at the same time cause then it'll bounce even with game paused
@@ -993,13 +993,13 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 	end
 --//
 
-hook.Add("PostCleanupMap", "PhysBullets", function()
+hook.Add("PostCleanupMap", "ZC_PhysBullets", function()
 	for key, bullet in pairs(PLUGIN.BulletsTable) do
 		bullet:Die()
 	end
 end)
 
-hook.Add("EntityFireBullets", "あPhysBullets", function(ent, bullet)
+hook.Add("EntityFireBullets", "ZC_PhysBulletsFire", function(ent, bullet)
 	if(GetGlobalBool("PhysBullets_ReplaceDefault", false))then
 		if(SERVER)then
 			if bullet.DontUsePhysBullets then return end
@@ -1019,7 +1019,7 @@ hook.Add("EntityFireBullets", "あPhysBullets", function(ent, bullet)
 			-- bullet.Damage = 0
 
 			PLUGIN.CreateBullet(bullet)
-			-- hook.Run("PostEntityFireBullets", ent, bullet)
+			-- hook.Run("ZC_PostEntityFireBullets", ent, bullet)
 		end
 
 		return false
@@ -1030,4 +1030,3 @@ end)
 	-- PLUGIN:Include("sv_plugin.lua")
 	-- PLUGIN:Include("cl_plugin.lua")
 --//
-

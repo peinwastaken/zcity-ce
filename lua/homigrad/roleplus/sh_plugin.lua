@@ -41,15 +41,14 @@ local PLUGIN = hg.RolePlus
 PLUGIN.ID = "RolePlus"
 
 function PLUGIN:AddHook(id, func)
-	hook.Add(id, "HG.Plugin.List[" .. self.ID .. "].Hooks[" .. id .. "]", func)
+	hook.Add("ZC_PluginHook" .. self.ID .. id, "ZC_PluginHook" .. self.ID .. id, func)
 end
 
 function PLUGIN:RunHook(id, ...)
-	return hook.Run("HG.Plugin.List[" .. self.ID .. "].Hooks[" .. id .. "]", ...)
+	return hook.Run("ZC_PluginHook" .. self.ID .. id, ...)
 end
 --//
 
 PLUGIN.Name = "RolePlus"
 PLUGIN.Description = "Adds subroles"
 PLUGIN.Version = 1
-

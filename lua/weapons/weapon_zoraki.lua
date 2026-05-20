@@ -184,7 +184,7 @@ SWEP.InspectAnimWepAng = {
 }
 
 if CLIENT then
-	hook.Add("PostEntityFireBullets","zoraki906",function(self,bullet)
+	hook.Add("ZC_PostEntityFireBullets","ZC_ZorakiMuzzleFlash",function(self,bullet)
 		if bullet.AmmoType ~= "9mm PAK Flash Defense" then return end
 		if not lply:Alive() then return end
 		if lply.organism and lply.organism.unconscious then return end

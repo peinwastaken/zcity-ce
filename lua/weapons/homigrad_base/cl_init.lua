@@ -47,7 +47,7 @@ matproxy.Add({
     end
 })
 
-hook.Add("radialOptions", "ReloadOnFloor", function()
+hook.Add("ZC_RadialOptions", "ZC_ReloadOnFloor", function()
 	if !lply:Alive() or !lply.organism or lply.organism.unconscious then return end
 	local org = lply.organism
 	if org.pain > 50 or (org.rarmamputated and org.larmamputated) then return end
@@ -69,7 +69,7 @@ hook.Add("radialOptions", "ReloadOnFloor", function()
 	end
 end)
 
-hook.Add("radialOptions", "PlaceBipod", function()
+hook.Add("ZC_RadialOptions", "ZC_PlaceBipod", function()
 	if !lply:Alive() or !lply.organism or lply.organism.unconscious then return end
 	local org = lply.organism
 	if org.pain > 50 or (org.rarmamputated and org.larmamputated) then return end
@@ -87,7 +87,7 @@ hook.Add("radialOptions", "PlaceBipod", function()
 	end
 end)
 
-hook.Add("StartCommand", "reloadfloorweapon", function(ply, cmd)
+hook.Add("StartCommand", "ZC_ForceCrouchWhileFloorReloading", function(ply, cmd)
     if IsValid(ply) and ply:Alive() and ply:GetNW2Bool("FloorReloading", false) and not IsValid(ply.FakeRagdoll) then
 		cmd:AddKey(IN_DUCK)
 		cmd:RemoveKey(IN_JUMP)

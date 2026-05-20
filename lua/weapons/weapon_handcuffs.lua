@@ -165,34 +165,34 @@ function SWEP:Tie(tr)
 end
 
 if SERVER then
-	hook.Add("Org Clear","Removehandcuffs",function(org)
+	hook.Add("ZC_OrganismClear","ZC_RemoveHandcuffs",function(org)
 		org.handcuffed = false
 		if IsValid(org.owner) and org.owner:IsPlayer() then
 			org.owner:SetNetVar("handcuffed",false)
 		end
 	end)
 
-	hook.Add("Ragdoll_Create","Addhandcuffs", function(ply, ragdoll)
+	hook.Add("ZC_OnPlayerRagdollCreated","ZC_AddHandcuffs", function(ply, ragdoll)
 		if ply.organism.handcuffed or ragdoll.organism and ragdoll.organism.handcuffed then
 			handcuff(ragdoll)
 			ply:SelectWeapon("weapon_hands_sh")
 		end
 	end)
 
-	hook.Add("PlayerCanPickupWeapon","handcuffDisallowpickup",function(ply,ent)
+	hook.Add("PlayerCanPickupWeapon","ZC_HandcuffDisallowPickup",function(ply,ent)
 		if ply.organism.handcuffed and ent:GetClass() != "weapon_handcuffs_key" then
 			return false
 		end
 	end)
 
-	hook.Add("PlayerUse","restrictuser",function(ply, ent)
+	hook.Add("PlayerUse","ZC_RestrictUse",function(ply, ent)
 		if ply.organism.handcuffed then
 			return false
 		end
 	end)
 end
 
-hook.Add( "PlayerSwitchWeapon", "WeaponSwitchExample", function( ply, oldWeapon, newWeapon )
+hook.Add( "PlayerSwitchWeapon", "ZC_RestrictHandcuffedWeaponSwitch", function( ply, oldWeapon, newWeapon )
 	if (ply:GetNetVar("handcuffed",false) or not IsValid(newWeapon)) then
 		local hands = ply:GetWeapon(newWeapon:GetClass() == "weapon_handcuffs_key" and "weapon_handcuffs_key" or "weapon_hands_sh")
 		if IsValid(hands) and SERVER then

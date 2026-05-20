@@ -72,7 +72,7 @@ net.Receive("HMCD_UpdateChemicalResistance", function(len, ply)
 end)
 --//
 
-hook.Add("Think", "HMCD_SubRole_Abilities", function()
+hook.Add("Think", "ZC_SubRoleAbilities", function()
 	if(BeingVictimOfNeckBreakResetTime and BeingVictimOfNeckBreakResetTime <= CurTime())then
 		BeingVictimOfNeckBreakResetTime = nil
 		LocalPlayer().BeingVictimOfNeckBreak = false
@@ -92,7 +92,7 @@ hook.Add("Think", "HMCD_SubRole_Abilities", function()
 	end
 end)
 --[[
-hook.Add("InputMouseApply", "HMCD_SubRole_Abilities", function(cmd, mouse_x, mouse_y, ang)
+hook.Add("InputMouseApply", "ZC_SubRoleAbilities", function(cmd, mouse_x, mouse_y, ang)
 	-- if(LocalPlayer().BeingVictimOfNeckBreak)then
 		local mouse_speed = 1.1
 		local eye_angles = LocalPlayer():EyeAngles()
@@ -105,13 +105,13 @@ hook.Add("InputMouseApply", "HMCD_SubRole_Abilities", function(cmd, mouse_x, mou
 	-- end
 end)
 ]]
-hook.Add("hg_AdjustMouseSensitivity", "HMCD_SubRole_Abilities", function(sensitivity)
+hook.Add("ZC_AdjustMouseSensitivity", "ZC_SubRoleAbilities", function(sensitivity)
 	if(LocalPlayer().BeingVictimOfNeckBreak)then
 		return 0.1
 	end
 end)
 
-hook.Add("PrePlayerDraw", "HMCD_SubRoles_Abilities", function(ply, flags)
+hook.Add("PrePlayerDraw", "ZC_SubRolesAbilities", function(ply, flags)
 	-- if(ply.Ability_NeckBreak)then
 		-- local ability = ply.Ability_NeckBreak
 		-- local victim = ability.Victim

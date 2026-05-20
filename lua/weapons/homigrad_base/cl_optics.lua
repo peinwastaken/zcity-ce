@@ -3,7 +3,7 @@ AddCSLuaFile()
 local delta = 0
 local color_red = Color(255, 0, 0)
 
-hook.Add("HG.InputMouseApply", "ChangeZoom", function(tbl)
+hook.Add("ZC_InputMouseApply", "ZC_ChangeZoom", function(tbl)
 	local ply = LocalPlayer()
 
 	delta = Lerp(FrameTime() * 5, delta, 0)
@@ -271,7 +271,7 @@ local mat_Add = Material("pp/add")
 mat_Add:SetTexture("$basetexture", exampleRT)
 mat_Add:SetVector("$color2", Vector(10, 10, 10))
 
-hook.Add("InitPostEntity","zc_huyhuy",function()
+hook.Add("InitPostEntity","ZC_InitOpticRenderTargets",function()
 	exampleRT = GetRenderTarget( "example_rt", 1024, 1024 )
 
 	customMaterial = CreateMaterial( "example_rt_mat", "UnlitGeneric", {
@@ -289,7 +289,7 @@ end)
 
 
 gameevent.Listen( "OnRequestFullUpdate" )
-hook.Add( "OnRequestFullUpdate", "RT_shits", function( data )
+hook.Add( "OnRequestFullUpdate", "ZC_ResetOpticRenderTargets", function( data )
 	exampleRT = GetRenderTarget( "example_rt", 1024, 1024 )
 
 	customMaterial = CreateMaterial( "example_rt_mat", "UnlitGeneric", {
@@ -312,7 +312,7 @@ local blured
 --local zc_blur_holo = GetConVar("zc_blur_holo") or CreateClientConVar("zc_blur_holo", "1", true, false, "Disable this if holo blur makes your fps cry.", 0, 1)
 
 local invcolor = Color(0,0,0,0)
-hook.Add("PostDrawTranslucentRenderables","stencil-test-holo2",function()
+hook.Add("PostDrawTranslucentRenderables","ZC_RenderHolographicSight",function()
 	local ply = not LocalPlayer():Alive() and LocalPlayer():GetNWEntity("spect",LocalPlayer()) or LocalPlayer()
 	if not IsValid(ply) then return end
 	local self = ply.GetActiveWeapon and ply:GetActiveWeapon() or nil
@@ -439,7 +439,7 @@ hook.Add("PostDrawTranslucentRenderables","stencil-test-holo2",function()
 
 end)
 
-hook.Add("RenderScreenspaceEffects","stencil-test-holo2",function()
+hook.Add("RenderScreenspaceEffects","ZC_RenderHolographicSight",function()
 	--[[local ply = not LocalPlayer():Alive() and LocalPlayer():GetNWEntity("spect",LocalPlayer()) or LocalPlayer()
 	local self = ply.GetActiveWeapon and ply:GetActiveWeapon() or nil
 	if not IsValid(self) or not self.GetWeaponEntity or not IsValid(self:GetWeaponEntity()) then return end
@@ -481,7 +481,7 @@ hook.Add("RenderScreenspaceEffects","stencil-test-holo2",function()
 
 end)
 
-hook.Add("PostDrawOpaqueRenderables","stencil-test-holo",function()
+hook.Add("PostDrawOpaqueRenderables","ZC_RenderHolographicStencil",function()
 	--wtf teplak??!???
 	if true then return end
 	render.SetStencilWriteMask( 0xFF )

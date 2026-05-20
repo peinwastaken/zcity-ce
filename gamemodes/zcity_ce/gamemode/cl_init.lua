@@ -99,7 +99,7 @@ local keydownattack
 local keydownattack2
 local keydownreload
 
-hook.Add("HUDPaint","FUCKINGSAMENAMEUSEDINHOOKFUCKME",function()
+hook.Add("HUDPaint","ZC_DrawSpectatorTargetHud",function()
     if LocalPlayer():Alive() then return end
 	local spect = LocalPlayer():GetNWEntity("spect")
 	if not IsValid(spect) then return end
@@ -117,7 +117,7 @@ hook.Add("HUDPaint","FUCKINGSAMENAMEUSEDINHOOKFUCKME",function()
 	surface.DrawText(txt)
 end)
 
-hook.Add("HG_CalcView", "ZCityDeathSpectateView", function(ply, pos, angles, fov)
+hook.Add("ZC_CalculateView", "ZC_DeathSpectateView", function(ply, pos, angles, fov)
 	if not lply:Alive() then
 		if lply:KeyDown(IN_ATTACK) then
 			if not keydownattack then
@@ -253,7 +253,7 @@ end)
 
 zb.fade = zb.fade or 0
 
-hook.Add("RenderScreenspaceEffects", "ZCityFadeScreenspace", function()
+hook.Add("RenderScreenspaceEffects", "ZC_FadeScreenspace", function()
 	if zb.fade > 0 then
 		zb.fade = math.Approach(zb.fade, 0, FrameTime() * 1)
 
@@ -266,7 +266,7 @@ zb.ROUND_STATE = 0
 net.Receive("RoundInfo", function()
 	local rnd = net.ReadString()
 
-	hook.Run("RoundInfoCalled", rnd)
+	hook.Run("ZC_OnRoundInfoCalled", rnd)
 
 	if zb.CROUND ~= rnd then
 		if hg.DynaMusic then
@@ -302,7 +302,7 @@ if IsValid(scoreBoardMenu) then
 	scoreBoardMenu = nil
 end
 
-hook.Add("Player Disconnected","retrymenu",function(data)
+hook.Add("ZC_PlayerDisconnected","ZC_CloseScoreboardOnDisconnect",function(data)
 	if IsValid(scoreBoardMenu) then
 		scoreBoardMenu:Remove()
 		scoreBoardMenu = nil
@@ -383,7 +383,7 @@ local function addToPlayerInfo(ply, muted, volume)
 end
 
 gameevent.Listen("player_connect")
-hook.Add("player_connect", "zcityhuy", function(data)
+hook.Add("player_connect", "ZC_ShowPlayerConnectMessage", function(data)
 	local ply = Player(data.userid)
 	if IsValid(ply) and ply.SetMuted and hg.playerInfo and hg.playerInfo[data.networkid] then
 		ply:SetMuted(hg.playerInfo[data.networkid][1])
@@ -391,7 +391,7 @@ hook.Add("player_connect", "zcityhuy", function(data)
 	end
 end)
 
-hook.Add("InitPostEntity", "ZCityLoadMutedPlayers", function()
+hook.Add("InitPostEntity", "ZC_LoadMutedPlayers", function()
 	if file.Exists("zcity_muted.txt", "DATA") then
 		local json = file.Read("zcity_muted.txt", "DATA")
 
@@ -469,7 +469,7 @@ end
 
 
 
-hook.Add("Player Getup", "nomorespect", function(ply)
+hook.Add("ZC_PlayerGetUp", "ZC_ClearSpectatorOnGetup", function(ply)
 	if not hg.mutespect then return end
 
 	//ply:SetMuted(ply.oldmutedspect)
@@ -481,7 +481,7 @@ hook.Add("Player Getup", "nomorespect", function(ply)
 	//end
 end)
 
-hook.Add("Player_Death", "fixSpectatorVoiceMute", function(ply)
+hook.Add("ZC_PlayerDeath", "ZC_FixSpectatorVoiceMute", function(ply)
 	if not hg.mutespect then return end
 
 	//ply.oldmutedspect = ply:IsMuted()
@@ -492,7 +492,7 @@ hook.Add("Player_Death", "fixSpectatorVoiceMute", function(ply)
 	//end
 end)
 
-hook.Add("Player_Death", "fixSpectatorVoiceEffect", function(ply)
+hook.Add("ZC_PlayerDeath", "ZC_FixSpectatorVoiceEffect", function(ply)
 	if eightbit and eightbit.EnableEffect and ply.UserID then
 		eightbit.EnableEffect(ply:UserID(), 0)
 	end
@@ -842,7 +842,7 @@ function GM:ScoreboardHide()
 	end
 end
 local AdminShowVoiceChat = CreateClientConVar("zc_admin_show_voicechat","0",false,false,"Show voicechat panels for admins",0,1)
-hook.Add("PlayerStartVoice", "showVoicePanels", function(ply)
+hook.Add("PlayerStartVoice", "ZC_ShowVoicePanels", function(ply)
 	if !IsValid(ply) then return end
 	if LocalPlayer():IsAdmin() and AdminShowVoiceChat:GetBool() then return end
 
@@ -879,7 +879,7 @@ net.Receive("AnotherLightningEffect", function()
     for i = 1, 27 do
         points[i] = target:GetPos() + Vector(0, 0, i * 50) + Vector(math.Rand(-20,20),math.Rand(-20,20),math.Rand(-20,20))
     end
-    hook.Add( "PreDrawTranslucentRenderables", "LightningExample", function(isDrawingDepth, isDrawingSkybox)
+    hook.Add( "PreDrawTranslucentRenderables", "ZC_RenderLightningStrikeEffect", function(isDrawingDepth, isDrawingSkybox)
         if isDrawingDepth or isDrawingSkybox then return end
         local uv = math.Rand(0, 1)
         render.OverrideBlend( true, BLEND_SRC_COLOR, BLEND_SRC_ALPHA, BLENDFUNC_ADD, BLEND_ONE, BLEND_ZERO, BLENDFUNC_ADD )
@@ -892,7 +892,7 @@ net.Receive("AnotherLightningEffect", function()
         render.OverrideBlend( false )
     end )
     timer.Simple(0.1, function()
-        hook.Remove("PreDrawTranslucentRenderables", "LightningExample")
+        hook.Remove("PreDrawTranslucentRenderables", "ZC_RenderLightningStrikeEffect")
     end)
 end)
 
@@ -1076,7 +1076,7 @@ concommand.Add("zb_snake", function() -- like here!
     resetGame()
 end)
 
-hook.Add("Player Spawn", "GuiltKnown",function(ply)
+hook.Add("ZC_PlayerSpawn", "ZC_MarkKnownGuilt",function(ply)
 	if ply == LocalPlayer() then
 		system.FlashWindow()
 	end

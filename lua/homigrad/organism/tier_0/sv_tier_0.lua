@@ -14,7 +14,7 @@ function hg.organism.Add(ent)
 end
 
 function hg.organism.Clear(org)
-	hook_Run("Org Clear", org)//.owner.organism_internal)
+	hook_Run("ZC_OrganismClear", org)//.owner.organism_internal)
 	if IsValid(org.owner) then org.owner.fullsend = true end
 	hg.send_organism(org)
 end
@@ -25,10 +25,10 @@ function hg.organism.Remove(ent)
 	hg.organism.list[ent] = nil
 end
 
-hook.Add("PlayerInitialSpawn", "homigrad-organism", function(ply) hg.organism.Add(ply) end)
-hook.Add("Player Spawn", "homigrad-organism", function(ply) hg.organism.Clear(ply.organism) end)
-hook.Add("PlayerDisconnected", "homigrad-organism", function(ply) hg.organism.Remove(ply) end)
-hook.Add("PostPlayerDeath", "homigrad-organism", function(ply)
+hook.Add("PlayerInitialSpawn", "ZC_AddOrganismOnInitialSpawn", function(ply) hg.organism.Add(ply) end)
+hook.Add("ZC_PlayerSpawn", "ZC_ClearOrganismOnPlayerSpawn", function(ply) hg.organism.Clear(ply.organism) end)
+hook.Add("PlayerDisconnected", "ZC_RemoveOrganismOnDisconnect", function(ply) hg.organism.Remove(ply) end)
+hook.Add("PostPlayerDeath", "ZC_MoveOrganismToDeathRagdoll", function(ply)
 	local ragdoll = ply:GetNWEntity("RagdollDeath")
 	
 	if not IsValid(ragdoll) then ragdoll = ply.FakeRagdoll end
@@ -37,7 +37,7 @@ hook.Add("PostPlayerDeath", "homigrad-organism", function(ply)
 		local newOrg = hg.organism.Add(ragdoll)
 		table.Merge(newOrg, ply.organism)
 
-		hook.Run("RagdollDeath", ply, ragdoll)
+		hook.Run("ZC_OnRagdollDeath", ply, ragdoll)
 
 		table.Merge(zb.net.list[ragdoll], zb.net.list[ply])
 
@@ -50,7 +50,7 @@ hook.Add("PostPlayerDeath", "homigrad-organism", function(ply)
 
 	hg.organism.Clear(ply.organism)
 
-	hook.Run("PostPostPlayerDeath", ply, ragdoll)
+	hook.Run("ZC_AfterPostPlayerDeath", ply, ragdoll)
 end)
 
 local tickrate = 1 / 10
@@ -58,7 +58,7 @@ local delay = 0
 local time, mulTime, start
 local CurTime = CurTime
 local SysTime = SysTime
-hook.Add("Think", "homigrad-organism", function()
+hook.Add("Think", "ZC_UpdateOrganismThinkLoop", function()
 	time = CurTime()
 	local tickrate2 = tickrate// / math.max(game.GetTimeScale(), 0.01)
 	//print(delay ,time + tickrate)
@@ -76,19 +76,19 @@ hook.Add("Think", "homigrad-organism", function()
 	start = SysTime()
 	for owner, org in pairs(hg.organism.list) do -- now it is clear why corpses cause lag...
 		if org.godmode then continue end
-		hook_Run("Org Think", owner, org, mulTime)
+		hook_Run("ZC_OrganismThink", owner, org, mulTime)
 	end
 end)
 
 local lastcall = SysTime()
-hook.Add("Org Think Call", "homigrad-organism", function(owner, org)
+hook.Add("ZC_OrganismThinkCall", "ZC_RunOrganismThink", function(owner, org)
 	if (SysTime() - lastcall) < tickrate then return end
 	lastcall = SysTime()
-	hook_Run("Org Think", owner, org, 0.00001)
+	hook_Run("ZC_OrganismThink", owner, org, 0.00001)
 end)
 
 
-hook.Add("Fake", "organism", function(ply, ragdoll)
+hook.Add("ZC_OnFakeRagdollCreated", "ZC_Organism", function(ply, ragdoll)
 	ragdoll.organism = ply.organism
 	--zb.net.list[ragdoll] = zb.net.list[ply]
 end)

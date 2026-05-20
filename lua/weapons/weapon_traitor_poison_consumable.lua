@@ -205,11 +205,11 @@ end
 --//
 
 if(SERVER)then
-    hook.Add("Org Clear", "RemovePoison_KCN", function(org)
+    hook.Add("ZC_OrganismClear", "ZC_RemovePoisonKCN", function(org)
         org.Poison_KCN = nil
     end)
 
-	hook.Add("Org Think", "Poison_KCN",function(owner, org, timeValue)
+	hook.Add("ZC_OrganismThink", "ZC_PoisonKCN",function(owner, org, timeValue)
 		if not owner:IsPlayer() or not owner:Alive() then return end
 		if((not org.Poison_KCN) or (not org.alive))then return end
 		

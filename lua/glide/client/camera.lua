@@ -53,7 +53,7 @@ function Camera:Activate( vehicle, seatIndex )
         if self.isActive then return self:Think() end
     end )
 
-    hook.Add( "PostPostHGCalcView", "GlideCamera.CalcView", function()
+    hook.Add( "ZC_PostPostCalculateView", "GlideCamera.CalcView", function()
         if zc_no_camera_in_cars:GetBool() and !self.isInFirstPerson then return self:CalcView() end
     end, HOOK_HIGH )
 
@@ -86,7 +86,7 @@ function Camera:Deactivate()
     timer.Remove( "GlideCamera.CheckState" )
 
     hook.Remove( "Think", "GlideCamera.Think" )
-    hook.Remove( "PostPostHGCalcView", "GlideCamera.CalcView" )
+    hook.Remove( "ZC_PostPostCalculateView", "GlideCamera.CalcView" )
     hook.Remove( "CreateMove", "GlideCamera.CreateMove" )
     hook.Remove( "InputMouseApply", "GlideCamera.InputMouseApply" )
     hook.Remove( "PlayerBindPress", "GlideCamera.PlayerBindPress" )

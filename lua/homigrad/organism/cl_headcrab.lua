@@ -1,10 +1,10 @@
-hook.Add("RenderScreenspaceEffects","hg-headcrab",function()
+hook.Add("RenderScreenspaceEffects","ZC_Headcrab",function()
     if lply:GetNetVar("headcrab") and lply == GetViewEntity() and lply.PlayerClassName ~= "headcrabzombie" then
         lply:ScreenFade(SCREENFADE.IN, color_black, 1, 1)
     end
 end)
 
-hook.Add("Player Spawn", "removecrab", function(ply)
+hook.Add("ZC_PlayerSpawn", "ZC_RemoveHeadcrabModelOnSpawn", function(ply)
     if IsValid(ply.headcrabmodel) then
         ply.headcrabmodel:Remove()
         ply.headcrabmodel = nil
@@ -13,7 +13,7 @@ end)
 
 local offsetVec = Vector(-1,0,0)
 local offsetAng = Angle(-90,-90,-20)
---hook.Add("PostDrawPlayerRagdoll","hg-drawplayer",function(ent,ply)
+--hook.Add("ZC_PostDrawPlayerRagdoll","ZC_DrawHeadcrabPlayer",function(ent,ply)
 function hg.RenderHeadcrab(ent, ply)
     if not IsValid(ply.headcrabmodel) then
         ply.headcrabmodel = ClientsideModel(ply:GetNetVar("headcrab"))

@@ -184,7 +184,7 @@ local function BindObjects(ent1, pos1, ent2, pos2, power, bone1, bone2)
 end
 
 if SERVER then
-	hook.Add("Should Fake Up", "NailTaped", function(ply)
+	hook.Add("ZC_ShouldRestorePlayerFromFake", "ZC_NailTaped", function(ply)
 		if ply and IsValid(ply.FakeRagdoll) then
 			local Nails = ply.FakeRagdoll.Nails
 			if Nails then

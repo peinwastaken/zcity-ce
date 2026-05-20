@@ -74,8 +74,8 @@ function COMMAND_Input(ply,args)
 
 	return true,cmd[1](ply,args)
 end
--- Uh, WHAT IS PLAYERSEI FOR THEN????
-hook.Add("HG_PlayerSay","commands-chat",function(ply, txtTbl, text)
+
+hook.Add("ZC_OnPlayerSay","ZC_HandleChatCommands",function(ply, txtTbl, text)
 	COMMAND_Input(ply, COMMAND_GETARGS(string.Split(string.sub(text, 2, #text), " ")))
 end)
 

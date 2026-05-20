@@ -5,7 +5,7 @@ SWEP.RHandPos = Vector(-4, -1, 3)
 SWEP.LHandPos = Vector(7, -1, -1)
 SWEP.AimHands = Vector(0, 1.8, -4.5)
 --[[if CLIENT then
-    hook.Add("SWEPStep","fakeUpdate",function(self)
+    hook.Add("ZC_WeaponStep","ZC_FakeUpdate",function(self)
         local fakeGun = self:GetNWEntity("fakeGun")
         local owner = self:GetOwner()
 

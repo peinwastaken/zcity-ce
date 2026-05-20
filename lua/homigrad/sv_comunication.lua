@@ -12,7 +12,7 @@ local chat_dist_whisper = 100
 local function ChatLogic(output, input, isChat, teamonly, text)
 	if not IsValid(output) then return true, true end
 	if not IsValid(input) then return false end
-	local result, is3D = hook.Run("CanListenOthers",output,input,isChat,teamonly,text)
+	local result, is3D = hook.Run("ZC_CanReceiveCommunication",output,input,isChat,teamonly,text)
 
 	if result ~= nil then return result,is3D end
 
@@ -44,13 +44,13 @@ local function ChatLogic(output, input, isChat, teamonly, text)
 	end
 end
 
-hook.Add("PlayerCanSeePlayersChat", "RealiticChar", function(text, teamOnly, listener, speaker)
+hook.Add("PlayerCanSeePlayersChat", "ZC_RealisticChat", function(text, teamOnly, listener, speaker)
 	if not IsValid(speaker) then return end
     local result = ChatLogic(speaker,listener,true,false,text)
 
     if not IsValid(speaker) then speaker = Entity(0) end
 
-	local Hook = hook.Run("HG_PlayerCanSeePlayersChat", listener, speaker )
+	local Hook = hook.Run("ZC_CanSeePlayerChat", listener, speaker )
 	if Hook then
 		return Hook
 	end
@@ -121,13 +121,13 @@ local function funca(ply, txt)
 	return txt
 end
 
-hook.Add("HG_PlayerSay", "huy", function(ply, txt)
+hook.Add("ZC_OnPlayerSay", "ZC_BlockMutedCommunication", function(ply, txt)
 	local text = txt[1]
 
 	txt[1] = funca(ply, text)
 end)
 
-hook.Add("HG_PlayerCanHearPlayersVoice","BrainDamage", function(listener, speaker)
+hook.Add("ZC_CanHearPlayerVoice","ZC_BrainDamage", function(listener, speaker)
 	if speaker.organism.brain > 0.05 then return false, false end
 end)
 
@@ -139,14 +139,14 @@ local braindeadphrase_female = {
 	"vo/episode_1/npc/female01/cit_behindyousfx01.wav",
 	"vo/episode_1/npc/female01/cit_behindyousfx02.wav",
 }
-hook.Add("HG_ReplacePhrase", "BraindeadPhrase", function(ply, phrase, muffed, pitch)
+hook.Add("ZC_ReplacePhrase", "ZC_BraindeadPhrase", function(ply, phrase, muffed, pitch)
 	if IsValid(ply) and ply.organism and ply.organism.brain >= 0.5 then
 		local phr = ThatPlyIsFemale(ply) and braindeadphrase_female[math.random(#braindeadphrase_female)] or braindeadphrase_male[math.random(#braindeadphrase_male)]
 		return ply, phr, muffed, pitch
 	end
 end)
 
-hook.Add("PlayerCanHearPlayersVoice", "RealisticVoice", function(listener,speaker)
+hook.Add("PlayerCanHearPlayersVoice", "ZC_RealisticVoice", function(listener,speaker)
 	local result,is3D = ChatLogic(speaker,listener,false,false)
 	local speak = speaker:IsSpeaking()
 	speaker.IsSpeak = speak
@@ -154,10 +154,10 @@ hook.Add("PlayerCanHearPlayersVoice", "RealisticVoice", function(listener,speake
 	if speaker.IsOldSpeak ~= speaker.IsSpeak then
 		speaker.IsOldSpeak = speak
 		--print("huy")
-		if speak then hook.Run( "StartVoice", speaker, listener ) else hook.Run( "EndVoice", speaker, listener )  end
+		if speak then hook.Run( "ZC_StartVoiceTransmission", speaker, listener ) else hook.Run( "ZC_EndVoiceTransmission", speaker, listener )  end
 	end
 
-	local Hook = hook.Run("HG_PlayerCanHearPlayersVoice", listener, speaker )
+	local Hook = hook.Run("ZC_CanHearPlayerVoice", listener, speaker )
 	if Hook ~= nil then
 		return Hook
 	end

@@ -184,7 +184,7 @@ function MODE.ContinueBreakingOtherNeck(ply)
 	end
 end
 
-hook.Add("HG_MovementCalc_2", "HMCD_SubRole_Abilities", function(mul, ply, cmd)
+hook.Add("ZC_CalculateMovementModifiers", "ZC_SubRoleAbilities", function(mul, ply, cmd)
 	if(ply.BeingVictimOfNeckBreak or ply.BeingVictimOfDisarmament)then
 		mul[1] = mul[1] * 0.3
 	end
@@ -335,7 +335,7 @@ function MODE.ContinueDisarmingOther(ply)
 	end
 end
 
-hook.Add("PlayerSwitchWeapon", "HMCD_SubRole_Abilities", function(ply)
+hook.Add("PlayerSwitchWeapon", "ZC_SubRoleAbilities", function(ply)
 	if(ply.BeingVictimOfDisarmament)then
 		return true
 	end

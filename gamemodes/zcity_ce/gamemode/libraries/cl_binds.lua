@@ -129,7 +129,7 @@ function binds.FindFirstBind(keycode)
   return nil
 end
 
-hook.Add("PlayerBindPress", "zcity.binds.press", function(ply, bind, pressed, number)
+hook.Add("PlayerBindPress", "ZC_HandleBindsPress", function(ply, bind, pressed, number)
   local zcBind = binds.FindFirstBind(number)
   if zcBind and pressed then
     if zb.dev.IsDeveloper() then
@@ -142,6 +142,6 @@ hook.Add("PlayerBindPress", "zcity.binds.press", function(ply, bind, pressed, nu
   end
 end)
 
-hook.Add("InitPostEntity", "zcity.binds.postentity", function()
+hook.Add("InitPostEntity", "ZC_LoadBindsAfterInit", function()
   zb.binds.LoadBinds()
 end)

@@ -1,6 +1,6 @@
 include("shared.lua")
 
-hook.Add("NetworkEntityCreated", "Radiohuy", function(ent)
+hook.Add("NetworkEntityCreated", "ZC_RegisterRadioEntity", function(ent)
     if playingents[ent:EntIndex()] then
         local tbl = playingents[ent:EntIndex()]
 

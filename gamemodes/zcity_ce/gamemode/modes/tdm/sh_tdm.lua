@@ -183,7 +183,7 @@ AddItemToBUY( ".44 Remington Magnum (20)", "Ammo", "ent_ammo_.44remingtonmagnum"
 
 AddItemToBUY( "Arrow", "Ammo", "ent_ammo_arrow", 25, "Ammo", {}, 5)
 
-function MODE:HG_MovementCalc_2( mul, ply, cmd, mv )
+function MODE:ZC_CalculateMovementModifiers( mul, ply, cmd, mv )
     if (zb.ROUND_START or 0) + 20 > CurTime() and cmd then
         cmd:RemoveKey(IN_ATTACK)
         cmd:RemoveKey(IN_FORWARD)
@@ -208,7 +208,7 @@ function MODE:HG_MovementCalc_2( mul, ply, cmd, mv )
     end
 end
 
-function MODE:PlayerCanLegAttack( ply )
+function MODE:ZC_CanPlayerLegAttack( ply )
 	if zb.CROUND == "dm" and (zb.ROUND_START or 0) + 20 > CurTime() then
 		return false
 	end

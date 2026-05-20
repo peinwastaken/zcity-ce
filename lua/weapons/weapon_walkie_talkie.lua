@@ -97,7 +97,7 @@ if SERVER then
 		end
     end
 
-    hook.Add("CanListenOthers", "radio", function(output, input, isChat, teamonly, text)
+    hook.Add("ZC_CanReceiveCommunication", "ZC_Radio", function(output, input, isChat, teamonly, text)
         local wep = output:GetWeapon("weapon_walkie_talkie")
 
 		if not IsValid(wep) then
@@ -128,7 +128,7 @@ if SERVER then
         end
     end)
 
-	hook.Add("StartVoice", "radio", function(output)
+	hook.Add("ZC_StartVoiceTransmission", "ZC_Radio", function(output)
         local wep = output:GetWeapon("weapon_walkie_talkie")
 
 		if(not IsValid(wep))then
@@ -148,7 +148,7 @@ if SERVER then
 		end
     end)
 
-	hook.Add("EndVoice", "radio", function(output)
+	hook.Add("ZC_EndVoiceTransmission", "ZC_Radio", function(output)
         local wep = output:GetWeapon("weapon_walkie_talkie")
 
 		if not IsValid(wep) then

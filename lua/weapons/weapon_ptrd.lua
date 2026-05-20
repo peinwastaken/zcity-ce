@@ -197,7 +197,7 @@ function SWEP:ThinkAdd()
 	end
 end
 
-hook.Add("HG_MovementCalc_2", "HG_PTRDReloading_Slow", function(mul, ply, cmd, mv)
+hook.Add("ZC_CalculateMovementModifiers", "ZC_PTRDReloadingSlowdown", function(mul, ply, cmd, mv)
 	local wep = IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon()
 	if wep and wep ~= NULL and wep:GetClass() == "weapon_ptrd" and wep.reload then
 		cmd:RemoveKey(IN_MOVELEFT)
@@ -226,7 +226,7 @@ hook.Add("HG_MovementCalc_2", "HG_PTRDReloading_Slow", function(mul, ply, cmd, m
 end)
 
 if CLIENT then
-	hook.Add("hg_AdjustMouseSensitivity", "HG_PTRDReloading_Sens", function(ply)
+	hook.Add("ZC_AdjustMouseSensitivity", "ZC_PTRDReloadingSensitivity", function(ply)
 		local wep = IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon()
 		if wep and wep ~= NULL and wep:GetClass() == "weapon_ptrd" and wep.reload then
 			return 0.1

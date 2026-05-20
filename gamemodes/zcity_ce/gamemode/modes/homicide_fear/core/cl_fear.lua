@@ -5,7 +5,7 @@ local function ShowShadows(ent, ply, bool)
 	ent:DrawShadow(bool)
 end
 
-function MODE:PreDrawPlayer2(ent, ply)
+function MODE:ZC_PreDrawPlayerOverride(ent, ply)
 	local lply = LocalPlayer()
 
 	if !IsValid(ent) or !IsValid(ply) then return end
@@ -193,7 +193,7 @@ local notifs = {
 	"Where's everyone?",
 }
 
-function MODE:Player_Death(ply)
+function MODE:ZC_PlayerDeath(ply)
 	local lply = LocalPlayer()
 
 	self:CreateTimer("fearfearingfearful", 3, 1, function()

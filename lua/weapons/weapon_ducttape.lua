@@ -213,7 +213,7 @@ function hgCheckDuctTapeObjects(ent1)
 end
 
 if SERVER then
-	hook.Add("Should Fake Up", "DuctTaped", function(ply)
+	hook.Add("ZC_ShouldRestorePlayerFromFake", "ZC_DuctTaped", function(ply)
 		if ply and IsValid(ply.FakeRagdoll) then
 			local dtape = ply.FakeRagdoll.DuctTape
 			if dtape then

@@ -177,7 +177,7 @@ hg.ConVars = hg.ConVars or {}
 
 	local host_timescale = game.GetTimeScale
 
-	hook.Add("Think", "Mul lerp", function()
+	hook.Add("Think", "ZC_UpdateLerpMultiplier", function()
 		local ft = FrameTime()
 		ftlerped = Lerp(0.5,ftlerped,math_Clamp(ft,0.001,0.1))
 	end)
@@ -405,7 +405,7 @@ hg.ConVars = hg.ConVars or {}
 	}
 	local zc_sandboxmusic = ConVarExists("zc_sandboxmusic") and GetConVar("zc_sandboxmusic") or CreateConVar("zc_sandboxmusic", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle dynamic music in sandbox gamemode", 0, 1)
 	local gamemod = engine.ActiveGamemode()
-	hook.Add("player_spawn", "homigrad-spawn3", function(data)
+	hook.Add("player_spawn", "ZC_HandleDataPlayerSpawn", function(data)
 		local ply = Player(data.userid)
 		if not IsValid(ply) then return end
 
@@ -474,7 +474,7 @@ hg.ConVars = hg.ConVars or {}
 			hg.renderOverride(self, ent, flags)
 		end
 
-		hook.Run("Player Getup", ply)
+		hook.Run("ZC_PlayerGetUp", ply)
 
 		local override = (CLIENT and hg.override[ply]) or (SERVER and OverrideSpawn)
 
@@ -483,7 +483,7 @@ hg.ConVars = hg.ConVars or {}
 		end
 
 		if not override then
-			hook.Run("Player Spawn", ply)
+			hook.Run("ZC_PlayerSpawn", ply)
 
 			if CLIENT and not ply:IsLocal() and gamemod == "sandbox" then
 				if hg.DynaMusic then
@@ -637,12 +637,12 @@ local IsValid = IsValid
 		if ent:GetMaterial() == "NULL" then ent:DrawShadow( false ) return end
 		if not IsValid(ent) then return end
 
-		--local drawornot = hook_Run("PreDrawPlayer2", ent, self) // true means nodraw
+		--local drawornot = hook_Run("ZC_PreDrawPlayerOverride", ent, self) // true means nodraw
 		--if drawornot then return end
 
 		DrawPlayerRagdoll(ent, self)
 		RenderAccessoriesCool(ent, self)
-		hook_Run("CoolPostDrawAppearance", ent, self)
+		hook_Run("ZC_PostDrawAppearancePreview", ent, self)
 		//hg.HomigradBones(self, CurTime(), FrameTime())
 
 		if IsValid(self.OldRagdoll) then DrawAppearance(ent, self, true) end
@@ -653,7 +653,7 @@ local IsValid = IsValid
 			DrawAppearance(ent, self)
 		end
 
-		hook_Run("PostDrawAppearance", ent, self)
+		hook_Run("ZC_PostDrawAppearance", ent, self)
 	end
 --//
 
@@ -664,7 +664,7 @@ local IsValid = IsValid
 		curlean = curlean or 0
 		unmodified_angle = unmodified_angle or 0
 		local time = SysTime() - 0.01
-		hook.Add("HUDPaint", "leanin", function()
+		hook.Add("HUDPaint", "ZC_UpdateLeanInterpolation", function()
 			local ply = LocalPlayer()
 
 			local dtime = SysTime() - time
@@ -675,31 +675,31 @@ local IsValid = IsValid
 		end)
 	end
 --//
---\\ Player Spawn - Override Spawn
-	hook.Add("Player Spawn","default-thingies",function(ply)
+--\\ ZC_PlayerSpawn - Override Spawn
+	hook.Add("ZC_PlayerSpawn","ZC_SetDefaultPlayerState",function(ply)
 		if OverrideSpawn then return false end
 	end)
 --//
 --\\ gameevents
 	gameevent.Listen("player_disconnect")
-	hook.Add("player_disconnect", "hg-disconnect", function(data)
-		hook.Run("Player Disconnected", data)
+	hook.Add("player_disconnect", "ZC_HandleDataPlayerDisconnect", function(data)
+		hook.Run("ZC_PlayerDisconnected", data)
 	end)
 
 	gameevent.Listen( "player_activate" )
-	hook.Add("player_activate","player_activatehg",function(data)
+	hook.Add("player_activate","ZC_HandleDataPlayerActivate",function(data)
 		local ply = Player(data.userid)
 		if not IsValid(ply) then return end
 
-		hook.Run("Player Activate", ply)
+		hook.Run("ZC_PlayerActivate", ply)
 		if SERVER and ply.SyncVars then ply:SyncVars() end
 	end)
 
 	gameevent.Listen("entity_killed")
-	hook.Add("entity_killed", "homigrad-death", function(data)
+	hook.Add("entity_killed", "ZC_HandleDataEntityKilled", function(data)
 		local ply = Entity(data.entindex_killed)
 		if not IsValid(ply) or not ply:IsPlayer() then return end
-		hook.Run("Player_Death", ply)
+		hook.Run("ZC_PlayerDeath", ply)
 	end)
 --//
 --\\ IsLookingAt
@@ -963,15 +963,15 @@ local IsValid = IsValid
 		ply.CurrentActivity = nil
 	end
 
-	hook.Add("Player Getup", "TauntEndHG", function(ply, act, length)
+	hook.Add("ZC_PlayerGetUp", "ZC_StopTauntState", function(ply, act, length)
 		stop_taunt(ply)
 	end)
 
-	hook.Add("Fake", "TauntEndHG", function(ply)
+	hook.Add("ZC_OnFakeRagdollCreated", "ZC_StopTauntState", function(ply)
 		stop_taunt(ply)
 	end)
 
-	hook.Add("PlayerStartTaunt", "TauntRecordHG", function(ply, act, length)
+	hook.Add("PlayerStartTaunt", "ZC_RecordTauntState", function(ply, act, length)
 		if not taunt_function_start[act] then return end
 
 		taunt_function_start[act](ply, act, length)
@@ -999,7 +999,7 @@ local IsValid = IsValid
 	-- 		RunConsoleCommand("hg_change_standposture", 0)
 	-- 	end
 
-	-- 	hook.Add("radialOptions", "standing_posture", function()
+	-- 	hook.Add("ZC_RadialOptions", "ZC_StandingPosture", function()
 	-- 		do return end
 
 	-- 		local ply = LocalPlayer()
@@ -1088,11 +1088,11 @@ local IsValid = IsValid
 	end
 --//
 --\\ Disable drive (driving is fixed so i don't think that we need this)
-	--[[hook.Add("StartEntityDriving", "disabledriving", function(ent, ply)
+	--[[hook.Add("StartEntityDriving", "ZC_BlockDrivingAnimation", function(ent, ply)
 		return false
 	end)
 
-	hook.Add("PlayerDriveAnimate", "disabledriving", function(ent, ply)
+	hook.Add("PlayerDriveAnimate", "ZC_BlockDrivingAnimation", function(ent, ply)
 		return false
 	end)]]
 --//
@@ -1117,7 +1117,7 @@ local IsValid = IsValid
 		return p
 	end
 
-	hook.Add( "EntityEmitSound", "TimeWarpSounds", function( t )
+	hook.Add( "EntityEmitSound", "ZC_TimeWarpSounds", function( t )
 		local p = changePitch(t.Pitch)
 
 		if ( p ~= t.Pitch ) then
@@ -1127,10 +1127,10 @@ local IsValid = IsValid
 	end )
 --//
 --\\ remove default death sound
-	hook.Add("PlayerDeathSound", "removesound", function() return true end)
+	hook.Add("PlayerDeathSound", "ZC_BlockDefaultDeathSound", function() return true end)
 --//
 --\\ flashlight custom switch
-	hook.Add("PlayerSwitchFlashlight", "removeflashlights", function(ply, enabled)
+	hook.Add("PlayerSwitchFlashlight", "ZC_BlockFlashlightToggle", function(ply, enabled)
 		if ply.PlayerClassName == "Combine" then return false end --!! TODO: CLASS.NoFlashLight boolean
 
 		local wep = ply:GetActiveWeapon()
@@ -1362,7 +1362,7 @@ local IsValid = IsValid
 		["npc_turret_ceiling"] = {multi = 1.25, AmmoType = "9x19 mm QuakeMaker"},
 	}
 
-	hook.Add("EntityFireBullets", "NPC_Boolets", function(ent, bullet)
+	hook.Add("EntityFireBullets", "ZC_HandleNpcBullets", function(ent, bullet)
 		if IsValid(ent) and npcs[ent:GetClass()] and not bullet.NpcShoot then
 			local tbl = npcs[ent:GetClass()]
 			if ent:GetClass() == "npc_turret_floor" and IsValid(ent:GetEnemy()) and ent:GetEnemy():GetClass() == "npc_bullseye" and IsValid(ent:GetEnemy().rag) then
@@ -1407,7 +1407,7 @@ local IsValid = IsValid
 --//
 
 --\\ Custom player use
-	hook.Add("PlayerUse","nouseinfake",function(ply,ent)
+	hook.Add("PlayerUse","ZC_BlockUseWhileFake",function(ply,ent)
 		local class = ent:GetClass()
 
 		if class == "momentary_rot_button" then return end
@@ -1427,20 +1427,20 @@ local IsValid = IsValid
 	end)
 --//
 --\\ set hull
-	hook.Add("Player Activate","SetHull",function(ply)
+	hook.Add("ZC_PlayerActivate","ZC_SetPlayerHullOnActivate",function(ply)
 		ply:SetHull(HullMins, HullMaxs)
 		ply:SetHullDuck(HullDuckMins, HullDuckMaxs)
 		ply:SetViewOffset(ViewOffset)
 		ply:SetViewOffsetDucked(ViewOffsetDucked)
 	end)
 
-	hook.Add("Player Spawn","SetHull",function(ply)
+	hook.Add("ZC_PlayerSpawn","ZC_ResetPlayerStateOnSpawn",function(ply)
 		ply:SetNWEntity("FakeRagdoll",NULL)
 		ply:SetObserverMode(OBS_MODE_NONE)
 	end)
 --//
 --\\ custom equip
-	hook.Add("WeaponEquip","pickupHuy",function(wep,ply)
+	hook.Add("WeaponEquip","ZC_HandleWeaponEquipPickup",function(wep,ply)
 		--if not wep.init then return end
 		timer.Simple(0,function()
 			if wep.DontEquipInstantly then wep.DontEquipInstantly = nil return end
@@ -1460,7 +1460,7 @@ local IsValid = IsValid
 	end)
 --//
 --\\ block pickup with holding something (why it shared)
-	hook.Add("AllowPlayerPickup","pickupWithWeapons",function(ply,ent)
+	hook.Add("AllowPlayerPickup","ZC_AllowWeaponPickup",function(ply,ent)
 		if ent:IsPlayerHolding() then return false end
 	end)
 --//
@@ -1472,7 +1472,7 @@ local IsValid = IsValid
 		"prop_dynamic"
 	}
 
-	hook.Add("FindUseEntity","findhguse",function(ply,heldent)
+	hook.Add("FindUseEntity","ZC_FindUseEntity",function(ply,heldent)
 		if IsValid(heldent) and heldent:GetClass() == "button" then return heldent end
 
 		if not ply:KeyDown(IN_USE) then return false end
@@ -1523,7 +1523,7 @@ duplicator.Allow( "homigrad_base" )
 		["76561198325967989"] = true, -- zac90
 	}
 
-	hook.Add("PlayerInitialSpawn","Hey! Developer here YAY",function(ply)
+	hook.Add("PlayerInitialSpawn","ZC_PrintDeveloperJoinMessage",function(ply)
 		if SERVER and DEVELOPERS_LIST[ply:SteamID64()] then
 			PrintMessage(HUD_PRINTTALK, ply:Nick() .. " - zteam dev here!")
 		end
@@ -1760,7 +1760,7 @@ if CLIENT then
 		util.ScreenShake(vPos, nAmplitude, nFrequency, nDuration, nRadius, bAirshake)
 	end)
 
-	hook.Add("PostHGCalcView","util.ScreenShake",function(ply, view)
+	hook.Add("ZC_PostCalculateView","ZC_ApplyScreenShakesToView",function(ply, view)
 		for i = 1, #ScreenShakers do
 			local shake = ScreenShakers[i]
 			if shake then

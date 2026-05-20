@@ -219,7 +219,7 @@ derma.DefineControl("HMCD_RolePanelList", "", PANEL, "DPanel")
 
 --\\Manual Click detection
 local delta = 0
-hook.Add("CreateMove", "HMCD_RolePanelClick", function(cmd)
+hook.Add("CreateMove", "ZC_RolePanelClick", function(cmd)
 	local dlta = (input.WasMousePressed(MOUSE_WHEEL_DOWN) and -1) or (input.WasMousePressed(MOUSE_WHEEL_UP) and 1) or 0
 
 	delta = LerpFT(0.05, delta, dlta)

@@ -26,7 +26,7 @@ else
 		end
 	end
 
-	hook.Add("Think", "HGAmmo_PhysSilkTranslationTable", function()
+	hook.Add("Think", "ZC_UpdateAmmoPhysSilkTranslation", function()
 		for bullet_key, translation_info in pairs(HGAmmo_PhysSilkTranslationTable) do
 			if(translation_info.DeathTime <= CurTime())then
 				for _, silk in pairs(translation_info.Silks) do
@@ -38,7 +38,7 @@ else
 		end
 	end)
 
-	hook.Add("NotifyShouldTransmit", "HGAmmo_PhysSilkTranslationTable", function(ent, state)
+	hook.Add("NotifyShouldTransmit", "ZC_UpdateAmmoPhysSilkTranslation", function(ent, state)
 		if(state == true)then
 			local ent_id = ent:EntIndex()
 
@@ -149,7 +149,7 @@ end
 --=\\Scheduled explosions
 APScheduledExplosions = APScheduledExplosions or {}
 
-hook.Add("Think", "APScheduledExplosions", function()	--; AimPoint Mr.Point
+hook.Add("Think", "ZC_RunScheduledAmmoExplosions", function()	--; AimPoint Mr.Point
 	for id, coroutine_example in pairs(APScheduledExplosions) do
 		if(!coroutine.resume(coroutine_example))then
 			APScheduledExplosions[id] = nil
@@ -2841,7 +2841,7 @@ local function addAmmoTypes()
 end
 
 addAmmoTypes()
-hook.Add("Initialize", "init-ammo", addAmmoTypes)
+hook.Add("Initialize", "ZC_InitAmmoTypes", addAmmoTypes)
 
 --drag coefficient can also be calculated mathematically
 --11300 - lead density in kg/m3
@@ -2976,7 +2976,7 @@ if CLIENT then
         AmmoMenu(ply)
     end )
 
-	hook.Add("radialOptions", "hg-ammomenu", function()
+	hook.Add("ZC_RadialOptions", "ZC_OpenAmmoRadialMenu", function()
 		local organism = LocalPlayer().organism or {}
 		if not organism.unconscious and table.Count(LocalPlayer():GetAmmo()) > 0 and lply:KeyDown(IN_WALK) then
 			hg.radialOptions[#hg.radialOptions + 1] = {

@@ -4,7 +4,7 @@ local PLUGIN = hg.PluvTown
 
 -- local Pluv = Material("pluv/pluv.png")
 
-PLUGIN.AddHook("PostDrawAppearance", function(ent, ply)
+PLUGIN.AddHook("ZC_PostDrawAppearance", function(ent, ply)
 	//for _, ply in player.Iterator() do
 		-- if ply == LocalPlayer() then continue end
 		if ply.NotSeen then return end

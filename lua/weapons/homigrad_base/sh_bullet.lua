@@ -40,7 +40,7 @@ local effect = {
 if SERVER then
 	hg.bulletholes = hg.bulletholes or {}
 
-	hook.Add("PostCleanupMap", "cleanupholes", function()
+	hook.Add("PostCleanupMap", "ZC_CleanupBulletHoles", function()
 		hg.bulletholes = {}
 
 		SetNetVar("BulletHoles", hg.bulletholes)

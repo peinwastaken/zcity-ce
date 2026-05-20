@@ -557,7 +557,7 @@ if CLIENT then
         frame:SizeToChildren(false, true)
     end
 
-    hook.Add("InitPostEntity", "RequestModeData", function()
+    hook.Add("InitPostEntity", "ZC_RequestModeData", function()
         if LocalPlayer():IsAdmin() then
             timer.Simple(2, function()
                 net.Start("ZB_RequestRoundList")

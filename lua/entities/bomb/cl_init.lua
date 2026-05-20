@@ -144,7 +144,7 @@ net.Receive("bomb_look",function()
 	CreateMenu(bomb)
 end)
 
-hook.Add("HUDPaint","Draw3D2DFrameBomb",function()
+hook.Add("HUDPaint","ZC_Draw3D2DFrameBomb",function()
 
 end)
 

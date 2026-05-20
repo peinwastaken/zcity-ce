@@ -188,7 +188,7 @@ end
 
 -- Sandbox applyApperance
 if engine.ActiveGamemode() == "sandbox" then
-    hook.Add("PlayerSpawn","SetAppearance",function(ply)
+    hook.Add("PlayerSpawn","ZC_SetAppearance",function(ply)
         if OverrideSpawn then return end
         timer.Simple(0,function()
             ApplyAppearance(ply,nil,nil,nil,true)

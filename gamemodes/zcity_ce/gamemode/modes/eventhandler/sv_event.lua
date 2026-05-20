@@ -121,7 +121,7 @@ function MODE:RoundStart()
 
         timer.Create("EventLootSpawnTimer", 5, 0, function()
             if MODE.LootEnabled then
-                hook.Run("Boxes Think")
+                hook.Run("ZC_BoxThink")
             end
         end)
     end
@@ -136,7 +136,7 @@ end
 function MODE:RoundThink()
     if self.LootEnabled and (self.nextBoxesThink or 0) < CurTime() then
         self.nextBoxesThink = CurTime() + 2
-        hook.Run("Boxes Think")
+        hook.Run("ZC_BoxThink")
     end
 
 	if (zb.ROUND_START or 0) + 20 < CurTime() then
@@ -252,7 +252,7 @@ function MODE:LoadLootTable()
     print("[Event Mode] Loot table loaded for server: " .. serverIdentifier .. " with " .. #self.CustomLootTable[1][2] .. " items")
 end
 
-hook.Add("Initialize", "ZB_EventLoadLootTable", function()
+hook.Add("Initialize", "ZC_EventLoadLootTable", function()
     timer.Simple(1, function()
         if SERVER and MODE and MODE.LoadLootTable then
             MODE:LoadLootTable()
@@ -384,7 +384,7 @@ concommand.Add("zb_event_loot", function(ply, _, _, args)
     if enabled and not timer.Exists("EventLootSpawnTimer") then
         timer.Create("EventLootSpawnTimer", 5, 0, function()
             if MODE.LootEnabled then
-                hook.Run("Boxes Think")
+                hook.Run("ZC_BoxThink")
             end
         end)
     elseif not enabled and timer.Exists("EventLootSpawnTimer") then
@@ -394,7 +394,7 @@ concommand.Add("zb_event_loot", function(ply, _, _, args)
     ply:ChatPrint("Event loot " .. (enabled and "enabled" or "disabled"))
 end)
 
-hook.Add("PlayerInitialSpawn", "ZB_EventLootSync", function(ply)
+hook.Add("PlayerInitialSpawn", "ZC_EventLootSync", function(ply)
     timer.Simple(5, function()
         if IsValid(ply) and (ply:IsAdmin() or MODE.EventersList[ply:SteamID()]) then
             net.Start("event_loot_sync")
@@ -404,14 +404,14 @@ hook.Add("PlayerInitialSpawn", "ZB_EventLootSync", function(ply)
     end)
 end)
 
-hook.Add("HG_PlayerSay", "ZB_EventLootCommand", function(ply, txtTbl, text)
+hook.Add("ZC_OnPlayerSay", "ZC_EventLootCommand", function(ply, txtTbl, text)
     if string.lower(text) == "!eventloot" and (ply:IsAdmin() or MODE.EventersList[ply:SteamID()]) then
         ply:ConCommand("zb_event_loot_menu")
         txtTbl[1] = ""
     end
 end)
 
-hook.Add("InitPostEntity", "ZB_EventLootInitCheck", function()
+hook.Add("InitPostEntity", "ZC_EventLootInitCheck", function()
     timer.Simple(3, function()
         print("[Event Mode] Checking loot system status...")
         if MODE.LootEnabled then
@@ -419,7 +419,7 @@ hook.Add("InitPostEntity", "ZB_EventLootInitCheck", function()
             if not timer.Exists("EventLootSpawnTimer") then
                 timer.Create("EventLootSpawnTimer", 5, 0, function()
                     if MODE.LootEnabled then
-                        hook.Run("Boxes Think")
+                        hook.Run("ZC_BoxThink")
                     end
                 end)
             end

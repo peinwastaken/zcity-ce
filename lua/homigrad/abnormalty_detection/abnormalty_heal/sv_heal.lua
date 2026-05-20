@@ -63,7 +63,7 @@ end
 --//
 
 --\\SpecialEvents
-hook.Add("Abnormalties_HotZoneAbnormaltyAdded", "Abnormalties_Heal", function(zone_id, abnormalty_name, amt, ply)
+hook.Add("ZC_OnHotZoneAbnormalityAdded", "ZC_AbnormalitiesHeal", function(zone_id, abnormalty_name, amt, ply)
 	local zone = PLUGIN.Zones[zone_id]
 	
 	if(PLUGIN.GetZoneAbnormalty(zone, "sacrifice") >= 10 and PLUGIN.GetZoneAbnormalty(zone, "help") >= 20 and amt > 0)then
@@ -88,7 +88,7 @@ hook.Add("Abnormalties_HotZoneAbnormaltyAdded", "Abnormalties_Heal", function(zo
 	end
 end)
 
-hook.Add("Think", "Abnormalties_Heal", function()
+hook.Add("Think", "ZC_AbnormalitiesHeal", function()
 	for ply, info in pairs(PLUGIN.Heal.ToHeal) do
 		if(info.Time <= CurTime())then
 			local owner = info.Owner
@@ -136,7 +136,7 @@ hook.Add("Think", "Abnormalties_Heal", function()
 	end
 end)
 
-hook.Add("PostCleanupMap", "Abnormalties_Heal", function()
+hook.Add("PostCleanupMap", "ZC_AbnormalitiesHeal", function()
 	PLUGIN.Heal.ToHeal = {}
 end)
 --//

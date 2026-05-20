@@ -696,7 +696,7 @@ net.Receive("defense_commander_notification", function()
 end)
 
 
-hook.Add("radialOptions", "CommanderSupplyMenu", function()
+hook.Add("ZC_RadialOptions", "ZC_CommanderSupplyMenu", function()
     local ply = LocalPlayer()
     
     if ply:GetNWString("PlayerRole") == "Commander" and ply:Alive() then
@@ -850,10 +850,10 @@ local function DrawCommanderHint()
 end
 
 
-hook.Add("HUDPaint", "DrawCommanderHint", DrawCommanderHint)
+hook.Add("HUDPaint", "ZC_DrawCommanderHint", DrawCommanderHint)
 
 
-hook.Add("OnEntityCreated", "CheckCommanderForHint", function(ent)
+hook.Add("OnEntityCreated", "ZC_CheckCommanderForHint", function(ent)
     if not IsValid(ent) then return end
     if not ent:IsPlayer() then return end
     
@@ -870,7 +870,7 @@ hook.Add("OnEntityCreated", "CheckCommanderForHint", function(ent)
     end)
 end)
 
-hook.Add("InitPostEntity", "ResetCommanderHintFlag", function()
+hook.Add("InitPostEntity", "ZC_ResetCommanderHintFlag", function()
     COMMANDER_HINT.shownThisRound = false
 end)
 
@@ -879,7 +879,7 @@ net.Receive("npc_defense_start", function()
 end)
 
 
-hook.Add("OnPlayerSpawn", "CheckPlayerCommanderRole", function(ply)
+hook.Add("OnPlayerSpawn", "ZC_CheckPlayerCommanderRole", function(ply)
     if not IsValid(ply) then return end
     if ply ~= LocalPlayer() then return end
     
@@ -894,13 +894,13 @@ hook.Add("OnPlayerSpawn", "CheckPlayerCommanderRole", function(ply)
     end)
 end)
 
-hook.Add("InitPostEntity", "InitCommanderHint", function()
+hook.Add("InitPostEntity", "ZC_InitCommanderHint", function()
     COMMANDER_HINT.shownThisRound = false
     timer.Simple(2, CheckAndShowCommanderHint)
 end)
 
 
-hook.Add("HUDPaint", "CheckForCommanderStatus", function()
+hook.Add("HUDPaint", "ZC_CheckForCommanderStatus", function()
     if not COMMANDER_HINT.haveCheckedInitially then
         timer.Simple(5, function()
             CheckAndShowCommanderHint()
@@ -935,7 +935,7 @@ net.Receive("npc_defense_prepphase", function()
 end)
 
 
-hook.Add("OnLocalPlayerRoleChanged", "CheckCommanderRoleChange", function(oldRole, newRole)
+hook.Add("ZC_OnLocalPlayerRoleChanged", "ZC_CheckCommanderRoleChange", function(oldRole, newRole)
     if newRole == "Commander" and not COMMANDER_HINT.shownThisRound then
         ShowCommanderHint()
         COMMANDER_HINT.shownThisRound = true

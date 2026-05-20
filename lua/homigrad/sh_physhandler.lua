@@ -54,7 +54,7 @@ function IsReasonable( pos )
 	return true
 end
 
-hook.Add("OnCrazyPhysics","crazy_physics",function(ent, physobj)--function(a,msg,c,d, r,g,b)
+hook.Add("ZC_OnCrazyPhysics","ZC_HandleCrazyPhysics",function(ent, physobj)--function(a,msg,c,d, r,g,b)
 	ent:CollisionRulesChanged()
 
 	if physobj:IsValid() then

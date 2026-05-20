@@ -82,7 +82,7 @@ end
 
 local shadowControl = hg.ShadowControl
 
-hook.Add("Fake", "Contorl", function(ply, ragdoll)
+hook.Add("ZC_OnFakeRagdollCreated", "ZC_ResetFakeControlCooldowns", function(ply, ragdoll)
 	ragdoll.cooldownLH = 0
 	ragdoll.cooldownRH = 0
 end)
@@ -110,7 +110,7 @@ CreateConVar("zc_shitty_fake", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY, "enable shitty
 
 local player_GetHumans = player.GetHumans
 
-hook.Add("Think", "Fake", function()
+hook.Add("Think", "ZC_UpdateFakeRagdollControl", function()
 	hg.humans_cached = player_GetHumans()
 
 	//for ply, ragdoll in pairs(hg.ragdollFake) do
@@ -135,7 +135,7 @@ hook.Add("Think", "Fake", function()
 			end
 		end
 
-		if hook_Run("CanControlFake", ply, ragdoll) ~= nil then
+		if hook_Run("ZC_CanControlRagdoll", ply, ragdoll) ~= nil then
 			ply.lastFake = 0
 			//ply:SetNetVar("lastFake",0)
 			continue
@@ -718,7 +718,7 @@ hook.Add("Think", "Fake", function()
 				if zb then
 					local dmgInfo = DamageInfo()
 					dmgInfo:SetAttacker(ply)
-					hook.Run("HomigradDamage", org.owner, dmgInfo, HITGROUP_RIGHTARM, hg.GetCurrentCharacter(org.owner), ragdoll.dtime * ((zb.MaximumHarm or 10) / 50) )
+					hook.Run("ZC_OnOrganismDamage", org.owner, dmgInfo, HITGROUP_RIGHTARM, hg.GetCurrentCharacter(org.owner), ragdoll.dtime * ((zb.MaximumHarm or 10) / 50) )
 				end
 
 				if org.unconscious then
@@ -904,7 +904,7 @@ hook.Add("Think", "Fake", function()
 	end
 end)
 
-hook.Add("PlayerDeath", "homigrad-fake-control", function(ply)
+hook.Add("PlayerDeath", "ZC_ClearFakeControlOnDeath", function(ply)
 	local ragdoll = ply.FakeRagdoll
 	if not IsValid(ragdoll) then return end
 	if IsValid(ragdoll.ConsLH) then

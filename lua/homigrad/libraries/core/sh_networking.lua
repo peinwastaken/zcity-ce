@@ -12,7 +12,7 @@ if (CLIENT) then
 
     	zb.net.globals[key] = var
 
-        hook.Run("OnGlobalVarSet", key, var)
+        hook.Run("ZC_OnGlobalVarSet", key, var)
     end)
 
     net.Receive("zbNetVarSet", function()
@@ -27,7 +27,7 @@ if (CLIENT) then
 		-- print(index, key)
 		
 		if IsValid(Entity(index)) then
-			hook.Run("OnNetVarSet", index, key, var)
+			hook.Run("ZC_OnNetVarSet", index, key, var)
 		else
 			zb.net[index].waiting = true
 		end
@@ -44,7 +44,7 @@ if (CLIENT) then
     	zb.net[LocalPlayer():EntIndex()] = zb.net[LocalPlayer():EntIndex()] or {}
     	zb.net[LocalPlayer():EntIndex()][key] = var
 
-    	hook.Run("OnLocalVarSet", key, var)
+		hook.Run("ZC_OnLocalVarSet", key, var)
     end)
 
     function GetNetVar(key, default) -- luacheck: globals GetNetVar
@@ -65,7 +65,7 @@ if (CLIENT) then
 
     playerMeta.GetLocalVar = entityMeta.GetNetVar
 
-	hook.Add("InitPostEntity", "OnRequestFullUpdate_zb", function()
+	hook.Add("InitPostEntity", "ZC_OnRequestFullUpdateZb", function()
 		LocalPlayer():SyncVars()
 	end)
 
@@ -86,7 +86,7 @@ else
 	end)
 
 	gameevent.Listen( "OnRequestFullUpdate" )
-	hook.Add("OnRequestFullUpdate", "OnRequestFullUpdate_zb", function(data)
+	hook.Add("OnRequestFullUpdate", "ZC_OnRequestFullUpdateZb", function(data)
 		local id = data.userid
 		local ply = Player(id)
 		
@@ -246,11 +246,11 @@ else
     	end
     end
 	
-	hook.Add("EntityRemoved","ZB_clear_net",function(ent,fullUpdate)
+	hook.Add("EntityRemoved","ZC_ClearEntityNetVars",function(ent,fullUpdate)
 		ent:ClearNetVars()
 	end)
 
-	hook.Add("PlayerDisconnected","ZB_clear_net",function(ply)
+	hook.Add("PlayerDisconnected","ZC_ClearPlayerNetVarsOnDisconnect",function(ply)
 		ply:ClearNetVars()
 	end)
 end

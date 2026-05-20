@@ -44,13 +44,13 @@ net.Receive("setupclass", function()
 	ply:PlayerClassEvent("On", data)
 end)
 
-hook.Add("PostDrawAppearance", "PlayerClass", function(ent,ply) end)
+hook.Add("ZC_PostDrawAppearance", "ZC_PlayerClass", function(ent,ply) end)
 
 if CLIENT then
-	hook.Add("Player Think", "ClassPlyThink", function(ply, time, dtime)
+	hook.Add("ZC_PlayerThink", "ZC_ClassPlyThink", function(ply, time, dtime)
 		ply:PlayerClassEvent("Think", time, dtime)
 	end)
 end
 
---hook.Add("HGReloading", "PlayerClass", function(wep) wep:GetOwner():PlayerClassEvent("HGReloading", wep) end)
---hook.Add("PlayerFootstep", "PlayerClass", function(ply, pos, foot, sound, volume, rf) ply:PlayerClassEvent("PlayerFootstep", ply, pos, foot, sound, volume, rf) end)
+--hook.Add("ZC_OnWeaponReloading", "ZC_PlayerClass", function(wep) wep:GetOwner():PlayerClassEvent("HGReloading", wep) end)
+--hook.Add("PlayerFootstep", "ZC_PlayerClass", function(ply, pos, foot, sound, volume, rf) ply:PlayerClassEvent("PlayerFootstep", ply, pos, foot, sound, volume, rf) end)

@@ -258,7 +258,7 @@ end
 
 local function RenderOutlines()
 	
-	hook.Run( "SetupOutlines", Add )
+	hook.Run( "ZC_SetupOutlines", Add )
 	
 	if ( ListSize == 0 ) then return end
 	
@@ -268,7 +268,7 @@ local function RenderOutlines()
 	
 end
 
-hook.Add( "PreDrawViewModels", "RenderOutlines", function()
+hook.Add( "PreDrawViewModels", "ZC_RenderOutlines", function()
 	
 	if ( RenderType == OUTLINE_RENDERTYPE_BEFORE_VM ) then
 		
@@ -278,7 +278,7 @@ hook.Add( "PreDrawViewModels", "RenderOutlines", function()
 	
 end )
 
-hook.Add( "PreDrawEffects", "RenderOutlines", function()
+hook.Add( "PreDrawEffects", "ZC_RenderOutlines", function()
 	
 	if ( RenderType == OUTLINE_RENDERTYPE_BEFORE_EF ) then
 		
@@ -288,7 +288,7 @@ hook.Add( "PreDrawEffects", "RenderOutlines", function()
 	
 end )
 
-hook.Add( "PostDrawEffects", "RenderOutlines", function()
+hook.Add( "PostDrawEffects", "ZC_RenderOutlines", function()
 	
 	if ( RenderType == OUTLINE_RENDERTYPE_AFTER_EF ) then
 		

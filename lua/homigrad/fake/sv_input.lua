@@ -10,8 +10,8 @@ concommand.Add("fake", function(ply)
 	end
 end)
 
-hook.Add("PlayerInitialSpawn", "PlayerColideCallback", function(ply) ply:AddCallback("PhysicsCollide", function(phys, data) hook.Run("PlayerCollide", ply, data.HitEntity, data) end) end)
-hook.Add("PlayerCollide", "Fake", function(ply, ent, data)
+hook.Add("PlayerInitialSpawn", "ZC_PlayerCollideCallback", function(ply) ply:AddCallback("PhysicsCollide", function(phys, data) hook.Run("ZC_PlayerCollide", ply, data.HitEntity, data) end) end)
+hook.Add("ZC_PlayerCollide", "ZC_HandleFakeRagdollPropCollision", function(ply, ent, data)
 	if (not ent:IsPlayerHolding()) and data.Speed > math.max(700 - ent:GetPhysicsObject():GetMass(), 200) and ent:GetPhysicsObject():GetMass() > 20 and ent:GetClass() ~= "prop_ragdoll" and ent:GetPhysicsObject():GetVelocity():Length() > 50 then		--[[local d = DamageInfo()
 		d:SetDamageType(DMG_CRUSH)
 		d:SetAttacker(data.HitEntity)
@@ -24,7 +24,7 @@ hook.Add("PlayerCollide", "Fake", function(ply, ent, data)
 	end
 end)
 
-hook.Add("OnPlayerHitGround","fallStun",function(ply,inwater,onfloater,speed)
+hook.Add("OnPlayerHitGround","ZC_FallStun",function(ply,inwater,onfloater,speed)
 	if IsValid(ply.FakeRagdoll) then return true end
 	local tr = {}
 	tr.start = ply:GetPos()

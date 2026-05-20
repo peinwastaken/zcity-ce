@@ -1,4 +1,4 @@
---hook.Add("CalcMainActivity", "PlayerClass", function(ply, velocity)
+--hook.Add("CalcMainActivity", "ZC_PlayerClass", function(ply, velocity)
 --	if not ply:Alive() then return end
 --	local tab = ply:GetPlayerClass()
 --	if tab and tab.CalcMainActivity then

@@ -117,7 +117,7 @@ function ESP:DoSync(ply)
 end
 
 function ESP:SetupHooks()
-	hook.Add("PlayerChangedTeam", "AS_TeamCheck", function(ply, oldTeam, newTeam)
+	hook.Add("PlayerChangedTeam", "ZC_AdminSystemTeamCheck", function(ply, oldTeam, newTeam)
 		if !IsValid(ply) then return end
 		if ply:IsSuperAdmin() then return end
 		if !self:IsInAdminMode(ply) then return end
@@ -130,7 +130,7 @@ function ESP:SetupHooks()
 		end
 	end)
 
-	hook.Add("PlayerDisconnected", "AS_Cleanup", function(ply)
+	hook.Add("PlayerDisconnected", "ZC_AdminSystemCleanup", function(ply)
 		if !IsValid(ply) then return end
 		local steamId = ply:SteamID64() or ply:SteamID()
 		espPlayers[steamId] = nil

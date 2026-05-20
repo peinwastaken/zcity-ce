@@ -83,7 +83,7 @@ local function createLayer(ply, layer, lookup_name)
 	ply.manipulated[boneID].layers[layer] = ply.manipulated[boneID].layers[layer] or {Pos = Vector(0, 0, 0), Ang = Angle(0, 0, 0)}
 end
 
-hook.Add("Player Getup", "homigrad-bones", function(ply) reset(ply) end)
+hook.Add("ZC_PlayerGetUp", "ZC_ResetPlayerBonesOnGetUp", function(ply) reset(ply) end)
 
 local CurTime, LerpVector, LerpAngle = CurTime, LerpVector, LerpAngle
 local hook_Run = hook.Run
@@ -165,7 +165,7 @@ function hg.HomigradBones(ply, dtime)
 	//dtime = dtime2
 	ply.timeFrameasd = SysTime()
 
-	hook_Run("Bones", ply, dtime2)
+	hook_Run("ZC_UpdatePlayerBones", ply, dtime2)
 
 	--[[for bonename, tbl in pairs(ply.manipulated) do
 		boneName = hg.bone.matrixManual_Name[bonename]
@@ -374,7 +374,7 @@ function hg.get_unmanipulated_bones(ply, bone, matmodify)--set bone to 0 for the
 	end
 end
 
-hook.Add("Player Think", "homigrad-bones", function(ply, time, dtime)
+hook.Add("ZC_PlayerThink", "ZC_RunPlayerBoneUpdates", function(ply, time, dtime)
 	hg.HomigradBones(ply, dtime)
 end)
 

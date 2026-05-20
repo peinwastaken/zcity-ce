@@ -1,6 +1,6 @@
 local clr_inv, clr_inv_selected = Color(20, 0, 0, 200), Color(90, 0, 0, 200)
 local type = type
-hook.Add("PlayerButtonDown", "NI_PlayerButtonDown", function(ply, key)
+hook.Add("PlayerButtonDown", "ZC_NewInventoryPlayerButtonDown", function(ply, key)
 	if GetGlobalBool("RadialInventory", false) and key == KEY_1 and ply.organism and not ply.organism.unconscious then
 		local tbl1 = {}
 		local weps = ply:GetWeapons()
@@ -24,7 +24,7 @@ hook.Add("PlayerButtonDown", "NI_PlayerButtonDown", function(ply, key)
 	end
 end)
 
-hook.Add("PlayerButtonUp", "NI_PlayerButtonUp", function(ply, key)
+hook.Add("PlayerButtonUp", "ZC_NewInventoryPlayerButtonUp", function(ply, key)
 	if GetGlobalBool("RadialInventory", false) and key == KEY_1 then
 		hg.PressRadialMenu(1)
 	end

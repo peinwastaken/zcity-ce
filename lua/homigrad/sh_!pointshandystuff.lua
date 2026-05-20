@@ -6,7 +6,7 @@ if (CLIENT) then
     --sw and sh as global variables
     sw, sh = ScrW(), ScrH()
 
-    hook.Add( "OnScreenSizeChanged", "sw_sh_globals", function()
+    hook.Add( "OnScreenSizeChanged", "ZC_UpdateScreenGlobals", function()
         sw, sh = ScrW(), ScrH()
     end)
 

@@ -118,7 +118,7 @@ local limbs = {
 	["rarm"] = "ValveBiped.Bip01_R_Forearm",
 }
 
-hook.Add("HG_OrganismChanged", "explodelegs", function(oldorg, org)
+hook.Add("ZC_OnOrganismChanged", "ZC_SpawnAmputationBloodBurst", function(oldorg, org)
 	local ply = org.owner
 	local ent = hg.GetCurrentCharacter(ply)
 

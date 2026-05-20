@@ -51,7 +51,7 @@ if SERVER then
 		end
 	end
 
-	hook.Add("OnEntityCreated", "drum_spawn", function(ent) timer.Simple(0, function() addDrum(ent) end) end)
+	hook.Add("OnEntityCreated", "ZC_DrumSpawn", function(ent) timer.Simple(0, function() addDrum(ent) end) end)
 end
 
 if SERVER then
@@ -60,18 +60,18 @@ if SERVER then
 
 	local time = CurTime()
 	local CurTime = CurTime
-	hook.Add("Think", "drum_think", function()
+	hook.Add("Think", "ZC_DrumThink", function()
 		if time > CurTime() then return end
 		time = time + 0.1
 
 		for i, drum in pairs(hg.drums) do
-			hook.Run("Drum Think", i, drum)
+			hook.Run("ZC_LiquidDrumThink", i, drum)
 		end
 	end)
 
 	local time2 = CurTime()
 	local ents_FindInSphere = ents.FindInSphere
-	hook.Add("Think", "path_think", function()
+	hook.Add("Think", "ZC_PathThink", function()
 		if time2 > CurTime() then return end
 		time2 = time2 + 1
 
@@ -107,7 +107,7 @@ if SERVER then
 		net.Broadcast()
 	end)
 
-	hook.Add("PostCleanupMap","removetrailsofevidence",function()
+	hook.Add("PostCleanupMap","ZC_ClearLiquidTrails",function()
 		hg.drums = {}
 		hg.drums2 = {}
 		hg.gasolinePath = {}
@@ -115,7 +115,7 @@ if SERVER then
 
 	local vecTemp = Vector(0, 0, 0)
 
-	hook.Add("Drum Think", "Main", function(i, drum)
+	hook.Add("ZC_LiquidDrumThink", "ZC_UpdateLiquidDrum", function(i, drum)
 		local ent = drum.Entity
 
 		if not IsValid(ent) then
@@ -203,7 +203,7 @@ if SERVER then
 		end
 	end)
 
-	hook.Add("EntityRemoved", "drum_removed", function(ent)
+	hook.Add("EntityRemoved", "ZC_DrumRemoved", function(ent)
 		local drum = hg.drums[ent:EntIndex()]
 		if drum then
 			if drum.loopsound then
@@ -214,7 +214,7 @@ if SERVER then
 		table.RemoveByValue(hg.drums2, ent)
 	end)
 
-	hook.Add("ExplosivesTakeDamage", "drum_damage", function(ent, dmgInfo)
+	hook.Add("ZC_ExplosivesTakeDamage", "ZC_DrumDamage", function(ent, dmgInfo)
 		if !hg.drums[ent:EntIndex()] then return end
 		if !(dmgInfo:IsDamageType(DMG_BULLET + DMG_BUCKSHOT) or (dmgInfo:IsDamageType(DMG_SLASH) and dmgInfo:GetDamage() >= 25)) then return end
 
@@ -250,7 +250,7 @@ else
 		end
 	end)
 
-	hook.Add("PreDrawEffects","fireeffects",function()
+	hook.Add("PreDrawEffects","ZC_Fireeffects",function()
 		for i, tbl in ipairs(hg.gasolinePath) do
 
 			local effparticles = hg.effparticles
@@ -273,7 +273,7 @@ else
 		end
 	end)
 
-	hook.Add("PostCleanupMap","removetrailsofevidence",function()
+	hook.Add("PostCleanupMap","ZC_ClearLiquidTrails",function()
 		hg.gasolinePath = {}
 
 		for _, eff in pairs(hg.effparticles) do
@@ -283,7 +283,7 @@ else
 		end
 	end)
 
-	hook.Add("HUDPaint","drum_client",function()
+	hook.Add("HUDPaint","ZC_DrumClient",function()
 		if true then return end
 
         for i, drum in pairs(hg.drums) do

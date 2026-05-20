@@ -42,7 +42,7 @@ hg.amputeetable = {
 	//[HITGROUP_HEAD] = 0.5
 }--]]
 
-hook.Add("ScalePlayerDamage", "remove-effects", function(ent, hitgroup, dmgInfo)
+hook.Add("ScalePlayerDamage", "ZC_RemoveEffects", function(ent, hitgroup, dmgInfo)
 	if dmgInfo:IsDamageType(DMG_BUCKSHOT + DMG_BULLET + DMG_SLASH) then
 		return true
 	end
@@ -95,20 +95,20 @@ local mat2 = Material("vgui/gradient-d")
 local ang1 = Angle()
 local ang2 = Angle()
 
-hook.Add("HUDShouldDraw", "hg.HUDShouldDraw", function(id)
+hook.Add("HUDShouldDraw", "ZC_HUDShouldDraw", function(id)
 	if (fakeTimer and fakeTimer - 2 > CurTime()) then
 		return false
 	end
 end)
 
-hook.Add("HG_OnUnconscious", "adsadsadhuy!!", function(ply)
+hook.Add("ZC_OnPlayerUnconscious", "ZC_StartUnconsciousSoundFade", function(ply)
 	if ply == LocalPlayer() then
 		lply:SetDSP(17)
 		plyCommand(lply,"soundfade 100 99999")
 	end
 end)
 
-hook.Add("Player_Death", "adsadsadhuy!!", function(ply)
+hook.Add("ZC_PlayerDeath", "ZC_StartUnconsciousSoundFade", function(ply)
 	if ply == LocalPlayer() then
 		lply:SetDSP(17)
 		plyCommand(lply,"soundfade 100 99999")
@@ -136,7 +136,7 @@ end
 
 local disorientationLerp = 0
 
-hook.Add("Player Spawn", "screenshot_game", function(ply)
+hook.Add("ZC_PlayerSpawn", "ZC_ScreenshotGame", function(ply)
 	if OverrideSpawn then return end
 
 	if ply == lply then
@@ -155,15 +155,15 @@ hook.Add("Player Spawn", "screenshot_game", function(ply)
 	end
 end)
 
-hook.Add("InitPostEntity", "removeshits", function()
+hook.Add("InitPostEntity", "ZC_RemoveStatusScreens", function()
 	remove_imgs()
 end)
 
-hook.Add("Player Disconnected", "removeshits", function()
+hook.Add("ZC_PlayerDisconnected", "ZC_RemoveStatusScreens", function()
 	remove_imgs()
 end)
 
-hook.Add("radialOptions", "DislocatedJoint", function()
+hook.Add("ZC_RadialOptions", "ZC_DislocatedJoint", function()
     if !lply:Alive() or !lply.organism or lply.organism.unconscious then return end
 	if (lply.tried_fixing_limb or 0) > CurTime() then return end
 	local org = lply.organism
@@ -194,7 +194,7 @@ hook.Add("radialOptions", "DislocatedJoint", function()
     end
 end)
 
-hook.Add("radialOptions", "DislocatedJoint2", function()
+hook.Add("ZC_RadialOptions", "ZC_DislocatedJoint2", function()
     if !lply:Alive() or !lply.organism or lply.organism.unconscious then return end
 	if (lply.tried_fixing_limb or 0) > CurTime() then return end
 	local org = lply.organism
@@ -225,7 +225,7 @@ hook.Add("radialOptions", "DislocatedJoint2", function()
     end
 end)
 
-hook.Add("radialOptions", "DislocatedJaw", function()
+hook.Add("ZC_RadialOptions", "ZC_DislocatedJaw", function()
     if !lply:Alive() or !lply.organism or lply.organism.unconscious then return end
 	if (lply.tried_fixing_limb or 0) > CurTime() then return end
 	local org = lply.organism
@@ -256,7 +256,7 @@ hook.Add("radialOptions", "DislocatedJaw", function()
     end
 end)
 
-hook.Add("PostRender", "screenshot_think", function()
+hook.Add("PostRender", "ZC_ScreenshotThink", function()
 	local org = lply.organism
 
 	if not org or not org.brain or org.unconscious or !lply:Alive() then return end
@@ -296,7 +296,7 @@ local braindeathstart = CurTime() + 20
 local lerpedpart = 0
 local lerpedbrain = 0
 
-hook.Add("Post Post Pre Post Processing", "ShowScreens", function()
+hook.Add("ZC_AfterPostProcessingDraw", "ZC_ShowScreens", function()
 	local org = lply.organism
 
 	if !lply:Alive() then return end
@@ -335,7 +335,7 @@ local zc_potatopc
 local old = false
 local tinnitusSoundFactor
 local zc_gopro = ConVarExists("zc_gopro") and GetConVar("zc_gopro") or CreateClientConVar("zc_gopro", "0", true, false, "Toggle GoPro-like first-person camera view", 0, 1)
-hook.Add("Post Post Pre Post Processing", "organism-effects", function()
+hook.Add("ZC_AfterPostProcessingDraw", "ZC_OrganismEffects", function()
 	local spect = IsValid(lply:GetNWEntity("spect")) and lply:GetNWEntity("spect")
 	local organism = lply:Alive() and lply.organism or (viewmode == 1 and IsValid(spect) and spect.organism) or {}
 	local new_organism = lply:Alive() and lply.new_organism or (viewmode == 1 and IsValid(spect) and spect.new_organism) or {}
@@ -344,7 +344,7 @@ hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 
 	if organism.owner == LocalPlayer() then
 		if new_organism.unconscious and !old then
-			hook.Run("HG_OnUnconscious", new_organism.owner)
+			hook.Run("ZC_OnPlayerUnconscious", new_organism.owner)
 		end
 
 		old = new_organism.unconscious
@@ -379,7 +379,7 @@ hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 	local incapacitated = org.incapacitated or false
 	local critical = org.critical or false
 	tinnitusSoundFactor = Lerp(FrameTime()*2.5,tinnitusSoundFactor or 0, math.min(math.max( lply.tinnitus and (lply.tinnitus - CurTime()) or 0, 0)*7.5,120))
-	local tinnitusSoundFactor2 = tinnitusSoundFactor + (hook.Run("ModifyTinnitusFactor", tinnitusSoundFactor) or 0)
+	local tinnitusSoundFactor2 = tinnitusSoundFactor + (hook.Run("ZC_ModifyTinnitusFactor", tinnitusSoundFactor) or 0)
 
 	--print(lply.tinnitus)
 
@@ -572,7 +572,7 @@ hook.Add("Post Post Pre Post Processing", "organism-effects", function()
 	end
 end)
 
-hook.Add("OnNetVarSet","wounds_netvar",function(index, key, var)
+hook.Add("ZC_OnNetVarSet","ZC_WoundsNetVar",function(index, key, var)
 	if key == "wounds" then
 		local ent = Entity(index)
 		--local ent = hg.RagdollOwner(ent) or ent
@@ -595,7 +595,7 @@ hook.Add("OnNetVarSet","wounds_netvar",function(index, key, var)
 	end
 end)
 
-hook.Add("OnNetVarSet","wounds_netvar2",function(index, key, var)
+hook.Add("ZC_OnNetVarSet","ZC_WoundsNetVar2",function(index, key, var)
 	if key == "arterialwounds" then
 		local ent = Entity(index)
 		--local ent = hg.RagdollOwner(ent) or ent
@@ -618,14 +618,14 @@ hook.Add("OnNetVarSet","wounds_netvar2",function(index, key, var)
 	end
 end)
 
-hook.Add("Player Spawn", "removewounds", function(ply)
+hook.Add("ZC_PlayerSpawn", "ZC_RemoveWounds", function(ply)
 	if OverrideSpawn then return end
 
 	ply.wounds = {}
 	ply.arterialwounds = {}
 end)
 
-hook.Add("Fake", "huyhuyhuy235", function(ply,ragdoll)
+hook.Add("ZC_OnFakeRagdollCreated", "ZC_TransferWoundsToRagdoll", function(ply,ragdoll)
 	if not IsValid(ragdoll) then return end
 
 	ragdoll.wounds = ply.wounds
@@ -663,7 +663,7 @@ local muffedClasses = {
 
 local zc_heartbeat_volume = ConVarExists("zc_heartbeat_volume") and GetConVar("zc_heartbeat_volume") or CreateClientConVar("zc_heartbeat_volume", 1, true, nil, "heartbeat loudness", 0, 4)
 
-hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, ent, time)
+hook.Add("ZC_PlayerRagdollThink", "ZC_OrganismThinkClientBlood", function(ply, ent, time)
 	--local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
 	--print(ply,ent,ply.organism.owner,ply.new_organism.owner)
 	local organism = ply.organism
@@ -1028,7 +1028,7 @@ end
 local prank = {}
 local time_troll = 100
 
-hook.Add("HG.InputMouseApply","zzzzzzzzzzzzbrain_death",function(tbl)
+hook.Add("ZC_InputMouseApply","ZC_BrainDeathMouseInput",function(tbl)
 
 
 	if lply:Alive() and lply.organism and (lply.organism.brain or 0) > 0.1 then

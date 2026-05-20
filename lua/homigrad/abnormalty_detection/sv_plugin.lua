@@ -77,7 +77,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 		end
 	end
 
-	hook.Add("DatabaseConnected", "AbnormaltiesSQL", function()
+	hook.Add("ZC_OnDatabaseConnected", "ZC_AbnormalitiesSQL", function()
 		local query = mysql:Create("abnormalties_player_info")
 			query:Create("steamid", "VARCHAR(20) NOT NULL")
 			query:Create("consequences", "INTEGER NOT NULL")
@@ -93,7 +93,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 		query:Execute()
 	end)
 
-	hook.Add("PlayerInitialSpawn", "AbnormaltiesSQL", function(ply)
+	hook.Add("PlayerInitialSpawn", "ZC_AbnormalitiesSQL", function(ply)
 		PLUGIN.LoadConsequences(ply, true)
 	end)
 --//
@@ -125,7 +125,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 		end
 	end
 
-	hook.Add("Think", "Abnormalties_SQLSave", function()
+	hook.Add("Think", "ZC_AbnormalitiesSQLSave", function()
 		for steam_id_64, stats in pairs(PLUGIN.PlayerStats) do
 			local ply = PLUGIN.PlayerStatsPlayers[steam_id_64]
 
@@ -154,7 +154,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 		end
 	end)
 
-	hook.Add("PlayerDisconnected", "Abnormalties_SQLSave", function(ply)
+	hook.Add("PlayerDisconnected", "ZC_AbnormalitiesSQLSave", function(ply)
 		if(ply.AbnormaltiesReady)then
 			local steam_id_64 = ply:SteamID64()
 			local stats = PLUGIN.PlayerStats[steam_id_64]
@@ -391,7 +391,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 			return 1
 		end
 
-		hook.Add("PlayerPostThink", "Abnormalties_Consequences", function(ply)
+		hook.Add("PlayerPostThink", "ZC_AbnormalitiesConsequences", function(ply)
 			if(ply.AbnormaltiesReady)then
 				ply.AbnormaltiesConsequencesLastThink = ply.AbnormaltiesConsequencesLastThink or CurTime()
 				local delta_time = CurTime() - ply.AbnormaltiesConsequencesLastThink
@@ -880,7 +880,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 							for abnormalty_name, amt in pairs(abnormalty) do
 								zone.Abnormalties[abnormalty_name] = (zone.Abnormalties[abnormalty_name] or 0) + amt
 
-								hook.Run("Abnormalties_HotZoneAbnormaltyAdded", zone_id, abnormalty_name, amt, ply)
+								hook.Run("ZC_OnHotZoneAbnormalityAdded", zone_id, abnormalty_name, amt, ply)
 							end
 						end
 					end)
@@ -989,7 +989,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 					for abnormalty_name, amt in pairs(abnormalty) do
 						zone.Abnormalties[abnormalty_name] = (zone.Abnormalties[abnormalty_name] or 0) + amt
 
-						hook.Run("Abnormalties_HotZoneAbnormaltyAdded", zone_id, abnormalty_name, amt, ply)
+						hook.Run("ZC_OnHotZoneAbnormalityAdded", zone_id, abnormalty_name, amt, ply)
 					end
 				end
 			end)
@@ -1007,7 +1007,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 			end
 		end
 
-		hook.Add("Abnormalties_HotZoneAbnormaltyAdded", "Abnormalties", function(zone_id, abnormalty_name, amt, ply)
+		hook.Add("ZC_OnHotZoneAbnormalityAdded", "ZC_Abnormalities", function(zone_id, abnormalty_name, amt, ply)
 			local zone = PLUGIN.Zones[zone_id]
 
 			if(amt > 0)then
@@ -1022,12 +1022,12 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 		PLUGIN.CreateRandomCharInfo(65 + 32, 90 + 32)
 		PLUGIN.CreateRandomCharInfo(1040 + 32, 1071 + 32)
 
-		hook.Run("Abnormalties_RandomizeCharInfos")
+		hook.Run("ZC_RandomizeAbnormalityCharacterInfo")
 	end
 --//
 
 --\\Special Equipment
-	hook.Add("PreHomigradDamage", "Abnormalties_SpecialEquipment", function(ply, dmg, hitgroup, ent, harm)
+	hook.Add("ZC_PreOrganismDamage", "ZC_AbnormalitiesSpecialEquipment", function(ply, dmg, hitgroup, ent, harm)
 		if(ply.armors)then
 			if(ply.armors["torso"] == "ego_equalizer")then
 				if(dmg:IsDamageType(DMG_BULLET + DMG_BUCKSHOT))then
@@ -1039,7 +1039,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 		end
 	end)
 
-	hook.Add("PreTraceOrganBulletDamage", "Abnormalties_SpecialEquipment", function(org, bone, dmg, dmgInfo, box, dir, hit, ricochet, organ, hook_info)
+	hook.Add("ZC_PreTraceOrganBulletDamage", "ZC_AbnormalitiesSpecialEquipment", function(org, bone, dmg, dmgInfo, box, dir, hit, ricochet, organ, hook_info)
 		local ply = org.owner
 
 		if(IsValid(ply) and ply.armors)then
@@ -1053,7 +1053,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 		end
 	end)
 
-	hook.Add("PreHomigradDamageBulletBleedAdd", "Abnormalties_SpecialEquipment", function(ent, org, dmgInfo, hitgroup, harm, hitBoxs, inputHole, hook_info)
+	hook.Add("ZC_PreOrganismBulletBleedAdd", "ZC_AbnormalitiesSpecialEquipment", function(ent, org, dmgInfo, hitgroup, harm, hitBoxs, inputHole, hook_info)
 		local ply = org.owner
 
 		if(IsValid(ply) and ply.armors)then
@@ -1076,18 +1076,18 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 			coroutine.yield()
 		end
 
-		hook.Remove("Think", "temp_Abnormalties")
+		hook.Remove("Think", "ZC_TempAbnormalities")
 
 		PLUGIN.NextZoneCheck = CurTime() + PLUGIN.ZoneCheckCD
 	end
 
 	local coroutine_think = nil
 
-	hook.Add("Think", "Abnormalties", function()
+	hook.Add("Think", "ZC_Abnormalities", function()
 		if(!PLUGIN.NextZoneCheck or PLUGIN.NextZoneCheck <= CurTime())then
 			PLUGIN.NextZoneCheck = CurTime() + 100
 
-			hook.Add("Think", "temp_Abnormalties", function()
+			hook.Add("Think", "ZC_TempAbnormalities", function()
 				if not coroutine_think or not coroutine.resume(coroutine_think) then
 					coroutine_think = coroutine.create(coroutine_think_func)
 
@@ -1097,7 +1097,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 		end
 	end)
 
-	hook.Add("PostCleanupMap", "Abnormalties", function()
+	hook.Add("PostCleanupMap", "ZC_Abnormalities", function()
 		PLUGIN.HotWords = {}
 		PLUGIN.Zones = {}
 		PLUGIN.HotZones = {}
@@ -1115,7 +1115,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 		PLUGIN.RandomizeCharInfos()
 	end
 
-	hook.Add("HG_PlayerSay", "Abnormalties", function(ply, txtTbl, text)
+	hook.Add("ZC_OnPlayerSay", "ZC_Abnormalities", function(ply, txtTbl, text)
 		if(GetGlobalBool("AbnormaltiesEnabled", false) and IsValid(ply))then
 			if(ply:Alive())then
 				-- local id = data.userid
@@ -1232,7 +1232,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 		end
 	end)
 
-	hook.Add("HomigradDamage", "Abnormalties_Equalizers", function(ply, dmg, hitgroup, ent, harm)
+	hook.Add("ZC_OnOrganismDamage", "ZC_AbnormalitiesEqualizers", function(ply, dmg, hitgroup, ent, harm)
 		if(!ply.AbnormaltiesDoNotCountEqualizers)then
 			if(!IsValid(ply.FakeRagdoll))then
 				ply.Abnormalties_Equalizers = (ply.Abnormalties_Equalizers or 0) + dmg:GetDamage() * 1
@@ -1246,7 +1246,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 		-- ply:ChatPrint(ply.Abnormalties_Equalizers)
 	end)
 
-	hook.Add("HG_BloodParticleStartedDropping", "Abnormalties", function(owner, org, wound, dir, artery)
+	hook.Add("ZC_OnBloodParticleStartedDropping", "ZC_Abnormalities", function(owner, org, wound, dir, artery)
 		if(GetGlobalBool("AbnormaltiesEnabled", false) and IsValid(owner))then
 			local ent = owner:IsPlayer() and IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or owner
 			local pos, _ = ent:GetBonePosition(ent:LookupBone(wound[4]))

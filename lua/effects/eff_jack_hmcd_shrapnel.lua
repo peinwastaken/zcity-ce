@@ -70,7 +70,7 @@ function EFFECT:Init(data)
 	Emitter:Finish()
 end
 
-hook.Add("PostCleanupMap","RemoveParticlesShrapnel",function()
+hook.Add("PostCleanupMap","ZC_RemoveParticlesShrapnel",function()
 	for i = 0, #parts do
 		if parts[i] and parts[i].SetDieTime then
 			parts[i]:SetDieTime(0.1)

@@ -98,7 +98,7 @@ if SERVER then
 		if owner.injectedinto[org.owner] > 1 and injected > 0 then
 			local dmgInfo = DamageInfo()
 			dmgInfo:SetAttacker(owner)
-			hook.Run("HomigradDamage", org.owner, dmgInfo, HITGROUP_RIGHTARM, hg.GetCurrentCharacter(org.owner), injected * (zb.MaximumHarm or 10))
+			hook.Run("ZC_OnOrganismDamage", org.owner, dmgInfo, HITGROUP_RIGHTARM, hg.GetCurrentCharacter(org.owner), injected * (zb.MaximumHarm or 10))
 		end
 
 		if self.poisoned2 then

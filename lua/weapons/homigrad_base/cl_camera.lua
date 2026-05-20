@@ -18,7 +18,7 @@ local zc_realismcam = ConVarExists("zc_realismcam") and GetConVar("zc_realismcam
 local zoomPosSetter = Vector()
 local isSettingZoom = false
 
-hook.Add("HG.InputMouseApply", "HGZoomPositionEditor", function(tbl)
+hook.Add("ZC_InputMouseApply", "ZC_ZoomPositionEditor", function(tbl)
 	if IsValid(lply) and lply:IsSuperAdmin() and zc_setzoompos:GetBool() and lply:KeyDown(IN_ATTACK2) then
 		zoomPosSetter:Add(Vector(tbl.cmd:GetMouseWheel(), -tbl.x / 500, -tbl.y / 500))
 		local str = "SWEP.ZoomPos = Vector("..math.Round(zoomPosSetter[1], 4)..", "..math.Round(zoomPosSetter[2], 4)..", "..math.Round(zoomPosSetter[3], 4)..")"
@@ -109,7 +109,7 @@ function SWEP:Blur(x,y,w,z)
 	return blurtbl
 end
 
-hook.Add("HUDPaint","drawWeaponHUD",function()
+hook.Add("HUDPaint","ZC_DrawWeaponHUD",function()
 	if lply:Alive() then return end
 	local ply = lply:GetNWEntity("spect", lply)
 	if not IsValid(ply) or not ply:IsPlayer() or viewmode != 1 or ply == lply then return end
@@ -324,7 +324,7 @@ local green = Color(100, 250, 100)
 local blue = Color(100, 100, 250)
 local sv_cheats = GetConVar("sv_cheats")
 local pos, wep, lply
-hook.Add("HUDPaint", "homigrad-test-att", function()
+hook.Add("HUDPaint", "ZC_DrawWeaponMuzzleDebug", function()
 	lply = LocalPlayer()
 	if not zc_show_hitposmuzzle:GetBool() or (zc_show_hitposmuzzle:GetBool() and not (sv_cheats:GetBool() or lply:IsAdmin() or lply:IsSuperAdmin())) then return end
 	wep = lply:GetActiveWeapon()

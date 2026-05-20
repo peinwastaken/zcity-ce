@@ -327,8 +327,8 @@ end
 
 vgui.Register( "ZMainMenu", PANEL, "ZFrame")
 
-hook.Add("OnPauseMenuShow","OpenMainMenu",function()
-    local run = hook.Run("OnShowZCityPause")
+hook.Add("OnPauseMenuShow","ZC_OpenMainMenu",function()
+    local run = hook.Run("ZC_OnShowPause")
     if run != nil then
         return run
     end

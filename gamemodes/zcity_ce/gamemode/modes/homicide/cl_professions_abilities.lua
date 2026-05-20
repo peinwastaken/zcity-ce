@@ -57,7 +57,7 @@ function MODE.RemoveFootstep(footstep_key)
 end
 --//
 
-hook.Add("PostDrawTranslucentRenderables", "HMCD_Professions_Abilities", function()
+hook.Add("PostDrawTranslucentRenderables", "ZC_ProfessionsAbilities", function()
 	local view = render.GetViewSetup(true)
 	local ply_pos = view.origin
 	local ply_angs = view.angles
@@ -128,7 +128,7 @@ hook.Add("PostDrawTranslucentRenderables", "HMCD_Professions_Abilities", functio
 	end
 end)
 
-hook.Add("Think", "HMCD_Professions_Abilities", function()
+hook.Add("Think", "ZC_ProfessionsAbilities", function()
 	if(MODE.CoroutineFootStepsArrangement)then
 		if(!coroutine.resume(MODE.CoroutineFootStepsArrangement))then
 			MODE.CoroutineFootStepsArrangement = nil
@@ -137,7 +137,7 @@ hook.Add("Think", "HMCD_Professions_Abilities", function()
 	end
 end)
 
-hook.Add("PostCleanupMap", "HMCD_Professions_Abilities", function()
+hook.Add("PostCleanupMap", "ZC_ProfessionsAbilities", function()
 	MODE.FootSteps = {}
 	MODE.ArrangedFootSteps = {}
 	MODE.FootStepsAmt = 0
@@ -155,7 +155,7 @@ local function createMolotov()
 	RunConsoleCommand("hg_create_molotov")
 end
 
-hook.Add("radialOptions", "EngineerCraft", function()
+hook.Add("ZC_RadialOptions", "ZC_EngineerCraft", function()
     local ply = LocalPlayer()
     local organism = ply.organism or {}
 

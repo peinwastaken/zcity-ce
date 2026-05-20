@@ -176,7 +176,7 @@ if SERVER then
         net.Send(ply)
     end)
 
-    hook.Add("PlayerDeath","ZB_GiveKills", function(ply)
+    hook.Add("PlayerDeath","ZC_GiveExperienceForKills", function(ply)
         timer.Simple(.1,function()
             if not IsValid(ply) then return end
             local most_harm,biggest_attacker = 0,nil

@@ -360,7 +360,7 @@ function DrawAppearance(ent, ply, setup)
 	end
 end
 
-hook.Add("RenderScreenspaceEffects","AppearanceShitty",function()
+hook.Add("RenderScreenspaceEffects","ZC_RenderAccessoryScreenEffects",function()
 	if (not LocalPlayer():Alive()) or LocalPlayer():GetViewEntity() ~= LocalPlayer() then return end
 	local ply = LocalPlayer()
 	local acsses = ply:GetNetVar("Accessories", "none")

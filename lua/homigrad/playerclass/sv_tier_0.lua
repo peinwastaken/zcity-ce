@@ -32,7 +32,7 @@ function Player:GiveSwep(list, mulClip1) -- improved tdm.GiveSwep
 end
 
 util.AddNetworkString("setupclass")
-hook.Add("PlayerInitializeSpawn", "PlayerClass", function(plySend)
+hook.Add("ZC_OnPlayerInitializeSpawn", "ZC_PlayerClass", function(plySend)
 	for _, ply in player.Iterator() do
 		if not ply:GetPlayerClass() then continue end
 		net.Start("setupclass")
@@ -43,12 +43,12 @@ hook.Add("PlayerInitializeSpawn", "PlayerClass", function(plySend)
 	end
 end)
 
-hook.Add("PostPostPlayerDeath", "PlayerClass", function(ply, ragdoll)
+hook.Add("ZC_AfterPostPlayerDeath", "ZC_PlayerClass", function(ply, ragdoll)
 	ply:PlayerClassEvent("PlayerDeath")
 	ply:SetPlayerClass()
 end)
 
-hook.Add("Player Think", "ClassPlyThink", function(ply, time, dtime)
+hook.Add("ZC_PlayerThink", "ZC_ClassPlyThink", function(ply, time, dtime)
 	ply:PlayerClassEvent("Think", time, dtime)
 end)
 

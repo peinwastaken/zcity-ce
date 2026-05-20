@@ -13,7 +13,7 @@ net.Receive("organism_send", function()
 	end
 
 	if add and org.owner.organism and org.owner.new_organism then
-		hook.Run("HG_OrganismChanged", org.owner.organism, org)
+		hook.Run("ZC_OnOrganismChanged", org.owner.organism, org)
 
 		table.Merge(org.owner.organism, org, true)
 		table.Merge(org.owner.new_organism, org, true)
@@ -51,7 +51,7 @@ net.Receive("organism_send", function()
 	--print(collectgarbage("collect"))
 end)
 
-hook.Add("Player_Death","removeorg",function(ply)
+hook.Add("ZC_PlayerDeath","ZC_RemoveOrganism",function(ply)
 	ply.organism = nil
 	ply.new_organism = nil
 
@@ -267,7 +267,7 @@ local littleblack = Color(75, 75, 75, 255)
 local trahalgmod = Color(0, 0, 0, 75)
 local weight = 200
 local zc_stats = GetConVar("zc_stats") or CreateClientConVar("zc_stats", 1, true, false, "show stats", 0, 1)
-hook.Add("HUDPaint", "homigrad-organism-debug", function()
+hook.Add("HUDPaint", "ZC_DrawOrganismDebugHud", function()
 
 	local spect = IsValid(lply:GetNWEntity("spect")) and lply:GetNWEntity("spect")
 	local organism = lply:Alive() and lply.organism or (viewmode == 1 and IsValid(spect) and spect.organism) or {}
@@ -426,7 +426,7 @@ local function startPlayingHit(i)
 	timeHuy = 0
 end
 
-hook.Add("Player_Death","wowww",function(ply)
+hook.Add("ZC_PlayerDeath","ZC_PlayQueuedHitEffectsOnDeath",function(ply)
 	if ply != LocalPlayer() or #hg.hits == 0 then return end
 
 	iter = #hg.hits
@@ -436,7 +436,7 @@ hook.Add("Player_Death","wowww",function(ply)
 end)
 
 
-hook.Add("Player Spawn","removehuys",function(ply)
+hook.Add("ZC_PlayerSpawn","ZC_RemoveStatusScreens",function(ply)
 	if ply != LocalPlayer() then return end
 	hg.hits = {}
 end)
@@ -551,7 +551,7 @@ function hg.DeathCamAvailable(ply)
 end
 
 local delta = 0
-hook.Add("CreateMove","delta-counting-hg",function(cmd)
+hook.Add("CreateMove","ZC_DeltaCountingHg",function(cmd)
 	delta = cmd:GetMouseWheel()
 end)
 
@@ -604,7 +604,7 @@ surface.CreateFont( "DefaultFixedDropShadowBig",{
 	size = ScreenScale(12),
 })
 local colblacka = Color(22,22,22,255)
-hook.Add("HUDPaint","homigrad-wound-debug",function()
+hook.Add("HUDPaint","ZC_DrawWoundDebugHud",function()
 	if not lply:Alive() then
 		if timeHuy == 0 then timeHuy = CurTime() end
 

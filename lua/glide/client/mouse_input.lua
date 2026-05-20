@@ -34,7 +34,7 @@ function MouseInput:Activate()
             self:DrawFlyingHUD()
         end )
 
-        hook.Add( "HG.InputMouseApply", "Glide.UpdateMouseInput", function( tbl )
+        hook.Add( "ZC_InputMouseApply", "Glide.UpdateMouseInput", function( tbl )
             self:ApplyFlyingInput( tbl )
         end )
 
@@ -50,7 +50,7 @@ function MouseInput:Activate()
         -- Activate mouse steering controls.
         self:Prepare()
 
-        hook.Add( "HG.InputMouseApply", "Glide.UpdateMouseInput", function( tbl )
+        hook.Add( "ZC_InputMouseApply", "Glide.UpdateMouseInput", function( tbl )
             self:ApplySteeringInput( tbl )
         end )
 
@@ -82,7 +82,7 @@ function MouseInput:Prepare()
 end
 
 function MouseInput:Deactivate()
-    hook.Remove( "HG.InputMouseApply", "Glide.UpdateMouseInput" )
+    hook.Remove( "ZC_InputMouseApply", "Glide.UpdateMouseInput" )
     hook.Remove( "Think", "Glide.UpdateMouseInput" )
     hook.Remove( "HUDPaint", "Glide.DrawMouseInput" )
 end

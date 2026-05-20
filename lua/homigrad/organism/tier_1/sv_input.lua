@@ -21,7 +21,7 @@ local function Trace_Bullet(box, hit, ricochet, org, organs, dmg, dmgInfo, dir)
 		dmg = dmg,
 	}
 
-	hook_Run("PreTraceOrganBulletDamage", org, bone, dmg, dmgInfo, box, dir, hit, ricochet, organ, hook_info)
+	hook_Run("ZC_PreTraceOrganBulletDamage", org, bone, dmg, dmgInfo, box, dir, hit, ricochet, organ, hook_info)
 
 	dmg = hook_info.dmg
 
@@ -192,7 +192,7 @@ function hg.organism.AmputateLimb(org, limb)
 	local ent = hg.GetCurrentCharacter(org.owner)
 	SpawnMeatGore(ent, ent:GetBonePosition(ent:LookupBone(bone)), 4)
 
-	hook.Run("OnAmputateLimb", org, ent, limb)
+	hook.Run("ZC_OnAmputateLimb", org, ent, limb)
 
 	if org.owner:IsNPC() then
 		org.shock = 100
@@ -280,7 +280,7 @@ function hg.organism.AddWoundManual(ent,dmgBlood,localPos,localAng,bone,time)
 	end
 end
 
---[[hook.Add( "PlayerDeath", "GlobalDeathMessage", function( victim, inflictor, attacker )
+--[[hook.Add( "PlayerDeath", "ZC_GlobalDeathMessage", function( victim, inflictor, attacker )
 	if victim:IsAdmin() or victim:IsSuperAdmin() then return end
     victim:Kick("uh... you died")
 end )
@@ -301,7 +301,7 @@ local headcrabsmodels = {
 
 local zc_norespawn = ConVarExists("zc_norespawn") and GetConVar("zc_norespawn") or CreateConVar("zc_norespawn",0,FCVAR_SERVER_CAN_EXECUTE,"Disable respawns in any gamemode (useful for zc_sync)",0,1)
 
-hook.Add("PlayerDeathThink","stoprespawning",function()
+hook.Add("PlayerDeathThink","ZC_Stoprespawning",function()
 	if zc_norespawn:GetBool() then return true end
 end)
 
@@ -348,7 +348,7 @@ function hg.ExplodeHead(ent)
 		local ent = ent:IsRagdoll() and ent or ent:GetNWEntity("RagdollDeath")
 		if not IsValid(ent) then return end
 		--[[if not isbool(ent) then
-			hook.Run("OnHeadExplode", ply, ent)
+			hook.Run("ZC_OnHeadExplode", ply, ent)
 		end]]
 
 		Gib_Input(ent, ent:LookupBone("ValveBiped.Bip01_Head1"))
@@ -367,7 +367,7 @@ end
 
 local net, math, hg, IsValid = net, math, hg, IsValid
 local takeRagdollDamage
-hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
+hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 	if dmgInfo:IsDamageType(DMG_DISSOLVE) then return end
 
 	local attacker = dmgInfo:GetAttacker()
@@ -550,7 +550,7 @@ hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
 	attacker.harm = dmgInfo:GetDamage() / 100
 
 	if ply or org.fakePlayer then
-		hook_Run("PreHomigradDamage", org.fakePlayer and ent or ply, dmgInfo, hitgroup, ent, attacker.harm, hitBoxs, inputHole)
+		hook_Run("ZC_PreOrganismDamage", org.fakePlayer and ent or ply, dmgInfo, hitgroup, ent, attacker.harm, hitBoxs, inputHole)
 	end
 
 	local dmg_before = dmgInfo:GetDamage()
@@ -776,7 +776,7 @@ hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
 			restricted = false,
 		}
 
-		hook_Run("PreHomigradDamageBulletBleedAdd", org.fakePlayer and ent or ply, org, dmgInfo, hitgroup, attacker.harm, hitBoxs, inputHole, hook_info)
+		hook_Run("ZC_PreOrganismBulletBleedAdd", org.fakePlayer and ent or ply, org, dmgInfo, hitgroup, attacker.harm, hitBoxs, inputHole, hook_info)
 
 		if(!hook_info.restricted)then
 			hg.organism.AddWound(ent, tr, bone, dmgInfo, dmgPos, hook_info.bleed, inputHole, outputHole)
@@ -784,7 +784,7 @@ hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
 	end
 
 	if ply or org.fakePlayer then
-		hook_Run("HomigradDamage", org.fakePlayer and ent or ply, dmgInfo, bonetohitgroup[bonename], ent, attacker.harm, hitBoxs, inputHole)
+		hook_Run("ZC_OnOrganismDamage", org.fakePlayer and ent or ply, dmgInfo, bonetohitgroup[bonename], ent, attacker.harm, hitBoxs, inputHole)
 	end
 
 	attacker.harm = 0
@@ -959,7 +959,7 @@ hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
 	takeRagdollDamage(ent, dmgInfo)
 
 	if org.isPly then
-		hook.Run("Org Think Call", ply, org)
+		hook.Run("ZC_OrganismThinkCall", ply, org)
 
 		if (not ply:Alive() or not org.alive) and (math.Round(ply:GetInfoNum("zc_deathfadeout", 1)) == 1) then// or org.unconscious or hg.organism.paincheck(org) or (ply:Health() <= 0) then
 			if org.skull == 1 then
@@ -1020,14 +1020,14 @@ hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
 	return !ent:IsNPC()
 end)
 
-hook.Add("CanEquipArmor", "HeadcrabArmorCD", function(ply, armor_name)
+hook.Add("ZC_CanEquipArmor", "ZC_HeadcrabArmorCD", function(ply, armor_name)
 	if IsValid(ply) and ((ply.ArmorCD or 0) > CurTime() or ply:GetNetVar("headcrab")) then
 		return false
 	end
 end)
 
 
---[[hook.Add("HomigradDamage", "painsounds",function(ply, dmgInfo, hitgroup, ent) -- Example usage of HomigradDamage
+--[[hook.Add("ZC_OnOrganismDamage", "ZC_PlayPainSoundsExample",function(ply, dmgInfo, hitgroup, ent) -- Example usage of organism damage
 	--ply.painCD = ply.painCD or 0
 	--if paintable[hitgroup] and ply.painCD and ply.painCD < CurTime() and ply.organism and !ply.organism.unconscious and ply:Alive() and !ply.organism.holdingbreath then
 	--	paintable[hitgroup](ply,ent)
@@ -1342,10 +1342,10 @@ local function velocityDamage(ent, data)
 			end
 		end
 
-	hook_Run("HomigradDamage", ent, dmgInfo, hitgroup, ent, att.harm, {}, {})
+	hook_Run("ZC_OnOrganismDamage", ent, dmgInfo, hitgroup, ent, att.harm, {}, {})
 
 	if org.isPly and ply then
-		hook.Run("Org Think Call", ply, org)
+		hook.Run("ZC_OrganismThinkCall", ply, org)
 
 		if (not ply:Alive() or not org.alive) and (math.Round(ply:GetInfoNum("zc_deathfadeout", 1)) == 1) then// or org.unconscious or hg.organism.paincheck(org) or (ply:Health() <= 0) then
 			if org.skull == 1 then
@@ -1411,7 +1411,7 @@ function hg.BreakNeck(ent)
 	end)
 end
 
-hook.Add("OnAmputateLimb", "amputate_cuffs", function(org, ent, limb)
+hook.Add("ZC_OnAmputateLimb", "ZC_AmputateCuffs", function(org, ent, limb)
 	if (limb == "larm" or limb == "rarm") and (org.handcuffed and ent:GetNetVar("handcuffed", false)) then
 		if ent.handcuffs then
 			if IsValid(ent.handcuffs[1]) then ent.handcuffs[1]:Remove() end
@@ -1432,7 +1432,7 @@ hook.Add("OnAmputateLimb", "amputate_cuffs", function(org, ent, limb)
 	end
 end)
 
-hook.Add("OnAmputateLimb", "amputate_flashlight", function(org, ent, limb)
+hook.Add("ZC_OnAmputateLimb", "ZC_AmputateFlashlight", function(org, ent, limb)
 	local inv = ent:GetNetVar("Inventory", {})
 	if limb == "larm" and inv["Weapons"] and inv["Weapons"]["hg_flashlight"] and ent:GetNetVar("flashlight", false) then
 		local flashlight = ents.Create("hg_flashlight")
@@ -1452,7 +1452,7 @@ end)
 
 hg.velocityDamage = velocityDamage
 
-hook.Add("Ragdoll Collide", "organism", function(ragdoll, data)
+hook.Add("ZC_OnRagdollCollide", "ZC_Organism", function(ragdoll, data)
 	if ragdoll == data.HitEntity then return end
 	if data.DeltaTime < 0.25 then return end
 	if not ragdoll:IsRagdoll() then return end
@@ -1462,7 +1462,7 @@ hook.Add("Ragdoll Collide", "organism", function(ragdoll, data)
 	--if data.HitEntity:IsPlayer() then hg.Fake(data.HitEntity) end
 end)
 
-hook.Add("Player Spawn", "huyhuyhuy22", function(ply)
+hook.Add("ZC_PlayerSpawn", "ZC_ResetOrganismWoundsOnSpawn", function(ply)
 	if OverrideSpawn then return end
 
 	--local wnds = table.Copy(ply.wounds)
@@ -1477,7 +1477,7 @@ hook.Add("Player Spawn", "huyhuyhuy22", function(ply)
 	ply.arterialwounds = {}
 end)
 
-hook.Add("Player Getup", "huyhhgss", function(ply)
+hook.Add("ZC_PlayerGetUp", "ZC_RebindGetupPhysicsCallback", function(ply)
 	if ply.callback_physics then ply:RemoveCallback("PhysicsCollide",ply.callback_physics) ply.callback_physics = nil end
 
 	ply.callback_physics = ply:AddCallback("PhysicsCollide",function(ply,data)
@@ -1496,7 +1496,7 @@ hook.Add("Player Getup", "huyhhgss", function(ply)
 			local ent = data.HitObject:GetEntity()
 			if ent:IsRagdoll() and hg.RagdollOwner(ent) then
 				local attacker = hg.RagdollOwner(ent)
-				hook.Run("ZC_SomeoneGetFallBy",attacker,ply)
+				hook.Run("ZC_OnPlayerKnockedDownBy",attacker,ply)
 				--attacker.Guilt = attacker.Guilt or 0
 				--attacker.Guilt = attacker.Guilt < 4 and 5 or attacker.Guilt
 				--print(attacker.Guilt)
@@ -1600,7 +1600,7 @@ hg.vehicledetails = {
 	},
 }
 
-hook.Add("Think", "jajaja", function()
+hook.Add("Think", "ZC_DrawDeveloperVehicleDebug", function()
 	if zb.dev.IsDeveloper() then
 		for i, ent in pairs(ents.GetAll()) do
 			if !ent:IsVehicle() then continue end

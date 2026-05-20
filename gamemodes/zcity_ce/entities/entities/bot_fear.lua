@@ -70,7 +70,7 @@ if SERVER then
     tr.collisiongroup = COLLISION_GROUP_WEAPON -- world and static stuff
     tr.filter = {false, false, false}
 
-    hook.Add("PostCleanupMap", "filterAdd", function()
+    hook.Add("PostCleanupMap", "ZC_RebuildFearFilters", function()
         --[[local filta = ents.FindByClass("prop_*")
         local filta2 = ents.FindByClass("func_*")
 

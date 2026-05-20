@@ -4,7 +4,7 @@ local math_min = math.min
 local CurTime, _ = CurTime, FrameTime
 gasparticles_hook = gasparticles_hook or {}
 local gasparticles_hook = gasparticles_hook
-hook.Add("PostDrawOpaqueRenderables", "gasparticles", function()
+hook.Add("PostDrawOpaqueRenderables", "ZC_DrawGasParticles", function()
 	local time = CurTime()
 	if not gasparticles_hook then return end
 	if delay > time then

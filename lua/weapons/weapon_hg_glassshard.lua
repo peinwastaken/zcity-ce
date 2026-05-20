@@ -184,7 +184,7 @@ if SERVER then
 	end)
 end
 
-hook.Add("radialOptions","tape_shard",function()
+hook.Add("ZC_RadialOptions","ZC_TapeShard",function()
     local ply = LocalPlayer()
 	local organism = ply.organism or {}
 	if organism.unconscious then return end

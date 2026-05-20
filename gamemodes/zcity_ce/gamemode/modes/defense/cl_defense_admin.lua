@@ -185,7 +185,7 @@ net.Receive("defense_admin_wave_menu", function()
 end)
 
 
-hook.Add("OnPlayerChat", "DefenseAdminWavesChat", function(ply, text)
+hook.Add("OnPlayerChat", "ZC_DefenseAdminWavesChat", function(ply, text)
     if ply ~= LocalPlayer() then return end
     
     if text:lower() == "!waves" or text:lower() == "/waves" then

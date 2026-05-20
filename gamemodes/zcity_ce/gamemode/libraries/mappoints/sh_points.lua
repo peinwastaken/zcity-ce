@@ -85,10 +85,10 @@ if CLIENT then
     CreateConVar( "zc_drawpoints", "0", FCVAR_PROTECTED, "Draw map points if player is admin", 0, 1 )
     cvars.AddChangeCallback("zc_drawpoints", function(convar_name, value_old, value_new)
         if tobool(value_new) then
-            hook.Add("PostDrawOpaqueRenderables", "RenderPoints", zb.DrawPoints)
+            hook.Add("PostDrawOpaqueRenderables", "ZC_RenderMapPoints", zb.DrawPoints)
             zb.GetAllPoints()
         else
-            hook.Remove("PostDrawOpaqueRenderables", "RenderPoints" )
+            hook.Remove("PostDrawOpaqueRenderables", "ZC_RenderMapPoints" )
         end
     end, "huy")
 

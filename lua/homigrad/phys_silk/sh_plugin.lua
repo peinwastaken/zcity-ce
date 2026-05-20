@@ -266,7 +266,7 @@ PLUGIN.SilkTableClient = PLUGIN.SilkTableClient or {}
 
 		silk.HG_IsSilk = true
 
-		hook.Run("SilkPostSetup", silk)
+		hook.Run("ZC_OnSilkPostSetup", silk)
 		-- silk:Think()
 
 		return silk
@@ -294,7 +294,7 @@ PLUGIN.SilkTableClient = {}
 -- })
 
 --\\Hooks
-	hook.Add("Think", "PhysSilk", function()
+	hook.Add("Think", "ZC_PhysSilk", function()
 		for _, silk in pairs(PLUGIN.SilkTable) do
 			if(CLIENT)then
 				silk.Pos = LocalPlayer():GetShootPos() + LocalPlayer():GetAimVector() * 340
@@ -308,7 +308,7 @@ PLUGIN.SilkTableClient = {}
 		-- end
 	end)
 
-	hook.Add("PostCleanupMap", "PhysSilk", function()
+	hook.Add("PostCleanupMap", "ZC_PhysSilk", function()
 		for _, silk in pairs(PLUGIN.SilkTable) do
 			silk:Die()
 		end
@@ -319,7 +319,7 @@ PLUGIN.SilkTableClient = {}
 	end)
 
 	if(CLIENT)then
-		hook.Add("PostDrawTranslucentRenderables", "PhysSilk", function(bDepth, bSkybox)
+		hook.Add("PostDrawTranslucentRenderables", "ZC_PhysSilk", function(bDepth, bSkybox)
 			if(not bSkybox)then
 				for _, silk in pairs(PLUGIN.SilkTable) do
 					silk:Draw()

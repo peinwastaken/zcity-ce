@@ -24,11 +24,11 @@ function PLAYER:PlayCustomAnims(anim, autoStop, speed, needForceLook, autostopAd
 	return animDelay
 end
 
-hook.Add("PlayerDeath", "StopWhenDieCustomAnim", function(ply)
+hook.Add("PlayerDeath", "ZC_StopWhenDieCustomAnim", function(ply)
 	ply:PlayCustomAnims("")
 end)
 
-hook.Add("CalcMainActivity", "CustomAnim_Activity", function(ply, vel)
+hook.Add("CalcMainActivity", "ZC_CustomAnimActivity", function(ply, vel)
 	local str = ply:GetNWString("hg_CustomAnim", "")
 	local num = ply:GetNWFloat("hg_CustomAnimDelay")
 	local st = ply:GetNWFloat("hg_CustomAnimStartTime")

@@ -528,7 +528,7 @@ SWEP.FakeViewBobBone = "ValveBiped.Bip01_R_Hand"
 SWEP.FakeVPShouldUseHand = false
 SWEP.FakeViewBobBaseBone = "ValveBiped.Bip01_R_Forearm"
 
---hook.Add("PostDrawPlayerRagdoll","ragdollhuymelee",function(ent,ply)
+--hook.Add("ZC_PostDrawPlayerRagdoll","ZC_RenderMeleeOnRagdoll",function(ent,ply)
 function hg.RenderMelees(ent, ply, wep)
     if wep.DrawWorldModel2 then
         wep:DrawWorldModel2()
@@ -1071,7 +1071,7 @@ function SWEP:CustomThink()
                 --timer.Simple(0, function()
                 --    hg.organism.Vomit(owner, "player/flesh/flesh_bullet_impact_03.wav")
                 --end)
-                hook.Run("HomigradDamage", owner, dmgInfo, HITGROUP_HEAD, hg.GetCurrentCharacter(org.owner), 15)
+                hook.Run("ZC_OnOrganismDamage", owner, dmgInfo, HITGROUP_HEAD, hg.GetCurrentCharacter(org.owner), 15)
                 owner:EmitSound(self.SuicideSound or self.Attack2HitFlesh, 50)
 
                 --timer.Simple(0.05, function()

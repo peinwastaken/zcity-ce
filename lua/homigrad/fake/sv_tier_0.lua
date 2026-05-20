@@ -10,7 +10,7 @@ function PLAYER:CreateRagdoll()
 end
 
 local hook_Run = hook.Run
-hook.Add("OnEntityCreated", "bull_add", function(npc)
+hook.Add("OnEntityCreated", "ZC_UpdateNpcBullseyeRelationships", function(npc)
 	timer.Simple(0, function()
 		if IsValid(npc) then
 			if npc:IsNPC() or string.Explode( "_" , npc:GetClass() ) == "terminator" then
@@ -160,7 +160,7 @@ function hg.Ragdoll_Create(ply)
 			ragdoll.bull:Remove()
 		end
 	end)
-	ragdoll:AddCallback("PhysicsCollide", function(outEnt, data) hook_Run("Ragdoll Collide", ragdoll, data) end)
+	ragdoll:AddCallback("PhysicsCollide", function(outEnt, data) hook_Run("ZC_OnRagdollCollide", ragdoll, data) end)
 	local velocity = ply:GetVelocity()
 	--local phys = ragdoll:GetPhysicsObject()
 	--if IsValid(phys) then --phys:SetMass(20)
@@ -258,7 +258,7 @@ function hg.Ragdoll_Create(ply)
 				table.insert(ragdoll.welds, weld)
 				weld:CallOnRemove("removeVehicleWeld", function()
 					if ragdoll.removingwelds then return end
-					//hook.Run("CanExitVehicle", ply, veh)
+					//hook.Run("ZC_CanExitVehicle", ply, veh)
 					if !hg.leaveveh then hg.fallfromveh = true end
 					hg.leaveveh = true
 					if IsValid(ply) then ply:ExitVehicle() end
@@ -346,7 +346,7 @@ function hg.Ragdoll_Create(ply)
 		end)
 	end]]
 
-	hook_Run("Ragdoll_Create", ply, ragdoll)
+	hook_Run("ZC_OnPlayerRagdollCreated", ply, ragdoll)
 
 	ragdoll.ply = ply
 	ApplyAppearanceRagdoll(ragdoll, ply)
@@ -393,7 +393,7 @@ local function NET_Up(ply, send)
 	end
 end
 
-hook.Add("PlayerSpawn", "Fake", function(ply)
+hook.Add("PlayerSpawn", "ZC_HandleFakeRagdollPlayerSpawn", function(ply)
 	ply:RemoveFlags(FL_NOTARGET)
 	ply:SetCollisionGroup(COLLISION_GROUP_PLAYER)
 	if OverrideSpawn then return end
@@ -414,7 +414,7 @@ end)
 -- local LastTick = 0
 
 
--- hook.Add("Tick", "FPS Check", function()
+-- hook.Add("Tick", "ZC_FPSCheck", function()
 -- 	FrameTimeS = SysTime() - (LastTick or SysTime())
 -- 	LastTick = SysTime()
 
@@ -427,7 +427,7 @@ end)
 
 hg.ragdollFake = hg.ragdollFake or {}
 --local ragdollFake = hg.ragdollFake
-hook.Add("DoPlayerDeath", "Fake", function(ply)
+hook.Add("DoPlayerDeath", "ZC_CreateFakeRagdollOnDeath", function(ply)
 	local ragdoll = ply.FakeRagdoll
 	--if not IsValid(ragdoll) then return end
 	if (not ply.Removed) and not IsValid(ragdoll) then
@@ -445,7 +445,7 @@ hook.Add("DoPlayerDeath", "Fake", function(ply)
 	ply.RagdollDeath = ragdoll
 end)
 
-hook.Add("PostPlayerDeath", "Garbage", function(ply)
+hook.Add("PostPlayerDeath", "ZC_ClearFakeRagdollAfterPlayerDeath", function(ply)
 	local ragdoll = HookGetRagdollEntity(ply)
 	if IsValid(ragdoll) then ragdoll:Remove() end
 
@@ -472,7 +472,7 @@ end
 hg.queue_ragdolls = hg.queue_ragdolls or {}
 hg.humans_cached = hg.humans_cached or {}
 
-hook.Add("SetupPlayerVisibility", "fuckragdolls", function( ply )
+hook.Add("SetupPlayerVisibility", "ZC_RemoveRagdolls", function( ply )
 	local queue = hg.queue_ragdolls
 
 	for ent, tbl in pairs(queue) do--it probably hurts
@@ -489,7 +489,7 @@ hook.Add("SetupPlayerVisibility", "fuckragdolls", function( ply )
 
 end)
 
-hook.Add("SetupPlayerVisibility", "ragdollview", function( ply )
+hook.Add("SetupPlayerVisibility", "ZC_AddFakeRagdollToPvs", function( ply )
 	local ent = IsValid(hg.ragdollFake[ply]) and hg.ragdollFake[ply] or ply:GetNWEntity("FakeRagdoll")
 
 	if IsValid(ent) and !ent:TestPVS(ply) then
@@ -538,7 +538,7 @@ function hg.Fake(ply, huyragdoll, no_freemove, force)
 	if IsValid(huyragdoll) then
 		ply:SetNWEntity("FakeRagdoll", ragdoll)
 		ragdoll:SetNWEntity("ply", ply)
-		hook_Run("Ragdoll_Create", ply, ragdoll)
+		hook_Run("ZC_OnPlayerRagdollCreated", ply, ragdoll)
 	end
 	if !IsValid(ragdoll) then return end
 	ragdoll:CallOnRemove("Fake", RemoveRag, ply)
@@ -562,7 +562,7 @@ function hg.Fake(ply, huyragdoll, no_freemove, force)
 
 	hg.ragdollFake[ply] = ragdoll
 	ply.ActiveWeapon = ply:GetActiveWeapon()
-	hook_Run("Fake", ply, ragdoll, listArmor)
+	hook_Run("ZC_OnFakeRagdollCreated", ply, ragdoll, listArmor)
 
 	--timer.Simple(0,function()
 		ply:DrawWorldModel(false)
@@ -633,16 +633,16 @@ end
 
 local CurTime = CurTime
 
-hook.Add("PreCleanupMap","VSEM_VSTAT",function()
+hook.Add("PreCleanupMap","ZC_VehicleStats",function()
 	for i, ply in player.Iterator() do
 		hg.FakeUp(ply)
 	end
 end)
 
-hook.Add("PlayerSpawn", "!!!!!!", function() if OverrideSpawn then return false end end)
-hook.Add("PlayerSpawn", "z", function() if OverrideSpawn then return false end end)
-hook.Add("Player Spawn", "!!!!!!", function() if OverrideSpawn then return false end end)
-hook.Add("Player Spawn", "z", function() if OverrideSpawn then return false end end)
+hook.Add("PlayerSpawn", "ZC_BlockOverrideSpawn", function() if OverrideSpawn then return false end end)
+hook.Add("PlayerSpawn", "ZC_BlockOverrideSpawnFallback", function() if OverrideSpawn then return false end end)
+hook.Add("ZC_PlayerSpawn", "ZC_BlockCustomOverrideSpawn", function() if OverrideSpawn then return false end end)
+hook.Add("ZC_PlayerSpawn", "ZC_BlockCustomOverrideSpawnFallback", function() if OverrideSpawn then return false end end)
 
 util.AddNetworkString("Override Spawn")
 function hg.OverrideSpawn(ply)
@@ -656,7 +656,7 @@ local tr = {
 	filter = {}
 }
 
-hook.Add("Should Fake Up","speedhuy",function(ply)
+hook.Add("ZC_ShouldRestorePlayerFromFake","ZC_UpdateSpeed",function(ply)
 	if IsValid(ply.FakeRagdoll) then
 		if ply.FakeRagdoll:GetVelocity():Length() > 200 then return false end
 		if (ply.organism.stun - CurTime()) > 0 then return false end
@@ -665,7 +665,7 @@ hook.Add("Should Fake Up","speedhuy",function(ply)
 	end
 end)
 
-hook.Add("Player Spawn", "fuckingremoveragdoll", function(ply)
+hook.Add("ZC_PlayerSpawn", "ZC_RemoveRagdoll", function(ply)
 	local ragdoll = ply:GetNWEntity("FakeRagdoll")
 
 	if IsValid(ragdoll) then
@@ -676,7 +676,7 @@ hook.Add("Player Spawn", "fuckingremoveragdoll", function(ply)
 	ply:SetNWEntity("RagdollDeath", NULL)
 end)
 
-hook.Add("CanControlFake","stunnednocontrol",function(ply,rag)
+hook.Add("ZC_CanControlRagdoll","ZC_StunnedNoControl",function(ply,rag)
 	if (ply.organism.stun - CurTime()) > 0 then return false end
 end)
 
@@ -706,7 +706,7 @@ function hg.FakeUp(ply, forced, instant)
 
 	if ply:InVehicle() then forced = true end
 	//if ply:InVehicle() and ply:GetVehicle():WaterLevel() >= 3 then return end
-	if not forced and (not IsValid(ply.FakeRagdoll) or not ply:Alive() or hook_Run("Should Fake Up", ply) ~= nil) then return false end
+	if not forced and (not IsValid(ply.FakeRagdoll) or not ply:Alive() or hook_Run("ZC_ShouldRestorePlayerFromFake", ply) ~= nil) then return false end
 	ply.fakecd = CurTime() + 2
 
 	if ply:InVehicle() then
@@ -719,7 +719,7 @@ function hg.FakeUp(ply, forced, instant)
 
 	if not pos and not forced then return end
 
-	hook_Run("Fake Up", ply, ragdoll)
+	hook_Run("ZC_OnPlayerRestoredFromFake", ply, ragdoll)
 
 	ply.FakeRagdollOld = ragdoll
 	ply.OldRagdoll = ragdoll
@@ -853,15 +853,15 @@ function hg.GetCurrentCharacter(ply)
 	return (IsValid(rag) and rag) or ply
 end
 
-hook.Add("PlayerDisconnected", "Fake", function(ply) hg.ragdollFake[ply] = nil end)
-hook.Add("PlayerFootstep", "CustomFootstep", function(ply) if IsValid(ply.FakeRagdoll) then return true end end)
+hook.Add("PlayerDisconnected", "ZC_ClearFakeRagdollOnDisconnect", function(ply) hg.ragdollFake[ply] = nil end)
+hook.Add("PlayerFootstep", "ZC_CustomFootstep", function(ply) if IsValid(ply.FakeRagdoll) then return true end end)
 function hg.RagdollOwner(ragdoll)
 	if not IsValid(ragdoll) then return end
 	local ply = ragdoll.ply
 	return IsValid(ply) and ply.FakeRagdoll == ragdoll and ply
 end
 
-hook.Add("PlayerDisconnected", "hg-killniers", function(ply)
+hook.Add("PlayerDisconnected", "ZC_CleanupDisconnectingFakeRagdoll", function(ply)
 	if ply:Alive() then
 		ply:Kill()
 		local ragdoll = ply:GetNWEntity("RagdollDeath")
@@ -899,13 +899,13 @@ function hg.RemoveDeadBodies(veh)
 	return anydeadbodies
 end
 
-hook.Add("Glide_CanSwitchSeat", "letsslowdownalittle", function(ply, seat)
+hook.Add("Glide_CanSwitchSeat", "ZC_SlowDownMotion", function(ply, seat)
 	if ply.lastswitched and ply.lastswitched > CurTime() then return false end
 
 	ply.lastswitched = CurTime() + 1.5
 end)
 
-hook.Add("CanPlayerEnterVehicle","fake_enterveh",function(ply, veh)
+hook.Add("CanPlayerEnterVehicle","ZC_FakeEnterVehicle",function(ply, veh)
 	if hg.RemoveDeadBodies(veh) then return false end
 
 	local parent = veh:GetParent()
@@ -914,7 +914,7 @@ hook.Add("CanPlayerEnterVehicle","fake_enterveh",function(ply, veh)
 	return true//not IsValid(ply.FakeRagdoll)// or IsValid(ply.wasveh)
 end)
 local zc_no_fake_in_cars = CreateConVar("zc_no_fake_in_cars","0",FCVAR_ARCHIVE + FCVAR_REPLICATED, "disables fake in cars", 0, 1)
-hook.Add("PlayerEnteredVehicle","allowweapons",function(ply,veh,role)
+hook.Add("PlayerEnteredVehicle","ZC_AllowWeapons",function(ply,veh,role)
 	if zc_no_fake_in_cars:GetBool() then return end
 	ply:SetEyeAngles(angle_zero)
 	//local veh2 = veh:GetParent()
@@ -934,7 +934,7 @@ hook.Add("PlayerEnteredVehicle","allowweapons",function(ply,veh,role)
 	end
 end)
 
-hook.Add("HG_OnWakeUnconscious", "enterveh", function(ply)
+hook.Add("ZC_OnPlayerWakeFromUnconscious", "ZC_EnterVehicle", function(ply)
 	//if Glide and IsValid(ply.glideveh) then
 	//	Glide.ActivateInput(ply, ply.glideveh, ply.seat)
 	//
@@ -945,7 +945,7 @@ hook.Add("HG_OnWakeUnconscious", "enterveh", function(ply)
 	//end
 end)
 
-hook.Add("HG_OnUnconscious", "leaveveh", function(ply)
+hook.Add("ZC_OnPlayerUnconscious", "ZC_LeaveVehicle", function(ply)
 	if ply:InVehicle() then
 		local veh = ply:GetVehicle()
 
@@ -960,7 +960,7 @@ hook.Add("HG_OnUnconscious", "leaveveh", function(ply)
 	end
 end)
 
-hook.Add("PlayerLeaveVehicle","allowweapons",function(ply,veh)
+hook.Add("PlayerLeaveVehicle","ZC_AllowWeapons",function(ply,veh)
 	ply:SetAllowWeaponsInVehicle(false)
 
 	if timer.Exists("EnterVehicleRag"..ply:EntIndex()) then
@@ -1017,7 +1017,7 @@ function PLAYER:ExitVehicle()
 end
 */
 
-hook.Add("CanExitVehicle","huyhuy",function(ply, veh)
+hook.Add("ZC_CanExitVehicle","ZC_UpdateWeaponThink",function(ply, veh)
 	//return false
 end)
 
@@ -1096,7 +1096,7 @@ ragdoll:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
 ent:SetRenderMode(RENDERMODE_NONE)
 ent:SetNWEntity("huy",ragdoll)
 ApplyAppearanceRagdoll(ent,ragdoll)
-hook.Add("Think","ragdollShittt",function()
+hook.Add("Think","ZC_DebugRagdollBoneSync",function()
 	local ragbonecount = ragdoll:GetBoneCount()
 	for i = 0, ragbonecount - 1 do
 		local bonename = ragdoll:GetBoneName(i)
@@ -1133,7 +1133,7 @@ end)
 */
 --[[local ents_FindInSphere = ents.FindInSphere
 local sphereRadius = 25
-hook.Add("Move","PushAwayRagdolls",function(ply, mv)
+hook.Add("Move","ZC_PushAwayRagdolls",function(ply, mv)
 	do return end
 	if not ply:Alive() or not hg.GetCurrentCharacter(ply):IsPlayer() then return end
     local sphereCenter = ply:GetPos()
@@ -1171,7 +1171,7 @@ hook.Add("Move","PushAwayRagdolls",function(ply, mv)
 end)]]
 
 local mRandom = math.random
-hook.Add("Ragdoll Collide", "FallSounds", function(rag, data)
+hook.Add("ZC_OnRagdollCollide", "ZC_FallSounds", function(rag, data)
 	if not IsValid(rag) then return end
 	if not data.HitEntity:IsWorld() then return end
 	if data.OurOldVelocity:LengthSqr() < 165000 or (rag.NextSND or 0) > data.DeltaTime then return end

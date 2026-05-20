@@ -38,7 +38,7 @@ local function addModeHook( MODE, hookName, func )
 	zb.modesHooks[MODE.name] = zb.modesHooks[MODE.name] or {}
 	zb.modesHooks[MODE.name][hookName] = func
 
-	hook.Add( hookName, "zb_modehook_" .. hookName, function( ... )
+	hook.Add( hookName, "ZC_ModeHook" .. hookName, function( ... )
 		local Current = zb.CROUND_MAIN or zb.CROUND or "tdm"
 
 		local modeHooks = zb.modesHooks[Current]
@@ -98,7 +98,7 @@ end
 local chancesfile = "zbattle/modeschances.json"
 
 if SERVER then
-	hook.Add("ShutDown", "savechances", function()
+	hook.Add("ShutDown", "ZC_SaveModeChances", function()
 		file.Write(chancesfile, util.TableToJSON(zb.ModesChances or {}, true))
 	end)
 

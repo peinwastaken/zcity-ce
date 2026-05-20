@@ -45,19 +45,19 @@ offsetView = offsetView or Angle(0, 0, 0)
 
 camera_position_addition = Vector(0,0,0)
 
-hook.Add("Camera", "Weapon", function(ply, ...)
+hook.Add("ZC_CalculateCameraView", "ZC_Weapon", function(ply, ...)
 	local ply = ply or lply
 	wep = ply:GetActiveWeapon()
 	if wep.Camera then return wep:Camera(...) end
 end)
 
-hook.Add("MotionBlur", "Weapon", function(x,y,w,z)
+hook.Add("ZC_CalculateMotionBlur", "ZC_Weapon", function(x,y,w,z)
 	wep = lply:GetActiveWeapon()
 	if wep.Blur then return wep:Blur(x,y,w,z) end
 end)
 
-hook.Add("GetMotionBlurValues", "MotionBlurEffect", function( x, y, w, z)
-    local blur = hook_Run("MotionBlur",x,y,w,z)
+hook.Add("GetMotionBlurValues", "ZC_MotionBlurEffect", function( x, y, w, z)
+    local blur = hook_Run("ZC_CalculateMotionBlur",x,y,w,z)
 	if blur then
 		return blur[1],blur[2],blur[3],blur[4]
 	end
@@ -179,7 +179,7 @@ function HGAddView(ply, origin, angles, velLen)
 		end
 	end
 
-	local _, origin_override, angles_override = hook.Run("HGAddView", ply, origin, angles)
+	local _, origin_override, angles_override = hook.Run("ZC_AddCameraView", ply, origin, angles)
 	if origin_override ~= nil then
 		origin, angles = origin_override, angles_override
 	end
@@ -187,7 +187,7 @@ function HGAddView(ply, origin, angles, velLen)
 	return origin, angles
 end
 
-hook.Add("ShouldDrawLocalPlayer","drawlocalplayeralways",function(ply)
+hook.Add("ShouldDrawLocalPlayer","ZC_DrawLocalPlayerAlways",function(ply)
 	--return true
 end)
 local materialsWheelDirve = {
@@ -237,7 +237,7 @@ surface.CreateFont(
 	}
 )
 
-hook.Add("HUDPaint", "HUDPaint_DrawABox", function() -- this code is older than you, do not judge it harshly
+hook.Add("HUDPaint", "ZC_HUDPaintDrawABox", function() -- this code is older than you, do not judge it harshly
 	local lply = LocalPlayer()
 	if lply:Alive() and zc_gopro:GetBool() then
 		local specPly = lply
@@ -342,7 +342,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 				--lply:SetEyeAngles(ply:EyeAngles())
 			end
 		else
-			return hook.Run("HG_CalcView", lply, origin, angles, fov, znear, zfar)
+			return hook.Run("ZC_CalculateView", lply, origin, angles, fov, znear, zfar)
 		end
 	end
 
@@ -353,7 +353,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	local firstPerson = GetViewEntity() == lply
 
 	local fova = {0}
-	hook.Run("HG_CalcView", ply, origin, angles, fova, znear, zfar)
+	hook.Run("ZC_CalculateView", ply, origin, angles, fova, znear, zfar)
 
 	if not firstPerson then return end
 
@@ -429,7 +429,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	hg.cam_things(ply,view,angles)
 	--print(ply:EyeAngles())
 	if not RENDERSCENE then
-		--[[local CamControl = hook.Run("HG_CalcView",ply, origin, angles, fov, znear, zfar)
+		--[[local CamControl = hook.Run("ZC_CalculateView",ply, origin, angles, fov, znear, zfar)
 		if CamControl ~= nil then
 			return CamControl
 		end]]
@@ -450,7 +450,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		leanmul1 = ((ply.lean < 0 and ply.lean * 2.2 or 0) + 1)
 		leanmul2 = ((ply.lean > 0 and ply.lean * 2.2 or 0) + 1)
 		origin = origin + ((angles:Forward() * -30 + angles:Right() * 15 * leanmul1) * lerpaim)
-		view = hook.Run("Camera", ply, view.origin, view.angles, view, vector_origin) or view
+		view = hook.Run("ZC_CalculateCameraView", ply, view.origin, view.angles, view, vector_origin) or view
 		lerpasad = Lerp(0.1, lerpasad, ((IsAimingNoScope(ply) or zc_legacycam:GetBool()) and 0.001 or 1))
 
 		local pos = hg.eye(ply, 10, follow)
@@ -482,7 +482,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 
 	--view.fov = view.fov - 10 * fixVal
 
-	result = hook_Run("Camera", ply, eyePos, angles, view, velLen * 200)
+	result = hook_Run("ZC_CalculateCameraView", ply, eyePos, angles, view, velLen * 200)
 	--if not RENDERSCENE then
 	view.origin, view.angles = HGAddView(ply, view.origin, view.angles, velLen)
 	--end
@@ -521,7 +521,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 
 		view.angles:Add(-vpang)
 		view.angles[3] = view.angles[3] + GetViewPunchAngles4()[3]
-		hook_Run("PostHGCalcView", ply, view)
+		hook_Run("ZC_PostCalculateView", ply, view)
 		return view
 	end
 
@@ -533,7 +533,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 
 	wep = ply:GetActiveWeapon()
 	if IsValid(wep) and whitelist[wep:GetClass()] then return end
-	result = hook_Run("PostPostHGCalcView", ply, view)
+	result = hook_Run("ZC_PostPostCalculateView", ply, view)
 	if result then
 		return result
 	end
@@ -610,7 +610,7 @@ end)
 local MaxLookX,MinLookX = 55,-55
 local MaxLookY,MinLookY = 45,-45
 
-hook.Add( "HG.InputMouseApply", "FreezeTurning", function( tbl )
+hook.Add( "ZC_InputMouseApply", "ZC_FreezeTurning", function( tbl )
 
 	MaxLookX,MinLookX = hg.MaxLookX or MaxLookX, hg.MinLookX or MinLookX
 	MaxLookY,MinLookY = hg.MaxLookY or MaxLookY, hg.MinLookY or MinLookY
@@ -633,7 +633,7 @@ hook.Add( "HG.InputMouseApply", "FreezeTurning", function( tbl )
 end )
 
 hg.CalcView = CalcView
-hook.Add("CalcView", "homigrad-view", function(ply, origin, angles, fov, znear, zfar)
+hook.Add("CalcView", "ZC_CalculatePlayerView", function(ply, origin, angles, fov, znear, zfar)
 	local viewa = viewOverride
 	viewOverride = nil
 	return viewa or CalcView(ply, origin, angles, fov, znear, zfar)
@@ -660,7 +660,7 @@ local fliprtmat = CreateMaterial(
 
 local invertCam = CreateClientConVar("zc_cheats","0",false,false,"Toggle uselezz cheats",0,1)
 
-hook.Add("HG.InputMouseApply","ASdInvert",function(tbl)
+hook.Add("ZC_InputMouseApply","ZC_InvertAimInput",function(tbl)
 	if invertCam:GetBool() then
 		tbl.x = -tbl.x
 		--print("huy")
@@ -668,7 +668,7 @@ hook.Add("HG.InputMouseApply","ASdInvert",function(tbl)
 	end
 end)
 
-hook.Add( "CreateMove", "flipmove", function( cmd )
+hook.Add( "CreateMove", "ZC_FlipMove", function( cmd )
 	if invertCam:GetBool() then
 		cmd:SetSideMove( -cmd:GetSideMove() )
 	end
@@ -711,7 +711,7 @@ local function renderscene(pos, angle, fov)
 		render.SetRenderTarget( fliprt )
 	end
 
-	--hook.Run("HG_RenderScene", pos, angle, fov)
+	--hook.Run("ZC_RenderScene", pos, angle, fov)
 
 	renderView.w = scrw
 	renderView.h = scrh
@@ -747,13 +747,13 @@ end
 
 --[[cvars.AddChangeCallback( "zc_norenderoverride", function(cvar, old, new)
 	if tonumber(new) == 0 then
-		hook.Add("RenderScene", "jopa", renderscene)
+		hook.Add("RenderScene", "ZC_RenderCustomCameraScene", renderscene)
 	else
-		--hook.Remove("RenderScene", "jopa")
+		--hook.Remove("RenderScene", "ZC_RenderCustomCameraScene")
 	end
 end, "huynuck")]]
 
-hook.Add("RenderScene", "jopa", renderscene)
+hook.Add("RenderScene", "ZC_RenderCustomCameraScene", renderscene)
 
 net.Receive("LookAway",function()
 	local ply = net.ReadEntity()
@@ -766,7 +766,7 @@ net.Receive("LookAway",function()
 end)
 
 local angle_use = Angle(0,0,0)
-hook.Add("Bones","HeadTurnAway",function(ply)
+hook.Add("ZC_UpdatePlayerBones","ZC_HeadTurnAway",function(ply)
 	if (ply.head_netsendtime or 0) < CurTime() and ply == LocalPlayer() and (hg.IsChanged(LookX, "LookX") or hg.IsChanged(LookY, "LookY")) then
 		ply.head_netsendtime = CurTime() + 0.1
 
@@ -822,10 +822,10 @@ local function DrawFog(bDepth, bSkybox)
 	--fogcolor["g"] = clr2
 	--fogcolor["b"] = clr3
 end
-hook.Add( "PreDrawTranslucentRenderables", "FPS_Fog", function( bDepth, bSkybox )
+hook.Add( "PreDrawTranslucentRenderables", "ZC_FPSFog", function( bDepth, bSkybox )
 	DrawFog(bDepth, bSkybox)
 end )
 
---hook.Add( "PreDrawOpaqueRenderables", "FPS_Fog", function( bDepth, bSkybox )
+--hook.Add( "PreDrawOpaqueRenderables", "ZC_FPSFog", function( bDepth, bSkybox )
 --	--DrawFog(bDepth, bSkybox)
 --end )

@@ -1505,4 +1505,4 @@ function hg.IsValidAtt(att)
 end
 
 initAttachments()
-hook.Add("Initialize", "init-atts", initAttachments)
+hook.Add("Initialize", "ZC_InitAttachments", initAttachments)

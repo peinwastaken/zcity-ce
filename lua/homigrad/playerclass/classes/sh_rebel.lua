@@ -280,8 +280,8 @@ function CLASS.On(self, data)
     end
 
     local index = self:EntIndex()
-    hook.Add( "OnEntityCreated", "rebel_relation_ship"..index, function( ent )
-        if not IsValid(self) then hook.Remove("OnEntityCreated","rebel_relation_ship"..index) return end
+    hook.Add( "OnEntityCreated", "ZC_RebelRelationShip" .. index, function( ent )
+        if not IsValid(self) then hook.Remove("OnEntityCreated","ZC_RebelRelationShip" .. index) return end
         if ( ent:IsNPC() ) then
             if table.HasValue(rebels,ent:GetClass()) then
                 ent:AddEntityRelationship( self, D_LI, 0 )
@@ -361,7 +361,7 @@ if SERVER then
         ["Rebel_Medic"] = true
     }
 
-    hook.Add("HomigradDamage", "Rebels_painsounds", function(ply, dmgInfo, hitgroup, ent)
+    hook.Add("ZC_OnOrganismDamage", "ZC_RebelPainSounds", function(ply, dmgInfo, hitgroup, ent)
         if rebel_classes[ply.PlayerClassName] then
             ply.painCD = ply.painCD or 0
             if paintable[hitgroup] and (ply.painCD < CurTime()) and ply.organism and not ply.organism.unconscious and ply:Alive() and not ply.organism.holdingbreath then
@@ -370,7 +370,7 @@ if SERVER then
         end
     end)
 
-    hook.Add("HGReloading", "Rebels_reloadalert", function(wep)
+    hook.Add("ZC_OnWeaponReloading", "ZC_RebelReloadAlert", function(wep)
         if CLIENT then return end
         local ply = wep:GetOwner()
         if not IsValid(ply) then return end

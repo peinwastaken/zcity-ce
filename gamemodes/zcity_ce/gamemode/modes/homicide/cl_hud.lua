@@ -38,7 +38,7 @@ local function draw_RotatedText(text, font, x, y, color, ang, scale)
 	render.PopFilterMin()
 end
 
-hook.Add("HUDPaint", "HMCD_SubRoles_Abilities", function()
+hook.Add("HUDPaint", "ZC_SubRolesAbilities", function()
 	local ply = LocalPlayer()
 	local aim_ent, other_ply, trace = MODE.GetPlayerTraceToOther(ply)
 	local after_text_offset = 5
@@ -230,7 +230,7 @@ local function CreateAvatarPanel(steamid)
 end
 
 
-hook.Add("PlayerButtonDown", "TraitorPanelToggle", function(ply, btn)
+hook.Add("PlayerButtonDown", "ZC_TraitorPanelToggle", function(ply, btn)
     if ply ~= LocalPlayer() or btn ~= KEY_F4 then return end
     if not LocalPlayer().isTraitor then return end
 
@@ -274,7 +274,7 @@ net.Receive("HMCD_TraitorDeathState", function()
     end
 end)
 
-hook.Add("HUDPaint", "DrawTraitorPanel", function()
+hook.Add("HUDPaint", "ZC_DrawTraitorPanel", function()
     local ply = LocalPlayer()
     if not ply.isTraitor or not ply:Alive() then
         traitor_panel.visible = false
@@ -461,7 +461,7 @@ hook.Add("HUDPaint", "DrawTraitorPanel", function()
 end)
 
 
-hook.Add("PostPlayerDeath", "ClearTraitorPanel", function(ply)
+hook.Add("PostPlayerDeath", "ZC_ClearTraitorPanel", function(ply)
     if ply == LocalPlayer() then
         traitor_panel.dead_anim = {}
         traitor_panel.smooth_toggle = 0
@@ -476,7 +476,7 @@ hook.Add("PostPlayerDeath", "ClearTraitorPanel", function(ply)
 end)
 
 
-hook.Add("Think", "UpdateTraitorAssistants", function()
+hook.Add("Think", "ZC_UpdateTraitorAssistants", function()
 	if not LocalPlayer().isTraitor or not LocalPlayer().MainTraitor then return end
 
 	if not traitor_panel.next_assistant_check or traitor_panel.next_assistant_check < CurTime() then
@@ -499,7 +499,7 @@ hook.Add("Think", "UpdateTraitorAssistants", function()
 end)
 
 
-hook.Add("Think", "RequestTraitorStatus", function()
+hook.Add("Think", "ZC_RequestTraitorStatus", function()
 	if not LocalPlayer().isTraitor or not LocalPlayer().MainTraitor then return end
 
 	if not traitor_panel.next_status_request or traitor_panel.next_status_request < CurTime() then

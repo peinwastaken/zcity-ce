@@ -28,7 +28,7 @@ net.Receive("SWARM(ApplyBleed)",function(len, plycaller)
 	SWARM:ApplyBleed(net.ReadFloat())
 end)
 
-hook.Add("Think","SWARM",function()
+hook.Add("Think","ZC_UpdateSwarmClientStatusEffects",function()
 	if(SWARM_PsychEnd)then
 		_SWARM_IGNOREDSP = true
 		LocalPlayer():SetDSP(math.Round(31,33),false)
@@ -61,13 +61,13 @@ function PlayerMeta:SetDSP(soundFilter,fastReset)
 	SWARM_OLDFUNC_SetDSP(self,soundFilter,fastReset)
 end
 
-hook.Add("CalcMainActivity","Swarm",function(ply,vel)
+hook.Add("CalcMainActivity","ZC_ApplySwarmKnockoutAnimation",function(ply,vel)
 	if(SWARM_KnockoutEnd)then
 		return ACT_INVALID,ply:LookupSequence("seq_cower")
 	end
 end)
 
-hook.Add("CreateMove","Swarm",function(cmd)
+hook.Add("CreateMove","ZC_BlockSwarmKnockoutMovement",function(cmd)
 	if(SWARM_KnockoutEnd)then
 		cmd:ClearMovement()
 		cmd:SetMouseX(math.Clamp(cmd:GetMouseX(),-6,6))
@@ -75,7 +75,7 @@ hook.Add("CreateMove","Swarm",function(cmd)
 end)
 
 SWARM_Lerp_Perc = 0
-hook.Add("PostDrawHUD", "Swarm", function()
+hook.Add("PostDrawHUD", "ZC_DrawSwarmHudOverlay", function()
 	-- local perc = LocalPlayer():GetNWInt("SwarmPercent")
 	-- SWARM_Lerp_Perc = Lerp(FrameTime()*0.5,SWARM_Lerp_Perc,perc)
 

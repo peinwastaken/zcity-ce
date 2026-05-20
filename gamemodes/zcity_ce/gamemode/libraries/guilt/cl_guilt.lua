@@ -4,13 +4,13 @@
     -- And that is all |
 --]]
 
-hook.Add("OnNetVarSet", "Guilt",function(index, key, var)
+hook.Add("ZC_OnNetVarSet", "ZC_GuiltNetVarChanged",function(index, key, var)
     if key == "Karma" then
         Entity(index).Karma = var
     end
 end)
 
-hook.Add("Player Spawn", "GuiltKnown",function(ply)
+hook.Add("ZC_PlayerSpawn", "ZC_MarkKnownGuilt",function(ply)
     --if (ply == LocalPlayer()) and ply.Karma then
     --    ply:ChatPrint("Your current karma is "..tostring(math.Round(ply.Karma)).."")
     --end
@@ -51,14 +51,14 @@ local BlurBackground = hg.DrawBlur
 
 
 local showstuff = CurTime() + 5
-hook.Add("Player_Death","karmacheck",function(ply)
+hook.Add("ZC_PlayerDeath","ZC_CheckKarmaOnDeath",function(ply)
     if ply != LocalPlayer() then return end
 
     showstuff = CurTime() + 5
 end)
 
 local pressed
-hook.Add("HUDPaint","shownotification",function()
+hook.Add("HUDPaint","ZC_DrawGuiltNotification",function()
     if LocalPlayer():Alive() then return end
 
     if showstuff > CurTime() then

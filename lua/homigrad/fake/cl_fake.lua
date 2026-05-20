@@ -15,14 +15,14 @@ function GetCoolCameraBool()
 end
 local vpangs
 
-hook.Add("CreateMove", "asdasdas22", function(cmd)
+hook.Add("CreateMove", "ZC_ApplyCoolCameraCreateMove", function(cmd)
 	if hg.InGame() or !GetCoolCameraBool() then return end
 
 	hook.Run("InputMouseApply", cmd, 0, 0, (realanglelerp or Angle()) + (vpangs or Angle()))
 end)
 
 local diff = Angle()
-hook.Add("InputMouseApply", "fakeCameraAngles", function(cmd, x, y, angle)
+hook.Add("InputMouseApply", "ZC_FakeCameraAngles", function(cmd, x, y, angle)
 	local tbl = {}
 	local cc = GetCoolCameraBool()
 	if cc then
@@ -44,7 +44,7 @@ hook.Add("InputMouseApply", "fakeCameraAngles", function(cmd, x, y, angle)
 		tbl.angle = realangle
 	end
 
-	hook.Run("HG.InputMouseApply", tbl)
+	hook.Run("ZC_InputMouseApply", tbl)
 
 	if !lply:Alive() then
 		tbl.angle.r = 0
@@ -88,11 +88,11 @@ end
 local rollang = 0
 local ctime
 local vecUpX, vecUpY, vecUpZ = Vector(1, 0, 0), Vector(0, 1, 0), Vector(0, 0, 1)
-hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
+hook.Add("ZC_InputMouseApply", "ZC_FakeCameraAngles2", function(tbl)
 	if IsValid(follow) and ctime != CurTime() then
 		ctime = CurTime()
 
-		hook.Run("ViewpunchThink", tbl)
+		hook.Run("ZC_ViewPunchThink", tbl)
 	end
 
 	local x = tbl.x
@@ -224,7 +224,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	end
 
 	if not lply:Alive() and not follow then
-		return hook.Run("HG_CalcView", ply, origin, angles, fov, znear, zfar)
+		return hook.Run("ZC_CalculateView", ply, origin, angles, fov, znear, zfar)
 	end
 
 	if LocalPlayer().lean and math.abs(LocalPlayer().lean) < 0.01 then
@@ -377,7 +377,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	end
 	//view.angles = angles
 
-	view = hook.Run("Camera", ply, view.origin, view.angles, view, vector_origin) or view
+	view = hook.Run("ZC_CalculateCameraView", ply, view.origin, view.angles, view, vector_origin) or view
 
 	if GetCoolCameraBool() and !zc_cshs_fake:GetBool() and ply:Alive() then
 		local angcool = realangle + GetViewPunchAngles() * 0.2 - vpang
@@ -402,9 +402,9 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		return SpecCam(follow, origin, angles, fov, znear, zfar)
 	end
 
-	hook.Run("PostHGCalcView", ply, view)
+	hook.Run("ZC_PostCalculateView", ply, view)
 
-	result = hook.Run("PostPostHGCalcView", ply, view)
+	result = hook.Run("ZC_PostPostCalculateView", ply, view)
 	if result then
 		return result
 	end
@@ -425,7 +425,7 @@ function net.ReadEntity2()
 
 end
 
---hook.Add("EntityNetworkedVarChanged","huhuhuasd",function()
+--hook.Add("EntityNetworkedVarChanged","ZC_DebugFakeRagdollNetVarChange",function()
 
 --end)
 
@@ -458,7 +458,7 @@ local function TryBindPendingFakeRagdoll(ply, ragdoll, ragdoll_index)
 	end
 
 	ClearPendingFakeRagdoll(ply)
-	hook_Run("RagdollEntityCreated", ply, ragdoll, "FakeRagdoll")
+	hook_Run("ZC_OnRagdollEntityCreated", ply, ragdoll, "FakeRagdoll")
 end
 
 net.Receive("Player Ragdoll", function()
@@ -476,7 +476,7 @@ net.Receive("Player Ragdoll", function()
 	end
 end)
 
-hook.Add("NetworkEntityCreated", "HG_GiveRenderOverride", function(ragdoll)
+hook.Add("NetworkEntityCreated", "ZC_GiveRenderOverride", function(ragdoll)
 	if ragdoll:GetClass() == "prop_ragdoll" then
 		if !IsValid(ragdoll:GetNWEntity("ply")) then
 			ragdoll.RenderOverride = function(self, flags)
@@ -498,7 +498,7 @@ hook.Add("NetworkEntityCreated", "HG_GiveRenderOverride", function(ragdoll)
 				ragdoll.PredictedArmor = v:GetNetVar("Armor",{})
 				ragdoll.PredictedHideArmorRender = v:GetNetVar("HideArmorRender", false)
 
-				hook.Run("RagdollPerdiction",ragdoll,v)
+				hook.Run("ZC_OnPredictedRagdollCreated",ragdoll,v)
 				break
 			end
 		end
@@ -512,7 +512,7 @@ hook.Add("NetworkEntityCreated", "HG_GiveRenderOverride", function(ragdoll)
 	end
 end)
 --h
-hook.Add("RagdollEntityCreated", "RagdollFinder", function(ply, ent, key)
+hook.Add("ZC_OnRagdollEntityCreated", "ZC_RagdollFinder", function(ply, ent, key)
 	if not IsValid(ply) then return end
 	--print(ply)
 	local oldrag = ply.FakeRagdoll
@@ -538,7 +538,7 @@ hook.Add("RagdollEntityCreated", "RagdollFinder", function(ply, ent, key)
 
 	--ply:SetNWEntity("FakeRagdoll", ent)
 	--if not IsValid(oldrag) then oldrag = ent end
-	hook.Run("ServerRagdollTransferDecals", ply, ent)
+	hook.Run("ZC_TransferServerRagdollDecals", ply, ent)
 
 
 
@@ -574,13 +574,13 @@ hook.Add("RagdollEntityCreated", "RagdollFinder", function(ply, ent, key)
 		hg.ragdolls[#hg.ragdolls + 1] = ragdoll
 
 		ragdoll:CallOnRemove("RagdollRemove",function()
-			hook.Run("RagdollRemove",ply,ragdoll)
+			hook.Run("ZC_OnRagdollRemoved",ply,ragdoll)
 		end)
 
 		//ply.FakeRagdollOld = nil
 
 		ply.FakeRagdoll = ragdoll
-		hook_Run("Fake", ply, ragdoll)
+		hook_Run("ZC_OnFakeRagdollCreated", ply, ragdoll)
 	else
 		if IsValid(ply.FakeRagdoll) then
 			ply.fakecd = CurTime() + 2
@@ -597,7 +597,7 @@ hook.Add("RagdollEntityCreated", "RagdollFinder", function(ply, ent, key)
 
 		ply.FakeRagdoll = nil
 
-		hook_Run("FakeUp", ply, ragdoll)
+		hook_Run("ZC_OnPlayerRestoredFromFake", ply, ragdoll)
 	end
 
 	--if IsValid(ply) and ply.BoneScaleChange then ply:BoneScaleChange() end
@@ -662,7 +662,7 @@ end
 -- 	end
 -- end
 
--- hook.Add("PostCleanupMap","wtfdude",function()
+-- hook.Add("PostCleanupMap","ZC_ResetLocalBoneScaleOnCleanup",function()
 -- 	LocalPlayer():BoneScaleChange()
 -- end)
 
@@ -685,19 +685,19 @@ local function funcrag(ply, name, oldval, ragdoll)
 	--ply.onetime = false
 end
 
-hook.Add("PlayerInitialSpawn","asdfgacke",function(ply)
+hook.Add("PlayerInitialSpawn","ZC_SetupFakeRagdollNetVarProxy",function(ply)
 	ply:SetNWVarProxy("RagdollDeath",funcrag)
 	ply:SetNWVarProxy("FakeRagdoll", funcrag)
 end)
 
-hook.Add("InitPostEntity","fuckyou",function()
+hook.Add("InitPostEntity","ZC_SetupExistingFakeRagdollNetVarProxies",function()
 	for _, ply in player.Iterator() do
 		ply:SetNWVarProxy("RagdollDeath",funcrag)
 		ply:SetNWVarProxy("FakeRagdoll", funcrag)
 	end
 end)
 
-hook.Add("Player Getup", "Fake", function(ply)
+hook.Add("ZC_PlayerGetUp", "ZC_ResetLocalFakeRagdollState", function(ply)
 	if ply == lply then
 		ply.bGetUp = true
 		fakeTimer = nil
@@ -717,7 +717,7 @@ function hg.RagdollOwner(ragdoll)
 	return IsValid(ply) and ply:GetNWEntity("FakeRagdoll") == ragdoll and ply
 end
 
-hook.Add("Player_Death", "Fake", function(ply)
+hook.Add("ZC_PlayerDeath", "ZC_StartLocalFakeDeathTimer", function(ply)
 	if ply != lply then return end
 
 	fakeTimer = CurTime() + 5
@@ -735,7 +735,7 @@ function hg.GetCurrentCharacter(ply)
 	return (IsValid(ply.FakeRagdoll) and ply.FakeRagdoll) or ply
 end
 
-hook.Add("Player Spawn", "fuckingremoveragdoll", function(ply)
+hook.Add("ZC_PlayerSpawn", "ZC_RemoveRagdoll", function(ply)
 	local ragdoll = ply:GetNWEntity("FakeRagdoll")
 
 	if IsValid(ragdoll) then
@@ -760,29 +760,29 @@ end)
 local override = {}
 hg.override = override
 net.Receive("Override Spawn", function() override[net.ReadEntity()] = true end)
-hook.Add("Player Spawn", "!Override", function(ply)
+hook.Add("ZC_PlayerSpawn", "ZC_BlockOverrideSpawnClient", function(ply)
 	if override[ply] then
 		override[ply] = nil
 		return false
 	end
 end)
 
-hook.Add("Player Spawn", "zOverride", function(ply)
+hook.Add("ZC_PlayerSpawn", "ZC_BlockOverrideSpawnClientFallback", function(ply)
 	if override[ply] then
 		override[ply] = nil
 		return false
 	end
 end)
 
-hook.Add("PlayerFootstep", "CustomFootstep", function(ply) if IsValid(ply.FakeRagdoll) then return true end end)
+hook.Add("PlayerFootstep", "ZC_CustomFootstep", function(ply) if IsValid(ply.FakeRagdoll) then return true end end)
 
-hook.Add("EntityRemoved", "ragdollmodelsnatchinstance", function(ent)
+hook.Add("EntityRemoved", "ZC_RestoreRagdollModelInstance", function(ent)
 	if IsValid(ent.ply) then
 		ent.ply:SnatchModelInstance(ent)
 	end
 end)
 
-hook.Add("ServerRagdollTransferDecals","raghuy", function(ent, rag)
+hook.Add("ZC_TransferServerRagdollDecals","ZC_TransferRagdollDecals", function(ent, rag)
     if IsValid(ent) && IsValid(rag) && !rag.DecalTransferDone then
         rag:SnatchModelInstance( ent )
         rag.DecalTransferDone = true
@@ -790,7 +790,7 @@ hook.Add("ServerRagdollTransferDecals","raghuy", function(ent, rag)
 end)
 
 
---[[hook.Add("OnEntityCreated", "TryCopyAppearanceNow", function( ent )
+--[[hook.Add("OnEntityCreated", "ZC_TryCopyAppearanceNow", function( ent )
 	--if not ent:IsRagdoll() then return end
 	--for k,ply in ipairs(ents.FindInSphere(ent:GetPos(),15)) do
 	--	if ply:IsPlayer() then
@@ -807,7 +807,7 @@ end)
 end)]]
 
 --[[local sphereRadius = 12
-hook.Add("Move","PushAwayRagdolls",function(ply) --// lagging
+hook.Add("Move","ZC_PushAwayRagdolls",function(ply) --// lagging
 	do return end
 	if not ply:Alive() and not hg.GetCurrentCharacter(ply):IsPlayer() then return end
 	local playerPos = ply:GetPos()

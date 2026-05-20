@@ -1,6 +1,6 @@
 local hook = hook
 --\\ Custom running anim rate
-	hook.Add("UpdateAnimation", "NormAnimki", function(ply, vel, maxSeqGroundSpeed)
+	hook.Add("UpdateAnimation", "ZC_UpdateRunningAnimationRate", function(ply, vel, maxSeqGroundSpeed)
 		if not IsValid(ply) or not ply:Alive() or not ply:OnGround() then return end
 
 		if vel:LengthSqr() >= 77000 and vel:LengthSqr() < 110000 then
@@ -22,7 +22,7 @@ local hook = hook
 		["grenade"] = true
 	}
 
-	hook.Add( "CalcMainActivity", "RunningAnim", function(ply, vel)
+	hook.Add( "CalcMainActivity", "ZC_SelectRunningAnimation", function(ply, vel)
 		local wep = IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon()
 		local isAmputated = ply:IsBerserk() and ply.organism and (ply.organism.llegamputated or ply.organism.rlegamputated)
 		if (not ply:InVehicle()) and ply:IsOnGround() and vel:Length() > 250 and wep and runHoldTypes[wep:GetHoldType()] and not isAmputated then

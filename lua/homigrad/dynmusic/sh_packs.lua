@@ -201,7 +201,7 @@ elseif CLIENT then
     end)
 end
 
-hook.Add("HomigradDamage", "Panic", function(ply, dmgInfo, hitgroup, ent, harm, hitBoxs, inputHole)
+hook.Add("ZC_OnOrganismDamage", "ZC_AddDamagePanicMusic", function(ply, dmgInfo, hitgroup, ent, harm, hitBoxs, inputHole)
     if ent:IsPlayer() then
         --print(ply,dmgInfo:GetDamage()*5)
         hg.DynaMusic:AddPanic(ply,dmgInfo:GetDamage()*25)

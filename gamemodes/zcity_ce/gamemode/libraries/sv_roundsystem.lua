@@ -76,7 +76,7 @@ function zb:RoundThink()
 	end
 end
 
-hook.Add("CanListenOthers","RoundStartChat",function(output, input, isChat, teamonly, text)
+hook.Add("ZC_CanReceiveCommunication","ZC_RoundStartChat",function(output, input, isChat, teamonly, text)
 	if zb.ROUND_STATE == 0 or zb.ROUND_STATE == 3 then return true, false end
 end)
 
@@ -93,7 +93,7 @@ function zb:EndRound()
 
 	--PrintMessage(HUD_PRINTTALK, "Round ended.")
 	CurrentRound():EndRound()
-	hook.Run("ZB_EndRound")
+	hook.Run("ZC_EndRound")
 	zb.AddFade()
 
 	hg.achievements.SavePlayerAchievements()
@@ -162,7 +162,7 @@ function zb:EndRoundThink()
 
 			zb.SHOULD_FADE = true
 
-			hook.Run("ZB_PreRoundStart")
+			hook.Run("ZC_PreRoundStart")
 			hook.Run("TTTPrepareRound") -- stormfox2 random_round_weather
 
 			zb.CROUND = zb.nextround or "hmcd"
@@ -195,7 +195,7 @@ function zb:EndRoundThink()
 	end
 end
 
-hook.Add("PlayerInitialSpawn", "zb_SendRoundInfo", function(ply)
+hook.Add("PlayerInitialSpawn", "ZC_SendRoundInfo", function(ply)
 	if zb.CROUND then
 		local mode,_ = CurrentRound()
 		net.Start("RoundInfo")
@@ -216,7 +216,7 @@ function zb:Think(time)
 	zb:EndRoundThink()
 end
 
-hook.Add("Think", "zb-think", function() zb:Think(CurTime()) end)
+hook.Add("Think", "ZC_RoundSystemThink", function() zb:Think(CurTime()) end)
 
 function zb:KillPlayers()
 	local mode = CurrentRound()
@@ -254,7 +254,7 @@ end
 
 ZBATTLE_BIGMAP = 5700
 
-hook.Add("InitPostEntity", "loadbigmap", function()
+hook.Add("InitPostEntity", "ZC_LoadLargeMapConfig", function()
 	local filik = file.Read("zbattle/mapsizes.json", "DATA")
 
 	if filik then
@@ -532,7 +532,7 @@ function zb.SendRoundListToClient(ply)
 end
 
 
-hook.Add("PlayerInitialSpawn", "ZB_SendModesOnSpawn", function(ply)
+hook.Add("PlayerInitialSpawn", "ZC_SendModesOnSpawn", function(ply)
 	if ply:IsAdmin() then
 		timer.Simple(1, function()
 			if IsValid(ply) then
@@ -610,7 +610,7 @@ function zb:RoundStart()
 		CurrentRound():RoundStartPost()
 	end
 
-	hook.Run("ZB_StartRound")
+	hook.Run("ZC_StartRound")
 
 	//zb.GetAllPoints(true)
 
@@ -627,7 +627,7 @@ function zb.NotifyQueueEmptied()
 	net.Send(zb.GetAllAdmins())
 end
 
-hook.Add("PlayerInitialSpawn", "SendGameModesToClient", function(ply)
+hook.Add("PlayerInitialSpawn", "ZC_SendGameModesToClient", function(ply)
 	if ply:IsAdmin() then
 		local modesToSend = {}
 		for key, mode in pairs(zb.modes) do
@@ -793,7 +793,7 @@ if SERVER then
 	util.AddNetworkString("QueueEmptiedNotification")
 	util.AddNetworkString("QueueModifiedNotification")
 
-	hook.Add("PlayerInitialSpawn", "SendGameModesToClient", function(ply)
+	hook.Add("PlayerInitialSpawn", "ZC_SendGameModesToClient", function(ply)
 		if ply:IsAdmin() then
 			local modesToSend = {}
 			for key, mode in pairs(zb.modes) do

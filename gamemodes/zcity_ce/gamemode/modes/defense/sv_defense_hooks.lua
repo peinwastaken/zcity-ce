@@ -2,7 +2,7 @@ util.AddNetworkString("defense_highlight_last_npcs")
 
 
 local npc_autoseek_timer = 0
-hook.Add("Think", "NPCAutoSeekPlayer", function()
+hook.Add("Think", "ZC_NPCAutoSeekPlayer", function()
     local currentRound = CurrentRound()
     if not currentRound or currentRound.name ~= "defense" then return end
     if npc_autoseek_timer > CurTime() then return end
@@ -142,8 +142,8 @@ hook.Add("Think", "NPCAutoSeekPlayer", function()
 end)
 
 
-hook.Remove("EntityRemoved", "DefenseNPCRemoved")
-hook.Add("EntityRemoved", "DefenseNPCRemoved", function(ent)
+hook.Remove("EntityRemoved", "ZC_DefenseNPCRemoved")
+hook.Add("EntityRemoved", "ZC_DefenseNPCRemoved", function(ent)
     if not IsValid(ent) then return end
 
     local MODE = CurrentRound()
@@ -179,8 +179,8 @@ hook.Add("EntityRemoved", "DefenseNPCRemoved", function(ent)
 end)
 
 
-hook.Remove("OnEntityCreated", "DefenseAddNewNPCs")
-hook.Add("OnEntityCreated", "DefenseAddNewNPCs", function(ent)
+hook.Remove("OnEntityCreated", "ZC_DefenseAddNewNPCs")
+hook.Add("OnEntityCreated", "ZC_DefenseAddNewNPCs", function(ent)
     local MODE = CurrentRound()
     if not MODE or MODE.name ~= "defense" then return end
 
@@ -235,8 +235,8 @@ hook.Add("OnEntityCreated", "DefenseAddNewNPCs", function(ent)
 end)
 
 
-hook.Remove("OnNPCKilled", "DefenseNPCKilled")
-hook.Add("OnNPCKilled", "DefenseNPCKilled", function(npc, attacker, inflictor)
+hook.Remove("OnNPCKilled", "ZC_DefenseNPCKilled")
+hook.Add("OnNPCKilled", "ZC_DefenseNPCKilled", function(npc, attacker, inflictor)
     local MODE = CurrentRound()
     if not MODE or MODE.name ~= "defense" then return end
 
@@ -275,8 +275,8 @@ hook.Add("OnNPCKilled", "DefenseNPCKilled", function(npc, attacker, inflictor)
     end)
 end)
 
-hook.Remove("EntityTakeDamage", "DefenseZombieDamageTrack")
-hook.Add("EntityTakeDamage", "DefenseZombieDamageTrack", function(ent, dmginfo)
+hook.Remove("EntityTakeDamage", "ZC_TrackDefenseZombieDamage")
+hook.Add("EntityTakeDamage", "ZC_TrackDefenseZombieDamage", function(ent, dmginfo)
     if not IsValid(ent) then return end
 
 
@@ -330,7 +330,7 @@ end)
 local lastNPCList = {}
 local lastSentTime = 0
 
-hook.Add("Think", "DefenseNPCValidityCheck", function()
+hook.Add("Think", "ZC_DefenseNPCValidityCheck", function()
     if CurTime() % 5 != 0 then return end
 
     local MODE = CurrentRound()
@@ -405,7 +405,7 @@ hook.Add("Think", "DefenseNPCValidityCheck", function()
     end
 end)
 
-hook.Add("Think", "DefenseCleanupCheck", function()
+hook.Add("Think", "ZC_DefenseCleanupCheck", function()
     if CurTime() % 15 != 0 then return end
 
     local MODE = CurrentRound()

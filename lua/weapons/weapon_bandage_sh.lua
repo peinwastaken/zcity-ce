@@ -378,7 +378,7 @@ function SWEP:Reload()
 	end
 end
 if CLIENT then
-	hook.Add("OnNetVarSet","bandage-net-var",function(index,key,var)
+	hook.Add("ZC_OnNetVarSet","ZC_BandageNetVarChanged",function(index,key,var)
 		if key == "modeValues" then
 			local ent = Entity(index)
 
@@ -852,13 +852,13 @@ if SERVER then
 		end
 	end
 
-	hook.Add("Player Spawn", "remove-tourniquets", function(ply)
+	hook.Add("ZC_PlayerSpawn", "ZC_RemoveTourniquetsOnSpawn", function(ply)
 		if OverrideSpawn then return end
 		ply:SetNetVar("Tourniquets",{})
 		ply.tourniquets = {}
 	end)
 
-	hook.Add("Player_Death", "remove-tourniquetshuy", function(ply)
+	hook.Add("ZC_PlayerDeath", "ZC_RemoveTourniquetsOnDeath", function(ply)
 		if IsValid(ply.FakeRagdoll) then
 			ply.FakeRagdoll.tourniquets = table.Copy(ply.tourniquets)
 			ply.FakeRagdoll:SetNetVar("Tourniquets",ply.FakeRagdoll.tourniquets)
@@ -867,13 +867,13 @@ if SERVER then
 		ply.tourniquets = {}
 	end)
 
-	hook.Add("Player Spawn", "remove-bandages", function(ply)
+	hook.Add("ZC_PlayerSpawn", "ZC_RemoveBandagesOnSpawn", function(ply)
 		if OverrideSpawn then return end
 		ply:SetNetVar("bandaged_limbs",{})
 		ply.bandaged_limbs = {}
 	end)
 
-	hook.Add("Player_Death", "remove-bandageshuy", function(ply)
+	hook.Add("ZC_PlayerDeath", "ZC_RemoveBandagesOnDeath", function(ply)
 		if IsValid(ply.FakeRagdoll) then
 			ply.FakeRagdoll.bandaged_limbs = table.Copy(ply.bandaged_limbs)
 			ply.FakeRagdoll:SetNetVar("bandaged_limbs",ply:GetNetVar("bandaged_limbs",ply.FakeRagdoll.bandaged_limbs))
@@ -883,7 +883,7 @@ if SERVER then
 	end)
 
 
-	hook.Add("Fake", "rtourniquetsss", function(ply,ragdoll)
+	hook.Add("ZC_OnFakeRagdollCreated", "ZC_TransferTourniquetsToRagdoll", function(ply,ragdoll)
 		if not IsValid(ragdoll) then return end
 
 		ragdoll.tourniquets = table.Copy(ply.tourniquets)
@@ -891,7 +891,7 @@ if SERVER then
 		ragdoll:SetNetVar("Tourniquets",ragdoll.tourniquets)
 	end)
 
-	hook.Add("Fake", "bandages-setfake", function(ply,ragdoll)
+	hook.Add("ZC_OnFakeRagdollCreated", "ZC_TransferBandagesToRagdoll", function(ply,ragdoll)
 		if not IsValid(ragdoll) then return end
 
 		ragdoll.bandaged_limbs = table.Copy(ply.bandaged_limbs)
@@ -936,7 +936,7 @@ else
 		end
 	end
 
-	hook.Add("OnNetVarSet","tourniquetnisser",function(index, key, var)
+	hook.Add("ZC_OnNetVarSet","ZC_TourniquetNetVarChanged",function(index, key, var)
 		if not IsValid(Entity(index)) then return end
 		if key == "Tourniquets" then
 			local ent = Entity(index)
@@ -951,18 +951,18 @@ else
 		end
 	end)
 
-	hook.Add("Fake","gsdgsdgsdgsdsdgTURNIKET",function(ply,ragdoll)
+	hook.Add("ZC_OnFakeRagdollCreated","ZC_ApplyFakeTourniquets",function(ply,ragdoll)
 		remove_tourniquets(ply)
 		if IsValid(ragdoll) then
 			remove_tourniquets(ragdoll)
 		end
 	end)
 
-	hook.Add("Player_Death","huyhuyhuyFuckyou",function(ply)
+	hook.Add("ZC_PlayerDeath","ZC_ClearMedicalItemsOnDeath",function(ply)
 		remove_tourniquets(ply)
 	end)
 
-	--hook.Add("PostDrawPlayerRagdoll", "draw_tourniquets", function(ent,ply)
+	--hook.Add("ZC_PostDrawPlayerRagdoll", "ZC_DrawTourniquets", function(ent,ply)
 	function hg.RenderTourniquets(ent, ply)
 		if !ply.tourniquets or !next(ply.tourniquets) then return end
 		for i, wound in ipairs(ply.tourniquets) do
@@ -1009,7 +1009,7 @@ else
 		ent.bandagesModel = nil
 	end
 
-	hook.Add("OnNetVarSet","bandage_netvar",function(index, key, var)
+	hook.Add("ZC_OnNetVarSet","ZC_BandageNetVarUpdated",function(index, key, var)
 		if key == "bandaged_limbs" then
 			local ent = Entity(index)
 
@@ -1062,7 +1062,7 @@ else
 		["ValveBiped.Bip01_R_Calf"] = "LegDownRught-f",
 	}
 
-	--hook.Add("PostDrawPlayerRagdoll", "draw_bandages", function(ent,ply)
+	--hook.Add("ZC_PostDrawPlayerRagdoll", "ZC_DrawBandages", function(ent,ply)
 	function hg.RenderBandages(ent, ply)
 		--PrintTable(ent.bandaged_limbs)
 		if not ent.bandaged_limbs then return end

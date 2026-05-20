@@ -26,7 +26,7 @@ net.Receive("dm_start",function()
 	end )
 end)
 
-hook.Add("Think", "ZoneSoundThink", function()
+hook.Add("Think", "ZC_ZoneSoundThink", function()
 	if CurrentRound() and CurrentRound().name ~= "dm" then return end
 	local station = zb.SoundStation
 	if not IsValid(station) then return end

@@ -13,7 +13,7 @@ ENT.AdminOnly = true
 ENT.AutomaticFrameAdvance = true -- Must be set on client
 
 if SERVER then
-    hook.Add("PostCleanupMap", "fuckthoseladders", function()
+    hook.Add("PostCleanupMap", "ZC_RemoveBrokenLadders", function()
         --[[for i, ent in pairs(ents.FindByClass("func_useableladder")) do
             local ent2 = ents.Create("func_useableladder2")
 
@@ -26,7 +26,7 @@ if SERVER then
         end--]]
     end)
 
-    hook.Add("PlayerUse", "daFuqIsThisShit", function(ply, ent)
+    hook.Add("PlayerUse", "ZC_BlockBrokenLadderUse", function(ply, ent)
         --if ent:GetClass() == "reserved_spot" then
             --ply:SetMaxSpeed(99999999999999)
         --end

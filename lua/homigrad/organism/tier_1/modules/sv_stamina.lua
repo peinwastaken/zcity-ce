@@ -93,7 +93,7 @@ function entMeta:AddNaturalAdrenaline(fAmount)
 end
 
 local vecZero = Vector(0, 0, 0)
-hook.Add("FinishMove", "!homigrad-organism", function(ply, move)
+hook.Add("FinishMove", "ZC_ApplyStaminaMovement", function(ply, move)
 	local vel = move:GetFinalJumpVelocity()
 
 	if !ply.organism then return end

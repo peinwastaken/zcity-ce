@@ -104,7 +104,7 @@ function SWEP:Reload()
     end
 end
 
-hook.Add("OnNetVarSet", "AsdGuilt",function(index, key, var)
+hook.Add("ZC_OnNetVarSet", "ZC_UpdateExtinguisherDeployAnimation",function(index, key, var)
     if key == "extinguishermode" then
         local self = Entity(index)
         if not IsValid(self) or not self.AnimList then return end

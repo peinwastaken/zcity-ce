@@ -74,11 +74,11 @@ function ENT:Detonate(data)
 			npc.SatisfactionEndTime = CurTime() + 60
 
 			if not npc.SatisfactionEndTime then
-				hook.Add("Think", npc:EntIndex(), function()
+				hook.Add("Think", "ZC_BugbaitAntlionThink" .. npc:EntIndex(), function()
 					if npc.SatisfactionEndTime < CurTime() or not IsValid(npc) then
 						npc:AddRelationship("player D_HT 99")
 						npc.SatisfactionEndTime = nil
-						hook.Remove("Think", npc:EntIndex())
+						hook.Remove("Think", "ZC_BugbaitAntlionThink" .. npc:EntIndex())
 					end
 				end)
 			end

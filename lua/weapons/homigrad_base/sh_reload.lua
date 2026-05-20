@@ -104,7 +104,7 @@ function SWEP:MapEvents()
 	end
 end
 
-hook.Add("OnReloadedWep", "changeeventmap", function(self)
+hook.Add("ZC_OnWeaponReloaded", "ZC_RefreshReloadEventMap", function(self)
 	self:MapEvents()
 end)
 

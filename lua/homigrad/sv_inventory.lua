@@ -73,14 +73,14 @@ function hg.RenewInv(ply, isDead)
     ply:SetNetVar("Inventory", inv)
 end
 
-hook.Add("Player Spawn", "homigrad-inventory", function(ply)
+hook.Add("ZC_PlayerSpawn", "ZC_SyncInventoryState", function(ply)
     hg.CreateInv(ply)
     ply.armors = {}
     ply.armors_health = {}
     ply:SyncArmor()
 end)
 
-hook.Add("WeaponEquip", "homigrad-inventory", function(wep, ply)
+hook.Add("WeaponEquip", "ZC_SyncInventoryState", function(wep, ply)
     local inv = ply.inventory or {}
     if blackList[wep:GetClass()] then return end
 
@@ -106,7 +106,7 @@ hook.Add("WeaponEquip", "homigrad-inventory", function(wep, ply)
     ply:SetNetVar("Inventory", inv)
 end)
 
-hook.Add("PlayerDroppedWeapon", "homigrad-inventory", function(ply, wep)
+hook.Add("PlayerDroppedWeapon", "ZC_SyncInventoryState", function(ply, wep)
     local inv = ply.inventory or {}
     if ply:IsNPC() then return end
     if blackList[wep:GetClass()] then return end
@@ -116,7 +116,7 @@ hook.Add("PlayerDroppedWeapon", "homigrad-inventory", function(ply, wep)
     ply:SetNetVar("Inventory", inv)
 end)
 
-hook.Add("PlayerAmmoChanged", "homigrad-inventory", function(ply,ammoID,oldcount,newcount)
+hook.Add("PlayerAmmoChanged", "ZC_SyncInventoryState", function(ply,ammoID,oldcount,newcount)
     if not ply.inventory then return end
     ply.inventory.Ammo = ply:GetAmmo()
     ply:SetNetVar("Inventory", ply.inventory)
@@ -135,7 +135,7 @@ hook.Add("PlayerAmmoChanged", "homigrad-inventory", function(ply,ammoID,oldcount
 end)
 
 local vecZero = Vector(0, 0, 0)
-hook.Add("PlayerDropWeapon", "homigrad-inventory", function(ply)
+hook.Add("ZC_PlayerDropWeapon", "ZC_SyncInventoryState", function(ply)
     local wep = ply:GetActiveWeapon()
     if not IsValid(wep) or wep.NoDrop then return end
     local eyeAngles = ply:EyeAngles()
@@ -202,13 +202,13 @@ hook.Add("PlayerDropWeapon", "homigrad-inventory", function(ply)
     end)
 end)
 
-hook.Add("PlayerLoadout", "giveHands", function(ply)
+hook.Add("PlayerLoadout", "ZC_GiveHandsLoadout", function(ply)
     ply:Give("weapon_hands_sh")
     return true
 end)
 
-hook.Add("DoPlayerDeath", "homigrad-inventory", function(ply)
-    hook.Run("PlayerDropWeapon", ply)
+hook.Add("DoPlayerDeath", "ZC_SyncInventoryState", function(ply)
+    hook.Run("ZC_PlayerDropWeapon", ply)
 end)
 
 function hg.TransferItems(ply,ragdoll)
@@ -230,7 +230,7 @@ function hg.TransferItems(ply,ragdoll)
 		ply:SetNetVar("Inventory",{})
 		ply.inventory = ply:GetNetVar("Inventory",{})
 
-        hook.Run("ItemsTransfered",ply,ragdoll)
+        hook.Run("ZC_ItemsTransferred",ply,ragdoll)
 
 		ragdoll:SetNetVar("Armor",ply.armors)
 		ragdoll.armors = ragdoll:GetNetVar("Armor",{})
@@ -243,7 +243,7 @@ function hg.TransferItems(ply,ragdoll)
 	end
 end
 
-hook.Add("PostPlayerDeath", "homigrad-inventory", function(ply)
+hook.Add("PostPlayerDeath", "ZC_SyncInventoryState", function(ply)
     local ragdoll = ply:GetNWEntity("RagdollDeath")
     hg.RenewInv(ply, true)
     hg.TransferItems(ply, ragdoll)
@@ -351,7 +351,7 @@ local functions = {
             ent:SetNetVar("zableval_masku", false)
         end
 
-        hook.Run("ItemTransfer",ply, ent, placement, armor)
+        hook.Run("ZC_ItemTransferred",ply, ent, placement, armor)
     end,
     ["Attachments"] = function(ply, ent, att)
         att = tonumber(att)
@@ -391,7 +391,7 @@ end)
 util.AddNetworkString("should_open_inv")
 local playerMeta = FindMetaTable("Player")
 function playerMeta:OpenInventory(ent)
-    hook.Run("ZB_InventoryOpened",self,ent)
+    hook.Run("ZC_OnInventoryOpened",self,ent)
     if not IsValid(ent) then return end
     if ent:IsPlayer() and not IsValid(ent.FakeRagdoll) then return end
     if ent:IsPlayer() then hg.RenewInv(ent) end
@@ -414,7 +414,7 @@ function playerMeta:GetLookTrace()
     return util.TraceLine(tr)
 end
 
-hook.Add("Player Think", "loot-fellows",function(ply)
+hook.Add("ZC_PlayerThink", "ZC_UpdateLootFellows",function(ply)
     if not ply:Alive() then return end
     ply.keypressed = ply.keypressed or false
     --if not ply:GetLookTrace() then return end
@@ -433,13 +433,13 @@ hook.Add("Player Think", "loot-fellows",function(ply)
         if not trace then return end
         local ent = trace.Entity
         ent = IsValid(hg.RagdollOwner(ent)) and hg.RagdollOwner(ent) or ent
-		local _, _, canloot = hook.Run("ZB_CanLootInventory", ply, ent, nil)
+		local _, _, canloot = hook.Run("ZC_CanLootInventory", ply, ent, nil)
 		if canloot ~= nil and canloot == false then
 			ply.keypressed = true
 			return
 		end
 
-        hook.Run("ZB_InventoryChecked", ply, ent)
+        hook.Run("ZC_OnInventoryChecked", ply, ent)
 
         if not IsValid(ent) or not ent:GetNetVar("Inventory") then return end
 

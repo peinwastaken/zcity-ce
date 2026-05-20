@@ -1,8 +1,8 @@
 --
 SWEP.WorkWithFake = true
 
-hook.Add("PlayerSwitchWeapon", "homigrad-weapons", function(ply, oldWep, newWep)
-	local switch = hook.Run("PlayerSwitchInFake",ply,oldWep,newWep)
+hook.Add("PlayerSwitchWeapon", "ZC_HandleFakeWeaponSwitch", function(ply, oldWep, newWep)
+	local switch = hook.Run("ZC_OnFakeWeaponSwitch",ply,oldWep,newWep)
 
 	if switch ~= nil then
 		return switch
@@ -45,7 +45,7 @@ hook.Add("PlayerSwitchWeapon", "homigrad-weapons", function(ply, oldWep, newWep)
 	end
 end)
 
-hook.Add("Fake", "weapons", function(ply, ragdoll)
+hook.Add("ZC_OnFakeRagdollCreated", "ZC_Weapons", function(ply, ragdoll)
 	local wep = ply:GetActiveWeapon()
 	if IsValid(wep) and wep.WorkWithFake and IsValid(ply.ActiveWeapon) then
 		ply:SetActiveWeapon(ply.ActiveWeapon)
@@ -143,7 +143,7 @@ function SWEP:RemoveFake()
 	self:SetFakeGun()
 end
 
-hook.Add("AllowPlayerPickup", "homigrad-weapons-pickup-e", function(ply, ent)
+hook.Add("AllowPlayerPickup", "ZC_BlockInvalidWeaponPickup", function(ply, ent)
 	if ply.FakeRagdoll or ent.dontPickup then
 		return false
 	end

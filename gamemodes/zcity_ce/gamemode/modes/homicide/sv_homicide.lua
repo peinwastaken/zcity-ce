@@ -1205,20 +1205,20 @@ function MODE:SendTraitorDeathState(traitor, is_alive)
 end
 
 
-hook.Add("PlayerDeath", "HMCD_TraitorDeathTracking", function(ply, _)
+hook.Add("PlayerDeath", "ZC_TraitorDeathTracking", function(ply, _)
     if ply.isTraitor then
         MODE:SendTraitorDeathState(ply, false)
     end
 end)
 
 
-hook.Add("PlayerSpawn", "HMCD_TraitorSpawnTracking", function(ply)
+hook.Add("PlayerSpawn", "ZC_TraitorSpawnTracking", function(ply)
     if ply.isTraitor then
         MODE:SendTraitorDeathState(ply, true)
     end
 end)
 
-hook.Add("PlayerCanPickupWeapon", "HMCD_TraitorRadioPickup", function( ply, weapon )
+hook.Add("PlayerCanPickupWeapon", "ZC_TraitorRadioPickup", function( ply, weapon )
     if ply.isTraitor and weapon:GetClass() == "weapon_walkie_talkie" then
         if ply:HasWeapon("weapon_walkie_talkie") then
             weapon:Remove()
@@ -1376,7 +1376,7 @@ function MODE:EndRound()
 						net.WriteBool(traitor:Alive())
 					net.Broadcast()
 
-					hook.Run("ZB_TraitorWinOrNot", traitor, winner)
+					hook.Run("ZC_CheckTraitorWin", traitor, winner)
 				end
 
 				for _, traitor in ipairs(traitors) do
@@ -1419,7 +1419,7 @@ function MODE:EndRound()
 					traitor:GiveSkill( -math.Rand(0.05,0.1) )
 				end
 
-				hook.Run("ZB_TraitorWinOrNot", traitor, winner)
+				hook.Run("ZC_CheckTraitorWin", traitor, winner)
 			else
 				PrintMessage(HUD_PRINTTALK, self.Types[self.Type].Messages[winner]..(winner == 0 and (" killed.") or ""))
 				for _, traitor in ipairs(traitors) do
@@ -1428,7 +1428,7 @@ function MODE:EndRound()
 						net.WriteBool(traitor:Alive())
 					net.Broadcast()
 
-					hook.Run("ZB_TraitorWinOrNot", traitor, winner)
+					hook.Run("ZC_CheckTraitorWin", traitor, winner)
 				end
 			end
 		end
@@ -1451,8 +1451,8 @@ function MODE:EndRound()
 	end)
 end
 
--- hook.Add("Player_Death", "HMCD_PlayerDeath", function(_, ply)
-hook.Add("Player_Death", "HMCD_PlayerDeath", function(ply, _)
+-- hook.Add("ZC_PlayerDeath", "ZC_HandleHomicidePlayerDeath", function(_, ply)
+hook.Add("ZC_PlayerDeath", "ZC_HandleHomicidePlayerDeath", function(ply, _)
 	local most_harm,biggest_attacker = 0,nil
 	local last_attacker = nil
 
@@ -1543,7 +1543,7 @@ concommand.Add("hmcd_request_main_traitor", function(ply, cmd, args)
     ply:ChatPrint("true")
 end)
 
-hook.Add("RoundStateChange", "ResetNextRoundMainTraitors", function(old, new)
+hook.Add("ZC_OnRoundStateChange", "ZC_ResetNextRoundMainTraitors", function(old, new)
     if new == 2 then
         MODE.NextRoundMainTraitors = {}
     end
@@ -1795,7 +1795,7 @@ function MODE.SpawnPlayers(spawn_with_subroles)
     end
 end
 
-hook.Add("PlayerSpawn", "HMCD_UpdateTraitorsList", function(ply)
+hook.Add("PlayerSpawn", "ZC_UpdateTraitorsList", function(ply)
 	if not ply.isTraitor then return end
 
 	timer.Simple(0.5, function()
@@ -1835,7 +1835,7 @@ hook.Add("PlayerSpawn", "HMCD_UpdateTraitorsList", function(ply)
 	end)
 end)
 
-hook.Add("PlayerDeath", "HMCD_UpdateTraitorsList", function(ply)
+hook.Add("PlayerDeath", "ZC_UpdateTraitorsList", function(ply)
 	if not ply.isTraitor then return end
 
 	timer.Simple(0.1, function()

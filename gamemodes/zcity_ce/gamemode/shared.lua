@@ -45,10 +45,10 @@ end
 local spawn = {"PlayerGiveSWEP", "PlayerSpawnEffect", "PlayerSpawnNPC", "PlayerSpawnObject", "PlayerSpawnProp", "PlayerSpawnRagdoll", "PlayerSpawnSENT", "PlayerSpawnSWEP", "PlayerSpawnVehicle"}
 
 for _, v in ipairs(spawn) do
-	hook.Add(v, "BlockSpawn", BlockSpawn)
+	hook.Add(v, "ZC_BlockSandboxSpawn", BlockSpawn)
 end
 
-hook.Add( "PlayerNoClip", "FeelFreeToTurnItOff", function( ply, desiredState )
+hook.Add( "PlayerNoClip", "ZC_RestrictNoclip", function( ply, desiredState )
 	if ( desiredState == false ) then -- the player wants to turn noclip off
 		return true -- always allow
 	elseif ( ply:IsAdmin() ) then
@@ -59,13 +59,13 @@ hook.Add( "PlayerNoClip", "FeelFreeToTurnItOff", function( ply, desiredState )
 end )
 
 if CLIENT then
-	hook.Add( "PlayerBindPress", "PlayerBindPressExample", function( ply, bind, pressed )
+	hook.Add( "PlayerBindPress", "ZC_HandleSpawnMenuBind", function( ply, bind, pressed )
 		if ( string.find( bind, "+menu" ) ) then
 			--return true
 		end
 	end )
 
-	hook.Add( "SpawnMenuOpen", "SpawnMenuWhitelist", function()
+	hook.Add( "SpawnMenuOpen", "ZC_BlockSpawnMenu", function()
 		local ply = LocalPlayer()
 		if ply:IsSuperAdmin() then return end
 		if ply:IsAdmin() then return end

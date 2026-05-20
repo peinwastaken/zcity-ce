@@ -68,7 +68,7 @@ module[2] = function(owner, org, timeValue)
     end
 end
 
-hook.Add("Org Think", "VirusRandomEvents", function(owner, org, timeValue)
+hook.Add("ZC_OrganismThink", "ZC_VirusRandomEvents", function(owner, org, timeValue)
     if not owner:IsPlayer() or not owner:Alive() then return end
     if owner:IsPlayer() and owner.Virus and owner.Virus.Infected and (owner.Virus.Stage == 1 or owner.Virus.Stage == 2) then
         if not owner.NextVirusRandomEventTime or CurTime() >= owner.NextVirusRandomEventTime then
@@ -79,7 +79,7 @@ hook.Add("Org Think", "VirusRandomEvents", function(owner, org, timeValue)
     end
 end)
 
-hook.Add("Org Think", "TemperatureSounds", function(owner, org, timeValue) -- added sounds at low temperature lol))
+hook.Add("ZC_OrganismThink", "ZC_TemperatureSounds", function(owner, org, timeValue) -- added sounds at low temperature lol))
     if not owner:IsPlayer() or not owner:Alive() or org.unconscious then return end
     if owner:IsPlayer() and org.temperature > 24 and org.temperature < 35 then
         if not owner.ColdRandomEventTime or CurTime() >= owner.ColdRandomEventTime then

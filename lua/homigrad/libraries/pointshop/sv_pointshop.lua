@@ -4,7 +4,7 @@ hg.Pointshop = hg.Pointshop or {}
 local PLUGIN = hg.Pointshop
 PLUGIN.PlayerInstances = PLUGIN.PlayerInstances or {}
 
-hook.Add("DatabaseConnected", "PointshopCreateData", function()
+hook.Add("ZC_OnDatabaseConnected", "ZC_PointshopCreateData", function()
 	local query
 
 	query = mysql:Create("hg_pointshop")
@@ -16,7 +16,7 @@ hook.Add("DatabaseConnected", "PointshopCreateData", function()
 		query:PrimaryKey("steamid")
 	query:Execute()
 
-    --hook.Run("ZPointshopLoaded")
+    --hook.Run("ZC_OnPointshopLoaded")
 
     PLUGIN.Active = true
 end)
@@ -24,7 +24,7 @@ end)
 --local query = mysql:Drop("zb_experience")
 --query:Execute()
 
-hook.Add( "PlayerInitialSpawn","Pointshop_OnInitSpawn", function( ply )
+hook.Add( "PlayerInitialSpawn","ZC_PointshopOnInitSpawn", function( ply )
     local name = ply:Name()
 	local steamID64 = ply:SteamID64()
 
@@ -272,7 +272,7 @@ net.Receive("hg_pointshop_net",function( _, ply )
     funcstring( PLUGIN, ply, unpack(vars) )
 end)
 
-hook.Add("HG_PlayerSay","OpenPointShop",function(ply, txtTbl, txt)
+hook.Add("ZC_OnPlayerSay","ZC_OpenPointShop",function(ply, txtTbl, txt)
     if txt == "!pointshop" then
         ply:ConCommand("hg_pointshop")
     end

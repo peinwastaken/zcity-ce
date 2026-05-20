@@ -1406,7 +1406,7 @@ hg.Accessories = {
     },
 }
 
-hook.Add("Think","RemoveME",function()
+hook.Add("Think","ZC_RegisterPointshopAccessories",function()
     hg.PointShop = hg.PointShop or {}
 
     local PLUGIN = hg.PointShop
@@ -1419,5 +1419,5 @@ hook.Add("Think","RemoveME",function()
         PLUGIN:CreateItem( k, string.NiceName( acces.name or k ), acces.model, acces.bodygroups, acces.skin, acces.vpos or Vector(0,0,0), acces.price, acces.isdpoint, {[0] = acces.SubMat} )
     end
 
-    hook.Remove( "Think", "RemoveME" )
+    hook.Remove( "Think", "ZC_RegisterPointshopAccessories" )
 end)

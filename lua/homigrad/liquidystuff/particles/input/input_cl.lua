@@ -16,7 +16,7 @@ end
 
 net.Receive("gas particle", function() addGasPart(net.ReadVector(), net.ReadVector(), mats[math.random(#mats)], math.random(5, 8), math.random(5, 8), net.ReadEntity()) end)
 --[[
-hook.Add("Think","liquid_drum_pour",function()
+hook.Add("Think","ZC_LiquidDrumPour",function()
 	for i = 1, #drums do
 		if not IsValid(drums[i]) then table.remove(drums,i) continue end
 		
@@ -24,7 +24,7 @@ hook.Add("Think","liquid_drum_pour",function()
 	end
 end)
 
-hook.Add("OnNetVarSet","liquid_drum",function(index, key, var)
+hook.Add("ZC_OnNetVarSet","ZC_LiquidDrum",function(index, key, var)
 	if key == "pouring" then
 		local ent = Entity(index)
 		if IsValid(ent) then

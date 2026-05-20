@@ -633,14 +633,14 @@ end
 function mysql:OnConnected()
 	MsgC(Color(25, 235, 25), "[mysql] Connected to the database!\n")
 
-	hook.Run("DatabaseConnected")
+	hook.Run("ZC_OnDatabaseConnected")
 end
 
 -- Called when the database connection fails.
 function mysql:OnConnectionFailed(errorText)
 	ErrorNoHalt(string.format("[mysql] Unable to connect to the database!\n%s\n", errorText))
 
-	hook.Run("DatabaseConnectionFailed", errorText)
+	hook.Run("ZC_OnDatabaseConnectionFailed", errorText)
 end
 
 -- A function to check whether or not the module is connected to a database.

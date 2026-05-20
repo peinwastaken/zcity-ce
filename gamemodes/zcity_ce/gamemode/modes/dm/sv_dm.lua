@@ -218,7 +218,7 @@ function MODE:RoundStart()
 end
 
 local cooldown = CurTime()
-hook.Add("Think","bober",function(ply)
+hook.Add("Think","ZC_DmModeThink",function(ply)
 	local rnd = CurrentRound()
 	if not rnd or rnd.name != "dm" then return end
 	if (zb.ROUND_START or CurTime()) + 20 > CurTime() then return end

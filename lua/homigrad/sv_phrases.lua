@@ -280,7 +280,7 @@ local function PlayClassPhrase(ply, phraseType)
 	ply.lastPhr = randomPhrase
 end
 
-hook.Add("PlayerSpawn","GiveRandomPitch",function(ply)
+hook.Add("PlayerSpawn","ZC_GiveRandomPitch",function(ply)
 	if OverrideSpawn then return end
 
 	ply.VoicePitch = mRandom(93, 107)
@@ -289,7 +289,7 @@ end)
 util.AddNetworkString("hg_phrase")
 net.Receive("hg_phrase", function(len, ply)
 	if (ply.phrCld or 0) > CurTime() then return end
-	local result = hook.Run("HG_CanDoPhrase", ply, cmd, args) // return here true to reject phrase
+	local result = hook.Run("ZC_CanUsePhrase", ply, cmd, args) // return here true to reject phrase
 	if result then return end
 
 	local playerClass = ply.PlayerClassName
@@ -337,7 +337,7 @@ net.Receive("hg_phrase", function(len, ply)
 	local pitch = nil
 
 	-- overrides
-	local override_ply, override_phrase, override_muffed, override_pitch = hook.Run("HG_ReplacePhrase", ply, phrase, muffed, pitch) -- pitch means pitched effect, not exact sound pitch
+	local override_ply, override_phrase, override_muffed, override_pitch = hook.Run("ZC_ReplacePhrase", ply, phrase, muffed, pitch) -- pitch means pitched effect, not exact sound pitch
 	if override_ply ~= nil then
 		phrase, muffed, pitch = override_phrase, override_muffed, override_pitch
 	end
@@ -375,13 +375,13 @@ net.Receive("hg_phrase", function(len, ply)
 	ply.lastPhr = phrase
 end)
 
-hook.Add("PlayerDeath", "StopPhrOnDeath",function(ply)
+hook.Add("PlayerDeath", "ZC_StopPhrOnDeath",function(ply)
 	local ent = hg.GetCurrentCharacter(ply)
 	ent:StopSound(ply.lastPhr or "")
 	ply.phrCld = 0
 end)
 
-hook.Add("HG_OnUnconscious", "StopPhrOnUnconscious", function( ply )
+hook.Add("ZC_OnPlayerUnconscious", "ZC_StopPhrOnUnconscious", function( ply )
 	local ent = hg.GetCurrentCharacter(ply)
 	ent:StopSound(ply.lastPhr or "")
 	ply.phrCld = 0
@@ -391,7 +391,7 @@ local femaleCount = 10
 local maleCount = 14
 local clr = Color(204,48,0)
 
-hook.Add("PreHomigradDamage","BurnScream", function( ent, dmgInfo )
+hook.Add("ZC_PreOrganismDamage","ZC_BurnScream", function( ent, dmgInfo )
 	local ply = ent:IsRagdoll() and hg.RagdollOwner(ent) or ent
 
 	if dmgInfo:IsDamageType(DMG_BURN) and IsValid(ply) and ply:IsPlayer()
@@ -399,7 +399,7 @@ hook.Add("PreHomigradDamage","BurnScream", function( ent, dmgInfo )
 		local phrase = "zcitysnd/"..(ThatPlyIsFemale(ply) and "fe" or "").."male/burn/death_burn"..mRandom(1,ThatPlyIsFemale(ply) and femaleCount or maleCount)..".mp3"
 
 		-- overrides
-		override_ply, override_phrase = hook.Run("HG_ReplaceBurnPhrase", ply, phrase)
+		override_ply, override_phrase = hook.Run("ZC_ReplaceBurnPhrase", ply, phrase)
 		if override_ply ~= nil then
 			ply, phrase = override_ply, override_phrase
 		end
@@ -415,7 +415,7 @@ hook.Add("PreHomigradDamage","BurnScream", function( ent, dmgInfo )
 	end
 end)
 
-hook.Add("Org Think", "WhatsSoFunny",function(owner, org, timeValue)
+hook.Add("ZC_OrganismThink", "ZC_PlayBerserkLaughPhrases",function(owner, org, timeValue)
 	if (owner.lastBerserkLaughSoundCD or 0) < CurTime() and !org.unconscious and owner:IsBerserk() and mRandom(1, 50) == 1 then
 		local phrase = (ThatPlyIsFemale(owner) and table.Random(f_laugh)) or table.Random(laugh)
 
@@ -429,7 +429,7 @@ hook.Add("Org Think", "WhatsSoFunny",function(owner, org, timeValue)
 end)
 
 // Stop it in water
-hook.Add("OnEntityWaterLevelChanged","StopPhraseInWater",function(ent,old,new)
+hook.Add("OnEntityWaterLevelChanged","ZC_StopPhraseInWater",function(ent,old,new)
 	if ent:IsPlayer() or ent:IsRagdoll() then
 		local ply = ent:IsRagdoll() and hg.RagdollOwner(ent) or ent
 		local entReal = hg.GetCurrentCharacter(ply)
@@ -443,10 +443,10 @@ end)
 // Context Phrases
 concommand.Add("hg_phrase_context",function(ply, cmd, args)
 	if !IsValid(ply) then return end
-	local result = hook.Run("HG_CanDoPhrase", ply, cmd, args) // return here true to reject phrase
+	local result = hook.Run("ZC_CanUsePhrase", ply, cmd, args) // return here true to reject phrase
 	if result then return end
 
-	result = hook.Run("HG_Phrase_Context", ply, cmd, args) // return here true to reject phrase
+	result = hook.Run("ZC_PhraseContext", ply, cmd, args) // return here true to reject phrase
 	if result then return end
 
 	local phrase = contextPhrases[ThatPlyIsFemale(ply) and 2 or 1][args[1]]
@@ -459,7 +459,7 @@ concommand.Add("hg_phrase_context",function(ply, cmd, args)
 	ply.lastPhr = phrase
 end)
 
-hook.Add("HG_CanDoPhrase", "Pharse_Check", function(ply, cmd, args)
+hook.Add("ZC_CanUsePhrase", "ZC_CheckPhrase", function(ply, cmd, args)
 	if (ply.phrCld or 0) > CurTime() then return true end
 	if ply.PlayerClassName == "Gordon" then return true end // move it to gordon playerclass soon...
 	if !IsValid(ply) or !ply:Alive() or ply:WaterLevel() >= 3 then return true end
@@ -477,7 +477,7 @@ hook.Add("HG_CanDoPhrase", "Pharse_Check", function(ply, cmd, args)
 	if !hg.organism.CanBreath(org) then return true end
 end)
 
-hook.Add("HG_Phrase_Context", "Pharse_Check", function(ply, cmd, args)
+hook.Add("ZC_PhraseContext", "ZC_CheckPhrase", function(ply, cmd, args)
 	local org = ply.organism
 	if !org then return true end
 
@@ -488,7 +488,7 @@ hook.Add("HG_Phrase_Context", "Pharse_Check", function(ply, cmd, args)
 	if (org.pain > 30 or hg.fearful(ply)) and args[1] == "Satisfied" then return true end
 end)
 
-hook.Add("HarmDone", "killmazafaka", function(attacker, victim, amt)
+hook.Add("ZC_OnHarmDone", "ZC_PlayKillPhrase", function(attacker, victim, amt)
 	if !IsValid(attacker) or !attacker:IsPlayer() then return end
 	if !IsValid(victim) or !victim:IsPlayer() then return end
 	if attacker == victim then return end
@@ -506,7 +506,7 @@ hook.Add("HarmDone", "killmazafaka", function(attacker, victim, amt)
 	end
 end)
 
-hook.Add("HarmDone", "MateDead", function(attacker, victim, amt)
+hook.Add("ZC_OnHarmDone", "ZC_MateDead", function(attacker, victim, amt)
 	if !IsValid(victim) or !victim:IsPlayer() then return end
 
 	local victimClass = victim.PlayerClassName
@@ -537,7 +537,7 @@ hook.Add("HarmDone", "MateDead", function(attacker, victim, amt)
 end)
 
 
-hook.Add("HGReloading", "Perezaryad", function(wep)
+hook.Add("ZC_OnWeaponReloading", "ZC_PlayReloadPhrase", function(wep)
 	if CLIENT then return end
 	local ply = wep:GetOwner()
 	if !IsValid(ply) then return end

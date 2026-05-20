@@ -15,7 +15,7 @@ function MODE.DisplayOrganismInfo(organism, ply)
 end
 
 --\\
-hook.Add("HG_PlayerFootstep_Notify", "HMCD_Professions_Abilities", function(ply, pos, foot, snd, volume, filter)
+hook.Add("ZC_PlayerFootstepNotify", "ZC_ProfessionsAbilities", function(ply, pos, foot, snd, volume, filter)
 	ply.ProfessionAbility_FootstepsAmt = ply.ProfessionAbility_FootstepsAmt or 0
 	ply.ProfessionAbility_FootstepsAmt = ply.ProfessionAbility_FootstepsAmt + 1
 
@@ -46,7 +46,7 @@ hook.Add("HG_PlayerFootstep_Notify", "HMCD_Professions_Abilities", function(ply,
 	end
 end)
 
-hook.Add("PlayerPostThink", "HMCD_Professions_Abilities", function(ply)
+hook.Add("PlayerPostThink", "ZC_ProfessionsAbilities", function(ply)
 	if(MODE.RoleChooseRoundTypes[MODE.Type])then
 		if(ply:Alive())then
 			if(ply.Profession == "doctor")then

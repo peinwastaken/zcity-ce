@@ -21,20 +21,20 @@ local gordon_hide = {
 	["CHudSuitPower"] = true,
 }
 
-hook.Add("HUDShouldDraw", "homigrad", function(name)
+hook.Add("HUDShouldDraw", "ZC_HideDefaultHud", function(name)
 	if hide[name] or lply.PlayerClassName and lply.PlayerClassName == "Gordon" and gordon_hide[name] then
 		return false
 	end
 end)
-hook.Add("HUDDrawTargetID", "homigrad", function()
+hook.Add("HUDDrawTargetID", "ZC_HideDefaultTargetId", function()
 	return false
 end)
 
-hook.Add("DrawDeathNotice", "homigrad", function()
+hook.Add("DrawDeathNotice", "ZC_HideDefaultDeathNotice", function()
 	return false
 end)
 
-hook.Add("HUDWeaponPickedUp", "HidePickedStuff", function(wep)
+hook.Add("HUDWeaponPickedUp", "ZC_HidePickupNotifications", function(wep)
 	--if not IsValid(lply) or not lply:Alive() then return end
 	if IsValid(lply) and lply.PlayerClassName and lply.PlayerClassName == "Gordon" then
 		return
@@ -48,7 +48,7 @@ hook.Add("HUDWeaponPickedUp", "HidePickedStuff", function(wep)
 	return false
 end)
 
-hook.Add("HUDAmmoPickedUp", "HidePickedStuff", function(ammoname, amt)
+hook.Add("HUDAmmoPickedUp", "ZC_HidePickupNotifications", function(ammoname, amt)
 	if IsValid(lply) and lply.PlayerClassName and lply.PlayerClassName == "Gordon" then
 		return
 	end
@@ -56,7 +56,7 @@ hook.Add("HUDAmmoPickedUp", "HidePickedStuff", function(ammoname, amt)
 	return false
 end)
 
-hook.Add("HUDItemPickedUp", "HidePickedStuff", function(itemname)
+hook.Add("HUDItemPickedUp", "ZC_HidePickupNotifications", function(itemname)
 	if IsValid(lply) and lply.PlayerClassName and lply.PlayerClassName == "Gordon" then
 		return
 	end
@@ -64,7 +64,7 @@ hook.Add("HUDItemPickedUp", "HidePickedStuff", function(itemname)
 	return false
 end)
 
-hook.Add("HUDDrawPickupHistory", "HidePickedStuff", function()
+hook.Add("HUDDrawPickupHistory", "ZC_HidePickupNotifications", function()
 	if IsValid(lply) and lply.PlayerClassName and lply.PlayerClassName == "Gordon" then
 		return
 	end
@@ -143,7 +143,7 @@ surface.CreateFont("HomigradFontVSmall", {
 	outline = false
 })
 
-hook.Add("HUDPaint", "homigrad-dev", function()
+hook.Add("HUDPaint", "ZC_DrawSandboxDeveloperHud", function()
 	if engine.ActiveGamemode() ~= "sandbox" then return end
 	w, h = ScrW(), ScrH()
 end)
@@ -208,13 +208,13 @@ local function CreateRadialMenu(options_arg, bAutoClose)
 	local paining = lply.organism and lply.organism.pain and (lply.organism.pain > 100 or lply.organism.brain > 0.2) or false
 
 	if !options_arg then
-		local functions = hook.GetTable()["radialOptions"]
+		local functions = hook.GetTable()["ZC_RadialOptions"]
 		for _, func in SortedPairs(functions) do
 			func()
 		end
 	end
 
-	//hook_Run("radialOptions")
+	//hook_Run("ZC_RadialOptions")
 	local options1 = options_arg or hg.radialOptions
 
 	hg.radialOptions = options1
@@ -254,7 +254,7 @@ local function CreateRadialMenu(options_arg, bAutoClose)
 			if thinkwait > CurTime() then return end
 			thinkwait = CurTime() + 0.25
 			table.Empty(hg.radialOptions)
-			local functions = hook.GetTable()["radialOptions"]
+			local functions = hook.GetTable()["ZC_RadialOptions"]
 
 			for _, func in SortedPairs(functions) do
 				//if i == "zmeyka_test" then continue end
@@ -387,7 +387,7 @@ local function PressRadialMenu(mouseClick)
 	local options = hg.radialOptions
 	--print(options[current_option][1])
 	--[[if lply.organism and lply.organism.pain and lply.organism.pain > 100 then
-		hook_Run("RadialMenuPressed")
+		hook_Run("ZC_RadialMenuPressed")
 
 		if IsValid(menuPanel) then
 			menuPanel:Close()
@@ -396,7 +396,7 @@ local function PressRadialMenu(mouseClick)
 		return
 	end--]]
 
-	hook_Run("RadialMenuPressed")
+	hook_Run("ZC_RadialMenuPressed")
 
 	local needed_mouseclick
 	if IsValid(menuPanel) and options[current_option] and isMouseOnRadial then
@@ -421,9 +421,9 @@ local firstTime6 = true
 
 -- first time?..
 
-hook.Add("HG_OnUnconscious", "resetshit", function(ply)
+hook.Add("ZC_OnPlayerUnconscious", "ZC_ResetHudState", function(ply)
 	if ply == lply then
-		hook_Run("RadialMenuPressed")
+		hook_Run("ZC_RadialMenuPressed")
 
 		if IsValid(menuPanel) then
 			menuPanel:Close()
@@ -431,7 +431,7 @@ hook.Add("HG_OnUnconscious", "resetshit", function(ply)
 	end
 end)
 
-hook.Add( "PlayerBindPress", "PlayerBindPressExample2huy", function( ply, bind, pressed )
+hook.Add( "PlayerBindPress", "ZC_HandleRadialMenuBind", function( ply, bind, pressed )
 	if string.find(bind, "+menu") then
 
 		if (lply.organism and lply.organism.unconscious) then
@@ -452,11 +452,11 @@ hook.Add( "PlayerBindPress", "PlayerBindPressExample2huy", function( ply, bind, 
 	end
 end)
 
-hook.Add("Think", "hg-radial-menu", function()
+hook.Add("Think", "ZC_RadialMenu", function()
 	if (lply.organism and lply.organism.unconscious) then
 
 		if IsValid(menuPanel) then
-			hook_Run("RadialMenuPressed")
+			hook_Run("ZC_RadialMenuPressed")
 			menuPanel:Close()
 		end
 
@@ -518,7 +518,7 @@ local function dropWeapon()
 	RunConsoleCommand("drop")
 end
 
-hook.Add("radialOptions", "77", function()
+hook.Add("ZC_RadialOptions", "ZC_DropWeaponRadialOption", function()
 	local organism = lply.organism or {}
 	if not organism.unconscious and IsValid(lply:GetActiveWeapon()) and lply:GetActiveWeapon():GetClass() ~= "weapon_hands_sh" and lply:KeyDown(IN_WALK) then
 		local tbl = {dropWeapon, "Drop Weapon"}
@@ -544,7 +544,7 @@ concommand.Add("hg_randomgesture",function()
 	randomGesture()
 end)
 
-hook.Add("radialOptions", "7", function()
+hook.Add("ZC_RadialOptions", "ZC_GestureRadialOption", function()
     local ply = LocalPlayer()
     local organism = ply.organism or {}
 
@@ -592,12 +592,12 @@ surface.CreateFont("HG_font", {
 })
 
 
---hook.Add("HUDPaint","homigrad-copyright",function()
+--hook.Add("HUDPaint","ZC_DrawCopyrightHud",function()
 	--local i = 1
 	--CopyRight("WAIT FOR DOX, WAIT FOR SWAT","HomigradFontBig",ScrW()/2 +(math.cos(CurTime()*1)*15*i),ScrH()/2+(math.sin(CurTime()*1)*55*i)+15,Color(255,255,255),math.cos(CurTime()*1)*1,2+math.sin(CurTime()*1)*0.5)
 --end)
 
-hook.Add("HUDPaint","Identifier",function()
+hook.Add("HUDPaint","ZC_Identifier",function()
 	if lply.organism and lply.organism.unconscious then return end
 	if !lply:Alive() then return end
 	if lply:GetNetVar("disappearance", nil) then return end
@@ -630,7 +630,7 @@ end)
 --sound.PlayURL("https://cdn.discordapp.com/attachments/1254022273661145108/1257385761414582382/pon_pon_016eb317d_1.mp4?ex=66882bbe&is=6686da3e&hm=429f0e4427bdc9d80673d3bfa2eccf48221ae5572ec508fb7699274c2c7041ef&","",function() end)
 
 function scare()
-	-- hook.Add("RenderScreenspaceEffects","Scare",function()
+	-- hook.Add("RenderScreenspaceEffects","ZC_Scare",function()
 		-- for i = 1, 5 do
 		-- CopyRight("Plyviski","HomigradFontBig",ScrW()/2 +(math.cos(CurTime()*1)*15*i),ScrH()/2+(math.sin(CurTime()*1)*55*i)+15,Color(255,255,255),math.cos(CurTime()*1)*1,2+math.sin(CurTime()*1)*0.5)
 		-- end
@@ -645,7 +645,7 @@ local zc_hints = ConVarExists("zc_hints") and GetConVar("zc_hints") or CreateCli
 
 local HintBackgroundColor = Color( 0, 0, 0, 200 )
 
-hook.Add("HUDPaint","EntHints",function()
+hook.Add("HUDPaint","ZC_EntHints",function()
 	if not zc_hints:GetBool() then return end
 	if lply.organism and lply.organism.unconscious then return end
 	if !lply:Alive() then return end
@@ -683,7 +683,7 @@ function hg.BasicHudHint(ent, trace)
 end
 
 
-hook.Add("HUDPaint","afflictionlist",function()
+hook.Add("HUDPaint","ZC_AfflictionList",function()
 	--[[if lply.organism and lply.organism.unconscious then return end
 	if !lply:Alive() then return end
 
@@ -712,7 +712,7 @@ end)
 -- Now playable :steamhappy:
 -- No. fuc kyouy
 if game.SinglePlayer() then
-	hook.Add("HUDPaint","Exit the singleplayer",function()
+	hook.Add("HUDPaint","ZC_ExitTheSingleplayer",function()
 		draw.SimpleText("Z-City is not meant to be played in singleplayer, in map selection menu change SINGLEPLAYER (green button top right corner) to 2 players or any.", "HomigradFontMedium", ScrW() / 2,ScrH() / 2, nil, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		draw.SimpleText("A lot of stuff won't work and we won't provide any fixes to singleplayer EVER", "HomigradFontMedium", ScrW() / 2,ScrH() * 7 / 12, nil,TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end)

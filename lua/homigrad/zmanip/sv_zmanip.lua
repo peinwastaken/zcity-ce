@@ -10,7 +10,7 @@ function hg.RunZManipAnim(ply, anim, revers, timeOveride, additionalTbl)
 	net.SendPVS(ply:GetPos())
 end
 
-hook.Add("PlayerUse", "ZManipUseAnim", function(ply, ent)
+hook.Add("PlayerUse", "ZC_ZManipUseAnim", function(ply, ent)
 	--print(ent,ent.Use)
 	if IsValid(ent) and !ent:IsRagdoll() and ent.Use and (!ply.ZManipInteractCD or ply.ZManipInteractCD < CurTime()) and !hgIsDoor(ent) then
 		if string.find(ent:GetClass(), "prop") or string.find(ent:GetClass(), "breakable") or string.find(ent:GetClass(), "ladder") then return end
@@ -25,7 +25,7 @@ hook.Add("PlayerUse", "ZManipUseAnim", function(ply, ent)
 	end
 end)
 
-hook.Add("Player Think", "ZManipSwimAnim", function(ply, time, dtime)
+hook.Add("ZC_PlayerThink", "ZC_ZManipSwimAnim", function(ply, time, dtime)
 	if ply:WaterLevel() > 0 and !ply:IsOnGround() and ply:GetVelocity():LengthSqr() > 3000 and (!ply.ZManipSwimCD or ply.ZManipSwimCD < CurTime()) then
 		ply.ZManipSwimCD = CurTime() + 0.95
 		if not (ply:WaterLevel() > 2) then

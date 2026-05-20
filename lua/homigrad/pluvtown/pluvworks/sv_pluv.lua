@@ -16,11 +16,11 @@ PLUGIN.AddHook("PlayerDeath", function(ply)
     end
 end)
 
-PLUGIN.AddHook("Fake", function(ply, ragdoll)
+PLUGIN.AddHook("ZC_OnFakeRagdollCreated", function(ply, ragdoll)
     ragdoll:SetNetVar("CurPluv", ply:GetNetVar("CurPluv", "pluv"))
 end)
 
-PLUGIN.AddHook("Org Think", function(ply, org)
+PLUGIN.AddHook("ZC_OrganismThink", function(ply, org)
     if ply:GetNetVar("CurPluvLayer") != "cry" and ply:GetNetVar("CurPluvLayer") != "dead" and org.pain >= 20 then
         ply:SetNetVar("CurPluvLayer", "cry")
 

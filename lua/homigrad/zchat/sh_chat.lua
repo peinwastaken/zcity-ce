@@ -14,11 +14,11 @@ if CLIENT then
 		hg.chat = vgui.Create("zChatbox")
 	end
 
-	hook.Add("InitPostEntity", "ZChat", function()
+	hook.Add("InitPostEntity", "ZC_InitZChat", function()
 		CreateChat()
 	end)
 
-	hook.Add("PlayerStartVoice","RemoveVoicePanles",function(ply)
+	hook.Add("PlayerStartVoice", "ZC_SuppressVoicePanelsWhileAlive",function(ply)
 		if !IsValid(ply) then return end
 
 		local other_alive = (ply:Alive() and LocalPlayer() != ply) or (ply.organism and (ply.organism.unconscious or (ply.organism.brain and ply.organism.brain > 0.05)))
@@ -28,7 +28,7 @@ if CLIENT then
 
 	-- CreateChat()
 
-	hook.Add("PlayerBindPress", "ZChat", function(client, bind, pressed)
+	hook.Add("PlayerBindPress", "ZC_HandleZChatBind", function(client, bind, pressed)
 		bind = bind:lower()
 
 		if (bind:find("messagemode") and pressed) then
@@ -38,14 +38,14 @@ if CLIENT then
 		end
 	end)
 
-	hook.Add("OnShowZCityPause", "ZChat", function()
+	hook.Add("ZC_OnShowPause", "ZC_CloseZChatOnPause", function()
 		if !hg.chat:GetActive() then return end
 		hg.chat:SetActive(false)
 
 		return false
 	end)
 
-	hook.Add("HUDShouldDraw", "ZChat", function(name)
+	hook.Add("HUDShouldDraw", "ZC_HideDefaultChatHud", function(name)
 		if (name == "CHudChat") then
 			return false
 		end
@@ -74,7 +74,7 @@ if CLIENT then
 		chat.AddText(unpack(buffer))
 	end)
 
-	hook.Add("ChatText", "ZChat", function(index, name, text, messageType)
+	hook.Add("ChatText", "ZC_RouteEngineChatToZChat", function(index, name, text, messageType)
 		if (IsValid(hg.chat)) then
 			hg.chat:AddMessage(text)
 		end
@@ -169,7 +169,7 @@ if CLIENT then
 
 	LoadFonts()
 
-	hook.Add("ModifyMessageBuffer", "ChatFont", function(buffer, speaker)
+	hook.Add("ZC_ModifyMessageBuffer", "ZC_ChatFont", function(buffer, speaker)
 		if !IsValid(speaker) or !speaker:IsPlayer() then return end
 
 		if speaker:IsBerserk() then
@@ -177,13 +177,13 @@ if CLIENT then
 		end
 	end)
 
-	hook.Add("StartChat", "TypingBool", function()
+	hook.Add("StartChat", "ZC_TypingBool", function()
 		net.Start("zChatTyping")
 			net.WriteBool(true)
 		net.SendToServer()
 	end)
 
-	hook.Add("FinishChat", "TypingBool", function()
+	hook.Add("FinishChat", "ZC_TypingBool", function()
 		net.Start("zChatTyping")
 			net.WriteBool(false)
 		net.SendToServer()
@@ -197,7 +197,7 @@ if CLIENT then
 
 	local ghost = Color(118, 159, 255)
 	local dead = Color(255, 0, 0)
-	hook.Add("OnPlayerChat", "ZChatDead", function(ply, text, bTeam, bDead, bWhisper)
+	hook.Add("OnPlayerChat", "ZC_FormatDeadPlayerChat", function(ply, text, bTeam, bDead, bWhisper)
 		if ( ply:IsPlayer() and !ply:Alive() ) then
 			chat.AddText( dead, "*DEAD* ", ghost, ply:Nick(), ghost, ": "..text )
 			return true
@@ -220,9 +220,9 @@ else
 		hook.Run("PlayerSay", ply, text)
 	end)
 
-	hook.Add("PlayerSay", "ZChat", function(ply, text)
+	hook.Add("PlayerSay", "ZC_ProcessZChatPlayerSay", function(ply, text)
  		local txtTbl = {text}
-		hook.Run("HG_PlayerSay", ply, txtTbl, text) // our shit gets called later
+		hook.Run("ZC_OnPlayerSay", ply, txtTbl, text) // our shit gets called later
 		text = isstring(txtTbl[1]) and txtTbl[1] or text // checks to see if shit hits the ceiling
 
 		if text == "" then return end

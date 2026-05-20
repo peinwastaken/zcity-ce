@@ -91,7 +91,7 @@ function CLASS.Off(self)
 	self:SetNWString("PlayerRole", nil)
     self.organism.CantCheckPulse = nil
     self.leader = nil
-	hook.Remove("OnEntityCreated", "relation_shipdo"..self:EntIndex())
+	hook.Remove("OnEntityCreated", "ZC_UpdateNpcRelationships" .. self:EntIndex())
 end
 
 
@@ -187,8 +187,8 @@ function CLASS.On(self, data)
     end
 
     local index = self:EntIndex()
-    hook.Add( "OnEntityCreated", "relation_shipdo"..index, function( ent )
-        if not IsValid(self) then hook.Remove("OnEntityCreated","relation_shipdo"..index) return end
+    hook.Add( "OnEntityCreated", "ZC_UpdateNpcRelationships" .. index, function( ent )
+        if not IsValid(self) then hook.Remove("OnEntityCreated","ZC_UpdateNpcRelationships" .. index) return end
         if ( ent:IsNPC() ) then
             --print(ent:GetClass())
             if table.HasValue(combines,ent:GetClass()) then
@@ -224,7 +224,7 @@ function CLASS.PlayerDeath(self)
 
     EmitSound( "npc/metropolice/die" .. math.random(1,4) .. ".wav", self:GetPos() )
 
-    hook.Remove( "OnEntityCreated", "relation_shipdo"..self:EntIndex())
+    hook.Remove( "OnEntityCreated", "ZC_UpdateNpcRelationships" .. self:EntIndex())
 end
 
 if SERVER then
@@ -234,7 +234,7 @@ if SERVER then
 		mtcop_phrases[k] = "npc/metropolice/vo/" .. v
 	end
 
-	hook.Add("HG_ReplacePhrase", "metropolice_phrase", function(ply, phrase, muffed, pitch)
+	hook.Add("ZC_ReplacePhrase", "ZC_MetropolicePhrase", function(ply, phrase, muffed, pitch)
 		if IsValid(ply) and ply.PlayerClassName == "Metrocop" then
 			return ply, mtcop_phrases[math.random(#mtcop_phrases)], muffed, pitch
 		end
@@ -243,7 +243,7 @@ end
 
 if CLIENT then
     local cmb_mat = Material("sprites/mat_jack_helmoverlay_r")
-    hook.Add("PostDrawHUD","Metrocop_helmet",function()
+    hook.Add("PostDrawHUD","ZC_MetrocopHelmet",function()
         local lply = LocalPlayer()
         if lply:Alive() and lply.PlayerClassName == "Metrocop" then
 

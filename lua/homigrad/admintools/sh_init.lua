@@ -63,13 +63,13 @@ function hg.AdminTools:Timer( str, time )
     local Text = str
     local Timer = time - CurTime()
     local RTimer = time - CurTime()
-    hook.Remove("HUDPaint","HG_AT_Timer")
-    hook.Add("HUDPaint","HG_AT_Timer",function()
+    hook.Remove("HUDPaint","ZC_ATTimer")
+    hook.Add("HUDPaint","ZC_ATTimer",function()
         FirstTime = LerpFT( 0.2, FirstTime, time > CurTime() - 3 and 1 or 0)
         if time < CurTime() then
             Timer = 0
             if FirstTime < 0.01 then
-                hook.Remove("HUDPaint","HG_AT_Timer")
+                hook.Remove("HUDPaint","ZC_ATTimer")
             end
             local beep = math.ceil(math.cos(CurTime() * 12))
             if beep == 0 then

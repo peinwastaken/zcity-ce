@@ -136,15 +136,15 @@ end
 
 hg.CreateNotification = CreateNotification
 
-hook.Add("Player Spawn","removeNotifications",function(ply)
+hook.Add("ZC_PlayerSpawn","ZC_ClearNotifications",function(ply)
     ply.msgs = {}
 end)
 
-hook.Add("HG_OnUnconscious","removeNotifications",function(ply)
+hook.Add("ZC_OnPlayerUnconscious","ZC_ClearNotifications",function(ply)
     ply.msgs = {}
 end)
 
-hook.Add("Player_Death","removeNotifications",function(ply)
+hook.Add("ZC_PlayerDeath","ZC_ClearNotifications",function(ply)
     ply.msgs = {}
 end)
 

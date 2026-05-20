@@ -74,7 +74,7 @@ if SERVER then
 		return true
 	end
 
-	hook.Add("Player Spawn", "homigrad-weapons-inv2", function(ply)
+	hook.Add("ZC_PlayerSpawn", "ZC_ClearWeaponInventoryOnSpawn", function(ply)
 		ply.weaponInv = ply.weaponInv or {}
 		ply.ammoInv = ply.weaponInv or {}
 		for k in pairs(ply.weaponInv) do
@@ -85,7 +85,7 @@ if SERVER then
 			ply.ammoInv[k] = nil
 		end
 
-		if hook.Run("WeaponsInv Loadout", ply) == nil then
+		if hook.Run("ZC_WeaponsInventoryLoadout", ply) == nil then
 			weaponInv.CreateLimit(ply, 1, 1) --main
 			weaponInv.CreateLimit(ply, 2, 2) --secondary
 			weaponInv.CreateLimit(ply, 3, 1) --melee
@@ -97,19 +97,19 @@ if SERVER then
 		weaponInv.Sync(ply)
 	end)
 
-	hook.Add("WeaponEquip", "homigrad", function(wep, ply)
+	hook.Add("WeaponEquip", "ZC_AddEquippedWeaponToInventory", function(wep, ply)
 		if weaponInv.Insert(ply, wep) then
 			weaponInv.Sync(ply)
 			return
 		end
 	end)
 
-	hook.Add("PlayerDroppedWeapon", "homigrad-weaponInv", function(ply, wep)
+	hook.Add("PlayerDroppedWeapon", "ZC_RemoveDroppedWeaponFromInventory", function(ply, wep)
 		weaponInv.Remove(ply, wep)
 		weaponInv.Sync(ply)
 	end)
 
-	hook.Add("PlayerCanPickupWeapon", "homigrad-weapons", function(ply, wep)
+	hook.Add("PlayerCanPickupWeapon", "ZC_CheckWeaponInventoryPickup", function(ply, wep)
 		if wep.init and ((ply:GetUseEntity() ~= wep or not ply:KeyPressed(IN_USE)) and not ply.force_pickup) then return false end
 		if wep.init and wep.IsSpawned and ((ply.cooldown_grab or 0) > CurTime()) and not ply.force_pickup then return false end
 		if wep.PickupFunc and (wep:PickupFunc(ply) == true) then return false end

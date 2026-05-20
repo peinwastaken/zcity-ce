@@ -1,7 +1,7 @@
 local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 --\\ Inertia & stuff
 	--\\ Antibhop accelerate (not used anyway)
-		--[[hook.Add("OnPlayerHitGround", "Movement", function(ply, inWater, onFloater, speed)
+		--[[hook.Add("OnPlayerHitGround", "ZC_Movement", function(ply, inWater, onFloater, speed)
 			local vel = ply:GetVelocity()
 
 			if (ply.MovementInertia and vel:LengthSqr() > 10000) then
@@ -49,7 +49,7 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 
 
 	local vomitVPAng, vecZero = Angle(1, 0, 0), Vector()
-	hook.Add("SetupMove", "HG(StartCommand)", function(ply, mv, cmd)
+	hook.Add("SetupMove", "ZC_StartCommand", function(ply, mv, cmd)
 		--\\ DeltaTime
 			ply.LastStartCommand = ply.LastStartCommand or SysTime()
 			local delta_time = SysTime() - ply.LastStartCommand--FrameTime()
@@ -90,8 +90,8 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 		end
 
 		if (ply:GetMoveType() == MOVETYPE_NOCLIP) then
-			hook.Run("HG_MovementCalc", vecZero, 0, 1, ply, cmd, mv)
-			hook.Run("HG_MovementCalc_2", {1}, ply, cmd, mv)
+			hook.Run("ZC_CalculateMovement", vecZero, 0, 1, ply, cmd, mv)
+			hook.Run("ZC_CalculateMovementModifiers", {1}, ply, cmd, mv)
 
 			return
 		end
@@ -215,11 +215,11 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 
 		ply.InertiaBlend = ply.InertiaBlend * inertia_blend_mul
 
-		hook.Run("HG_MovementCalc", vel, velLen, weightmul, ply, cmd, mv)
+		hook.Run("ZC_CalculateMovement", vel, velLen, weightmul, ply, cmd, mv)
 
 		local mul = {(ply.move or ply.CurrentSpeed) / ply:GetRunSpeed()}
 
-		hook.Run("HG_MovementCalc_2", mul, ply, cmd, mv)
+		hook.Run("ZC_CalculateMovementModifiers", mul, ply, cmd, mv)
 
 		mul = mul[1]
 
@@ -531,7 +531,7 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 
 --\\ Remove sandbox jump boost
 	local gamemod = engine.ActiveGamemode()
-	hook.Add("PlayerSpawn", "RemoveSandboxJumpBoost", function(ply)
+	hook.Add("PlayerSpawn", "ZC_RemoveSandboxJumpBoost", function(ply)
 		if (gamemod != "sandbox") then return end
 
 		local PLAYER = baseclass.Get("player_sandbox")
@@ -549,7 +549,7 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 --//
 
 --\\ Anti-gmod PVP system (anti crouch spam)
-	hook.Add("StartCommand", "HG_AntiGmodPVP", function(ply, cmd)
+	hook.Add("StartCommand", "ZC_AntiGmodPVP", function(ply, cmd)
 		ply.NowCrouched = cmd:KeyDown(IN_DUCK)
 		ply.OldCrouched = ply.OldCrouched or cmd:KeyDown(IN_DUCK)
 

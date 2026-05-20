@@ -214,7 +214,7 @@ SWEP.OpenBolt = true
 SWEP.Penetration = 10
 function SWEP:ReloadStartPost()
 	if not self or not IsValid(self:GetOwner()) then return end
-	hook.Run("HGReloading", self)
+	hook.Run("ZC_OnWeaponReloading", self)
 end
 
 SWEP.ShockMultiplier = 3

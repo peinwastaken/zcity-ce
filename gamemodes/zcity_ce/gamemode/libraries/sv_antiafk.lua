@@ -9,7 +9,7 @@ local function stopAFK(ply)
     ply.afkIsIdle = nil
 end
 
-hook.Add("PlayerInitialSpawn", "ZB_AnitAfk", function(ply)
+hook.Add("PlayerInitialSpawn", "ZC_ResetAfkActivity", function(ply)
   ply.afkTime = 0
   ply.afkTime2 = 0
   ply.afkIsIdle = true
@@ -45,5 +45,5 @@ timer.Create("ZB_AntiAfkThink",10,0,function()
     end
 end)
 
-hook.Add("KeyPress", "ZB_AnitAfk", stopAFK)
-hook.Add("HG_PlayerSay", "ZB_AnitAfk", stopAFK)
+hook.Add("KeyPress", "ZC_ResetAfkActivity", stopAFK)
+hook.Add("ZC_OnPlayerSay", "ZC_ResetAfkActivity", stopAFK)

@@ -66,7 +66,7 @@ SWEP.Identity = {
 SWEP.IsCostumeActive = false
 
 if SERVER then
-    hook.Add("HG_ReplacePhrase", "costume_pitch", function(ply, phrase, muffed, pitch)
+    hook.Add("ZC_ReplacePhrase", "ZC_CostumePitch", function(ply, phrase, muffed, pitch)
 		if IsValid(ply) then
 			if ply:GetModel() == "models/distac/player/ghostface.mdl" then
 				return ply, phrase, muffed, true

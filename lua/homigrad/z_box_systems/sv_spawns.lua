@@ -42,7 +42,7 @@ end
 
 local minBound, maxBound = -Vector(5000,5000,5000), Vector(5000,5000,5000)
 
-hook.Add("InitPostEntity", "niasas", function()
+hook.Add("InitPostEntity", "ZC_CacheZBoxMapBounds", function()
     minBound, maxBound = getMapBounds()
 end)
 
@@ -60,7 +60,7 @@ end
 
 
 
-Hook["Player Spawn"]= function(ply)
+Hook["ZC_PlayerSpawn"]= function(ply)
     map = map or game.GetMap()
     local spawnPoints = spawns[map]
     local availableSpawnIndex = nil
@@ -91,7 +91,7 @@ Hook["Player Spawn"]= function(ply)
     ply:Give("weapon_spawnmenu_pda")
 end
 
-function Hook.HG_PlayerSay(ply, txtTbl, text)
+function Hook.ZC_OnPlayerSay(ply, txtTbl, text)
     if not ply:IsAdmin() then return end
 
    --local args = string.Split(text, " ")
@@ -193,7 +193,7 @@ function Hook.OnNPCKilled(npc, attacker, inflictor)
     end
 end
 
-function Hook.ZBox_Start()
+function Hook.ZC_StartZBox()
     --SpawnNPCs()
     --CheckAndRespawnNPCs()
 end

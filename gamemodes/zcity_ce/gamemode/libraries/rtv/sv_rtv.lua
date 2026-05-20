@@ -136,7 +136,7 @@ local function getMapsByPrefix(prefix)
     return prefixMaps
 end
 
-hook.Add("InitPostEntity", "zb_GetMaps", function()
+hook.Add("InitPostEntity", "ZC_LoadRtvMaps", function()
     zb.votestarted = false
     getmaps()
 end)
@@ -438,7 +438,7 @@ function zb.StartRTV(time)
     zb.votestarted = true
 
 
-    hook.Add("Think", "RTVThink", zb.ThinkRTV)
+    hook.Add("Think", "ZC_RtvThink", zb.ThinkRTV)
 end
 
 util.AddNetworkString("RTVMenu")
@@ -543,12 +543,12 @@ end
 COMMANDS.rtv = {rtv, 0}
 COMMANDS.кем = {rtv, 0}
 
-hook.Add("ShutDown", "ResetRTVVotesOnMapChange", zb.ClearRTVVotes)
-hook.Add("PostGamemodeLoaded", "InitializeRTVSystem", function()
+hook.Add("ShutDown", "ZC_ResetRTVVotesOnMapChange", zb.ClearRTVVotes)
+hook.Add("PostGamemodeLoaded", "ZC_InitializeRTVSystem", function()
     zb.ClearRTVVotes()
 end)
 
-hook.Add("PlayerDisconnected", "CheckRTVAfterDisconnect", function(ply)
+hook.Add("PlayerDisconnected", "ZC_CheckRTVAfterDisconnect", function(ply)
     if rtvVotes[ply:SteamID()] then
         rtvVotes[ply:SteamID()] = nil
 

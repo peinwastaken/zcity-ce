@@ -2,7 +2,7 @@
 	if CLIENT then
 		hg.cached_children = hg.cached_children or {}
 		CurTime()
-		hook.Add("PostCleanupMap", "just_in_case_children", function()
+		hook.Add("PostCleanupMap", "ZC_ClearCachedBoneChildren", function()
 			hg.cached_children = {}
 			huytimer = CurTime()
 		end)

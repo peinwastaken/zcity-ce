@@ -63,7 +63,7 @@ local function RemoveCombineFromSquad(ply)
     CombineSquads.playerSquad[ply] = nil
 end
 
-hook.Add("PostCleanupMap", "CombineSquads_Reset", function()
+hook.Add("PostCleanupMap", "ZC_CombineSquadsReset", function()
     CombineSquads.squads = {}
     CombineSquads.playerSquad = {}
     CombineSquads.usedCallsigns = {}
@@ -230,7 +230,7 @@ function CLASS.Off(self)
 	self:SetNWString("PlayerName", self.oldname_cmb or self:GetNWString("PlayerName"))
     self.organism.CantCheckPulse = nil
     self.leader = nil
-	hook.Remove("OnEntityCreated", "relation_shipdo"..self:EntIndex())
+	hook.Remove("OnEntityCreated", "ZC_UpdateNpcRelationships" .. self:EntIndex())
 end
 
 
@@ -334,8 +334,8 @@ function CLASS.On(self, data)
     end
 
     local index = self:EntIndex()
-    hook.Add( "OnEntityCreated", "relation_shipdo"..index, function( ent )
-        if not IsValid(self) then hook.Remove("OnEntityCreated","relation_shipdo"..index) return end
+    hook.Add( "OnEntityCreated", "ZC_UpdateNpcRelationships" .. index, function( ent )
+        if not IsValid(self) then hook.Remove("OnEntityCreated","ZC_UpdateNpcRelationships" .. index) return end
         if ( ent:IsNPC() ) then
             --print(ent:GetClass())
             if table.HasValue(combines,ent:GetClass()) then
@@ -369,7 +369,7 @@ function CLASS.PlayerDeath(self)
         end
     end
 
-    hook.Remove( "OnEntityCreated", "relation_shipdo"..self:EntIndex())
+    hook.Remove( "OnEntityCreated", "ZC_UpdateNpcRelationships" .. self:EntIndex())
 end
 
 if SERVER then
@@ -401,7 +401,7 @@ if SERVER then
 		"npc/combine_soldier/vo/wehavenontaggedviromes.wav"
 	}
 
-	hook.Add("HG_ReplacePhrase", "combine_phrase", function(ply, phrase, muffed, pitch)
+	hook.Add("ZC_ReplacePhrase", "ZC_CombinePhrase", function(ply, phrase, muffed, pitch)
 		if IsValid(ply) and ply.PlayerClassName == "Combine" then
 			return ply, cmb_phrases[math.random(#cmb_phrases)], muffed, pitch
 		end
@@ -673,7 +673,7 @@ if CLIENT then
     end
 
     local cmb_mat = Material("sprites/mat_jack_helmoverlay_r")
-    hook.Add("RenderScreenspaceEffects","Combine_helmet",function()
+    hook.Add("RenderScreenspaceEffects","ZC_CombineHelmet",function()
         local lply = LocalPlayer()
         if lply:Alive() and lply.PlayerClassName == "Combine" then
             local role = lply:GetNWString("PlayerRole")
@@ -699,7 +699,7 @@ if CLIENT then
     end)
 end
 
-hook.Add("HG_CanThoughts", "CombineCantDumat", function(ply)
+hook.Add("ZC_CanShowThoughts", "ZC_CombineBlockThoughts", function(ply)
 	if ply.PlayerClassName == "Combine" then
 		return false
 	end
@@ -707,7 +707,7 @@ end)
 
 --;; Server hooks and footstep/death sounds
 if SERVER then
-    hook.Add("HG_PlayerFootstep","Combine_footsteps",function(ply)
+    hook.Add("ZC_PlayerFootstep","ZC_CombineFootsteps",function(ply)
         local chr = hg.GetCurrentCharacter(ply)
         if ply:Alive() and ply.PlayerClassName == "Combine" then
             --;; If there is a ragdoll, etc.
@@ -719,7 +719,7 @@ if SERVER then
         end
     end)
 
-    hook.Add("HomigradDamage","Combine_painsounds",function(ply, dmgInfo, hitgroup, ent)
+    hook.Add("ZC_OnOrganismDamage","ZC_CombinePainSounds",function(ply, dmgInfo, hitgroup, ent)
         --[[if ply.PlayerClassName == "Combine" then
             ply.painCD = ply.painCD or 0
             if hitgroups_sounds[hitgroup] and ply.painCD < CurTime() and ply.organism and not ply.organism.unconscious and ply:Alive() then
@@ -731,7 +731,7 @@ if SERVER then
         end--]]
     end)
 
-    hook.Add("HGReloading","Combine_reloadalert",function(wep)
+    hook.Add("ZC_OnWeaponReloading","ZC_CombineReloadAlert",function(wep)
         local ply = wep:GetOwner()
         if not IsValid(ply) then return end
         local nearPlayers = ents.FindInSphere(ply:GetPos(),300)
@@ -752,13 +752,13 @@ if SERVER then
     util.AddNetworkString("CombineRadioEnd")
     util.AddNetworkString("CombineChatMessage")
 
-    hook.Add("HG_PlayerCanHearPlayersVoice","CombineRadio",function(listener,talker)
+    hook.Add("ZC_CanHearPlayerVoice","ZC_CombineRadio",function(listener,talker)
         if talker.PlayerClassName == "Combine" and listener.PlayerClassName == "Combine" and talker:Alive() then
             return true,false
         end
     end)
 
-    hook.Add("HG_PlayerSay","CombineChatMessage",function(ply, txtTbl, text)
+    hook.Add("ZC_OnPlayerSay","ZC_CombineChatMessage",function(ply, txtTbl, text)
         if ply.PlayerClassName == "Combine" and ply:Alive() and not ply.organism.unconscious then
             ply:EmitSound("npc/metropolice/vo/on1.wav")
         end
@@ -768,18 +768,18 @@ end
 
 if CLIENT then
     local radio_end_sound = Sound("npc/metropolice/vo/off4.wav")
-    hook.Add("PlayerStartVoice","CombineRadioStart",function(ply)
+    hook.Add("PlayerStartVoice","ZC_CombineRadioStart",function(ply)
         if ply.PlayerClassName == "Combine" and ply:Alive() then
             ply:EmitSound(radio_end_sound)
         end
     end)
-    hook.Add("PlayerEndVoice","CombineRadioEnd",function(ply)
+    hook.Add("PlayerEndVoice","ZC_CombineRadioEnd",function(ply)
         if ply.PlayerClassName == "Combine" and ply:Alive() then
             ply:EmitSound(radio_end_sound)
         end
     end)
 
-    hook.Add("HG_NoSoundproof","CombineNoSoundproof",function(pPly, lply)
+    hook.Add("ZC_BypassSoundproofing","ZC_CombineNoSoundproof",function(pPly, lply)
         if pPly.PlayerClassName == "Combine" and pPly:Alive() and lply.PlayerClassName == "Combine" and lply:Alive() then
             return true
         end
@@ -823,7 +823,7 @@ if CLIENT then
             if pnv_enabled then
                 pnv_enabled = false
                 surface.PlaySound("items/nvg_off.wav")
-                hook.Remove("RenderScreenspaceEffects","PNV_ColorCorrection")
+                hook.Remove("RenderScreenspaceEffects","ZC_PNVColorCorrection")
                 if IsValid(pnv_light) then
                     pnv_light:Remove()
                     pnv_light = nil
@@ -838,7 +838,7 @@ if CLIENT then
         if pnv_enabled then
             transitioning = true
             surface.PlaySound("items/nvg_on.wav")
-            hook.Add("RenderScreenspaceEffects","PNV_ColorCorrection",function()
+            hook.Add("RenderScreenspaceEffects","ZC_PNVColorCorrection",function()
                 if ply.PlayerClassName ~= "Combine" then return end
                 local progress = math.min((CurTime() - transition_start)/transition_time,1)
                 local class = ply:GetNWString("PlayerRole")
@@ -853,11 +853,11 @@ if CLIENT then
         else
             transitioning = false
             surface.PlaySound("items/nvg_off.wav")
-            hook.Remove("RenderScreenspaceEffects","PNV_ColorCorrection")
+            hook.Remove("RenderScreenspaceEffects","ZC_PNVColorCorrection")
         end
     end
 
-    hook.Add("RenderScreenspaceEffects","PNV_ColorCorrection",function()
+    hook.Add("RenderScreenspaceEffects","ZC_PNVColorCorrection",function()
         local ply = LocalPlayer()
         if ply.PlayerClassName ~= "Combine" then return end
         if pnv_enabled then
@@ -868,17 +868,17 @@ if CLIENT then
         end
     end)
 
-    hook.Add("ZC_DisableShootTinnitus","NoCombineTinnitus",function(lply)
+    hook.Add("ZC_ShouldDisableShootTinnitus","ZC_NoCombineTinnitus",function(lply)
         if lply.PlayerClassName ~= "Combine" then return end
         return true
     end)
 
-    hook.Add("ZC_BodyTemperature","CombineSuitWarming",function(ply, org, timeValue, changeRate, MaxWarmMul, warmLoseMul)
+    hook.Add("ZC_CalculateBodyTemperature","ZC_CombineSuitWarming",function(ply, org, timeValue, changeRate, MaxWarmMul, warmLoseMul)
         if ply.PlayerClassName ~= "Combine" then return end
         return changeRate, MaxWarmMul + 0.5, warmLoseMul - 0.4
     end)
 
-    hook.Add("PreDrawHalos","PNV_Light",function()
+    hook.Add("PreDrawHalos","ZC_PNVLight",function()
         local ply = LocalPlayer()
         if ply.PlayerClassName ~= "Combine" then return end
         if pnv_enabled then
@@ -900,7 +900,7 @@ if CLIENT then
         end
     end)
 
-    hook.Add("Think","PNV_Think",function()
+    hook.Add("Think","ZC_PNVThink",function()
         local ply = LocalPlayer()
         if ply:Alive() and ply.PlayerClassName == "Combine" then
             if input.IsKeyDown(KEY_F) and not gui.IsGameUIVisible() and not IsValid(vgui.GetKeyboardFocus()) and (CurTime() > next_toggle_time) then

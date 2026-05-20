@@ -6,7 +6,7 @@ local bloodparticles_hook = bloodparticles_hook
 
 local zc_blood_fps = ConVarExists("zc_blood_fps") and GetConVar("zc_blood_fps") or CreateClientConVar("zc_blood_fps", 24, true, nil, "fps to draw blood", 12, 165)
 
-hook.Add("PreDrawEffects", "bloodpartciels", function()
+hook.Add("PreDrawEffects", "ZC_BloodParticles", function()
 	local time = CurTime()
 	local fps = 1 / zc_blood_fps:GetInt()-- / game.GetTimeScale()
 	if not bloodparticles_hook then return end
@@ -24,7 +24,7 @@ hook.Add("PreDrawEffects", "bloodpartciels", function()
 	end
 end)
 
-hook.Add("PostCleanupMap","remove_decals",function()
+hook.Add("PostCleanupMap","ZC_RemoveDecals",function()
 	table.Empty(hg.bloodparticles1)
 	table.Empty(hg.bloodparticles2)
 end)

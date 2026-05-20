@@ -158,4 +158,4 @@ function hg.DynamicMusicV2.Player.Think()
     end
 end
 
-hook.Add("Think", "DynamicMusicV2", hg.DynamicMusicV2.Player.Think)
+hook.Add("Think", "ZC_DynamicMusicV2", hg.DynamicMusicV2.Player.Think)

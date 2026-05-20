@@ -20,7 +20,7 @@ if not ConVarExists("zc_blood_sprites") then
 	CreateClientConVar("zc_blood_sprites", 1, true, nil, "blood is sprites or trails", 0, 1)
 end
 
-hook.Add("PostCleanupMap","removeblooddroplets",function()
+hook.Add("PostCleanupMap","ZC_RemoveBloodDroplets",function()
 	hg.bloodparticles1 = {}
 	hg.bloodpositions = {}
 	hg.bloodcount = 0
@@ -156,7 +156,7 @@ local gravity = GetConVar("sv_gravity")
 local radius = 20000
 local radiusSqr = radius * radius
 
-hook.Add("InitPostEntity", "sizeget", function()
+hook.Add("InitPostEntity", "ZC_GetScreenSize", function()
 	radius = hg.GetWorldSize()
     radiusSqr = radius * radius
 end)

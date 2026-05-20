@@ -254,7 +254,7 @@ if CLIENT then
 
 	local lpos,lang = Vector(-3.5,0,0),Angle(0,0,-90)
 
-	--hook.Add("PostDrawPlayerRagdoll","Drawhandcuffs", function(ply,ent)
+	--hook.Add("ZC_PostDrawPlayerRagdoll","ZC_DrawHandcuffs", function(ply,ent)
 	function hg.CuffedAnim(ent, ply)
 		if ply:IsRagdoll() or ent:IsRagdoll() then return end
 		if not IsValid(ply) or not ply:IsPlayer() or not ply:Alive() or not ply:GetNetVar("handcuffed",false) then return end
@@ -1176,7 +1176,7 @@ function SWEP:BlockingLogic(ent, mul, attacktype, trace)
     return 1
 end
 
---[[hook.Add("UpdateAnimation", "blockingfists", function(ply , vel, seq)//salat balbes
+--[[hook.Add("UpdateAnimation", "ZC_BlockingFists", function(ply , vel, seq)
 	if IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon().GetBlocking and ply:GetActiveWeapon():GetBlocking() then
 		//ply:DoAnimationEvent(ACT_HL2MP_FIST_BLOCK)
 	end
@@ -1685,7 +1685,7 @@ function SWEP:Reload()
 end
 
 if SERVER then
-	hook.Add("Think", "held-entities", function()
+	hook.Add("Think", "ZC_UpdateHeldEntities", function()
 		heldents = heldents or {}
 		for i, tbl in pairs(heldents) do
 			if not tbl or not IsValid(tbl[1]) then
@@ -1811,7 +1811,7 @@ if SERVER then
 end
 
 if SERVER then
-	hook.Add( "StartCommand", "tuda-suda-hahaha", function( ply, cmd )
+	hook.Add( "StartCommand", "ZC_SyncHeldEntityMovement", function( ply, cmd )
 		local whl = cmd:GetMouseWheel()
 		if ( whl != 0 ) then
 			if IsValid(ply:GetNetVar("carryent2")) then
@@ -1870,7 +1870,7 @@ function SWEP:IsEntSoft(ent)
 	return ent:IsNPC() or ent:IsPlayer() or hg.RagdollOwner(ent) or ent:IsRagdoll()
 end
 
-hook.Add("ShouldCollide","CustomCollisions",function(ent1,ent2)
+hook.Add("ShouldCollide","ZC_CustomCollisions",function(ent1,ent2)
 	if !IsValid(ent1) or !IsValid(ent2) then return end
 
 	if ent2:IsPlayer() and ent1:IsRagdoll() then
@@ -1911,7 +1911,7 @@ function SWEP:Holster( wep )
 	return true
 end
 
--- hook.Add("IKPoleRightArm", "HandsPoles", function(ply, ent)
+-- hook.Add("ZC_CalculateRightArmIKPole", "ZC_HandsPoles", function(ply, ent)
 -- 	local wep = ply.GetActiveWeapon and ply:GetActiveWeapon() or false
 -- 	if wep and IsValid(wep) then
 -- 		local mdl = wep.GetWM and IsValid(wep:GetWM()) and wep:GetWM() or false
@@ -1926,7 +1926,7 @@ end
 -- 	end
 -- end)
 
--- hook.Add("IKPoleLeftArm", "HandsPoles", function(ply, ent)
+-- hook.Add("ZC_CalculateLeftArmIKPole", "ZC_HandsPoles", function(ply, ent)
 -- 	local wep = ply.GetActiveWeapon and ply:GetActiveWeapon() or false
 -- 	if wep and IsValid(wep) then
 -- 		local mdl = wep.GetWM and IsValid(wep:GetWM()) and wep:GetWM() or false

@@ -394,7 +394,7 @@ end
 function MODE:RoundThink()
 end
 
-hook.Add("HarmDone", "MoneyGive", function(ply, victim, amt)
+hook.Add("ZC_OnHarmDone", "ZC_GiveMoneyForDamage", function(ply, victim, amt)
     if not CurrentRound().KillMoney then return end
     if not victim:IsPlayer() then return end
     if ply == victim then return end

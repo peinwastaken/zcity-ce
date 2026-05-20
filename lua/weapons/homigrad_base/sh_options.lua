@@ -161,7 +161,7 @@ else
 end
 
 if CLIENT then
-	hook.Add("radialOptions", "weapon_manipulations", function()
+	hook.Add("ZC_RadialOptions", "ZC_WeaponManipulations", function()
 		local wep = lply:GetActiveWeapon()
 		local organism = lply.organism or {}
 		

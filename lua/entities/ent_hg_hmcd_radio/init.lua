@@ -22,7 +22,7 @@ function ENT:Initialize()
     end
 end
 
-hook.Add("OnEntityCreated", "radioCreate", function( ent )
+hook.Add("OnEntityCreated", "ZC_RadioCreate", function( ent )
 	if ent:GetClass() == "ent_hg_hmcd_radio" then
 		SetGlobalEntity("radio",ent)
 	end

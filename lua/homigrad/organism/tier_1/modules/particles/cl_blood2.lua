@@ -35,7 +35,7 @@ end
 local radius = 20000
 local radiusSqr = radius * radius
 
-hook.Add("InitPostEntity", "sizeget2", function()
+hook.Add("InitPostEntity", "ZC_GetScreenSize2", function()
 	radius = hg.GetWorldSize()
     radiusSqr = radius * radius
 end)

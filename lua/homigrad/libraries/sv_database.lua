@@ -28,13 +28,13 @@ function hg.db.Connect()
     mysql:Connect(hostname, username, password, database, port)
 end
 
-hook.Add("InitPostEntity", "zbDatabaseConnect", function()
+hook.Add("InitPostEntity", "ZC_DatabaseConnect", function()
 	hg.db.Connect()
 end)
 
 --zb.db.Connect()
 
-hook.Add("DatabaseConnected", "DB_Think", function()
+hook.Add("ZC_OnDatabaseConnected", "ZC_DatabaseThink", function()
     --print("asd")
 	timer.Create("zbDatabaseThink", 0.5, 0, function()
 		mysql:Think()

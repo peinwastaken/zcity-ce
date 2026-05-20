@@ -80,7 +80,7 @@ function MODE:HUDPaint()
 	end
 end
 
-hook.Add("radialOptions", "CMB_Airstrike", function()
+hook.Add("ZC_RadialOptions", "ZC_CombineAirstrike", function()
 	local org = lply.organism
 
     if lply:GetNWString("PlayerRole") == "Elite" and not org.unconscious then -- that's a feature apparently

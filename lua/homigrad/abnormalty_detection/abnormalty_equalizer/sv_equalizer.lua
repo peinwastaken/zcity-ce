@@ -32,7 +32,7 @@ end
 --//
 
 --\\SpecialEvents
-hook.Add("Abnormalties_HotZoneAbnormaltyAdded", "Abnormalties_ConjureEqualizer", function(zone_id, abnormalty_name, amt, ply)
+hook.Add("ZC_OnHotZoneAbnormalityAdded", "ZC_AbnormalitiesConjureEqualizer", function(zone_id, abnormalty_name, amt, ply)
 	local zone = PLUGIN.Zones[zone_id]
 	
 	if(PLUGIN.GetZoneAbnormalty(zone, "shield") >= 20 and PLUGIN.GetZoneAbnormalty(zone, "ritual") >= 10 and PLUGIN.GetZoneAbnormalty(zone, "help") >= 10 and amt > 0)then
@@ -58,7 +58,7 @@ hook.Add("Abnormalties_HotZoneAbnormaltyAdded", "Abnormalties_ConjureEqualizer",
 end)
 --//
 
-hook.Add("Think", "Abnormalties_ConjureEqualizer", function()
+hook.Add("Think", "ZC_AbnormalitiesConjureEqualizer", function()
 	for id, info in pairs(PLUGIN.ConjureEqualizer.ToConjure) do
 		if(info.Time <= CurTime())then
 			if(info.Zone)then
@@ -75,11 +75,11 @@ hook.Add("Think", "Abnormalties_ConjureEqualizer", function()
 end)
 -- ulx luarun hg.Abnormalties.FunMode = true for _, ply in player.Iterator() do hg.AddArmor(ply, 'ego_equalizer') end
 -- ulx luarun hg.Abnormalties.FunMode = true for _, ply in player.Iterator() do ply:Give('weapon_bleeding_musket') ply.Abnormalties_Blood = 1000000 end
-hook.Add("PostCleanupMap", "Abnormalties_ConjureEqualizer", function()
+hook.Add("PostCleanupMap", "ZC_AbnormalitiesConjureEqualizer", function()
 	PLUGIN.ConjureEqualizer.ToConjure = {}
 end)
 
-hook.Add("PlayerPostThink", "Abnormalties_ConjureEqualizer", function(ply)
+hook.Add("PlayerPostThink", "ZC_AbnormalitiesConjureEqualizer", function(ply)
 	if(!PLUGIN.FunMode)then
 		if(ply.armors and ply:Alive())then
 			if(ply.armors["torso"] == "ego_equalizer")then
@@ -92,7 +92,7 @@ hook.Add("PlayerPostThink", "Abnormalties_ConjureEqualizer", function(ply)
 	end
 end)
 
-hook.Add("CanEquipArmor", "Abnormalties_ConjureEqualizer", function(ply, armor_name)
+hook.Add("ZC_CanEquipArmor", "ZC_AbnormalitiesConjureEqualizer", function(ply, armor_name)
 	if(!PLUGIN.FunMode)then
 		if(armor_name == "ego_equalizer")then
 			if(ply.Karma and ply.Karma < zb.MaxKarma)then

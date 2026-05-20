@@ -15,7 +15,7 @@ hg.TraitorLoot = {
 }
 
 if CLIENT then
-	hook.Add("Player_Death","foundloot",function(ply)
+	hook.Add("ZC_PlayerDeath","ZC_ClearFoundLootOnDeath",function(ply)
 		if IsValid(ply.FakeRagdoll) then ply.FakeRagdoll.foundloot = table.Copy(ply.foundloot) end
 		ply.foundloot = {}
 	end)
@@ -124,7 +124,7 @@ if CLIENT then
 	local plyMenu
 	BlurBackground = BlurBackground or hg.DrawBlur
 
-	hook.Add("OnNetVarSet","inventory_netvar",function(index,key,var)
+	hook.Add("ZC_OnNetVarSet","ZC_InventoryNetVarChanged",function(index,key,var)
 		if key == "Inventory" then
 			if IsValid(plyMenu) and plyMenu.entindex == index then
 				timer.Simple(0,function()

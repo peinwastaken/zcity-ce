@@ -32,7 +32,7 @@ end
 --//
 
 --\\SpecialEvents
-hook.Add("Abnormalties_HotZoneAbnormaltyAdded", "Abnormalties_ConjureBleedingMusket", function(zone_id, abnormalty_name, amt, ply)
+hook.Add("ZC_OnHotZoneAbnormalityAdded", "ZC_AbnormalitiesConjureBleedingMusket", function(zone_id, abnormalty_name, amt, ply)
 	local zone = PLUGIN.Zones[zone_id]
 	
 	if(PLUGIN.GetZoneAbnormalty(zone, "harm") >= 20 and PLUGIN.GetZoneAbnormalty(zone, "ritual") >= 10 and PLUGIN.GetZoneAbnormalty(zone, "sacrifice") >= 10 and amt > 0)then
@@ -58,7 +58,7 @@ hook.Add("Abnormalties_HotZoneAbnormaltyAdded", "Abnormalties_ConjureBleedingMus
 end)
 --//
 
-hook.Add("Think", "Abnormalties_ConjureBleedingMusket", function()
+hook.Add("Think", "ZC_AbnormalitiesConjureBleedingMusket", function()
 	for id, info in pairs(PLUGIN.ConjureBleedingMusket.ToConjure) do
 		if(info.Time <= CurTime())then
 			if(info.Zone)then
@@ -74,6 +74,6 @@ hook.Add("Think", "Abnormalties_ConjureBleedingMusket", function()
 	end
 end)
 
-hook.Add("PostCleanupMap", "Abnormalties_ConjureBleedingMusket", function()
+hook.Add("PostCleanupMap", "ZC_AbnormalitiesConjureBleedingMusket", function()
 	PLUGIN.ConjureBleedingMusket.ToConjure = {}
 end)

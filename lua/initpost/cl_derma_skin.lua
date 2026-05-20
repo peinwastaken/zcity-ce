@@ -10,7 +10,7 @@ function hg.GetMainSkin()
 end
 --//
 
-hook.Add("ForceDermaSkin", "ZCity", function()
+hook.Add("ForceDermaSkin", "ZC_ForceDermaSkin", function()
 	return "ZCity" --; This will paint all Derma objects to new skin
 end)
 

@@ -257,7 +257,7 @@ function hg.addBulletHoleEffect(pos)
 	end
 end
 
-hook.Add("PostCleanupMap","cleanupshells",function()
+hook.Add("PostCleanupMap","ZC_CleanupShells",function()
     for _, v in ipairs(hg_shelles) do
         --print("huy")
         v:Remove()

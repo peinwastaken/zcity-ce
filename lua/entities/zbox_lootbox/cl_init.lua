@@ -224,7 +224,7 @@ local modelOffset = {
 
 local offsetVec1,offsetAng1 = Vector(25,0,15),Angle(0,90,0)
 local lerpang = Angle(0,0,0)
-hook.Add("PostDrawOpaqueRenderables","Draw3D2DFrameContainer",function()
+hook.Add("PostDrawOpaqueRenderables","ZC_Draw3D2DFrameContainer",function()
     local ent = hg.OpenedContainer
 
 	if IsValid(ent) and IsValid(zbContainerMenu) and !zbContainerMenu.Closing then

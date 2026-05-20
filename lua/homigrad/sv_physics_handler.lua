@@ -23,12 +23,12 @@ local func = function()
 	end)
 end
 
-hook.Add("Tick", "vphysics_cathcer", func)
+hook.Add("Tick", "ZC_VPhysicsCatcher", func)
 
 local CrazyPhysPerSec = 0
 local CrazyPhysTime = 0
 local CrazyPhysTrusthold = 500
-hook.Add("OnCrazyPhysics", "stop_physics", function(ent, phys)
+hook.Add("ZC_OnCrazyPhysics", "ZC_StopPhysics", function(ent, phys)
 	if CrazyPhysTime < CurTime() then
 		CrazyPhysTime = CurTime() + 1
 	end

@@ -137,7 +137,7 @@ function SWARM:GetStats()
 	return {Percent=perc,Infected=inf,Points = points,NPCAmt=amt,Mothers = mothers,OrderCD = ordercd,KingBuildCD = kingbuildcd}
 end
 
-hook.Add('Think','Swarm',function()
+hook.Add('Think','ZC_UpdateSwarmInfection',function()
 	if(SWARM.NextNet<=CurTime())then
 		SWARM.NextNet = CurTime() + SWARM.NextNetCD
 		for _,ply in player.Iterator() do
@@ -179,7 +179,7 @@ hook.Add('Think','Swarm',function()
 		end
 	end
 end)
-hook.Add('Think','Swarm2',function()
+hook.Add('Think','ZC_SpawnSwarmNpcs',function()
 	if(SWARM.NextSpawn<=CurTime())then
 		SWARM.NextSpawn=CurTime()+SWARM.SpawnCD
 		for id,spawn in pairs(SWARM.Spawns)do
@@ -202,7 +202,7 @@ hook.Add('Think','Swarm2',function()
 	end
 end)
 
-hook.Add('PlayerDeath','Swarm',function(p)
+hook.Add('PlayerDeath','ZC_CreateSwarmOnPlayerDeath',function(p)
 	if(p.SwarmPerc>110)then
 		CreateSwarm(p,p.SwarmPerc/65+(p.Fin or 0))
 	end
@@ -216,13 +216,13 @@ hook.Add('PlayerDeath','Swarm',function(p)
 	p:ClearSwarm()
 end)
 
-hook.Add('Player Spawn','Swarm',function(p)
+hook.Add('ZC_PlayerSpawn','ZC_ClearSwarmOnPlayerSpawn',function(p)
 	-- if(!p:Alive() or !IsValid(p.FakeRagdoll))then
 	p:ClearSwarm()
 	-- end
 end)
 
-hook.Add('CanPlayerSuicide','Swarm',function(p)
+hook.Add('CanPlayerSuicide','ZC_BlockSwarmSuicide',function(p)
 	if(p.SwarmPerc>10 and p.Swm)then
 		p:ChatPrint("You can't.")
 		return false
@@ -310,7 +310,7 @@ PlayerMeta.InvoluntaryEvent = PlayerMeta.InvoluntaryEvent or function(self)
 	self:EmitSound('Flesh.Strain')
 end
 
-hook.Add('PostCleanupMap','Swarm',function()
+hook.Add('PostCleanupMap','ZC_ClearSwarmOnMapCleanup',function()
 	for _,p in player.Iterator() do
 		p:ClearSwarm()
 	end
@@ -318,7 +318,7 @@ end)
 
 
 
---hook.Add('EntityTakeDamage','Swarm',function(p,dmg)if(dmg:GetAttacker():GetClass()=='npc_swarm')then p.SwarmPerc=(p.SwarmPerc or 0)+105 p.Swm=true p.Inf=1 end end)
+--hook.Add('EntityTakeDamage','ZC_SwarmDamageDebug',function(p,dmg)if(dmg:GetAttacker():GetClass()=='npc_swarm')then p.SwarmPerc=(p.SwarmPerc or 0)+105 p.Swm=true p.Inf=1 end end)
 --hook.Remove( "DoAnimationEvent", "MA2AnimEventTest")
 function CreateSwarm(p,c)
 	local ps=p:GetPos()
@@ -333,7 +333,7 @@ end
 
 SWARM_AffectedEntities = SWARM_AffectedEntities or {}
 --SWARM_PsychedPlayers = SWARM_PsychedPlayers or {}
-hook.Add("Think","SWARM_Misc",function()
+hook.Add("Think","ZC_UpdateSwarmStatusEffects",function()
 	for ply,_ in pairs(SWARM_AffectedEntities)do
 		if(IsValid(ply))then
 			if(ply.SWARM_KnockoutEnd)then
@@ -371,13 +371,13 @@ hook.Add("Think","SWARM_Misc",function()
 	end
 end)
 
-hook.Add("CalcMainActivity","Swarm",function(ply,vel)
+hook.Add("CalcMainActivity","ZC_ApplySwarmKnockoutAnimation",function(ply,vel)
 	if(ply.SWARM_KnockoutEnd)then
 		return ACT_INVALID,ply:LookupSequence("seq_cower")
 	end
 end)
 
-hook.Add("StartCommand","Swarm",function(ply,cmd)
+hook.Add("StartCommand","ZC_LimitSwarmAffectedMovement",function(ply,cmd)
 	local max_speed = ply:GetRunSpeed()
 
 	if(ply.SWARM_KnockoutEnd)then

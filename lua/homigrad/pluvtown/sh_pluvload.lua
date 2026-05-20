@@ -23,7 +23,7 @@ else
     end)
 end
 
-hook.Add("InitPostEntity", "PluvTown", function()
+hook.Add("InitPostEntity", "ZC_PluvTown", function()
     PLUGIN.UpdateStatus()
 end)
 
@@ -41,13 +41,13 @@ end
 
 function PLUGIN.InitHooks()
     for k, v in pairs(PLUGIN.Hooks) do
-        hook.Add(k, "PLUVTOWN HOOK " .. k, v)
+        hook.Add(k, "ZC_PluvTownHook" .. k, v)
     end
 end
 
 function PLUGIN.DeInitHooks()
     for k, _ in pairs(PLUGIN.Hooks) do
-        hook.Remove(k, "PLUVTOWN HOOK " .. k)
+        hook.Remove(k, "ZC_PluvTownHook" .. k)
     end
 end
 
@@ -56,7 +56,7 @@ function PLUGIN.AddHook(name, func)
 end
 
 function PLUGIN.RemoveHook(name)
-    hook.Remove(name, "PLUVTOWN HOOK " .. name)
+    hook.Remove(name, "ZC_PluvTownHook" .. name)
 end
 
 hg.PluvTown.PluvMats = {

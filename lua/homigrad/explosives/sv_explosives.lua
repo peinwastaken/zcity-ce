@@ -341,9 +341,9 @@ local expItems = {
 
 hg.expItems = expItems
 
-hook.Add("EntityTakeDamage", "ExplosiveDamage", function( target, dmginfo )
+hook.Add("EntityTakeDamage", "ZC_ExplosiveDamage", function( target, dmginfo )
 	if IsValid(target) and expItems[target:GetModel()] then
-		hook.Run("ExplosivesTakeDamage", target, dmginfo)
+		hook.Run("ZC_ExplosivesTakeDamage", target, dmginfo)
 
 		local rnd = CurrentRound and CurrentRound()
 		if (rnd and rnd.name == "coop" and dmginfo:IsDamageType(DMG_BLAST_SURFACE + DMG_BLAST + DMG_BURN + DMG_BULLET + DMG_BUCKSHOT + DMG_AIRBOAT) or dmginfo:IsDamageType(DMG_BLAST_SURFACE + DMG_BLAST + DMG_BURN)) and not target.babahnut then

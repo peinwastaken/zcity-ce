@@ -12,7 +12,7 @@ net.Receive("cyanide_debug",function()
 	tbl = net.ReadTable()
 	sendtime = CurTime() + 1
 end)
-hook.Add("HUDPaint","cyanide_debug",function()
+hook.Add("HUDPaint","ZC_DrawCyanideDebug",function()
 	if not tbl then return end
 	
 	for i,tbl2 in ipairs(tbl) do

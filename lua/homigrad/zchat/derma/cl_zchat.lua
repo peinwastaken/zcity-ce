@@ -373,7 +373,7 @@ function PANEL:AddLine(elements)
 		"<font=zChatFont>"
 	}
 
-	buffer = hook.Run("ModifyMessageBuffer", buffer, CHAT_SPEAKER) or buffer
+	buffer = hook.Run("ZC_ModifyMessageBuffer", buffer, CHAT_SPEAKER) or buffer
 
 	for _, v in ipairs(elements) do
 		if (type(v) == "IMaterial") then

@@ -2,7 +2,7 @@
 hg.organism.module = hg.organism.module or {}
 local module = hg.organism.module
 hg.organism.lastindex = hg.organism.lastindex or 1000000
-hook.Add("Org Clear", "Main", function(org)
+hook.Add("ZC_OrganismClear", "ZC_ResetOrganismState", function(org)
 	org.alive = true
 	org.unconscious = false
 	org.entindex = IsValid(org.owner) and org.owner:EntIndex() or hg.organism.lastindex + 1
@@ -93,7 +93,7 @@ hook.Add("Org Clear", "Main", function(org)
 	org.SpawnedBrainChunks = nil
 end)
 
-hook.Add("Should Fake Up", "organism", function(ply)
+hook.Add("ZC_ShouldRestorePlayerFromFake", "ZC_Organism", function(ply)
 	local org = ply.organism
 	local spineTooDamaged = org.spine1 >= hg.organism.fake_spine1 or org.spine2 >= hg.organism.fake_spine2 or org.spine3 >= hg.organism.fake_spine3
 	local bothLegsDisabled = org.lleg == 1 and org.rleg == 1
@@ -287,7 +287,7 @@ local numerical = {
 	"Twenty."
 }
 
-hook.Add("HomigradDamage", "Berserk", function(ply, dmgInfo, hitgroup, ent)
+hook.Add("ZC_OnOrganismDamage", "ZC_UpdateBerserkDamageState", function(ply, dmgInfo, hitgroup, ent)
 	local attacker, victim = dmgInfo:GetAttacker(), ply
 	if !attacker or !IsValid(attacker) or (IsValid(attacker) and !attacker:IsPlayer()) then
 		attacker = ply:GetPhysicsAttacker()
@@ -308,7 +308,7 @@ hook.Add("HomigradDamage", "Berserk", function(ply, dmgInfo, hitgroup, ent)
 	end)
 end)
 
-hook.Add("Org Think", "Main", function(owner, org, timeValue)
+hook.Add("ZC_OrganismThink", "ZC_UpdateOrganismState", function(owner, org, timeValue)
 	if not IsValid(owner) then
 		hg.organism.list[owner] = nil
 		return
@@ -429,8 +429,8 @@ hook.Add("Org Think", "Main", function(owner, org, timeValue)
 
 	local just_went_uncon = not org.unconscious and org.needunconscious
 	local just_woke_up = not org.needunconscious and org.unconscious and (org.uncon_timer or 0) > 6
-	if isPly and just_went_uncon then hook.Run("HG_OnUnconscious", owner); hook.Run("PlayerDropWeapon", owner) end
-	if isPly and just_woke_up then hook.Run("HG_OnWakeUnconscious", owner) end
+	if isPly and just_went_uncon then hook.Run("ZC_OnPlayerUnconscious", owner); hook.Run("ZC_PlayerDropWeapon", owner) end
+	if isPly and just_woke_up then hook.Run("ZC_OnPlayerWakeFromUnconscious", owner) end
 
 	org.canmove = (org.spine2 < hg.organism.fake_spine2 and org.spine3 < hg.organism.fake_spine3) and not org.unconscious
 	org.canmovehead = (org.spine3 < hg.organism.fake_spine3) and not org.unconscious
@@ -556,7 +556,7 @@ hook.Add("Org Think", "Main", function(owner, org, timeValue)
 	end
 end)
 
-hook.Add("Org Think", "regenerationberserk", function(owner, org, timeValue)
+hook.Add("ZC_OrganismThink", "ZC_Regenerationberserk", function(owner, org, timeValue)
 	if not owner:IsPlayer() or not owner:Alive() then return end
 	if !owner:IsBerserk() then return end
 	//if org.heartstop then return end
@@ -611,7 +611,7 @@ hook.Add("Org Think", "regenerationberserk", function(owner, org, timeValue)
 	owner:SetRunSpeed(math.min(500, 400 + (25 * org.berserk)))
 end)
 
-hook.Add("Org Think", "regenerationnoradrenaline", function(owner, org, timeValue)
+hook.Add("ZC_OrganismThink", "ZC_Regenerationnoradrenaline", function(owner, org, timeValue)
 	if not owner:IsPlayer() or not owner:Alive() then return end
 	if org.noradrenaline <= 0 then return end
 
@@ -687,19 +687,19 @@ concommand.Add("hg_organism_clear", function(ply, cmd, args)
 	end
 end)
 
-hook.Add("SetupMove", "hg-speed", function(ply, mv) end) --mv:SetMaxClientSpeed(100) --mv:SetMaxSpeed(100)
+hook.Add("SetupMove", "ZC_Speed", function(ply, mv) end) --mv:SetMaxClientSpeed(100) --mv:SetMaxSpeed(100)
 
-hook.Add("StartCommand","hg_lol",function(ply,cmd)
+hook.Add("StartCommand","ZC_BlockMovementWhileUnconscious",function(ply,cmd)
 	if ply.organism.unconscious and ply:Alive() then
 		cmd:ClearMovement()
 	end
 end)
 
-hook.Add("PlayerDeath","next-respawn-full",function(ply)
+hook.Add("PlayerDeath","ZC_NextRespawnFull",function(ply)
 	ply.fullsend = true
 end)
 
-hook.Add("HG_OnWakeUnconscious", "afterUnconscious", function( owner )
+hook.Add("ZC_OnPlayerWakeFromUnconscious", "ZC_AfterUnconscious", function( owner )
 	owner.organism.after_unconscious = true
 	local str = hg.get_status_message(owner)
 	owner.organism.after_unconscious = nil
@@ -715,7 +715,7 @@ hook.Add("HG_OnWakeUnconscious", "afterUnconscious", function( owner )
 	owner:SendLua("system.FlashWindow()")
 end)
 
-hook.Add("HG_OnUnconscious", "fearful", function( plya )// WHAT
+hook.Add("ZC_OnPlayerUnconscious", "ZC_Fearful", function( plya )// WHAT
 	local ent = hg.GetCurrentCharacter(plya)
 	for _,ply in ipairs(ents.FindInSphere(ent:GetPos(),256)) do
 		if not ply:IsPlayer() or not ply.organism or plya == ply then continue end
@@ -825,7 +825,7 @@ concommand.Add("hg_fixdislocation", function(ply, cmd, args)
 	end
 end)
 
-hook.Add("OnEntityWaterLevelChanged", "ClearBlood", function(ent, old, new)
+hook.Add("OnEntityWaterLevelChanged", "ZC_ClearBlood", function(ent, old, new)
 	if new >= 2 then
 		if ent:IsOnFire() then ent:Extinguish() end
 		ent:RemoveAllDecals()

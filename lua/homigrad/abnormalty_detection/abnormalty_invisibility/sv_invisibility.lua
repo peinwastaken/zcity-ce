@@ -115,7 +115,7 @@ end
 --//
 
 --\\SpecialEvents
-hook.Add("Abnormalties_HotZoneAbnormaltyAdded", "Abnormalties_Invisibility", function(zone_id, abnormalty_name, amt, ply)
+hook.Add("ZC_OnHotZoneAbnormalityAdded", "ZC_AbnormalitiesInvisibility", function(zone_id, abnormalty_name, amt, ply)
 	local zone = PLUGIN.Zones[zone_id]
 	
 	if(PLUGIN.GetZoneAbnormalty(zone, "shield") >= 10 and PLUGIN.GetZoneAbnormalty(zone, "help") >= 20 and amt > 0)then
@@ -140,7 +140,7 @@ hook.Add("Abnormalties_HotZoneAbnormaltyAdded", "Abnormalties_Invisibility", fun
 	end
 end)
 
-hook.Add("Think", "Abnormalties_Invisibility", function()
+hook.Add("Think", "ZC_AbnormalitiesInvisibility", function()
 	for ply, info in pairs(PLUGIN.Invisibility.ToInvis) do
 		if(info.Time <= CurTime())then
 			local owner = info.Owner
@@ -160,7 +160,7 @@ hook.Add("Think", "Abnormalties_Invisibility", function()
 	end
 end)
 
-hook.Add("PlayerPostThink", "Abnormalties_Invisibility", function(ply)
+hook.Add("PlayerPostThink", "ZC_AbnormalitiesInvisibility", function(ply)
 	if(ply.Abnormalties_InvisibleNextFadeTime and ply.Abnormalties_InvisibleNextFadeTime <= CurTime())then
 		ply.Abnormalties_InvisibleNextFadeTime = nil
 		
@@ -169,7 +169,7 @@ hook.Add("PlayerPostThink", "Abnormalties_Invisibility", function(ply)
 	end
 end)
 
-hook.Add("HomigradDamage", "Abnormalties_Invisibility", function(ply, dmg, hitgroup, ent, harm)
+hook.Add("ZC_OnOrganismDamage", "ZC_AbnormalitiesInvisibility", function(ply, dmg, hitgroup, ent, harm)
 	if(ply:IsPlayer() and dmg:GetDamage() > 5 and ply != attacker)then
 		if(ply.Abnormalties_Invisible)then
 			PLUGIN.Invisibility.SetInvisible(ply, false)
@@ -187,7 +187,7 @@ hook.Add("HomigradDamage", "Abnormalties_Invisibility", function(ply, dmg, hitgr
 	end
 end)
 
-hook.Add("Fake", "Abnormalties_Invisibility", function(ply, ragdoll, list_armor)
+hook.Add("ZC_OnFakeRagdollCreated", "ZC_AbnormalitiesInvisibility", function(ply, ragdoll, list_armor)
 	if(ply:IsPlayer())then
 		if(ply.Abnormalties_Invisible)then
 			PLUGIN.Invisibility.UpdateInvisiblity(ply)
@@ -195,17 +195,17 @@ hook.Add("Fake", "Abnormalties_Invisibility", function(ply, ragdoll, list_armor)
 	end
 end)
 
-hook.Add("PlayerDeath", "Abnormalties_Invisibility", function(ply)
+hook.Add("PlayerDeath", "ZC_AbnormalitiesInvisibility", function(ply)
 	if(ply.Abnormalties_Invisible)then
 		PLUGIN.Invisibility.SetInvisible(ply, false)
 	end
 end)
 
-hook.Add("Player Spawn", "Abnormalties_Invisibility", function(ply)
+hook.Add("ZC_PlayerSpawn", "ZC_AbnormalitiesInvisibility", function(ply)
 	PLUGIN.Invisibility.SetInvisible(ply, false)
 end)
 
-hook.Add("PostCleanupMap", "Abnormalties_Invisibility", function()
+hook.Add("PostCleanupMap", "ZC_AbnormalitiesInvisibility", function()
 	PLUGIN.Invisibility.ToInvis = {}
 	
 	for _, ply in player.Iterator() do

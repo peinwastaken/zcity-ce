@@ -876,4 +876,4 @@ function hg.GetArmorPlacementNum(armor)
 end
 
 initArmor()
-hook.Add("Initialize", "init-atts", initArmor)
+hook.Add("Initialize", "ZC_InitAttachments", initArmor)

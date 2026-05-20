@@ -31,7 +31,7 @@ function MODE:StartEvent(name, ply)
 	
 	MODE.StartedEvents[userID] = table.Copy(MODE.Events[name])
 	MODE.StartedEvents[userID]:StartScare(ply)
-	hook.Add("Think","ScareThatGuy"..userID,function()
+	hook.Add("Think","ZC_FearScareThink" .. userID,function()
 		if not IsValid(ply) or not ply:Alive() then MODE:StopEvent(userID) return end
 		MODE:DoEventThink(ply)
 	end)
@@ -45,7 +45,7 @@ function MODE:DoEventThink(ply)
 end
 
 function MODE:StopEvent(userID)
-	hook.Remove("Think","ScareThatGuy"..userID)
+	hook.Remove("Think","ZC_FearScareThink" .. userID)
 	MODE.StartedEvents[userID] = nil
 end
 

@@ -31,7 +31,7 @@ function ENT:OnRemove()
 	end
 end
 
-hook.Add("RagdollPerdiction","TransferMats",function(ragdoll, ply)
+hook.Add("ZC_OnPredictedRagdollCreated","ZC_TransferMats",function(ragdoll, ply)
 	local armors = ragdoll.PredictedArmor
 	for _, v in pairs(armors) do
 		ragdoll:SetNWString("ArmorMaterials" .. v, ply:GetNWString("ArmorMaterials" .. v))

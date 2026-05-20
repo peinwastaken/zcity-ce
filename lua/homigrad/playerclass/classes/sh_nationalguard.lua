@@ -73,7 +73,7 @@ function CLASS.Guilt(self, Victim)
     return 1
 end
 
-hook.Add("HG_PlayerFootstep", "nationalguard_footsteps", function(ply, pos, foot, sound, volume, rf)
+hook.Add("ZC_PlayerFootstep", "ZC_NationalguardFootsteps", function(ply, pos, foot, sound, volume, rf)
 	if ply:Alive() and ply.PlayerClassName == "nationalguard" then
 		local ent = hg.GetCurrentCharacter(ply)
 

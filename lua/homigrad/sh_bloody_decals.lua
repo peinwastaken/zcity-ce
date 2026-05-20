@@ -130,7 +130,7 @@ AddDecalToEnt2(wm, wep:EntIndex(), Material("zbattle/blood"), false)--"decals/bl
 
 -- local matat = Material("models/weapons/m4a1/weapon_m4a1_dm")
 -- local white = Material("vgui/white")
--- hook.Add("HUDPaint", "testBlood", function()
+-- hook.Add("HUDPaint", "ZC_TestBlood", function()
 -- 	do return end
 -- 	if !curmat then return end
 -- 	--render.SuppressEngineLighting(true)

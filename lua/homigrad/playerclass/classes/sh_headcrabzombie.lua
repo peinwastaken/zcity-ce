@@ -138,9 +138,9 @@ function CLASS.On(self)
 
 		--\\ Npc relationships
 		local index = self:EntIndex()
-		hook.Add("OnEntityCreated", "relation_shipdo" .. index, function(ent)
+		hook.Add("OnEntityCreated", "ZC_UpdateNpcRelationships" .. index, function(ent)
 			if not IsValid(self) or self.PlayerClassName ~= "headcrabzombie" then
-				hook.Remove("OnEntityCreated","relation_shipdo" .. index)
+				hook.Remove("OnEntityCreated","ZC_UpdateNpcRelationships" .. index)
 				return
 			end
 
@@ -189,7 +189,7 @@ function CLASS.Off(self)
 		self.organism.disorientation = 0
 	end
 
-	hook.Remove("OnEntityCreated", "relation_shipdo"..self:EntIndex())
+	hook.Remove("OnEntityCreated", "ZC_UpdateNpcRelationships" .. self:EntIndex())
 end
 
 --// Reset npc relationship
@@ -202,7 +202,7 @@ function CLASS.PlayerDeath(self)
         end
     end
 
-    hook.Remove("OnEntityCreated", "relation_shipdo" .. self:EntIndex())
+    hook.Remove("OnEntityCreated", "ZC_UpdateNpcRelationships" .. self:EntIndex())
 end
 
 function CLASS.Guilt(self, victim)
@@ -292,13 +292,13 @@ for i = 1, 14 do
 	table.insert(zomb_burnphrases, "npc/zombie/zombie_voice_idle" .. i .. ".wav")
 end
 
-hook.Add("HG_ReplaceBurnPhrase", "ZombBurnPhrases", function(ply, phrase)
+hook.Add("ZC_ReplaceBurnPhrase", "ZC_ReplaceHeadcrabZombieBurnPhrases", function(ply, phrase)
 	if ply.PlayerClassName == "headcrabzombie" then
 		return ply, zomb_burnphrases[math.random(#zomb_burnphrases)]
 	end
 end)
 
-hook.Add("HG_ReplacePhrase", "ZombPhrases", function(ply, phrase, muffed, pitch) -- pitch means pitched effect, not exact sound pitch
+hook.Add("ZC_ReplacePhrase", "ZC_ReplaceHeadcrabZombiePhrases", function(ply, phrase, muffed, pitch) -- pitch means pitched effect, not exact sound pitch
 	if ply.PlayerClassName == "headcrabzombie" then
 		local inpain = ply.organism.pain > 30
 		local phr = (inpain and zomb_pain[math.random(#zomb_pain)] or zomb_phrases[math.random(#zomb_phrases)])
@@ -307,27 +307,27 @@ hook.Add("HG_ReplacePhrase", "ZombPhrases", function(ply, phrase, muffed, pitch)
 	end
 end)
 
-hook.Add("HG_CanThoughts", "ZombCantDumat", function(ply)
+hook.Add("ZC_CanShowThoughts", "ZC_BlockHeadcrabZombieThoughts", function(ply)
 	if ply.PlayerClassName == "headcrabzombie" then
 		return false
 	end
 end)
 
 --// Can't pickup weapons and use doors
-hook.Add("PlayerCanPickupWeapon", "ZombCantPickup", function(ply, ent)
+hook.Add("PlayerCanPickupWeapon", "ZC_BlockHeadcrabZombieWeaponPickup", function(ply, ent)
 	if IsValid(ply) and ply.PlayerClassName == "headcrabzombie" and ent:GetClass() ~= "weapon_hands_sh" then
 		return false
 	end
 end)
 
-hook.Add("PlayerUse", "ZombCantPickup", function(ply, ent)
+hook.Add("PlayerUse", "ZC_BlockHeadcrabZombieUse", function(ply, ent)
 	if IsValid(ply) and ply.PlayerClassName == "headcrabzombie" and ent:GetClass() ~= "func_button" then
 		return false
 	end
 end)
 
 --// Player speed & animation speed stuff
-hook.Add("HG_MovementCalc_2", "ZombSpeed", function(mul, ply, cmd, mv)
+hook.Add("ZC_CalculateMovementModifiers", "ZC_AdjustHeadcrabZombieMovement", function(mul, ply, cmd, mv)
 	if IsValid(ply) and ply.PlayerClassName == "headcrabzombie" then
         mul[1] = 0.8
 		if ply:IsSprinting() then
@@ -339,7 +339,7 @@ hook.Add("HG_MovementCalc_2", "ZombSpeed", function(mul, ply, cmd, mv)
     end
 end)
 
-hook.Add("UpdateAnimation", "ZombAnimRate", function(ply, vel, maxSeqGroundSpeed)
+hook.Add("UpdateAnimation", "ZC_UpdateHeadcrabZombieAnimationRate", function(ply, vel, maxSeqGroundSpeed)
 	if ply.PlayerClassName == "headcrabzombie" then
 		local isAmputated = ply:IsBerserk() and ply.organism and (ply.organism.llegamputated or ply.organism.rlegamputated)
 		if not IsValid(ply) or not ply:Alive() or isAmputated then return end
@@ -362,7 +362,7 @@ hook.Add("UpdateAnimation", "ZombAnimRate", function(ply, vel, maxSeqGroundSpeed
 end)
 
 if SERVER then
-	hook.Add("HG_PlayerFootstep", "ZombSteps", function(ply)
+	hook.Add("ZC_PlayerFootstep", "ZC_PlayHeadcrabZombieFootsteps", function(ply)
 		local chr = hg.GetCurrentCharacter(ply)
 		if ply:Alive() and ply.PlayerClassName == "headcrabzombie" then
 			if IsValid(ply.FakeRagdoll) and ply:GetNetVar("lastFake") == 0 then return end
@@ -375,7 +375,7 @@ if SERVER then
 		end
 	end)
 
-	--[[hook.Add("OnHeadExplode", "ZombAmputate", function(ply, rag)
+	--[[hook.Add("ZC_OnHeadExplode", "ZC_RemoveHeadcrabZombieOnHeadExplode", function(ply, rag)
 		print(ply, rag)
 		if ply.PlayerClassName == "headcrabzombie" then
 			rag:SetBodygroup(1, 0)
@@ -383,14 +383,14 @@ if SERVER then
 	end)]]
 
 	--// Zombies can't loot anyone
-	hook.Add("ZB_CanLootInventory", "ZombCanLoot", function(ply, ent, canloot)
+	hook.Add("ZC_CanLootInventory", "ZC_BlockHeadcrabZombieLooting", function(ply, ent, canloot)
 		if ply.PlayerClassName == "headcrabzombie" then
 			return ply, ent, false
 		end
 	end)
 
 	--// Zombies can't speak
-	hook.Add("HG_PlayerCanHearPlayersVoice", "ZombVoice", function(listener, speaker)
+	hook.Add("ZC_CanHearPlayerVoice", "ZC_BlockHeadcrabZombieVoice", function(listener, speaker)
 		if speaker.PlayerClassName == "headcrabzombie" then
 			return false, false
 		end
@@ -475,7 +475,7 @@ else
 		end
 	end
 
-	hook.Add("Post Pre Post Processing", "ZombDrawHeadcrab", function()
+	hook.Add("ZC_PrePostProcessingDraw", "ZC_DrawHeadcrabZombieHead", function()
 		if lply.PlayerClassName == "headcrabzombie" and lply:Alive() and lply.organism and not lply.organism.unconscious and GetViewEntity() == lply then
 			DrawHeadcrab(lply, "models/nova/w_headcrab.mdl", vector_origin, -50)
 		end
@@ -483,7 +483,7 @@ else
 
 	--// Change view from head to upper torso because zombie model doesn't have proper head bone..
 	-- "HG_CalcView", ply, origin, angles, fova, znear, zfar
-	hook.Add("HGAddView", "ZombView", function(ply, origin, angles)
+	hook.Add("ZC_AddCameraView", "ZC_AdjustHeadcrabZombieCamera", function(ply, origin, angles)
 		if ply:Alive() and ply.PlayerClassName == "headcrabzombie" then
 			local ply_spine_index = ply:LookupBone("ValveBiped.Bip01_Spine4")
 			if !ply_spine_index then return end
@@ -504,7 +504,7 @@ else
 		end
 	end)
 
-	hook.Add("hg_AdjustMouseSensitivity", "ZombSens", function(sensitivity)
+	hook.Add("ZC_AdjustMouseSensitivity", "ZC_AdjustHeadcrabZombieMouseSensitivity", function(sensitivity)
 		if lply.PlayerClassName == "headcrabzombie" and lply:GetVelocity():LengthSqr() >= 140000 and lply:GetMoveType() == MOVETYPE_WALK then
 			return 0.25
 		end
@@ -512,7 +512,7 @@ else
 
 	local zombMat = Material("effects/shaders/zb_grain2") -- Material("effects/shaders/zb_zomb")
 	local zombMat_Add = Material("effects/shaders/zb_heat")
-	hook.Add("Post Post Processing", "ZombShaders", function()
+	hook.Add("ZC_PostProcessingDraw", "ZC_DrawHeadcrabZombiePostProcessing", function()
 		if lply.PlayerClassName == "headcrabzombie" and lply:Alive() and GetViewEntity() == lply then
 			render.UpdateScreenEffectTexture()
 
@@ -544,14 +544,14 @@ else
 	end)
 end
 
-hook.Add("PlayerCanLegAttack", "ZombKick", function(ply)
+hook.Add("ZC_CanPlayerLegAttack", "ZC_BlockHeadcrabZombieLegAttack", function(ply)
 	if ply.PlayerClassName == "headcrabzombie" then
 		return false
 	end
 end)
 
 --// Zombie animations
-hook.Add("CalcMainActivity", "ZombAnims", function(ply, vel)
+hook.Add("CalcMainActivity", "ZC_SelectHeadcrabZombieAnimation", function(ply, vel)
 	if ply.PlayerClassName == "headcrabzombie" then
 		local anim = ACT_HL2MP_RUN_ZOMBIE
 		if vel:LengthSqr() <= 0 then
@@ -573,7 +573,7 @@ hook.Add("CalcMainActivity", "ZombAnims", function(ply, vel)
 end)
 
 --// Zombie can't drive vehicles
-hook.Add("CanPlayerEnterVehicle", "ZombVehicle", function(ply, ent)
+hook.Add("CanPlayerEnterVehicle", "ZC_BlockHeadcrabZombieVehicleEntry", function(ply, ent)
 	if ply.PlayerClassName == "headcrabzombie" then
 		return false
 	end

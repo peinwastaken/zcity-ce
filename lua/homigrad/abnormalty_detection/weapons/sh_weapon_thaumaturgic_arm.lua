@@ -166,7 +166,7 @@ function SWEP:CanPrimaryAttack()
     return true
 end
 
-hook.Add("EntityTakeDamage", "Abnormalties_Weapon", function(ent, dmg)
+hook.Add("EntityTakeDamage", "ZC_AbnormalitiesWeapon", function(ent, dmg)
 	local attacker = dmg:GetAttacker()
 	
 	if(IsValid(attacker) and attacker:IsPlayer())then

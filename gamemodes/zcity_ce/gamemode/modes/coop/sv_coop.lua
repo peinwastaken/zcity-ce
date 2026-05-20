@@ -132,7 +132,7 @@ local RemoveGordonWeapons = {
     ["item_suit"] = true
 }
 
-hook.Add("EntityTakeDamage","dontfuckingdamagethem",function(ent,dmginfo)
+hook.Add("EntityTakeDamage","ZC_BlockCoopFriendlyDamage",function(ent,dmginfo)
     if CurrentRound().name == "coop" then
         local att = dmginfo:GetAttacker()
         if IsValid(ent) and IsValid(att) and att:IsPlayer() and ent:IsNPC() and ((ent:Disposition(att) == D_LI) or (ent:Disposition(att) == D_NU)) then
@@ -199,7 +199,7 @@ end
 function MODE:CheckAlivePlayers()
 end
 
-function MODE:ZB_OnEntCreated( ent )
+function MODE:ZC_OnTrackedEntityCreated( ent )
 end
 
 CreateConVar("zc_coop_autochangelevel", "1", FCVAR_PROTECTED, "Toggle auto changelevel in Half-Life 2 CO-OP mode", 0, 1)
@@ -611,7 +611,7 @@ local function PossessNPC(ply, npc)
     return true
 end
 
-hook.Add("PlayerButtonDown", "checks", function(ply, button)
+hook.Add("PlayerButtonDown", "ZC_HandleCoopButtonDown", function(ply, button)
     if button ~= KEY_E then return end
     if CurrentRound().name ~= "coop" then return end
     if not coop_rts:GetBool() then return end
@@ -649,7 +649,7 @@ hook.Add("PlayerButtonDown", "checks", function(ply, button)
     end
 end)
 
-hook.Add("ZB_RoundStart", "RTSoff", function()
+hook.Add("ZC_RoundStart", "ZC_DisableCoopRtsOnRoundStart", function()
     if CurrentRound().name ~= "coop" then return end
 
     for _, ply in player.Iterator() do
@@ -657,7 +657,7 @@ hook.Add("ZB_RoundStart", "RTSoff", function()
     end
 end)
 
-hook.Add("PostCleanupMap", "RTScleanup", function()
+hook.Add("PostCleanupMap", "ZC_CleanupCoopRts", function()
     if CurrentRound().name ~= "coop" then return end
 
     for _, ply in player.Iterator() do
@@ -665,7 +665,7 @@ hook.Add("PostCleanupMap", "RTScleanup", function()
     end
 end)
 
-hook.Add("OnEntityCreated", "CoopAlyxWeapon", function(ent)
+hook.Add("OnEntityCreated", "ZC_CoopAlyxWeapon", function(ent)
     if CurrentRound().name ~= "coop" then return end
 
     timer.Simple(0, function()

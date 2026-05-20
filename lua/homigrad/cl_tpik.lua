@@ -633,7 +633,7 @@ local blackmans = {
 local hg, LocalToWorld = hg, LocalToWorld
 local durachok = "models/epangelmatikes/e3_elite_suit.mdl"
 
---hook.Add("PostDrawPlayerRagdoll", "!!!!!!!zcity_PostDrawPlayerRagdollmain", function(ent, ply)
+--hook.Add("ZC_PostDrawPlayerRagdoll", "ZC_PostDrawPlayerRagdollMain", function(ent, ply)
 local ang_head1, ang_head2 = Angle(-90, 0, 220), Angle(-90, 0, -30)
 function hg.MainTPIKFunction(ent, ply, wpn)
     if not IsValid(ply) then return end
@@ -733,7 +733,7 @@ function hg.MainTPIKFunction(ent, ply, wpn)
     end
 end
 
---[[hook.Add("IKPoleLeftArm", "asdasdr", function(ply, ent, pos, segments)
+--[[hook.Add("ZC_CalculateLeftArmIKPole", "ZC_DebugTpikLeftArmIkPole", function(ply, ent, pos, segments)
     return vector_origin
 end)--]]
 
@@ -1030,7 +1030,7 @@ function hg.DoTPIK(ply, ent)
                 segments[2].Pos = new
             end
 
-            local newpos = hook.Run("IKPoleRightArm", ply, ent, segments[2].Pos, segments)
+            local newpos = hook.Run("ZC_CalculateRightArmIKPole", ply, ent, segments[2].Pos, segments)
 
             if newpos then
                 segments[2].Pos = newpos
@@ -1170,7 +1170,7 @@ function hg.DoTPIK(ply, ent)
                 segments[2].Pos = new
             end
 
-            local newpos = hook.Run("IKPoleLeftArm", ply, ent, segments[2].Pos, segments)
+            local newpos = hook.Run("ZC_CalculateLeftArmIKPole", ply, ent, segments[2].Pos, segments)
 
             if newpos then
                 segments[2].Pos = newpos

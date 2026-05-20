@@ -40,21 +40,21 @@ if CLIENT then
 	hg.notifications = hg.notifications or {}
 	hg.notificationFont = "HuyFont"
 
-	hook.Add("Player_Death","removeNotifications",function(ply)
+	hook.Add("ZC_PlayerDeath","ZC_ClearNotifications",function(ply)
 		if ply != lply then return end
 
 		//hg.currentNotification = nil
 		hg.notifications = {}
 	end)
 
-	hook.Add("Player Spawn","removeNotificationsa",function(ply)
+	hook.Add("ZC_PlayerSpawn","ZC_ClearNotificationsOnSpawn",function(ply)
 		if ply != lply then return end
 
 		hg.currentNotification = nil
 		hg.notifications = {}
 	end)
 
-	hook.Add("HG_OnUnconscious","removeNotificationsb",function(ply)
+	hook.Add("ZC_OnPlayerUnconscious","ZC_ClearNotificationsOnUnconscious",function(ply)
 		if ply != lply then return end
 
 		//hg.currentNotification = nil
@@ -281,8 +281,8 @@ if CLIENT then
 		end
 	end
 
-	hook.Add("DrawOverlay", "HGNotificationsThink", NotificationsDraw)
-	hook.Add("Think", "HGNotificationsThink", NotificationsThink)
+	hook.Add("DrawOverlay", "ZC_NotificationsThink", NotificationsDraw)
+	hook.Add("Think", "ZC_NotificationsThink", NotificationsThink)
 else
 	concommand.Add("hg_notify", function(ply, cmd, args)
 		if not ply:IsAdmin() then return end

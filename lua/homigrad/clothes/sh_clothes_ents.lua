@@ -366,12 +366,12 @@ local function register()
     end
 end
 if CLIENT and !steamworks.ShouldMountAddon("3670069780") then return end -- anyway client not abile to see it when no
-hook.Add("Think","remove-me-clothes",function()
+hook.Add("Think","ZC_RegisterClothesEntities",function()
     register()
-    hook.Remove("Think","remove-me-clothes")
+    hook.Remove("Think","ZC_RegisterClothesEntities")
 end)
 
-hook.Add("Initialize", "init-clothes", register)
+hook.Add("Initialize", "ZC_InitClothes", register)
 --[[
 
     pants = "distac/gloves/pants",

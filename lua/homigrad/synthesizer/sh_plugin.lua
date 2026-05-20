@@ -33,7 +33,7 @@ PLUGIN.Version = 1
 		util.AddNetworkString("Synthesizer(PlayOnPlayer)")
 		SetGlobalBool("Synthesizer_Enable_Chat", false)
 
-		hook.Add("HG_PlayerSay", "Synthesizer", function(ply, txtTbl, text)
+		hook.Add("ZC_OnPlayerSay", "ZC_Synthesizer", function(ply, txtTbl, text)
 			if(GetGlobalBool("Synthesizer_Enable_Chat", false) and ply:Alive())then
 				if(string.StartsWith(text, "№"))then
 					local stripped_text = string.Right(text, #text - 3)

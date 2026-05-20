@@ -300,7 +300,7 @@ local function get_status_message(ply)
 		end
 	end
 
-	local nomessage = hook.Run("HG_CanThoughts", ply) --ply.PlayerClassName == "Gordon" || ply.PlayerClassName == "Combine"
+	local nomessage = hook.Run("ZC_CanShowThoughts", ply) --ply.PlayerClassName == "Gordon" || ply.PlayerClassName == "Combine"
 	if nomessage ~= nil and nomessage == false then return "" end
 
     if ply:GetInfoNum("zc_showthoughts", 1) == 0 then return "" end

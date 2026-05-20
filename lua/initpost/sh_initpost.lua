@@ -305,11 +305,11 @@ if CLIENT then
 			surface.DrawText("Please set your DirectX to 9 or higher and restart your game to play, or leave this server.")
 		end
 
-		hook.Add("HUDPaint", "noYouDon't", noYouDont)
-		hook.Add("HUDPaint", "noYouDon't", noYouDont)
-		hook.Add("HUDPaintBackground", "noYouDon't", noYouDont)
-		hook.Add("PreDrawHUD", "noYouDon't", noYouDont)
-		hook.Add("PostDrawHUD", "noYouDon't", noYouDont)
+		hook.Add("HUDPaint", "ZC_DrawUnsupportedDirectXWarning", noYouDont)
+		hook.Add("HUDPaint", "ZC_DrawUnsupportedDirectXWarning", noYouDont)
+		hook.Add("HUDPaintBackground", "ZC_DrawUnsupportedDirectXWarning", noYouDont)
+		hook.Add("PreDrawHUD", "ZC_DrawUnsupportedDirectXWarning", noYouDont)
+		hook.Add("PostDrawHUD", "ZC_DrawUnsupportedDirectXWarning", noYouDont)
     end
 end
 
@@ -318,7 +318,7 @@ if CLIENT then
 		return self:GetClass() == "prop_door_rotating" or self:GetClass() == "func_door_rotating"
 	end
 
-	hook.Add("OnEntityCreated", "doorInstructions", function(ent)
+	hook.Add("OnEntityCreated", "ZC_DoorInstructions", function(ent)
 		if SDOIsDoor(ent) then
 			if CLIENT then
 				local use = input.LookupBinding("+use") or "BIND YOUR +USE KEY PLEASE. WRITE \"bind e +use\" IN CONSOLE FOR THE LOVE OF GOD"

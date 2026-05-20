@@ -5,7 +5,7 @@ zb.Experience = zb.Experience or {}
 zb.Experience.PlayerInstances = zb.Experience.PlayerInstances or {}
 zb.Experience.Active = zb.Experience.Active or false
 
-hook.Add("DatabaseConnected", "ExperienceCreateData", function()
+hook.Add("ZC_OnDatabaseConnected", "ZC_ExperienceCreateData", function()
 	local query
 
 	query = mysql:Create("zb_experience")
@@ -25,7 +25,7 @@ end)
 --local query = mysql:Drop("zb_experience")
 --query:Execute()
 
-hook.Add( "PlayerInitialSpawn","ZB_Exp_OnInitSpawn", function( ply )
+hook.Add( "PlayerInitialSpawn","ZC_LoadExperienceOnSpawn", function( ply )
     local name = ply:Name()
 	local steamID64 = ply:SteamID64()
 
@@ -233,7 +233,7 @@ net.Receive("zb_xp_get",function(len,ply)
 end)
 
 
---hook.Add( "ZB_EndRound", "ZB_Exp_Give", function()
+--hook.Add( "ZC_EndRound", "ZC_ExpGive", function()
 --    local exp = ply.RoundEXP or 0
 --    local skill = ply.RoundSkill or 0
 --

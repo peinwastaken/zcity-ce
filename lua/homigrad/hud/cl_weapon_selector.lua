@@ -293,19 +293,19 @@ function WS.SetActuallyWeapon( ply, cmd )
     end
 end
 
-hook.Add( "PlayerBindPress", "WeaponSelector_PlayerBindPress", WS.ChangeSelectionWep )
+hook.Add( "PlayerBindPress", "ZC_WeaponSelectorPlayerBindPress", WS.ChangeSelectionWep )
 
-hook.Add( "HUDPaint", "WeaponSelector_Draw", function()
+hook.Add( "HUDPaint", "ZC_WeaponSelectorDraw", function()
     WS.WeaponSelectorDraw( LocalPlayer() )
 end)
 
-hook.Add( "StartCommand", "WeaponSelector_StartCommand", WS.SetActuallyWeapon )
+hook.Add( "StartCommand", "ZC_WeaponSelectorStartCommand", WS.SetActuallyWeapon )
 
 local tHideElements = {
     ["CHudWeaponSelection"] = true
 }
 
-hook.Add("HUDShouldDraw", "WeaponSelector_HUDShouldDraw", function(sElementName)
+hook.Add("HUDShouldDraw", "ZC_WeaponSelectorHUDShouldDraw", function(sElementName)
     if tHideElements[sElementName] then return false end
 end)
 

@@ -16,7 +16,7 @@ function PLAYER:PlayCustomAnims(anim, autoStop, speed, autostopAdjust)
 	return animDelay
 end
 
-hook.Add("CalcMainActivity", "SLCAnim_Activity", function(ply, vel)
+hook.Add("CalcMainActivity", "ZC_SLCAnimActivity", function(ply, vel)
 	local str = ply:GetNWString("hg_CustomAnim", "")
 	local num = ply:GetNWFloat("hg_CustomAnimDelay")
 	local st = ply:GetNWFloat("hg_CustomAnimStartTime")

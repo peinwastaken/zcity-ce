@@ -61,11 +61,11 @@ end
 
 getRandSpawn()
 
-hook.Add("InitPostEntity", "ZCityRefreshSpawns", function()
+hook.Add("InitPostEntity", "ZC_RefreshSpawns", function()
 	getRandSpawn()
 end)
 
-hook.Add("ZB_PreRoundStart", "reset_spawns", function()
+hook.Add("ZC_PreRoundStart", "ZC_ResetTeamSpawns", function()
 	zb.ctspawn = nil
 	zb.tspawn = nil
 end)
@@ -289,7 +289,7 @@ net.Receive("ZB_ChooseSpecPly",function(len,ply)
 	end
 end)
 
-hook.Add("SetupPlayerVisibility", "spectPVS", function(ply, viewent)
+hook.Add("SetupPlayerVisibility", "ZC_AddSpectatorTargetPvs", function(ply, viewent)
 	if ply:Alive() then return end
 
 	local entity = ply.chosenSpectEntity
@@ -299,7 +299,7 @@ hook.Add("SetupPlayerVisibility", "spectPVS", function(ply, viewent)
 	end
 end)
 
-hook.Add("PlayerDeathThink", "spectNetwork", function(ply)
+hook.Add("PlayerDeathThink", "ZC_NetworkSpectatorTarget", function(ply)
 	if ply:Alive() then return end
 	//ply:Spectate(OBS_MODE_ROAMING)
 
@@ -399,7 +399,7 @@ util.AddNetworkString("ZB_SpecMode")
 net.Receive("ZB_SpecMode",function(len,ply)
 	local bool = net.ReadBool()
 
-	local enable = !hook.Run("ZB_JoinSpectators", ply)
+	local enable = !hook.Run("ZC_CanJoinSpectators", ply)
 
 	if enable and bool and ply:Team() != TEAM_SPECTATOR then if ply:Alive() then ply:Kill() end ply:SetTeam(TEAM_SPECTATOR) PrintMessage(HUD_PRINTTALK,ply:Name().." joined the spectators.")
 	elseif ply:Team() != 1 then
@@ -447,7 +447,7 @@ local function getspawnpos()
 end
 
 
-hook.Add("PostCleanupMap","changelevel_generate",function()
+hook.Add("PostCleanupMap","ZC_GenerateChangelevelData",function()
 	if CurrentRound().name != "coop" then return end
 	local player_pos = getspawnpos()
     local dist = 0
@@ -544,7 +544,7 @@ function GM:EntityKeyValue( ent, key, value )
 
 end
 
-hook.Add("CanProperty", "AntiExploit", function(ply, property, ent)
+hook.Add("CanProperty", "ZC_BlockPropertyExploit", function(ply, property, ent)
 	if(!ply:IsAdmin())then
 		return false
 	end

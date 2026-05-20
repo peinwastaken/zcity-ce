@@ -245,8 +245,8 @@ function CLASS.On(self, data)
     end
 
     local index = self:EntIndex()
-    hook.Add( "OnEntityCreated", "refugee_relation_ship"..index, function( ent )
-        if not IsValid(self) then hook.Remove("OnEntityCreated","refugee_relation_ship"..index) return end
+    hook.Add( "OnEntityCreated", "ZC_RefugeeRelationShip" .. index, function( ent )
+        if not IsValid(self) then hook.Remove("OnEntityCreated","ZC_RefugeeRelationShip" .. index) return end
         if ( ent:IsNPC() ) then
             if table.HasValue(rebels,ent:GetClass()) then
                 ent:AddEntityRelationship( self, D_LI, 0 )

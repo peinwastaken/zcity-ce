@@ -66,7 +66,7 @@ concommand.Add("hg_dmusic_skip",function()
     end
 end)
 local MusicVolume = GetConVar("snd_musicvolume")
-hook.Add( "Think", "DMusic.Think", function()
+hook.Add( "Think", "ZC_DynamicMusicThink", function()
     if not DMusic.Tracks then return end
     local ply = LocalPlayer()
     if not ply:Alive() then DMusic.threaded = 0 end

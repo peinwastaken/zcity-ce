@@ -249,7 +249,7 @@ input_list.jaw = function(org, bone, dmg, dmgInfo, boneindex, dir, hit, ricochet
 	return result, vecrand
 end
 
-hook.Add("CanListenOthers", "CantHaveShitInDetroit", function(output, input, isChat, teamonly, text)
+hook.Add("ZC_CanReceiveCommunication", "ZC_MuffleBoneDamagedSpeech", function(output, input, isChat, teamonly, text)
 	if IsValid(output) and (output.organism.jaw == 1 or output.organism.jawdislocation) and output:Alive() and (output:IsSpeaking() or isChat) then
 		-- and !isChat and output:IsSpeaking()
 		output.organism.painadd = output.organism.painadd + 2 * (output:IsSpeaking() and 1 or (isChat and 5 or 0))

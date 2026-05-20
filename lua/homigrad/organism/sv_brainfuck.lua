@@ -184,7 +184,7 @@ local function clearSpasm(rag)
 	rag.spasm, rag.spasmEnd, rag.spasmStart, rag.spasmDur, rag.spasmForce, rag.spasmType, rag.rigorActive = nil, nil, nil, nil, nil, nil, nil
 end
 
-hook.Add("Should Fake Up", "BrainfuckFencing", function(ply)
+hook.Add("ZC_ShouldRestorePlayerFromFake", "ZC_BlockFakeUpForBrainDamage", function(ply)
 	local org = ply.organism
 	if org and org.fencing and org.fencingEnd and CurTime() < org.fencingEnd then
 		return false
@@ -195,7 +195,7 @@ hook.Add("Should Fake Up", "BrainfuckFencing", function(ply)
 	end
 end)
 
-hook.Add("RagdollDeath", "BrainfuckStart", function(ply, rag)
+hook.Add("ZC_OnRagdollDeath", "ZC_StartBrainDamageOnRagdollDeath", function(ply, rag)
 	timer.Simple(0.1, function()
 		if not IsValid(ply) or not IsValid(rag) then return end
 		local org = ply.organism
@@ -215,7 +215,7 @@ hook.Add("RagdollDeath", "BrainfuckStart", function(ply, rag)
 	end)
 end)
 
-hook.Add("Org Think", "BrainfuckThink", function(owner)
+hook.Add("ZC_OrganismThink", "ZC_UpdateBrainDamage", function(owner)
 	if not IsValid(owner) then return end
 	local org = owner.organism or owner
 
@@ -247,7 +247,7 @@ hook.Add("Org Think", "BrainfuckThink", function(owner)
 	end
 end)
 
-hook.Add("Org Clear", "BrainfuckClear", function(org)
+hook.Add("ZC_OrganismClear", "ZC_ClearBrainDamage", function(org)
 	if not org or not org.owner then return end
 	if IsValid(org.owner) then
 		clearSpasm(org.owner)

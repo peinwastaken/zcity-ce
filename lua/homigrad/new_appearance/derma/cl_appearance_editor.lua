@@ -79,7 +79,7 @@ local function PrecacheAccessoryModels()
 end
 
 
-hook.Add("InitPostEntity", "HG_PrecacheAppearanceModels", function()
+hook.Add("InitPostEntity", "ZC_PrecacheAppearanceModels", function()
     timer.Simple(5, PrecacheAccessoryModels)
 end)
 

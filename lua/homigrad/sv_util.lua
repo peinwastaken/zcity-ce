@@ -57,7 +57,7 @@ local function playEffects( ent, data )
     util_Decal( bloodMat, tempBloodPos, bloodPos, ent )
 end
 
-hook.Add( "PostEntityTakeDamage", "ResponsiveHits_PostEntityTakeDamage", playEffects )
+hook.Add( "PostEntityTakeDamage", "ZC_ResponsiveHitsPostEntityTakeDamage", playEffects )
 
 local function setBloodonSpawn( ent )
     if getBloodColor( ent ) == -1 then return end
@@ -65,8 +65,8 @@ local function setBloodonSpawn( ent )
     ent:SetBloodColor( -1 )
 end
 
-hook.Add( "PlayerSpawn", "ResponsiveHits_PlayerSpawn", setBloodonSpawn )
-hook.Add( "OnEntityCreated", "ResponsiveHits_OnEntityCreated", function( ent )
+hook.Add( "PlayerSpawn", "ZC_ResponsiveHitsPlayerSpawn", setBloodonSpawn )
+hook.Add( "OnEntityCreated", "ZC_ResponsiveHitsOnEntityCreated", function( ent )
     timer.Simple( 0, function()
         if not IsValid( ent ) then return end
         if not ent:IsNPC() then return end
@@ -75,7 +75,7 @@ hook.Add( "OnEntityCreated", "ResponsiveHits_OnEntityCreated", function( ent )
 end )
 
 --; npc_sniper prikols. check this shit: https://developer.valvesoftware.com/wiki/Npc_sniper
-hook.Add( "OnEntityCreated", "SniperShit", function( ent )
+hook.Add( "OnEntityCreated", "ZC_ConfigureNpcSnipers", function( ent )
 	timer.Simple( 0, function()
 		if not IsValid( ent ) then return end
 		if ent:GetClass() ~= "npc_sniper" then return end
@@ -97,7 +97,7 @@ hook.Add( "OnEntityCreated", "SniperShit", function( ent )
 	end )
 end )
 
-hook.Add( "OnEntityCreated", "HelicopterGunshipInit", function( ent )
+hook.Add( "OnEntityCreated", "ZC_HelicopterGunshipInit", function( ent )
 	timer.Simple( 0.1, function()
 		if not IsValid( ent ) then return end
 
@@ -108,7 +108,7 @@ hook.Add( "OnEntityCreated", "HelicopterGunshipInit", function( ent )
 	end )
 end )
 
-hook.Add( "Think", "Dumalkasniper", function()
+hook.Add( "Think", "ZC_UpdateNpcSniperSuppression", function()
 	for _, sniper in ipairs( ents.FindByClass( "npc_sniper" ) ) do
 		if not IsValid( sniper ) then continue end
 
@@ -194,7 +194,7 @@ hook.Add( "Think", "Dumalkasniper", function()
 end )
 
 
-hook.Add("EntityTakeDamage", "HL2Shit", function(target, dmginfo)
+hook.Add("EntityTakeDamage", "ZC_HandleLargeNpcDamage", function(target, dmginfo)
 	if not IsValid(target) then return end
 
 	local class = target:GetClass()
@@ -280,13 +280,13 @@ hook.Add("EntityTakeDamage", "HL2Shit", function(target, dmginfo)
 	end
 end)
 
-hook.Add("PlayerSilentDeath","removeragdollaswell",function(ply)
+hook.Add("PlayerSilentDeath","ZC_RemoveRagdollAsWell",function(ply)
 	if IsValid(ply.FakeRagdoll) then
 		ply.FakeRagdoll:Remove()
 	end
 end)
 
-hook.Add("OnEntityCreated", "DragDisabler", function(v) -- more reallife phys??
+hook.Add("OnEntityCreated", "ZC_ReduceEntityPhysicsDrag", function(v) -- more reallife phys??
 	timer.Simple(0, function()
 		if IsValid(v) then
 			local phys = v:GetPhysicsObject()
@@ -312,7 +312,7 @@ local badmats = {
 	["popcan"] = true,
 	["glassbottle"] = true,
 }
-hook.Add("OnEntityCreated", "PropMassFix", function(v)
+hook.Add("OnEntityCreated", "ZC_AdjustLowMassProps", function(v)
 	timer.Simple(0, function()
 		if IsValid(v) and IsValid(v:GetPhysicsObject()) and v:GetClass() ~= "prop_ragdoll" then
 			local phys = v:GetPhysicsObject()
@@ -373,7 +373,7 @@ function hg.EmitAISound(pos, vol, dur, typ) -- https://developer.valvesoftware.c
 end
 
 util.AddNetworkString("ZB_KeyDown2")
-hook.Add("KeyPress", "huy-hg", function(ply, key)
+hook.Add("KeyPress", "ZC_BroadcastKeyPressState", function(ply, key)
 	net.Start("ZB_KeyDown2")
 		net.WriteInt(key, 26)
 		net.WriteBool( ply.organism.canmove )
@@ -381,7 +381,7 @@ hook.Add("KeyPress", "huy-hg", function(ply, key)
 	net.SendPVS(ply:GetPos())
 end)
 
-hook.Add("KeyRelease", "huy-hg2", function(ply, key)
+hook.Add("KeyRelease", "ZC_BroadcastKeyReleaseState", function(ply, key)
 	net.Start("ZB_KeyDown2")
 		net.WriteInt(key, 26)
 		net.WriteBool(false)
@@ -397,7 +397,7 @@ end)
 
 SetGlobalBool("FullRealismMode",true)
 
-hook.Add("Player_Death","notarget_removebull",function(ply)
+hook.Add("ZC_PlayerDeath","ZC_RemoveBullseyeOnPlayerDeath",function(ply)
 	if IsValid(ply.bull) then
 		ply.bull:Remove()
 		ply.bull = nil
@@ -405,7 +405,7 @@ hook.Add("Player_Death","notarget_removebull",function(ply)
 	ply:AddFlags(FL_NOTARGET)
 end)
 
-hook.Add("Player Think", "homigrad-dropholstered", function(ply)
+hook.Add("ZC_PlayerThink", "ZC_DropNonHolsterableWeapons", function(ply)
 	if (ply.thinkdropwep or 0) > CurTime() then return end
 	ply.thinkdropwep = CurTime() + 0.1
 	if ply.organism and ply.organism.allowholster then return end
@@ -424,7 +424,7 @@ end)
 
 util.AddNetworkString( "DoPlayerFlinch" )
 
-hook.Add( "ScalePlayerDamage", "FlinchPlayersOnHit", function(ply, grp)
+hook.Add( "ScalePlayerDamage", "ZC_FlinchPlayersOnHit", function(ply, grp)
 	if ply:IsPlayer() then
 		--could maybe return end,
 		--but would that override other Scale hooks? -- no.
@@ -463,7 +463,7 @@ local function IsLookingAt(ply, targetVec)
 	return ply:GetAimVector():Dot(diff) / diff:Length() >= 0.8
 end
 
-hook.Add("PostEntityFireBullets","bulletsuppression",function(ent,bullet)
+hook.Add("ZC_PostEntityFireBullets","ZC_BulletSuppression",function(ent,bullet)
 	local tr = bullet.Trace
 	local dmg = bullet.Damage
 	if ent == Entity(0) then return end
@@ -576,7 +576,7 @@ local hlguns = {
 	["weapon_stunstick"] = true
 }
 
-hook.Add( "PlayerCanPickupWeapon", "CanPickup", function( ply, weapon )
+hook.Add( "PlayerCanPickupWeapon", "ZC_BlockAutomaticWeaponPickup", function( ply, weapon )
 	if hlguns[weapon:GetClass()] then return false end
 	if weapon.IsSpawned then
 		if !ply:KeyDown(IN_USE) and !ply.force_pickup then
@@ -588,7 +588,7 @@ hook.Add( "PlayerCanPickupWeapon", "CanPickup", function( ply, weapon )
 	end
 end )
 
-hook.Add( "OnPlayerPhysicsPickup", "CanPickup", function( ply, weapon )
+hook.Add( "OnPlayerPhysicsPickup", "ZC_HandlePhysicsWeaponPickup", function( ply, weapon )
 	if !IsValid(weapon) or !weapon:IsWeapon() then return end
 
 	if weapon.IsSpawned then
@@ -606,13 +606,13 @@ hook.Add( "OnPlayerPhysicsPickup", "CanPickup", function( ply, weapon )
 
 end )
 
-hook.Add("PlayerDroppedWeapon", "ManualPickup", function(owner, wep)
+hook.Add("PlayerDroppedWeapon", "ZC_MarkDroppedWeaponAsSpawned", function(owner, wep)
 	wep.IsSpawned = true
 end)
 
-hook.Add("PlayerSpawnedSWEP", "ManualPickup", function(ply, wep) wep.IsSpawned = true end)
+hook.Add("PlayerSpawnedSWEP", "ZC_MarkSpawnedSWEPAsSpawned", function(ply, wep) wep.IsSpawned = true end)
 
-hook.Add("Player_Death", "FLASHLIGHTHUY", function(ply)
+hook.Add("ZC_PlayerDeath", "ZC_BlockAttachmentFlashlight", function(ply)
 	ply:SetNetVar("flashlight",false)
 end)
 
@@ -679,10 +679,10 @@ concommand.Add("hg_dropkastet",function(ply)
 	ply:DoAnimationEvent(ACT_GMOD_GESTURE_MELEE_SHOVE_1HAND)
 end)
 
-hook.Add("SetupMove", "SV_SYNC", function(ply)
+hook.Add("SetupMove", "ZC_ServerSync", function(ply)
 	if not ply.sync then
 		ply.sync = true
-		hook.Run("PlayerSync", ply)
+		hook.Run("ZC_OnPlayerSync", ply)
 	end
 end)
 
@@ -703,7 +703,7 @@ function hgWreckBuildings(blaster, pos, power, range, ignoreVisChecks) -- taken 
 		for _, prop in ipairs(allProps) do
 			LastProcess = SysTime()
 			local blacklistedProp = table.HasValue(WreckBlacklist, prop:GetClass())
-			local hookBlockedProp = hook.Run("hg_CanDestroyProp", prop, blaster, pos, power, range, ignore) == false
+			local hookBlockedProp = hook.Run("ZC_CanDestroyProp", prop, blaster, pos, power, range, ignore) == false
 			local explosionProofProp = prop.ExplProof == true
 			local canAffectProp = not (blacklistedProp or hookBlockedProp or explosionProofProp)
 
@@ -766,7 +766,7 @@ end
 
 function hgBlastDoors(blaster, pos, power, range, ignoreVisChecks) -- taken from JMod
 	for _, door in pairs(ents.FindInSphere(pos, 40 * power * (range or 1))) do
-		if hgIsDoor(door) and hook.Run("hg_CanDestroyDoor", door, blaster, pos, power, range, ignore) ~= false then
+		if hgIsDoor(door) and hook.Run("ZC_CanDestroyDoor", door, blaster, pos, power, range, ignore) ~= false then
 			local proceed = ignoreVisChecks
 
 			if not proceed then
@@ -854,7 +854,7 @@ function hgBlastThatDoor(ent, vel) -- taken from JMod
 	end
 end
 
-hook.Add( "OnEntityCreated", "VechicleChairs", function( ent )
+hook.Add( "OnEntityCreated", "ZC_VehicleChairs", function( ent )
 	timer.Simple(0.1,function()
 		if IsValid(ent) and ent:IsVehicle() and ent.IsValidVehicle and ent:IsValidVehicle() then
 			if ent:IsVehicle() and ent.IsValidVehicle and ent:IsValidVehicle() and ent.SetVehicleEntryAnim then
@@ -1032,14 +1032,14 @@ local replace_ammo = {
 	[8] = "RPG-7 Projectile"
 }
 
-hook.Add("PlayerAmmoChanged","AmmoReplace",function(ply,id,old,new)
+hook.Add("PlayerAmmoChanged","ZC_AmmoReplace",function(ply,id,old,new)
 	if replace_ammo[id] ~= nil then
 		ply:GiveAmmo(new, replace_ammo[id], true)
 		ply:SetAmmo(0, id)
 	end
 end)
 
-hook.Add( "Move", "hg_RagdollIntoWalls", function( ply, mv)
+hook.Add( "Move", "ZC_RagdollIntoWalls", function( ply, mv)
 	local vel = mv:GetVelocity()
 	if ply:GetMoveType() == MOVETYPE_WALK and vel:LengthSqr() > 750 * 750 and not hg.GetCurrentCharacter(ply):IsRagdoll() and !(ply.IsStimulated and ply:IsStimulated()) then
 		local tr = util.TraceLine({
@@ -1095,7 +1095,7 @@ else
 		MsgC(Color(255, 0, 0), "Eightbit module is not found.\n")
 end
 
-hook.Add("InitPostEntity", "ffuckk", function()
+hook.Add("InitPostEntity", "ZC_IncreasePhysicsMaxVelocity", function()
 	local perf = physenv.GetPerformanceSettings()
 	perf.MaxVelocity = 100000 -- default 2000
 	physenv.SetPerformanceSettings(perf)
@@ -1209,12 +1209,12 @@ TrackedEntsNpc["weapon_shotgun"] = {"weapon_spas12"}
 TrackedEntsNpc["npc_grenade_frag"] = {"ent_hg_grenade_hl2grenade"}
 
 local fuckingwait = 0
-hook.Add("PreCleanupMap","ReplaceEntCD",function()
+hook.Add("PreCleanupMap","ZC_ReplaceEntCD",function()
 	fuckingwait = CurTime() + 5
 end)
 
-hook.Add( "OnEntityCreated", "ReplaceEnt", function( ent )
-	hook.Run("ZB_OnEntCreated",ent)
+hook.Add( "OnEntityCreated", "ZC_ReplaceEnt", function( ent )
+	hook.Run("ZC_OnTrackedEntityCreated",ent)
 	if OverrideWeaponSpawn then return end
 
 	timer.Simple(fuckingwait > CurTime() and 5 or 0,function()
@@ -1311,7 +1311,7 @@ end )
 		end
 	end
 
-	hook.Add("PlayerDeath","I_Feel_Death",function(ply)
+	hook.Add("PlayerDeath","ZC_SyncPlayerDeathState",function(ply)
 		if zc_sync:GetBool() then
 			ply:SyncDeath()
 		end
@@ -1328,7 +1328,7 @@ end
 
 --\\ Get shards/table legs on break
 	local string_find = string.find
-	hook.Add("PropBreak", "FurnitureLegs", function(ply, ent)
+	hook.Add("PropBreak", "ZC_FurnitureLegs", function(ply, ent)
 		if IsValid(ent) and string_find(ent:GetModel(), "furniture", 1, "%a") and math.random(3) == 2 then
 			if string_find(ent:GetModel(), "table", 1, "%a") or string_find(ent:GetModel(), "drawer", 1, "%a") or string_find(ent:GetModel(), "desk", 1, "%a") then
 				local leg = ents.Create("weapon_table_leg")
@@ -1348,7 +1348,7 @@ end
 		end
 	end)
 
-	hook.Add("PostEntityTakeDamage", "GlassShards", function(ent, dmginfo)
+	hook.Add("PostEntityTakeDamage", "ZC_GlassShards", function(ent, dmginfo)
 		if IsValid(ent) and math.random(4) == 2 then
 			if ent:GetClass() == "func_breakable_surf" or (ent:GetClass() == "func_breakable" and ent:GetMaterialType() == MAT_GLASS) then
 				local glass = ents.Create("weapon_hg_glassshard")
@@ -1425,7 +1425,7 @@ function entMeta:StealthOpenDoor(user)
 	hg.RunZManipAnim(user, !DoorIsOpen2(self) and "door_open_forward" or "door_open_back", nil, 2, {self})
 end
 
-hook.Add("StartCommand", "kolesiko", function(ply, cmd)
+hook.Add("StartCommand", "ZC_AdjustDoorOpenAngleWithMouseWheel", function(ply, cmd)
 	local whl = cmd:GetMouseWheel()
 	if ply:KeyDown(IN_WALK) and math.abs(whl) > 0 then
 		local old_amt = ply:GetNWInt("door_open_amt", 0)
@@ -1507,7 +1507,7 @@ function entMeta:SDOIsDoor()
 	return self:GetClass() == "prop_door_rotating" or self:GetClass() == "func_door_rotating"
 end
 
-hook.Add( "AcceptInput", "StealthOpenDoors", function( ent, inp, act, ply, val )
+hook.Add( "AcceptInput", "ZC_StealthOpenDoors", function( ent, inp, act, ply, val )
 	if inp == "Use" and ent:SDOIsDoor() then
 		local func = ((ply:KeyDown( IN_SPEED ) and "FastOpenDoor") or ( ply:KeyDown( IN_WALK ) and "StealthOpenDoor") or "NormalOpenDoor")
 		ent[func](ent,ply)
@@ -1528,7 +1528,7 @@ hook.Add( "AcceptInput", "StealthOpenDoors", function( ent, inp, act, ply, val )
 	end
 end )
 
-hook.Add("PlayerUse", "DoorClose", function(ply, ent)
+hook.Add("PlayerUse", "ZC_DoorClose", function(ply, ent)
 	local getdoor = ply:GetUseEntity()
 	if string_find(tostring(getdoor), "prop_door_rotating") and getdoor:GetInternalVariable("m_eDoorState") == 2 then
 		if getdoor:GetInternalVariable("m_hMaster") != NULL then
@@ -1545,7 +1545,7 @@ hook.Add("PlayerUse", "DoorClose", function(ply, ent)
 	end
 end)
 
-hook.Add( "KeyPress", "snowballs_pickup", function( ply, key )
+hook.Add( "KeyPress", "ZC_SnowballsPickup", function( ply, key )
 	if IsValid(ply.FakeRagdoll) then return end
 	ply.SnowBallPickupCD = ply.SnowBallPickupCD or 0
 	if ply.SnowBallPickupCD > CurTime() then return end
@@ -1591,11 +1591,11 @@ end
 local zc_temperaturesystem = CreateConVar("zc_temperaturesystem", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "Toggle temperature system", 0, 1)
 local sf2_get_temp = StormFox2 and StormFox2.Temperature and StormFox2.Temperature.Get or nil
 
-hook.Add("StormFox2.PostEntityScan","load-stormfox-support",function()
+hook.Add("StormFox2.PostEntityScan","ZC_LoadStormfoxSupport",function()
 	sf2_get_temp = StormFox2 and StormFox2.Temperature and StormFox2.Temperature.Get or nil
 end)
 
-hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- redesigned temperature system
+hook.Add("ZC_OrganismThink", "ZC_BodyTemperature", function(owner, org, timeValue) -- redesigned temperature system
 	if not owner:IsPlayer() or not owner:Alive() then return end
 	if owner.GetPlayerClass and owner:GetPlayerClass() and owner:GetPlayerClass().NoFreeze then return end
 	if !zc_temperaturesystem:GetBool() then return end
@@ -1650,7 +1650,7 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- rede
 	if temp < -20 then
 		changeRate = changeRate * math.abs(temp) * 0.1
 	end
-	local result1,result2,result3 = hook.Run("ZC_BodyTemperature", owner, org, timeValue, changeRate, MaxWarmMul, warmLoseMul)
+	local result1,result2,result3 = hook.Run("ZC_CalculateBodyTemperature", owner, org, timeValue, changeRate, MaxWarmMul, warmLoseMul)
 	if result1 and result2 and result3 then
 		changeRate = result1
 		MaxWarmMul = result2
@@ -1720,7 +1720,7 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- rede
 	--a bit expensive
 end)
 
-hook.Add("SetupMove","hg_FallSound",function(ply)
+hook.Add("SetupMove","ZC_AddAdrenalineFromFalling",function(ply)
 	--if not ply then return end
 	local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
 	local vel = ent:GetVelocity():Length()
@@ -1747,7 +1747,7 @@ hook.Add("SetupMove","hg_FallSound",function(ply)
 end)
 
 -- Takin from https://steamcommunity.com/sharedfiles/filedetails/?id=2845033629&searchtext=better+movement
-hook.Add("SetupMove", "bm_force_foosteps", function(ply, mv)
+hook.Add("SetupMove", "ZC_ForceFootsteps", function(ply, mv)
 
 	if ply:InVehicle() then return end
 
@@ -1781,7 +1781,7 @@ hook.Add("SetupMove", "bm_force_foosteps", function(ply, mv)
 end)
 
 local zc_fallonsideland = CreateConVar("zc_fallonsideland", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED},"Toggle fall from side landing (if player land direction != player eye direction)")
-hook.Add("Move", "CP_detectland", function(ply)
+hook.Add("Move", "ZC_DetectLandingViewPunch", function(ply)
 	if !zc_fallonsideland:GetBool() then return end
 	local vel = ply:GetVelocity()
 	vel[3] = 0
@@ -1796,7 +1796,7 @@ hook.Add("Move", "CP_detectland", function(ply)
 	ply.prev_on_ground = ply:OnGround()
 end)
 
-hook.Add("OnEntityCreated", "FunnySimfphys", function(ent)
+hook.Add("OnEntityCreated", "ZC_ReplaceJeepWithCustomVehicle", function(ent)
 	if IsValid(ent) and ent:GetClass() == "prop_vehicle_jeep" then
 		timer.Simple(1, function()
 			if !IsValid(ent) then return end
@@ -1830,25 +1830,25 @@ end
 
 local hook_Run = hook.Run
 
-hook.Add("PlayerTick", "HomigradPlayerThink", function(ply)
+hook.Add("PlayerTick", "ZC_RunPlayerThinkFromTick", function(ply)
 	ply.lastcall_tick = ply.lastcall_tick or SysTime() - 0.01
 	local dtime = SysTime() - ply.lastcall_tick
 
-	hook_Run("Player Think", ply, CurTime(), dtime)
+	hook_Run("ZC_PlayerThink", ply, CurTime(), dtime)
 
 	ply.lastcall_tick = SysTime()
 end)
 
-hook.Add("VehicleMove", "HomigradVehicleThink", function(ply, veh, mv)
+hook.Add("VehicleMove", "ZC_RunPlayerThinkFromVehicleMove", function(ply, veh, mv)
 	ply.lastcall_tick = ply.lastcall_tick or SysTime() - 0.01
 	local dtime = SysTime() - ply.lastcall_tick
 
-	hook_Run("Player Think", ply, CurTime(), dtime)
+	hook_Run("ZC_PlayerThink", ply, CurTime(), dtime)
 
 	ply.lastcall_tick = SysTime()
 end)
 
-hook.Add("Player Think", "homigrad-viewoffset", function(ply)
+hook.Add("ZC_PlayerThink", "ZC_ClearDeathBullseye", function(ply)
 	if !ply:Alive() and IsValid(ply.bull) then
 		ply.bull:Remove()
 		ply.bull = nil
@@ -1864,7 +1864,7 @@ if !istable(gmnetwork) and util.IsBinaryModuleInstalled("network") then
 end
 
 
-hook.Add("SetupMove", "AntiCrouchSpam", function(ply, mvd, cmd) -- actually pretty useless crap; just prevents crouch spam lol
+hook.Add("SetupMove", "ZC_AntiCrouchSpam", function(ply, mvd, cmd) -- actually pretty useless crap; just prevents crouch spam lol
 	if !ply:Alive() or !hg.GetCurrentCharacter( ply ):IsPlayer() then return end
 
 	ply.OldCrouchState = ply.OldCrouchState or false

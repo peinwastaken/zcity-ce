@@ -755,7 +755,7 @@ function ENTITY:FireLuaBullets(tInfo)
 			data.Attacker = tInfo.Attacker
 			data.TracerName = tInfo.TracerName
 
-			if (hook.Run("PostEntityFireBullets", self, data) == false) then
+			if (hook.Run("ZC_PostEntityFireBullets", self, data) == false) then
 				return
 			end
 

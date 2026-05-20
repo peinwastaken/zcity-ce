@@ -139,7 +139,7 @@ function VirusModule.ApplyVirusConvulsions(ply)
     end
 end
 
-hook.Add("Org Think", "VirusUpdate", function(ply)
+hook.Add("ZC_OrganismThink", "ZC_VirusUpdate", function(ply)
     if not ply:IsPlayer() or not ply:Alive() then return end
     if ply:IsPlayer() and ply.Virus and ply.Virus.Infected then
         VirusModule.UpdateVirusStage(ply)
@@ -148,7 +148,7 @@ hook.Add("Org Think", "VirusUpdate", function(ply)
     end
 end)
 
-hook.Add("EntityTakeDamage", "ZombieInfect", function(target, dmginfo)
+hook.Add("EntityTakeDamage", "ZC_InfectPlayerFromZombieDamage", function(target, dmginfo)
     if target:IsPlayer() and dmginfo:GetAttacker():IsNPC() then
         local attackerClass = dmginfo:GetAttacker():GetClass()
         if attackerClass == "terminator_nextbot_zambie" or attackerClass == "terminator_nextbot_zambietorso" then
@@ -165,12 +165,12 @@ hook.Add("EntityTakeDamage", "ZombieInfect", function(target, dmginfo)
     end
 end)
 
-hook.Add("PlayerDeath", "VirusReset", function(ply)
+hook.Add("PlayerDeath", "ZC_VirusReset", function(ply)
     ply.Virus = nil
     --print(ply:Nick() .. " has died and the virus has been reset.")
 end)
 
-hook.Add("Org Clear", "VirusClear", function(ply)
+hook.Add("ZC_OrganismClear", "ZC_VirusClear", function(ply)
     if IsValid(ply) and ply:IsPlayer() then
         ply.Virus = nil
     end

@@ -4,7 +4,7 @@ hg.noradrenalineStation = hg.noradrenalineStation or nil
 
 
 
-hook.Add("RenderScreenspaceEffects", "noradrenalineEffect", function()
+hook.Add("RenderScreenspaceEffects", "ZC_NoradrenalineEffect", function()
 	local organism = lply:Alive() and lply.organism
 
 	if !organism then
@@ -66,7 +66,7 @@ local grainMat = CreateMaterial("grain2noradrenaline", "screenspace_general",{
 	["$linearread_texture3"] = 1,
 })
 
-hook.Add("Post Post Processing", "noradrenalineEffect", function()
+hook.Add("ZC_PostProcessingDraw", "ZC_NoradrenalineEffect", function()
 	if hg.undernoradrenaline and hg.noradrenalineClamped then
 		render.UpdateScreenEffectTexture()
 		render.UpdateFullScreenDepthTexture()

@@ -49,7 +49,7 @@ local math_random = math.random
 	}
 
 	local zc_noorganismnpcs = CreateConVar("zc_noorganismnpcs", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "NPCs will NOT have organism system like the players", 0, 1)
-	hook.Add("OnEntityCreated", "npcorg", function(ent)
+	hook.Add("OnEntityCreated", "ZC_CreateNpcOrganism", function(ent)
 		if zc_noorganismnpcs:GetBool() then return end
 		if not IsValid(ent) then return end
 
@@ -73,13 +73,13 @@ local math_random = math.random
 		end
 	end)
 
-	--[[hook.Add("EntityTakeDamage", "npcdmg", function(ent, dmgInfo)
+	--[[hook.Add("EntityTakeDamage", "ZC_NPCDamage", function(ent, dmgInfo)
 		if ent:IsNPC() then
 			hg.organism.AddWound(ent, tr, bone, dmgInfo, dmgPos, hook_info.bleed, inputHole, outputHole)
 		end
 	end)--]]
 
-	hook.Add("CreateEntityRagdoll", "npcloot", function(ent, rag)
+	hook.Add("CreateEntityRagdoll", "ZC_CreateNpcLootRagdoll", function(ent, rag)
 		local class = ent:GetClass()
 		local loot = lootNPCs[class]
 
@@ -92,7 +92,7 @@ local math_random = math.random
 				local newOrg = hg.organism.Add(rag)
 				table.Merge(newOrg, ent.organism)
 
-				hook.Run("RagdollDeath", ent, rag)
+				hook.Run("ZC_OnRagdollDeath", ent, rag)
 
 				table.Merge(zb.net.list[rag], zb.net.list[ent])
 
@@ -131,7 +131,7 @@ local math_random = math.random
 --//
 
 --\\ Extract bugbait from dead antlion guards
-	hook.Add("PlayerUse", "extractbugbait", function(ply, ent)
+	hook.Add("PlayerUse", "ZC_ExtractBugbaitFromNpc", function(ply, ent)
 		if IsValid(ent) and ent:GetClass() == "prop_ragdoll" and ent:GetModel() == "models/antlion_guard.mdl" then
 			if not ent.bugbait then
 				ent.bugbait = true
@@ -312,7 +312,7 @@ local math_random = math.random
 	-- 	end)
 	-- end
 
-	-- hook.Add("OnEntityCreated", "ZombTwitch", function(ent)
+	-- hook.Add("OnEntityCreated", "ZC_UpdateZombieTwitching", function(ent)
 	-- 	if IsValid(ent) and ent:IsNPC() and zc_zombtwitching:GetBool() then
 	-- 		timer.Simple(0, function()
 	-- 			handleNPCSpawn(ent)
@@ -342,7 +342,7 @@ local math_random = math.random
 		["npc_manhack"] = 50,
 		["npc_antlion_grub"] = 20,
 	}
-	hook.Add("OnEntityCreated", "toughnpcs", function(ent)
+	hook.Add("OnEntityCreated", "ZC_ApplyToughNpcStats", function(ent)
 		timer.Simple(0.2, function()
 			if zc_toughnpcs:GetBool() and IsValid(ent) and ent:IsNPC() and npcToBuff[ent:GetClass()] then
 				ent:SetHealth(npcToBuff[ent:GetClass()])
@@ -356,7 +356,7 @@ local math_random = math.random
 
 --\\ Fall damage for NPCs
 	local vecforce = Vector(5000, 5000, -30000)
-	hook.Add("Think", "NPCFallDamageTracker", function()
+	hook.Add("Think", "ZC_TrackNpcFallDamage", function()
 		if zc_noorganismnpcs:GetBool() then return end
 		for _, npc in ipairs(ents.GetAll()) do
 			if not IsValid(npc) then continue end
@@ -415,6 +415,6 @@ local math_random = math.random
 		end
 	end
 
-	hook.Add("Initialize", "InitAddNPCweps", addNPCweps)
-	hook.Add("InitPostEntity", "InitPostAddNPCweps", addNPCweps)
+	hook.Add("Initialize", "ZC_InitNpcWeapons", addNPCweps)
+	hook.Add("InitPostEntity", "ZC_InitPostNpcWeapons", addNPCweps)
 --//

@@ -70,7 +70,7 @@ end
 
 local gamemod = engine.ActiveGamemode()
 local zc_slings = ConVarExists("zc_slings") and GetConVar("zc_slings") or CreateConVar("zc_slings", 0, FCVAR_SERVER_CAN_EXECUTE + FCVAR_ARCHIVE, "Toggle sling system", 0, 1)
-hook.Add("PlayerSwitchInFake","slingDrop",function(ply,oldWeapon,newWeapon)
+hook.Add("ZC_OnFakeWeaponSwitch","ZC_SlingDrop",function(ply,oldWeapon,newWeapon)
 	if not zc_slings:GetBool() then return end
 	if oldWeapon == newWeapon then return end
 	if zb.CROUND and zb.CROUND == "hmcd" or gamemod == "sandbox" then

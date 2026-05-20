@@ -20,7 +20,7 @@ local function IsInvalidName(name)
 		if not table.HasValue(allowed, utf8.GetChar(name, k)) then return true end
 	end
 
-	local ret = hook.Run("ZB_IsInvalidName", name)
+	local ret = hook.Run("ZC_IsInvalidCharacterName", name)
 	if ret ~= nil then return ret end
 
 	return false
@@ -419,7 +419,7 @@ local function AddBodygroupsFunc()
 	AppAddBodygroup("HANDS", "Mitten wool", "mittenwool_F", true, true, true, 300, "models/zcity/gloves/degloves.mdl", 8, nil)
 end
 
-hook.Add("ZPointshopLoaded", "AddBodygroups", AddBodygroupsFunc)
+hook.Add("ZC_OnPointshopLoaded", "ZC_RegisterAppearanceBodygroups", AddBodygroupsFunc)
 -- SkeletonTable
 hg.Appearance.SkeletonAppearanceTable = {
 	AModel = "Male 07",

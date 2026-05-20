@@ -77,7 +77,7 @@ hg.ConVars = hg.ConVars or {}
 
 --\\ Holster think for weapons & automatic attack stuff
 	if CLIENT then
-		hook.Add("Player Think", "fucking bullshit", function(ply)
+		hook.Add("ZC_PlayerThink", "ZC_ClientMeleeWeaponThink", function(ply)
 			local wep = ply:GetActiveWeapon()
 
 			if IsValid(wep) and wep.ismelee and ply != LocalPlayer() then
@@ -141,8 +141,8 @@ hg.ConVars = hg.ConVars or {}
 		hg.ClientsideModels = {}
 	end
 
-	hook.Add("PostCleanupMap","fuckclientsidemodels",hg.ClearClientsideModels)
-	hook.Add("PostCleanupMap","remove_this_stupid_clside_ragdolls",function()
+	hook.Add("PostCleanupMap","ZC_ClearClientsideModels",hg.ClearClientsideModels)
+	hook.Add("PostCleanupMap","ZC_ClearClientsideRagdolls",function()
 		for _,v in ipairs(ents.FindByClass('class C_ClientRagdoll')) do v:Remove() end
 	end)
 --//
@@ -168,7 +168,7 @@ hg.ConVars = hg.ConVars or {}
 		[KEY_BACKSPACE] = false,
 	}
 	local strstatus = ""
-	hook.Add("Move", "fakestatus", function(ply, mv)
+	hook.Add("Move", "ZC_FakeStatus", function(ply, mv)
 		if !CurrentRound then return end
 		local rnd = CurrentRound()
 		if !rnd then return end
@@ -220,12 +220,12 @@ players : 1 humans, 0 bots (20 max)
 --//
 
 --\\ Network created ragdolls
-	hook.Add("NetworkEntityCreated", "network_ragdoll_created", function(ent)
+	hook.Add("NetworkEntityCreated", "ZC_NetworkRagdollCreated", function(ent)
 		local index = ent:EntIndex()
 		if IsValid(ent) and zb.net and zb.net[index] and zb.net[index].waiting then
 			zb.net[index].waiting = nil
 			for key,var in pairs(zb.net[index]) do
-				hook.Run("OnNetVarSet", index, key, var)
+				hook.Run("ZC_OnNetVarSet", index, key, var)
 			end
 		end
 	end)
@@ -259,7 +259,7 @@ players : 1 humans, 0 bots (20 max)
 
 		local anguse = Angle(0,0,0)
 		s_suppression = s_suppression or 0
-		hook.Add("PostEntityFireBullets","bulletsuppression2",function(ent,bullet)
+		hook.Add("ZC_PostEntityFireBullets","ZC_UpdateBulletSuppression",function(ent,bullet)
 			if not lply:Alive() then return end
 			if not IsValid(lply) or not lply:IsPlayer() then return end
 			if !lply:Alive() or !lply.organism or lply.organism.unconscious then return end
@@ -367,7 +367,7 @@ players : 1 humans, 0 bots (20 max)
 		hg.ConVars.potatopc = zc_potatopc
 
 		local vignetteMat = Material( "effects/shaders/zb_vignette" )
-		hook.Add("RenderScreenspaceEffects","SIB_Suppresss",function()
+		hook.Add("RenderScreenspaceEffects","ZC_SuppressionBlur",function()
 			if not LocalPlayer():Alive() then return end
 
 			local fraction = math.Clamp(SIB_suppress.Force / 5, 0, 1)
@@ -394,11 +394,11 @@ players : 1 humans, 0 bots (20 max)
 
 		end)
 
-		hook.Add("Think","SIB_Suppresss_Think",function()
+		hook.Add("Think","ZC_SuppressionBlurThink",function()
 			SIB_suppress.Force = Lerp(0.25 * FrameTime(), SIB_suppress.Force,0)
 		end)
 
-		hook.Add("PlayerDeath","huyDeathRemoveSuppression",function()
+		hook.Add("PlayerDeath","ZC_ClearSuppressionOnDeath",function()
 			SIB_suppress.Force = 0
 		end)
 	end
@@ -412,11 +412,11 @@ players : 1 humans, 0 bots (20 max)
 
 	hg.ragdolls = hg.ragdolls or {}
 
-	hook.Add("EntityRemoved", "HomigradEntityRemoved", function(ent)
+	hook.Add("EntityRemoved", "ZC_RemoveCachedRagdollOnEntityRemoved", function(ent)
 		table.RemoveByValue(hg.ragdolls, ent)
 	end)
 
-	hook.Add("Think", "hg-playerthink", function()
+	hook.Add("Think", "ZC_PlayerThinkDispatcher", function()
 		local time = CurTime()
 		local dtime = SysTime() - lastcall
 		lastcall = SysTime()
@@ -436,10 +436,10 @@ players : 1 humans, 0 bots (20 max)
 				//ent.lasttimethink = CurTime() + (ply and ply == lply and 0 or 0.1)
 
 				if ply and ply:IsPlayer() and ply:Alive() then
-					hook_Run("Player Think", ply, time, dtime)
+					hook_Run("ZC_PlayerThink", ply, time, dtime)
 				end
 
-				hook_Run("Player-Ragdoll think", ply or ent, ent, time, dtime)
+				hook_Run("ZC_PlayerRagdollThink", ply or ent, ent, time, dtime)
 			end
 		end
 	end)
@@ -498,7 +498,7 @@ players : 1 humans, 0 bots (20 max)
 --\\ custom sens
 	local zc_zoomsensitivity = ConVarExists("zc_zoomsensitivity") and GetConVar("zc_zoomsensitivity") or CreateConVar("zc_zoomsensitivity", 1, FCVAR_ARCHIVE, "Multiply aiming zoom sensivity", 0, 3)
 
-	hook.Add("AdjustMouseSensitivity", "AdjustRunSensivityHUY", function(defaultSensitivity)
+	hook.Add("AdjustMouseSensitivity", "ZC_AdjustRunSensitivity", function(defaultSensitivity)
 		if not lply:Alive() then return end--kakoy sencivity NOOB
 		local org = lply.organism or {}
 		if not org or not org.brain then return end
@@ -515,7 +515,7 @@ players : 1 humans, 0 bots (20 max)
 			weaponAdjust = self:AdjustMouseSensitivity() or 1
 		end
 
-		local hookResult = hook.Run("hg_AdjustMouseSensitivity",lply)
+		local hookResult = hook.Run("ZC_AdjustMouseSensitivity",lply)
 		if hookResult ~= nil then
 			return hookResult
 		end
@@ -553,7 +553,7 @@ players : 1 humans, 0 bots (20 max)
 		end
 	end
 
-	hook.Add("Player_Death","removeflashlight",function(ply)
+	hook.Add("ZC_PlayerDeath","ZC_RemoveFlashlight",function(ply)
 		if ply.flashlight and ply.flashlight:IsValid() then
 			ply.flashlight:Remove()
 		end
@@ -574,7 +574,7 @@ players : 1 humans, 0 bots (20 max)
 	local util_DistanceToLine = util.DistanceToLine
 	local table_Add = table.Add
 
-	hook.Add("Think", "CanBeSeenOrNot", function()
+	hook.Add("Think", "ZC_UpdateVisibilityFlags", function()
 		--if checkcd > CurTime() then return end
 		--checkcd = CurTime() + 1
 		local entities = ents_FindByClass("prop_ragdoll")
@@ -650,7 +650,7 @@ players : 1 humans, 0 bots (20 max)
 		local ViewOffsetDucked = Vector(0, 0, 38)
 
 		gameevent.Listen( "OnRequestFullUpdate" )
-		hook.Add("OnRequestFullUpdate","SetHull",function()
+		hook.Add("OnRequestFullUpdate","ZC_SetPlayerHullOnFullUpdate",function()
 			local ply = LocalPlayer()
 			if not IsValid(ply) then return end
 			ply:SetHull(HullMins, HullMaxs)
@@ -659,13 +659,13 @@ players : 1 humans, 0 bots (20 max)
 			ply:SetViewOffsetDucked(ViewOffsetDucked)
 		end)
 
-		hook.Add("PlayerStartVoice","huy_CheckVoice",function(ply)
+		hook.Add("PlayerStartVoice","ZC_UpdateVoiceStatus",function(ply)
 			if not IsValid(ply) then return end
 
 			ply.IsSpeak = true
 		end)
 
-		hook.Add("PlayerEndVoice","huy_CheckVoice",function(ply)
+		hook.Add("PlayerEndVoice","ZC_UpdateVoiceStatus",function(ply)
 			if not IsValid(ply) then return end
 
 			ply.IsSpeak = false
@@ -759,7 +759,7 @@ players : 1 humans, 0 bots (20 max)
 			end
 		end
 
-		hook.Add("Player Think", "MouthThink", function(ply) if IsValid(ply.FakeRagdoll) then mouthmove(ply) end end)
+		hook.Add("ZC_PlayerThink", "ZC_UpdateFakeRagdollMouth", function(ply) if IsValid(ply.FakeRagdoll) then mouthmove(ply) end end)
 
 		hg.mouthmove = mouthmove
 --//
@@ -801,7 +801,7 @@ players : 1 humans, 0 bots (20 max)
 		end)
 	end
 
-	hook.Add("SetupMove","hg_FallSound",function()
+	hook.Add("SetupMove","ZC_UpdateClientFallSoundState",function()
 		local ply = LocalPlayer()
 		if not ply:Alive() or not ply.organism or ply.organism.unconscious then
 			if fallsnd and IsValid(fallSndStation) then
@@ -870,7 +870,7 @@ players : 1 humans, 0 bots (20 max)
 		end
 	end)
 
-	hook.Add("Think","hg_FallSnd",function()
+	hook.Add("Think","ZC_UpdateFallSounds",function()
 		if not IsValid(fallSndStation) or not IsValid(windSndStation) then
 			createSnd()
 			return
@@ -906,9 +906,9 @@ players : 1 humans, 0 bots (20 max)
 	if CLIENT then
 		RunConsoleCommand("mp_decals", "4096")  -- "4194304" can crash the client.
 
-		hook.Add("Think","RemoveMe_001",function()
+		hook.Add("Think","ZC_RemoveLegacyGasmaskDrawHook",function()
 			hook.Remove("PostPlayerDraw","BA2_GasmaskDraw")
-			hook.Remove("Think","RemoveMe_001")
+			hook.Remove("Think","ZC_RemoveLegacyGasmaskDrawHook")
 		end)
 	end
 --//
@@ -937,22 +937,22 @@ players : 1 humans, 0 bots (20 max)
 --//
 
 --\\ Remove CLIENT side hit particles
-	hook.Add("ScalePlayerDamage","remove_cl_hit_particles",function()
+	hook.Add("ScalePlayerDamage","ZC_RemoveClientHitParticles",function()
 		return !game.SinglePlayer() -- i hate singleplayer in gmod. WHY I SHOULD DO THIS STUPID IDIOTIC SHIT, i hate it.
 	end)
 --//
 
 --\\ Remove sfbreath effect
-	hook.Add("Think","RemoveSF2_breath",function()
+	hook.Add("Think","ZC_RemoveStormFoxBreathEffect",function()
 		hook.Remove("PostPlayerDraw", "StormFox2.Effect.Breath")
 		timer.Remove("StormFox2.Effect.BreathT")
 
-		hook.Remove("Think","RemoveSF2_breath")
+		hook.Remove("Think","ZC_RemoveStormFoxBreathEffect")
 	end)
 --//
 
 --\\ Flash effect
-	hook.Add("Player_Death","fixEyeAngles",function(ply)
+	hook.Add("ZC_PlayerDeath","ZC_FixEyeAngles",function(ply)
 		timer.Simple(0.1,function()
 			if IsValid(ply) then
 				local ang = ply:EyeAngles()
@@ -983,7 +983,7 @@ players : 1 humans, 0 bots (20 max)
 	amtflashed = 0
 	amtflashed2 = 0
 
-	hook.Add("Player_Death","huyhuyhuy",function(ply)
+	hook.Add("ZC_PlayerDeath","ZC_ClearDeadPlayerState",function(ply)
 		if ply == LocalPlayer() then
 			hg.flashes = {}
 			amtflashed = 0
@@ -991,13 +991,13 @@ players : 1 humans, 0 bots (20 max)
 		end
 	end)
 
-	hook.Add("PreCleanupMap", "noflashesforyouMreowe", function()
+	hook.Add("PreCleanupMap", "ZC_ClearFlashEffectsBeforeCleanup", function()
 		hg.flashes = {}
 		amtflashed = 0
 		amtflashed2 = 0
 	end)
 
-	hook.Add("Post Post Pre Post Processing","flasheseffect",function()
+	hook.Add("ZC_AfterPostProcessingDraw","ZC_DrawFlashEffects",function()
 		if !lply:Alive() then
 			if !next(hg.flashes) then
 				hg.flashes = {}

@@ -29,7 +29,7 @@ local cars = {
 }
 PLUGIN.Cars = PLUGIN.Cars or {}
 
-function Hook.ZBox_Start()
+function Hook.ZC_StartZBox()
     print("Cars: ZBox_Start called")
     timer.Create("CarSpawn", 150, 0, function()
         print("Cars: CarSpawn timer executed")
@@ -77,7 +77,7 @@ function Hook.ZBox_Start()
     end)
 end
 
-function Hook.ZBox_Disable()
+function Hook.ZC_DisableZBox()
     print("Spawnpoints: ZBox_Disable called")
     timer.Remove("CarSpawn")
 end

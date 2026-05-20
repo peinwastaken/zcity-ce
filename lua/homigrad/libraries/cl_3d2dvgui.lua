@@ -158,7 +158,7 @@ end
 -- Mouse input
 local lmbdown,rmbdown
 local lmbpressed,rmbpressed
-hook.Add("SetupMove", "VGUI3D2DMousePress", function(ply,mv,cmd)
+hook.Add("SetupMove", "ZC_VGUI3D2DMousePress", function(ply,mv,cmd)
 	local LMB = input.IsMouseDown(MOUSE_LEFT)
 	local RMB = input.IsMouseDown(MOUSE_RIGHT)
 

@@ -1,6 +1,6 @@
 local zc_allow_homigrad = ConVarExists("zc_allow_homigrad") and GetConVar("zc_allow_homigrad") or CreateConVar("zc_allow_homigrad",0,FCVAR_SERVER_CAN_EXECUTE,"Allow homigrad-like entity drag for administrators in spectator mode",0,1)
 
-hook.Add("Player Think","ShadowControlAdmin",function(ply, time)
+hook.Add("ZC_PlayerThink","ZC_ShadowControlAdmin",function(ply, time)
 	if !zc_allow_homigrad:GetBool() then return end
 	if !ply:IsSuperAdmin() or ply:Alive() then return end
 
@@ -55,7 +55,7 @@ hook.Add("Player Think","ShadowControlAdmin",function(ply, time)
 	end
 end)
 
-hook.Add("StartCommand","ShadowControlAdmin",function(ply, cmd)
+hook.Add("StartCommand","ZC_ShadowControlAdmin",function(ply, cmd)
 	if !zc_allow_homigrad:GetBool() then return end
 	if !ply:IsSuperAdmin() or ply:Alive() then return end
 

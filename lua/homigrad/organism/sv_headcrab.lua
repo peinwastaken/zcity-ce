@@ -14,13 +14,13 @@ function PLAYER:AddHeadcrab(headcrab)
     net.Broadcast()--]]
 end
 
-hook.Add("RagdollDeath","headcrab",function(ply,rag)
+hook.Add("ZC_OnRagdollDeath","ZC_Headcrab",function(ply,rag)
     rag:SetNetVar("headcrab", ply:GetNetVar("headcrab"))
     ply:SetNetVar("headcrab", false)
 	ply.organism.noHead = false
 end)
 
-hook.Add("Org Clear", "removeheadcrab", function(org)
+hook.Add("ZC_OrganismClear", "ZC_ClearHeadcrabOrganismState", function(org)
     org.headcrabon = nil
 	org.headcrabevent = false
 	if IsValid(org.owner) then
@@ -31,7 +31,7 @@ end)
 
 
 local clr_red, lerpAng = Color(150, 0, 0), Angle(0, 0, 0)
-hook.Add("Org Think", "Headcrab",function(owner, org, timeValue)
+hook.Add("ZC_OrganismThink", "ZC_Headcrab",function(owner, org, timeValue)
     if not IsValid(owner) then return end
     if not owner:IsPlayer() or not owner:Alive() then return end
 

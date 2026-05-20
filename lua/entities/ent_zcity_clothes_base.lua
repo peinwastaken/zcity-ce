@@ -270,7 +270,7 @@ end
 --//
 
 --\\ Render hook
-    hook.Add("CoolPostDrawAppearance", "ZC_ClothesDraw",function(ent, ply)
+    hook.Add("ZC_PostDrawAppearancePreview", "ZC_ClothesDraw",function(ent, ply)
         local Clothes = ply:GetNetVar("zc_clothes", {})
         if #Clothes < 1 then return end
 
@@ -283,7 +283,7 @@ end
 --//
 
 --\\ Transfer items
-    hook.Add("ItemsTransfered", "TransferClothes", function(ply, ragdoll)
+    hook.Add("ZC_ItemsTransferred", "ZC_TransferClothes", function(ply, ragdoll)
         local Clothes = ply:GetNetVar("zc_clothes", {})
         if #Clothes < 1 then return end
 
@@ -299,7 +299,7 @@ end
 --//
 
 --\\ Temperature system
-    hook.Add("ZC_BodyTemperature", "ClothesSaveTemp", function(ply, org, timeValue, changeRate, MaxWarmMul, warmLoseMul)
+    hook.Add("ZC_CalculateBodyTemperature", "ZC_ClothesSaveTemp", function(ply, org, timeValue, changeRate, MaxWarmMul, warmLoseMul)
         local Clothes = ply:GetNetVar("zc_clothes", {})
         if #Clothes < 1 then return end
 
@@ -337,7 +337,7 @@ end
         end)
     end
 
-    hook.Add("radialOptions", "zc_clothes", function()
+    hook.Add("ZC_RadialOptions", "ZC_ClothesRadialOption", function()
         local ply = LocalPlayer()
         local organism = ply.organism or {}
 

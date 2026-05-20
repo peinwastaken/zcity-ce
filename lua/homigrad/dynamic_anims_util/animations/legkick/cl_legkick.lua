@@ -1,4 +1,4 @@
-hook.Add("HG_MovementCalc_2","HG-LegKickAnim",function(mul, ply, cmd, mv)
+hook.Add("ZC_CalculateMovementModifiers","ZC_LegKickAnim",function(mul, ply, cmd, mv)
     if ply:GetNWFloat("InLegKick",0) > CurTime() then
         cmd:RemoveKey(IN_MOVELEFT)
         cmd:RemoveKey(IN_MOVERIGHT)
@@ -25,7 +25,7 @@ hook.Add("HG_MovementCalc_2","HG-LegKickAnim",function(mul, ply, cmd, mv)
     end
 end)
 
-hook.Add("hg_AdjustMouseSensitivity","HG-LegKickAnim",function(ply)
+hook.Add("ZC_AdjustMouseSensitivity","ZC_LegKickAnim",function(ply)
     if ply:GetNWFloat("InLegKick",0) > CurTime() then
         --print(1 - (ply:GetNWFloat("InLegKick",0) - CurTime()))
         return math.min(math.max(0.02,1 - (ply:GetNWFloat("InLegKick",0) - CurTime()) * 2 ),1)

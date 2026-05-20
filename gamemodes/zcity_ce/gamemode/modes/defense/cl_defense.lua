@@ -86,7 +86,7 @@ end)
 
 
 
-hook.Add("SetupOutlines", "HighlightLastNPCs", function(outline_Add)
+hook.Add("ZC_SetupOutlines", "ZC_HighlightLastNPCs", function(outline_Add)
 
     for entIndex, npc in pairs(highlightNPCs) do
         if not IsValid(npc) then
@@ -285,7 +285,7 @@ function createSupportMenu()
 end
 
 
-hook.Add("radialOptions", "CommanderSupportOptions", function()
+hook.Add("ZC_RadialOptions", "ZC_CommanderSupportOptions", function()
     local ply = LocalPlayer()
     local organism = ply.organism or {}
 
@@ -853,7 +853,7 @@ end
 
 
 
-hook.Remove("radialOptions", "CommanderSupportOptions")
+hook.Remove("ZC_RadialOptions", "ZC_CommanderSupportOptions")
 
 net.Receive("defense_submit_vote", function(len, ply)
     if not IsValid(ply) then return end
@@ -874,7 +874,7 @@ net.Receive("defense_submit_vote", function(len, ply)
     end
 end)
 
-hook.Add("Think", "MonitorPlayerRoleChange", function()
+hook.Add("Think", "ZC_MonitorPlayerRoleChange", function()
     local ply = LocalPlayer()
     if not IsValid(ply) then return end
 
@@ -883,7 +883,7 @@ hook.Add("Think", "MonitorPlayerRoleChange", function()
     if not ply.lastRole then
         ply.lastRole = currentRole
     elseif ply.lastRole ~= currentRole then
-        hook.Run("OnLocalPlayerRoleChanged", ply.lastRole, currentRole)
+        hook.Run("ZC_OnLocalPlayerRoleChanged", ply.lastRole, currentRole)
         ply.lastRole = currentRole
     end
 end)
@@ -1013,7 +1013,7 @@ local function DrawBossIncomingBanner()
 end
 
 
-hook.Add("HUDPaint", "DrawBossIncomingBanner", DrawBossIncomingBanner)
+hook.Add("HUDPaint", "ZC_DrawBossIncomingBanner", DrawBossIncomingBanner)
 
 
 --[[concommand.Add("defense_test_boss_banner", function()

@@ -175,7 +175,7 @@ function ESP:SetupNetworking()
 end
 
 function ESP:SetupHooks()
-	hook.Add("SetupOutlines", "AS_ESP_Outlines", function(Add)
+	hook.Add("ZC_SetupOutlines", "ZC_AdminSystemESPOutlines", function(Add)
 		if !ESP.Enabled then return end
 
 		local ply = LocalPlayer()
@@ -198,7 +198,7 @@ function ESP:SetupHooks()
 		end
 	end)
 
-	hook.Add("PreDrawHUD", "AS_ESP_EyeTrace", function()
+	hook.Add("PreDrawHUD", "ZC_AdminSystemESPEyeTrace", function()
 		if !ESP.Enabled then return end
 		if !ESPEye:GetBool() then return end
 
@@ -219,7 +219,7 @@ function ESP:SetupHooks()
 		end
 	end)
 
-	hook.Add("HUDPaint", "AS_ESP_Draw", function()
+	hook.Add("HUDPaint", "ZC_AdminSystemESPDraw", function()
 		if !ESP.Enabled then return end
 
 		local ply = LocalPlayer()

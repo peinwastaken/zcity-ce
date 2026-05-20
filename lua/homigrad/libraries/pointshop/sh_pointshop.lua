@@ -64,7 +64,7 @@ if CLIENT then
     end)
 end
 
-hook.Add("Think","ZPointshopLoaded",function()
-    hook.Run("ZPointshopLoaded")
-    hook.Remove("Think","ZPointshopLoaded")
+hook.Add("Think","ZC_RunPointshopLoadedHook",function()
+    hook.Run("ZC_OnPointshopLoaded")
+    hook.Remove("Think","ZC_RunPointshopLoadedHook")
 end)

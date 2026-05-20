@@ -230,8 +230,8 @@
 --end
 --
 --
---function Hook.ZBox_Start()
+--function Hook.ZC_StartZBox()
 --end
 --
---function Hook.ZBox_Disable()
+--function Hook.ZC_DisableZBox()
 --end

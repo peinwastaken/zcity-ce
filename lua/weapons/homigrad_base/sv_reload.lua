@@ -30,7 +30,7 @@ end
 
 function SWEP:ReloadStart()
 	self:SetHold(self.ReloadHold or self.HoldType)
-	hook.Run("HGReloading", self)
+	hook.Run("ZC_OnWeaponReloading", self)
 	--if self.ReloadSound then self:GetOwner():EmitSound(self.ReloadSound, 60, 100, 0.8, CHAN_AUTO) end
 end
 
@@ -138,6 +138,6 @@ concommand.Add("hg_reloadfloorweapon", function(ply, cmd, args)
 	end
 end)
 
-hook.Add("PlayerDeath", "fixgovno", function(ply)
+hook.Add("PlayerDeath", "ZC_ClearReloadOnDeath", function(ply)
 	FailSafe(ply)
 end)

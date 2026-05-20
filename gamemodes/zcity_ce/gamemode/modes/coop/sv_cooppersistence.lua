@@ -255,19 +255,19 @@ function hg.CoopPersistence.MarkPlayerRestored(steamid)
     end
 end
 
-hook.Add("ShutDown", "CoopPersistence_SaveOnShutdown", function()
+hook.Add("ShutDown", "ZC_CoopPersistenceSaveOnShutdown", function()
     if CurrentRound and CurrentRound().name == "coop" and hg.MapCompleted then
         hg.CoopPersistence.SaveAllPlayers()
     end
 end)
 
-hook.Add("InitPostEntity", "CoopPersistence_LoadOnStart", function()
+hook.Add("InitPostEntity", "ZC_CoopPersistenceLoadOnStart", function()
     timer.Simple(1, function()
         hg.CoopPersistence.LoadAllPlayers()
     end)
 end)
 
-hook.Add("ZB_PreRoundStart", "CoopPersistence_ClearOnModeChange", function()
+hook.Add("ZC_PreRoundStart", "ZC_CoopPersistenceClearOnModeChange", function()
     local nextRound = zb.nextround or "hmcd"
     local nextMode = zb:GetMode(nextRound)
 
@@ -276,14 +276,14 @@ hook.Add("ZB_PreRoundStart", "CoopPersistence_ClearOnModeChange", function()
     end
 end)
 
-hook.Add("ZB_StartRound", "CoopPersistence_ClearPending", function()
+hook.Add("ZC_StartRound", "ZC_CoopPersistenceClearPending", function()
     if CurrentRound and CurrentRound().name == "coop" then
         hg.CoopPersistence.PendingSave = {}
     end
 end)
 
 
-hook.Add("PlayerSpawn", "CoopPersistence_MidRoundSpawn", function(ply)
+hook.Add("PlayerSpawn", "ZC_CoopPersistenceMidRoundSpawn", function(ply)
     if not CurrentRound or CurrentRound().name ~= "coop" then return end
     if not zb or zb.ROUND_STATE ~= 1 then return end
     timer.Simple(0.5, function()

@@ -302,7 +302,7 @@ function SWEP:Shoot(override)
 	end
 end
 if SERVER then
-    hook.Add("Should Fake Up","Tasered",function(ply)
+    hook.Add("ZC_ShouldRestorePlayerFromFake","ZC_Tasered",function(ply)
         if ply and IsValid(ply.FakeRagdoll) then
             local org = ply.organism
             if org and org.tasered and org.tasered > CurTime() then
@@ -311,14 +311,14 @@ if SERVER then
         end
     end)
 
-    hook.Add("CanControlFake","Tasered", function(ply,rag)
+    hook.Add("ZC_CanControlRagdoll","ZC_Tasered", function(ply,rag)
         local org = ply.organism
         if org and org.tasered and org.tasered > CurTime() then
             return true
         end
     end)
 
-    hook.Add("Org Clear","RemoveTasered",function(org)
+    hook.Add("ZC_OrganismClear","ZC_RemoveTasered",function(org)
 		org.tasered = false
 	end)
 end

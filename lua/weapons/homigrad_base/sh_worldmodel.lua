@@ -6,7 +6,7 @@ local function firstAndThird(first, _, ...)
 	return first, ...
 end
 
-hook.Add("PhysgunPickup", "homigrad-weapons", function(ply, ent) if ent:GetNWBool("nophys") then return false end end)
+hook.Add("PhysgunPickup", "ZC_BlockNoPhysgunPickup", function(ply, ent) if ent:GetNWBool("nophys") then return false end end)
 SWEP.WorldPos = Vector(13, -0.3, 3.4)
 SWEP.WorldAng = Angle(5, 0, 180)
 SWEP.UseCustomWorldModel = false
@@ -440,7 +440,7 @@ function SWEP:CreateWorldModel()
 	return model
 end
 
-hook.Add("NotifyShouldTransmit", "PvsThingy", function(ent, shouldTransmit)
+hook.Add("NotifyShouldTransmit", "ZC_UpdateWeaponTransmitState", function(ent, shouldTransmit)
 	ent.shouldTransmit = shouldTransmit
 
 	if !shouldTransmit and ishgweapon(ent) then
@@ -720,7 +720,7 @@ end
 local table_IsEmpty = table.IsEmpty
 local string_find = string.find
 
-hook.Add("PostDrawTranslucentRenderables", "huyCock333", function()
+hook.Add("PostDrawTranslucentRenderables", "ZC_DrawWeaponWorldModels", function()
 	hg.weapons = hg.weapons or {}
 	for i=1, #hg.weapons do
 		self = hg.weapons[i]

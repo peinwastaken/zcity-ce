@@ -41,7 +41,7 @@ end
 --//
 
 --\\SpecialEvents
-hook.Add("Abnormalties_HotZoneAbnormaltyAdded", "Abnormalties_ConjureTA", function(zone_id, abnormalty_name, amt, ply)
+hook.Add("ZC_OnHotZoneAbnormalityAdded", "ZC_AbnormalitiesConjureTA", function(zone_id, abnormalty_name, amt, ply)
 	local zone = PLUGIN.Zones[zone_id]
 	
 	if(PLUGIN.GetZoneAbnormalty(zone, "ritual") >= 20 and PLUGIN.GetZoneAbnormalty(zone, "harm") >= 10 and PLUGIN.GetZoneAbnormalty(zone, "sacrifice") >= 10 and amt > 0)then
@@ -67,7 +67,7 @@ hook.Add("Abnormalties_HotZoneAbnormaltyAdded", "Abnormalties_ConjureTA", functi
 end)
 --//
 
-hook.Add("Think", "Abnormalties_ConjureTA", function()
+hook.Add("Think", "ZC_AbnormalitiesConjureTA", function()
 	for ent, info in pairs(PLUGIN.ConjureTA.ToConjure) do
 		if(info.Time <= CurTime())then
 			if(IsValid(ent))then
@@ -84,6 +84,6 @@ hook.Add("Think", "Abnormalties_ConjureTA", function()
 	end
 end)
 
-hook.Add("PostCleanupMap", "Abnormalties_ConjureTA", function()
+hook.Add("PostCleanupMap", "ZC_AbnormalitiesConjureTA", function()
 	PLUGIN.ConjureTA.ToConjure = {}
 end)

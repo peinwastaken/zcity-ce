@@ -14,7 +14,7 @@ net.Receive("chlorine_gas",function()
 end)
 local mat = Material("particle/smokesprites_0010")
 local colSmoke = Color(255,251,0,52)
-hook.Add("PreDrawEffects","chlorine_gas",function()
+hook.Add("PreDrawEffects","ZC_DrawChlorineGas",function()
 	if not tbl then return end
 	
 	for i,tbl2 in ipairs(tbl) do

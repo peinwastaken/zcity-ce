@@ -62,7 +62,7 @@ local whitelist = {
 	["!drop"] = true
 }
 
-hook.Add("HG_PlayerSay", "homigrad-drop-weapons", function(ply, txtTbl, text)
+hook.Add("ZC_OnPlayerSay", "ZC_HandleDropWeaponChatCommand", function(ply, txtTbl, text)
 	if whitelist[text] then
 		drop(ply)
 		txtTbl[1] = ""

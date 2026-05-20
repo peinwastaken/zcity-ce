@@ -107,7 +107,7 @@ function SWEP:DoPoison(ent)
 end
 
 if SERVER then
-	hook.Add("PlayerUse","otravleno_dibil!!!",function(ply,ent)
+	hook.Add("PlayerUse","ZC_BlockPoisonedUse",function(ply,ent)
 		if IsValid(ent) and ent.poisoned then
 			if IsValid(ply) and ply.organism then
 				ply.organism.poison2 = CurTime()
@@ -116,12 +116,12 @@ if SERVER then
 		end
 	end)
 
-    hook.Add("Org Clear", "RemovePoison2", function(org)
+    hook.Add("ZC_OrganismClear", "ZC_RemovePoison2", function(org)
         org.poison2 = nil
 		org.poison2notificate = nil
     end)
 
-	hook.Add("Org Think", "poison2",function(owner, org, timeValue)
+	hook.Add("ZC_OrganismThink", "ZC_Poison2",function(owner, org, timeValue)
 		if not owner:IsPlayer() or not owner:Alive() then return end
 		if (not org.poison2) or (not org.alive) then return end
 		

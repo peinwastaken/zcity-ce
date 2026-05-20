@@ -194,7 +194,7 @@ function hg.GenerateLoot(ply,ent,func)
 	local time = CurTime() - (zb.ROUND_START or CurTime())
 	--print(time)
 
-	local mul = hook.Run("ZB_LootMultiplier", ply)
+	local mul = hook.Run("ZC_LootMultiplier", ply)
 
 	if !mul then
 		mul = traitor_opened and 1.5 or (very_low_karma_player and 0.25 or (low_karma_player and 0.5 or (high_karma_player and 1.25 or 1)))
@@ -399,7 +399,7 @@ local functions_break = {
     -- end,
 }
 
-hook.Add("ZB_InventoryChecked", "LootSpawn", function(ply, ent)
+hook.Add("ZC_OnInventoryChecked", "ZC_HandleLootSpawn", function(ply, ent)
 	ent:SetNetVar("Inventory", ent.inventory)
 	if not IsValid(ent) or ent:IsPlayer() or ent.was_opened or not string.find(ent:GetClass(),"prop_") then return end
 	if not hg.loot_boxes[string.lower(ent:GetModel())] then return end
@@ -439,13 +439,13 @@ hg.loot_amount = {
 	[10] = {2,5},
 }
 
-hook.Add("PropBreak", "LootSpawn", function(ply,ent)
+hook.Add("PropBreak", "ZC_HandleLootSpawn", function(ply,ent)
 	ent.inventory = ent.inventory or {}
 	ent:SetNetVar("Inventory", ent.inventory)
 	if not IsValid(ent) or ent:GetClass() ~= "prop_physics" then return end
 	if not hg.loot_boxes[string.lower(ent:GetModel())] then return end
 
-	hook.Run("ZB_InventoryChecked", ply, ent)
+	hook.Run("ZC_OnInventoryChecked", ply, ent)
 
 	for tab, tbl in pairs(ent.inventory) do
 		for k in pairs(tbl) do
@@ -521,7 +521,7 @@ local tbladd = MakeRandomSpawns(tbl,0,500,{})
 local tblnew = zb.TranslateVectorsToPoints(tbladd)
 table.CopyFromTo(tbladd,spawns)]]--
 
-hook.Add( "InitPostEntity", "some_unique_name", function()
+hook.Add( "InitPostEntity", "ZC_LoadLootSpawns", function()
 	spawns = {}
 	for _, ent in pairs(ents.FindByClass("info_*")) do
 		table.insert(spawns, ent:GetPos())
@@ -569,7 +569,7 @@ if #spawns > 0 then
 end
 
 local hook_Run = hook.Run
-hook.Add("PostCleanupMap", "addboxs", function()
+hook.Add("PostCleanupMap", "ZC_RestoreLootBoxes", function()
 	if timer.Exists("SpawnTheBoxes") then timer.Remove("SpawnTheBoxes") end
 	timer.Simple(.5,function()
 		spawns = {}
@@ -595,15 +595,15 @@ hook.Add("PostCleanupMap", "addboxs", function()
 
 		table.Add(spawns,tbladd)
 
-		timer.Create("SpawnTheBoxes", 8, 0, function() hook_Run("Boxes Think") end)
+		timer.Create("SpawnTheBoxes", 8, 0, function() hook_Run("ZC_BoxThink") end)
 	end)
 end)
 
 if timer.Exists("SpawnTheBoxes") then timer.Remove("SpawnTheBoxes") end
-timer.Create("SpawnTheBoxes", 8, 0, function() hook_Run("Boxes Think") end)
+timer.Create("SpawnTheBoxes", 8, 0, function() hook_Run("ZC_BoxThink") end)
 
 local vec_dist = Vector(500,500,500)
-hook.Add("Boxes Think", "SpawnBoxes", function()
+hook.Add("ZC_BoxThink", "ZC_SpawnLootBoxes", function()
 	if zb.ROUND_STATE ~= 1 or not CurrentRound().LootSpawn then return end
 	//local spawnPos = table.Random(spawns) + vec
 

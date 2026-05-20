@@ -6,7 +6,7 @@ function PLAYER:LegAttack()
     if not self:Alive() or hg.GetCurrentCharacter(self):IsRagdoll() or self:GetNWFloat("InLegKick",0) > CurTime() or not self:IsOnGround() or self:IsSprinting() then return end
     if self.InLegKick and self.InLegKick > CurTime() then return end
     if self:GetNWBool("TauntStopMoving", false) then return end
-    if hook.Run( "PlayerCanLegAttack", self ) == false then return end
+    if hook.Run( "ZC_CanPlayerLegAttack", self ) == false then return end
 
 	local handClass = "weapon_hands_sh"
 	if self:HasWeapon("weapon_hg_coolhands") then
@@ -212,7 +212,7 @@ function PLAYER:LegAttack()
     self:SetNWFloat("InLegKick",CurTime() + speed - animstopAdjust)
 end
 
-hook.Add("HG_MovementCalc_2","HG-LegKickAnim",function(mul, ply, cmd, mv)
+hook.Add("ZC_CalculateMovementModifiers","ZC_LegKickAnim",function(mul, ply, cmd, mv)
     if ply:GetNWFloat("InLegKick",0) > CurTime() then
         cmd:RemoveKey(IN_MOVELEFT)
         cmd:RemoveKey(IN_MOVERIGHT)

@@ -34,7 +34,7 @@ local offset = CreateClientConVar("zc_berserk_offset", "0.85", true, false, "Set
 local bpm = CreateClientConVar("zc_berserk_bpm", "70", true, false, "Set berserk effect bpm", 1, 280)
 local path = CreateClientConVar("zc_berserk_path", "sound/zbattle/pharmacia.mp3", true, false, "Set berserk effect music path")
 
-hook.Add("RenderScreenspaceEffects", "berserkEffect", function()
+hook.Add("RenderScreenspaceEffects", "ZC_BerserkEffect", function()
 	local organism = lply:Alive() and lply.organism
 
 	if !organism then
@@ -171,7 +171,7 @@ local grainMat = CreateMaterial("grain2berserk","screenspace_general",{
 	["$linearread_texture3"] = 1,
 })
 
-hook.Add("Post Post Processing", "berserkEffect", function()
+hook.Add("ZC_PostProcessingDraw", "ZC_BerserkEffect", function()
 	if hg.underberserk2 and hg.berserkClamped then
 		render.UpdateScreenEffectTexture()
 		render.UpdateFullScreenDepthTexture()
@@ -192,7 +192,7 @@ hook.Add("Post Post Processing", "berserkEffect", function()
 	end
 end)
 
-hook.Add("HG_CalcView","InsaneRollCam",function(ply, origin, angles, fova)
+hook.Add("ZC_CalculateView","ZC_InsaneRollCam",function(ply, origin, angles, fova)
 	if ply:Alive() and hg.underberserk2 and IsValid(hg.berserkStation) and hg.berserkClamped then
 		local intensity = 1 - ((hg.berserkStation:GetTime() - offset:GetFloat()) / 60 * bpm:GetInt())
 		angles[1] = angles[1] - hg.berserkIntensity * 0.2
@@ -242,7 +242,7 @@ local HM_sky_material = CreateMaterial("g_sky_HMFrf", "g_Sky", {
 local matGlow = Material("Sprites/light_glow02_add_noz")
 local red = Color(255, 58, 84)
 
-hook.Add("PostDrawTranslucentRenderables", "berserkSky", function(depth, drawsky, sky3d)
+hook.Add("PostDrawTranslucentRenderables", "ZC_BerserkSky", function(depth, drawsky, sky3d)
 	if !hg.underberserk2 then return end
 
 	if !drawsky then

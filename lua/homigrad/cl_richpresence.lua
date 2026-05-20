@@ -104,7 +104,7 @@ function StartSteamPresence(arguments)
 	end)
 end
 
-hook.Add("PostGamemodeLoaded", "UpdateDiscordStatus", function()
+hook.Add("PostGamemodeLoaded", "ZC_UpdateDiscordStatus", function()
 	StartDiscordPresence()
 	StartSteamPresence()
 end)

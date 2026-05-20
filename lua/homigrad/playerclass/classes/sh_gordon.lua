@@ -149,7 +149,7 @@ function CLASS.On(self, data)
 end
 
 if SERVER then
-    hook.Add("PostCleanupMap","huyhuygordonspasjizn",function(ent)
+    hook.Add("PostCleanupMap","ZC_ReplaceSuitChargers",function(ent)
         timer.Simple(1,function()
             for _, ent in ents.Iterator() do
                 if ent:GetClass() == "item_suitcharger" then
@@ -194,7 +194,7 @@ if SERVER then
     end)
 end
 
-hook.Add("Player Think","health_armor_gordonthings",function(ply)
+hook.Add("ZC_PlayerThink","ZC_UpdateGordonSuitChargers",function(ply)
     if not (ply.PlayerClassName == "Gordon" and ply:GetNetVar("HEVSuit")) then return end
     local ent = hg.eyeTrace(ply).Entity
     if not (ent.armorcharger or ent.healthcharger) then return end
@@ -268,7 +268,7 @@ hook.Add("Player Think","health_armor_gordonthings",function(ply)
     ply.keypresseduse = true
 end)
 
-hook.Add("WeaponEquip","pickuplom",function(wep,ply)
+hook.Add("WeaponEquip","ZC_PickupCrowbar",function(wep,ply)
     if ply.PlayerClassName == "Gordon" and wep:GetClass() == "weapon_hg_crowbar" then
         wep:Remove()
 		local bar = ply:Give("weapon_hg_crowbar_gordon")
@@ -280,13 +280,13 @@ hook.Add("WeaponEquip","pickuplom",function(wep,ply)
 	end
 end)
 
-hook.Add("HG_CanThoughts", "GordonCantDumat", function(ply)
+hook.Add("ZC_CanShowThoughts", "ZC_GordonBlockThoughts", function(ply)
 	if ply.PlayerClassName == "Gordon" then
 		return false
 	end
 end)
 
-hook.Add("PlayerCanPickupItem","hevsuit",function(ply, ent)
+hook.Add("PlayerCanPickupItem","ZC_HEVSuit",function(ply, ent)
     local entclass = ent:GetClass()
     if entclass == "item_suit" then
         if ply.PlayerClassName == "Gordon" and not ply:GetNetVar("HEVSuit") then
@@ -333,7 +333,7 @@ hook.Add("PlayerCanPickupItem","hevsuit",function(ply, ent)
     end
 end)
 
-hook.Add("HomigradDamage","takesomearmor",function(ply,dmginfo,hitgroup,ent,harm)
+hook.Add("ZC_OnOrganismDamage","ZC_AbsorbDamageWithHEVArmor",function(ply,dmginfo,hitgroup,ent,harm)
     if not (ply.PlayerClassName == "Gordon" and ply:GetNetVar("HEVSuit")) then return end
 
     if dmginfo:IsDamageType(DMG_FALL + DMG_DROWN + DMG_POISON + DMG_RADIATION) then return end
@@ -514,7 +514,7 @@ if CLIENT then
     end
 
     local hevMat = Material("sprites/mat_jack_helmoverlay_r")
-    hook.Add("RenderScreenspaceEffects","HEV_helmet",function()
+    hook.Add("RenderScreenspaceEffects","ZC_HEVHelmet",function()
         if not lply:GetNetVar("HEVSuit") then return end
         local armors = lply.armors
         if armors["head"] ~= "gordon_helmet" then return end
@@ -532,13 +532,13 @@ if CLIENT then
 
 end
 
-hook.Add("CanListenOthers", "GordonWeDontHearYou", function(talker)
+hook.Add("ZC_CanReceiveCommunication", "ZC_GordonWeDontHearYou", function(talker)
     if talker:Alive() and talker.PlayerClassName == "Gordon" then
         return false, false
     end
 end)
 
-hook.Add("HG_PlayerSay", "GordonWeDontSeeYouChat", function(ply, txtTbl, text)
+hook.Add("ZC_OnPlayerSay", "ZC_GordonWeDontSeeYouChat", function(ply, txtTbl, text)
     if ply:Alive() and ply.PlayerClassName == "Gordon" then
         txtTbl[1] = ""
     end
@@ -553,7 +553,7 @@ if CLIENT then
         queen[#queen + 1] = net.ReadString()
     end)
     local inPlaying = 0
-    hook.Add("Think","HEV_Notify",function()
+    hook.Add("Think","ZC_HEVNotify",function()
         local armors = lply.armors
         if !lply:Alive() and #queen > 0 then queen = {} return end
         if not armors then return end
@@ -591,7 +591,7 @@ elseif SERVER then
     local hev_color = Color(255,125,0)
     local dead_color = Color(255,0,0)
 
-    hook.Add("Org Think","gordon_healing",function(ply, org, timeValue)
+    hook.Add("ZC_OrganismThink","ZC_GordonHealing",function(ply, org, timeValue)
 
         if org.HEV and not org.alive and not org.emitflatline then
             org.emitflatline = true
@@ -769,7 +769,7 @@ elseif SERVER then
         end
     end)
 
-    hook.Add("HomigradDamage", "HEV_Medical",function(ply, dmgInfo, hitgroup, ent, entharm)
+    hook.Add("ZC_OnOrganismDamage", "ZC_RunHEVMedicalResponse",function(ply, dmgInfo, hitgroup, ent, entharm)
         if ply.PlayerClassName == "Gordon" and ply:GetNetVar("HEVSuit") then
             timer.Simple(0, function()
                 timer.Create("HEV_CheckDMG",2,1,function()

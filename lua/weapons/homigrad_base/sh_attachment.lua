@@ -390,7 +390,7 @@ if SERVER then
 		[3] = 1,
 	}
 
-	hook.Add("PlayerSwitchFlashlight", "flashlightHuy", function(ply)
+	hook.Add("PlayerSwitchFlashlight", "ZC_BlockAttachmentFlashlight", function(ply)
 		local wep = ply:GetActiveWeapon()
 		if not IsValid(wep) or not wep.attachments then return end
 		if not wep:HasAttachment("underbarrel") then return false end
@@ -698,7 +698,7 @@ if CLIENT then
 
 	hg.GetAttachmentsInv = refreshtbl
 
-	hook.Add("OnNetVarSet", "attachmentPanelRefresh", function(index, key, var)
+	hook.Add("ZC_OnNetVarSet", "ZC_AttachmentPanelRefresh", function(index, key, var)
 		if key == "Inventory" or key == "attachments" and Entity(index) == lply:GetActiveWeapon() then
 			if IsValid(hg.attachmentsMenuPanel) and hg.attachmentsMenuPanel.RefreshTbl then
 				hg.attachmentsMenuPanel:RefreshTbl()

@@ -248,7 +248,7 @@ if CLIENT then
 	end
 end
 SWEP.isTPIKBase = true
---hook.Add("PostDrawPlayerRagdoll","ragdollhuytpik",function(ent,ply)
+--hook.Add("ZC_PostDrawPlayerRagdoll","ZC_RenderTpikWeaponOnRagdoll",function(ent,ply)
 function hg.RenderTPIKBase(ent, ply, wep)
     if wep.DrawWorldModel2 then
         wep:DrawWorldModel2()
@@ -513,9 +513,9 @@ function SWEP:PlayAnim(anim,time,cycling,callbackFuncName,reverse,sendtoclient)
             self.CallbackTime = CurTime() + timerAnim
             self.callback = self[callbackFuncName] or tAnim[5]
 
-            hook.Add("Think","AnimCallback"..self:EntIndex(), function()
+            hook.Add("Think","ZC_WeaponAnimCallback" .. self:EntIndex(), function()
                 if IsValid(self) and IsValid(self:GetOwner()) and self.CallbackTime < CurTime() then
-                    hook.Remove("Think","AnimCallback"..self:EntIndex())
+                    hook.Remove("Think","ZC_WeaponAnimCallback" .. self:EntIndex())
                     self.callback(self)
                 end
             end)

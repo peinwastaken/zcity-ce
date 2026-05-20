@@ -2,7 +2,7 @@ if SERVER then
     util.AddNetworkString("ZB_GiveRole")
 
     function zb.GiveRole(ply, name, color)
-        hook.Run( "ZB_GettingRole", ply, name )
+        hook.Run( "ZC_BeforeRoleAssigned", ply, name )
         net.Start("ZB_GiveRole")
             net.WriteTable({
                 name = name or "WHO ARE YOU?",

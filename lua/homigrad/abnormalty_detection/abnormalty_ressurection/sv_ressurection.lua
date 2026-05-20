@@ -75,7 +75,7 @@ end
 --//
 
 --\\SpecialEvents
-hook.Add("Abnormalties_HotZoneAbnormaltyAdded", "Abnormalties_Ressurection", function(zone_id, abnormalty_name, amt, ply)
+hook.Add("ZC_OnHotZoneAbnormalityAdded", "ZC_AbnormalitiesResurrection", function(zone_id, abnormalty_name, amt, ply)
 	local zone = PLUGIN.Zones[zone_id]
 	
 	if(PLUGIN.GetZoneAbnormalty(zone, "sacrifice") >= 50 and PLUGIN.GetZoneAbnormalty(zone, "help") >= 30 and PLUGIN.GetZoneAbnormalty(zone, "ritual") >= 10 and amt > 0)then
@@ -101,7 +101,7 @@ hook.Add("Abnormalties_HotZoneAbnormaltyAdded", "Abnormalties_Ressurection", fun
 	end
 end)
 
-hook.Add("Think", "Abnormalties_Ressurection", function()
+hook.Add("Think", "ZC_AbnormalitiesResurrection", function()
 	for ply, info in pairs(PLUGIN.Ressurection.ToRessurect) do
 		if(info.Time <= CurTime())then
 			local owner = info.Owner
@@ -141,7 +141,7 @@ hook.Add("Think", "Abnormalties_Ressurection", function()
 	end
 end)
 
-hook.Add("PostCleanupMap", "Abnormalties_Ressurection", function()
+hook.Add("PostCleanupMap", "ZC_AbnormalitiesResurrection", function()
 	PLUGIN.Ressurection.ToRessurect = {}
 end)
 --//

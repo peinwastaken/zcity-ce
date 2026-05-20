@@ -234,7 +234,7 @@ net.Receive("ZB_RequestAirStrike", function(len, ply)
     end
 end)
 
-hook.Add("PostCleanupMap", "ACD_ResetAirstrikes", function()
+hook.Add("PostCleanupMap", "ZC_ACDResetAirstrikes", function()
     ACD_StrikesLeft = {}
     ACD_NextAirstrikeTime = 0
 end)

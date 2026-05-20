@@ -22,7 +22,7 @@ util.AddNetworkString("HMCD_UpdateChemicalResistance")
 	end
 --//
 
-hook.Add("PlayerPostThink", "HMCD_SubRoles_Abilities", function(ply)
+hook.Add("PlayerPostThink", "ZC_SubRolesAbilities", function(ply)
 	if(MODE.RoleChooseRoundTypes[MODE.Type])then
 		if(ply:Alive() and ply.organism and not ply.organism.unconscious)then
 			if(ply.SubRole == "traitor_infiltrator" or ply.SubRole == "traitor_infiltrator_soe")then

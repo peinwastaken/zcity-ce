@@ -40,7 +40,7 @@ local function updatePlayer(ply)
 	query:Execute()
 end
 
-hook.Add("DatabaseConnected", "AchievementsCreateData", function()
+hook.Add("ZC_OnDatabaseConnected", "ZC_AchievementsCreateData", function()
 	local query
 
 	query = mysql:Create("hg_achievements")
@@ -59,8 +59,8 @@ hook.Add("DatabaseConnected", "AchievementsCreateData", function()
     end
 end)
 
-hook.Add( "PlayerInitialSpawn","hg_Exp_OnInitSpawn", updatePlayer)
-hook.Add("PlayerDisconnected", "savevalues", function(ply)
+hook.Add( "PlayerInitialSpawn","ZC_ExpOnInitSpawn", updatePlayer)
+hook.Add("PlayerDisconnected", "ZC_SaveRoundValues", function(ply)
     if !hg.achievements.SqlActive then print("Tried to save achievement data to SQL, but it is not active.") return end
 
     hg.achievements.SaveToSQL(ply)
@@ -192,14 +192,14 @@ end)
 
 local roundply = 0
 
-hook.Add("ZB_StartRound","hg_killemall_Acchivment",function()
+hook.Add("ZC_StartRound","ZC_KillEmAllAchievement",function()
     roundply = 0
     for _,_ in player.Iterator() do
         roundply = roundply + 1
     end
 end)
 
-hook.Add("ZB_TraitorWinOrNot","hg_killemall_Acchivment",function(ply,winner)
+hook.Add("ZC_CheckTraitorWin","ZC_KillEmAllAchievement",function(ply,winner)
     --if gmod.GetGamemode() ~= "zcity" then return end
 
     if winner == 1 and (ply.TraitorKills or 0 >= roundply - 1) and roundply >= 10 then
@@ -207,7 +207,7 @@ hook.Add("ZB_TraitorWinOrNot","hg_killemall_Acchivment",function(ply,winner)
     end
 end)
 
-hook.Add("PlayerDeath", "hg_killemall_Acchivment", function(ply)
+hook.Add("PlayerDeath", "ZC_KillEmAllAchievement", function(ply)
     local ach = hg.achievements.GetPlayerAchievement(ply,"deadlygambling")
     if ach["value"] ~= 10 and ach["value"] ~= 0 then
         hg.achievements.SetPlayerAchievement(ply, "deadlygambling", 0)
@@ -234,11 +234,11 @@ hook.Add("PlayerDeath", "hg_killemall_Acchivment", function(ply)
     end
 end)
 
-hook.Add("PlayerSilentDeath","hg_illbeback_Acchivment",function(ply)
+hook.Add("PlayerSilentDeath","ZC_TrackIllBeBackAchievement",function(ply)
     if ply.isTraitor then ply.TraitorKills = 0 return end
 end)
 
-hook.Add("HomigradDamage","hg_illbeback_Acchivment",function(ply, dmgInfo, hitgroup, ent, harm, hitBoxs)
+hook.Add("ZC_OnOrganismDamage","ZC_TrackIllBeBackAchievement",function(ply, dmgInfo, hitgroup, ent, harm, hitBoxs)
     --if gmod.GetGamemode() ~= "zcity" then return end
     if not ply:IsPlayer() then return end
     if (dmgInfo:IsDamageType(128) or dmgInfo:IsDamageType(DMG_BULLET)) and hitgroup == HITGROUP_HEAD and hg.achievements.GetPlayerAchievement(ply,"illbeback")["value"] ~= 3 then
@@ -247,7 +247,7 @@ hook.Add("HomigradDamage","hg_illbeback_Acchivment",function(ply, dmgInfo, hitgr
     end
 end)
 
-hook.Add("HG_OnUnconscious","hg_illbeback_Acchivment",function(ply)
+hook.Add("ZC_OnPlayerUnconscious","ZC_TrackIllBeBackAchievement",function(ply)
     if ply:IsRagdoll() then
         ply = hg.RagdollOwner(ply)
     end
@@ -256,20 +256,20 @@ hook.Add("HG_OnUnconscious","hg_illbeback_Acchivment",function(ply)
     end
 end)
 
-hook.Add("PlayerDeath","hg_illbeback_Acchivment",function(ply)
+hook.Add("PlayerDeath","ZC_TrackIllBeBackAchievement",function(ply)
     local val = hg.achievements.GetPlayerAchievement(ply,"illbeback")["value"]
     if val ~= 3 and val ~= 0 then
         hg.achievements.SetPlayerAchievement(ply,"illbeback", 0)
     end
 end)
 
-hook.Add("PlayerSilentDeath","hg_illbeback_Acchivment",function(ply)
+hook.Add("PlayerSilentDeath","ZC_TrackIllBeBackAchievement",function(ply)
     if hg.achievements.GetPlayerAchievement(ply,"illbeback")["value"] ~= 3 then
         hg.achievements.SetPlayerAchievement(ply,"illbeback",0)
     end
 end)
 
-hook.Add("HG_OnWakeUnconscious","hg_illbeback_Acchivment",function(ply)
+hook.Add("ZC_OnPlayerWakeFromUnconscious","ZC_TrackIllBeBackAchievement",function(ply)
     if ply:IsRagdoll() then
         ply = hg.RagdollOwner(ply)
     end
@@ -286,7 +286,7 @@ local tblToFind_bking = {
     {"calm down","calm down"},
 	{"успокойтесь","calm down"}
 }
-hook.Add("HG_PlayerSay","burgerking",function(ply, txtTbl, txt)
+hook.Add("ZC_OnPlayerSay","ZC_BurgerKing",function(ply, txtTbl, txt)
     local bking = {
         ["sir"] = false,
         ["please"] = false,

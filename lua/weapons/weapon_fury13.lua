@@ -130,9 +130,9 @@ function SWEP:NPCHeal(npc, mul, snd)
 				npc:AddEntityRelationship(v, D_HT, 99)
 			end
 
-			hook.Add("OnEntityCreated", "relation_shipdo" .. index, function(ent)
+			hook.Add("OnEntityCreated", "ZC_UpdateNpcRelationships" .. index, function(ent)
 				if not IsValid(npc) or not npc:Alive() then
-					hook.Remove("OnEntityCreated", "relation_shipdo" .. index)
+					hook.Remove("OnEntityCreated", "ZC_UpdateNpcRelationships" .. index)
 
 					return
 				end

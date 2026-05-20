@@ -254,12 +254,12 @@ function SWEP:DoPoison(ent)
 end
 
 if SERVER then
-    hook.Add("Org Clear", "RemovePoison4", function(org)
+    hook.Add("ZC_OrganismClear", "ZC_RemovePoison4", function(org)
         org.poison4 = nil
 		org.poison4notificate = nil
     end)
 
-	hook.Add("Org Think", "poison4",function(owner, org, timeValue)
+	hook.Add("ZC_OrganismThink", "ZC_Poison4",function(owner, org, timeValue)
 		if not IsValid(owner) or not owner:IsPlayer() or not owner:Alive() then return end
 		if (not org.poison4) or (not org.alive) then return end
 

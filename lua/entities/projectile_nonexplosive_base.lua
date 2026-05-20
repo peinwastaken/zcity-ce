@@ -263,7 +263,7 @@ if SERVER then
 		end
 	end)
 
-	hook.Add("Player Think", "takeArrowFunc", function(ply, ent)
+	hook.Add("ZC_PlayerThink", "ZC_TakeArrowFunc", function(ply, ent)
 		if ply.organism and ply.organism.canmove and ply:KeyPressed(IN_USE) then
 			local tr = hg.eyeTrace(ply)
 
@@ -273,7 +273,7 @@ if SERVER then
 		end
 	end)
 elseif CLIENT then
-	hook.Add("radialOptions", "takearrow", function()
+	hook.Add("ZC_RadialOptions", "ZC_Takearrow", function()
 		local ply = LocalPlayer()
 
 		if ply.organism and ply.organism.canmove and ply.organism.LodgedEntities and #ply.organism.LodgedEntities > 0 then

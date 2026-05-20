@@ -45,7 +45,7 @@
 		end
 	end
 
-	hook.Add("InitPostEntity", "OverrideBlackterio", function()
+	hook.Add("InitPostEntity", "ZC_OverrideBlackterioWeaponMenu", function()
 		override()
 	end)
 
@@ -69,7 +69,7 @@
 -- 	["walk_all"] = "jump_slam"
 -- }
 
--- hook.Add("UpdateAnimation", "AirAnimFix", function(ply, vel, maxSeqGroundSpeed)
+-- hook.Add("UpdateAnimation", "ZC_AirAnimFix", function(ply, vel, maxSeqGroundSpeed)
 -- 	if not IsValid(ply) or ply:IsOnGround() or not ply:Alive() then return end
 
 -- 	local targetSeq = seqOverride[ply:GetSequenceName(ply:GetSequence())]
@@ -79,7 +79,7 @@
 -- end)
 
 --\\ Give our guns to NPCs
-	hook.Add("PopulateMenuBar", "PopulateNPCweps", function(menubar)
+	hook.Add("PopulateMenuBar", "ZC_PopulateNpcWeaponMenu", function(menubar)
 		local bar = menubar:AddOrGetMenu("Z-City Weapon Override")
 		local weaponlist = weapons.GetList()
 

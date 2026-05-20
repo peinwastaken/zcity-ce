@@ -54,7 +54,7 @@ end
 --//
 
 --\\SpecialEvents
-hook.Add("Abnormalties_HotZoneAbnormaltyAdded", "Abnormalties_Broadcast", function(zone_id, abnormalty_name, amt, ply)
+hook.Add("ZC_OnHotZoneAbnormalityAdded", "ZC_AbnormalitiesBroadcast", function(zone_id, abnormalty_name, amt, ply)
 	local zone = PLUGIN.Zones[zone_id]
 	
 	if(PLUGIN.GetZoneAbnormalty(zone, "help") >= 20 and PLUGIN.GetZoneAbnormalty(zone, "ritual") >= 10 and amt > 0)then
@@ -80,7 +80,7 @@ hook.Add("Abnormalties_HotZoneAbnormaltyAdded", "Abnormalties_Broadcast", functi
 end)
 --//
 
-hook.Add("CanListenOthers", "Abnormalties_Broadcast", function(output, input, is_chat, teamonly, text)
+hook.Add("ZC_CanReceiveCommunication", "ZC_AbnormalitiesBroadcast", function(output, input, is_chat, teamonly, text)
 	if(output.Abnormalties_BroadcastNextFadeTime)then
 		if(output.Abnormalties_BroadcastNextFadeTime > CurTime())then
 			return true, false

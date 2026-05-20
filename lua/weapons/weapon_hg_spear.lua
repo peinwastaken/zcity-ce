@@ -172,7 +172,7 @@ if SERVER then
     end)
 end
 
-hook.Add("radialOptions","spear",function()
+hook.Add("ZC_RadialOptions","ZC_Spear",function()
     local ply = LocalPlayer()
     local organism = ply.organism or {}
 

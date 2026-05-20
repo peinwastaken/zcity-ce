@@ -57,9 +57,9 @@ local tab = {
 
 --local potatopc = GetConVar("zc_potatopc") or CreateClientConVar("zc_potatopc", "0", true, false, "enable this if you are noob", 0, 1)
 local hook_Run = hook.Run
-hook.Add("RenderScreenspaceEffects", "homigrad", function()
+hook.Add("RenderScreenspaceEffects", "ZC_RenderPostProcessing", function()
 	//if potatopc:GetInt() >= 1 then return end
-	hook_Run("Post Processing")
+	hook_Run("ZC_PrePostProcessing")
 	//DrawSunEffect()
 	for _, layer in ipairs(layers_name) do
 		layer = layers[layer]
@@ -77,11 +77,11 @@ hook.Add("RenderScreenspaceEffects", "homigrad", function()
 	tab["$pp_colour_brightness"] = addtiveLayer.brightness
 	DrawColorModify(tab)
 
-	hook_Run("Post Pre Post Processing")
+	hook_Run("ZC_PrePostProcessingDraw")
 
-	hook_Run("Post Post Processing")
+	hook_Run("ZC_PostProcessingDraw")
 
-	hook_Run("Post Post Pre Post Processing")
+	hook_Run("ZC_AfterPostProcessingDraw")
 end)
 
 local postprs = hg.postprocess
@@ -126,7 +126,7 @@ local LayerWeight = postprs.LayerWeight
 local LayerSetWeight = postprs.LayerSetWeight
 local CurTime = CurTime
 local timecheck = CurTime()
-hook.Add("Post Processing", "Main", function()
+hook.Add("ZC_PrePostProcessing", "ZC_UpdateWaterPostProcessing", function()
 	//if potatopc:GetInt() >= 1 then return end
 	//if !lply:Alive() then return end
 	local ply = lply:Alive() and lply or lply:GetNWEntity("spect")
@@ -171,7 +171,7 @@ hook.Add("Post Processing", "Main", function()
 end)
 
 
---[[hook.Add( "PreDrawHalos", "AddPropHalos", function() -- option with highlighting everything in radius
+--[[hook.Add( "PreDrawHalos", "ZC_AddPropHalos", function() -- option with highlighting everything in radius
 	local pickuphalo = {}
 
 	local lpos = lply:GetPos()
@@ -187,7 +187,7 @@ end)
 	halo.Add( pickuphalo, color_red, 1, 1, 1 )
 end )]]
 
---[[hook.Add( "PreDrawHalos", "AddPropHalos", function() -- option with highlighting only when looking
+--[[hook.Add( "PreDrawHalos", "ZC_AddPropHalos", function() -- option with highlighting only when looking
 	local pickuphalo = {}
 
 	local tr = hg.eyeTrace(lply,72)
@@ -300,7 +300,7 @@ local tempolerp = 0
 local lerpblood = 0
 local addtime = CurTime()
 local hurtoverlay = Material("zcity/neurotrauma/damageOverlay.png", "smooth")
-hook.Add("Post Post Processing", "ItHurts", function()
+hook.Add("ZC_PostProcessingDraw", "ZC_ItHurts", function()
 	local spect = IsValid(lply:GetNWEntity("spect")) and lply:GetNWEntity("spect")
 
 	if IsValid(PainStation) then
@@ -623,13 +623,13 @@ hook.Add("Post Post Processing", "ItHurts", function()
 	end
 end)
 
-hook.Add("Player_Death", "ItDoesntNow", function(ply)
+hook.Add("ZC_PlayerDeath", "ZC_StopScreenEffectsOnLifeStateChange", function(ply)
 	if !((ply == lply) or (ply == lply:GetNWEntity("spect"))) then return end
 
 	stopthings()
 end)
 
-hook.Add("Player Spawn", "ItDoesntNow", function(ply)
+hook.Add("ZC_PlayerSpawn", "ZC_StopScreenEffectsOnLifeStateChange", function(ply)
 	if ply != lply then return end
 
 	stopthings()
@@ -641,7 +641,7 @@ local function removeflash()
 	end
 end
 
-hook.Add("PreDrawOpaqueRenderables", "renderblindnessflash", function()
+hook.Add("PreDrawOpaqueRenderables", "ZC_RenderBlindnessFlash", function()
 	local spect = IsValid(lply:GetNWEntity("spect")) and lply:GetNWEntity("spect")
 
 	if !lply:Alive() and !IsValid(spect) then removeflash() return end

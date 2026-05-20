@@ -78,11 +78,11 @@ function AS:GetCurrentMode()
 	return mode and string.lower(mode) or "unknown"
 end
 
-hook.Add("InitPostEntity", "AdminSystem_Init", function()
+hook.Add("InitPostEntity", "ZC_AdminSystemInit", function()
 	timer.Simple(1, function()
 		if hg.AdminSystem.InitModules then
 			hg.AdminSystem:InitModules()
 		end
-		hook.Run("AdminSystem_Loaded")
+		hook.Run("ZC_OnAdminSystemLoaded")
 	end)
 end)

@@ -4,7 +4,7 @@ hg.EarlyAccess = hg.EarlyAccess or {}
 local PLUGIN = hg.EarlyAccess
 PLUGIN.PlayerInstances = PLUGIN.PlayerInstances or {}
 
-hook.Add("DatabaseConnected", "EarlyAccessCreateData", function()
+hook.Add("ZC_OnDatabaseConnected", "ZC_EarlyAccessCreateData", function()
 	local query
 
 	query = mysql:Create("hg_betatesters")
@@ -28,7 +28,7 @@ if file.Exists("zcity/verification.json","DATA") then
     end)
 end
 
-hook.Add("PlayerInitialSpawn","AddInWL",function(ply)
+hook.Add("PlayerInitialSpawn","ZC_LoadEarlyAccessWhitelist",function(ply)
     if STEAMIDs[ply:SteamID64()] then
         local name = ply:Name()
 	    local steamID64 = ply:SteamID64()

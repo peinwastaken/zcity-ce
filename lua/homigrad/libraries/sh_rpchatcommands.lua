@@ -15,7 +15,7 @@ if engine.ActiveGamemode() == "sandbox" then
             end
         }
 
-        hook.Add("HG_OnPlayerCommand", "zc_RPChatCommands", function(ply, texta)
+        hook.Add("ZC_OnPlayerChatCommand", "ZC_RpChatCommands", function(ply, texta)
             local text = texta[1]
             local cmd = string.lower(string.Explode(" ", text)[1])
             local txt = string.Explode(" ", text)

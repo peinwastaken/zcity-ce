@@ -72,13 +72,13 @@ local function CleanupEntities()
     end
 end
 
-function Hook.ZBox_Start()
+function Hook.ZC_StartZBox()
     timer.Create("CleanerTimer", CLEANUP_INTERVAL, 0, function()
         CleanupEntities()
     end)
 end
 
-function Hook.ZBox_Disable()
+function Hook.ZC_DisableZBox()
     timer.Remove("CleanerTimer")
 end
 

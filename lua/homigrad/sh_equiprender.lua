@@ -13,7 +13,7 @@ if CLIENT then
 	}
 
 
-	hook.Add("Initialize", "SetupPixVis", function() PixVis = util.GetPixelVisibleHandle() end)
+	hook.Add("Initialize", "ZC_SetupPixelVisibility", function() PixVis = util.GetPixelVisibleHandle() end)
 	local islply
 
 	local blmodels = {
@@ -196,7 +196,7 @@ if CLIENT then
 		end
 	end
 
-	hook.Add("OnNetVarSet","ArmorVarSet",function(index, key, var)
+	hook.Add("ZC_OnNetVarSet","ZC_ArmorVarSet",function(index, key, var)
 		if key == "Armor" then
 			timer.Simple(.1,function()
 				local ent = Entity(index)
@@ -239,7 +239,7 @@ if CLIENT then
 	local CustomSndPlayed = false
 	local NVGEnabled = false
 
-	hook.Add( "Think", "NVGEnabling", function( )
+	hook.Add( "Think", "ZC_UpdateNightVision", function( )
 		--print(lply:GetNWBool("NVG_Enabled", false))
 		if lply:GetNWBool("NVG_Enabled", false) != NVGEnabled then
 			--if cd > CurTime() then return end
@@ -255,7 +255,7 @@ if CLIENT then
 	local brainhemorrhage = Material( "overlays/brainhemorrhageoverlay.png" )
 
 	local zc_gopro = ConVarExists("zc_gopro") and GetConVar("zc_gopro") or CreateClientConVar("zc_gopro", "0", true, false, "Toggle GoPro-like first-person camera view", 0, 1)
-	hook.Add("Post Pre Post Processing", "renderHelmetThingy", function()
+	hook.Add("ZC_PrePostProcessingDraw", "ZC_RenderHelmetOverlay", function()
 		cam.IgnoreZ(true)
 		//cam.Start2D()
 		local armors = lply.armors
@@ -347,14 +347,14 @@ if CLIENT then
 			BlurAfterNVG = 5
 			NVGEnabled = false
 			ViewPunch2(Angle(-2,-1,2))
-			hook.Add("RenderScreenspaceEffects","renderblur",function()
+			hook.Add("RenderScreenspaceEffects","ZC_RenderEquipmentBlur",function()
 				BlurScreen(BlurAfterNVG,BlurAfterNVG*55)
 				local color = color_black
 				color.a = BlurAfterNVG*55
 				draw.RoundedBox(0,-1,-1,ScrW()+2, ScrH()+2,color)
 				BlurAfterNVG = Lerp(0.5*FrameTime(),BlurAfterNVG,0)
 				if BlurAfterNVG <= 0.01 or IsValid(lply.EZNVGlamp) then
-					hook.Remove("RenderScreenspaceEffects","renderblur")
+					hook.Remove("RenderScreenspaceEffects","ZC_RenderEquipmentBlur")
 					BlurAfterNVG = 5
 				end
 			end)
@@ -363,7 +363,7 @@ if CLIENT then
 		//cam.End2D()
 	end)
 
-	hook.Add("Player_Death", "stopgasmasksound", function(ply)
+	hook.Add("ZC_PlayerDeath", "ZC_StopGasmaskSound", function(ply)
 		if ply == lply and lply.soundhuy then
 			lply:StopSound(lply.soundhuy)
 			lply.soundhuy = nil
@@ -376,7 +376,7 @@ if CLIENT then
 		return 0
 	end
 
-	hook.Add("radialOptions", "equipment", function()
+	hook.Add("ZC_RadialOptions", "ZC_OpenEquipmentRadialMenu", function()
 		local armors = LocalPlayer().armors or {}
 		local inventory = LocalPlayer():GetNetVar("Inventory",{})
 		inventory["Weapons"] = inventory["Weapons"] or {}
@@ -453,7 +453,7 @@ if CLIENT then
 		return tblcpy
 	end
 
-	hook.Add("OnNetVarSet", "equipmentPanelRefresh", function(index, key, var)
+	hook.Add("ZC_OnNetVarSet", "ZC_EquipmentPanelRefresh", function(index, key, var)
 		if IsValid(hg.armorMenuPanel) and (key == "Armor" or key == "Inventory") then
 			if hg.armorMenuPanel.RefreshTbl and Entity(index) == lply then
 				hg.armorMenuPanel:RefreshTbl()
@@ -569,7 +569,7 @@ if CLIENT then
 		end
 	end)
 
-	hook.Add("radialOptions", "9NVG", function()
+	hook.Add("ZC_RadialOptions", "ZC_OpenNightVisionRadialMenu", function()
 		local ply = LocalPlayer()
 		local organism = ply.organism or {}
 		local armors = ply.armors
@@ -597,7 +597,7 @@ if SERVER then
 		end)
 	end)
 
-	hook.Add("PlayerDeath","NVG_DisableAfterDeath",function(ply)
+	hook.Add("PlayerDeath","ZC_NVGDisableAfterDeath",function(ply)
 		if ply:GetNWBool("NVG_Enabled", false) then
 			ply:SetNWBool("NVG_Enabled", false)
 		end

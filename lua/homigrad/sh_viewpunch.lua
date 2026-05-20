@@ -53,14 +53,14 @@ local IsValid = IsValid
 			return !(vgui.CursorVisible() or (x == 0 and y == 0))
 		end
 
-		hook.Add("Think", "vp_think", function()
+		hook.Add("Think", "ZC_ViewPunchThink", function()
 			if IsValid(lply.FakeRagdoll) and hg.InGame() then return end
 
-			hook.Run("ViewpunchThink")
+			hook.Run("ZC_ViewPunchThink")
 		end)
 
 		local lastplyroll
-		hook.Add("ViewpunchThink", "viewpunch_think", function(tblang)
+		hook.Add("ZC_ViewPunchThink", "ZC_ApplyViewPunch", function(tblang)
 			--if lply:InVehicle() then return end
 
 			local consmul = hg.CalculateConsciousnessMul()
@@ -260,7 +260,7 @@ local IsValid = IsValid
 
 		local prev_on_ground,current_on_ground,speedPrevious,speed = false,false,0,0
 		local angle_hitground = Angle(0,0,0)
-		hook.Add("Think", "CP_detectland", function()
+		hook.Add("Think", "ZC_DetectLandingViewPunch", function()
 			if IsValid(lply.FakeRagdoll) then return end
 			prev_on_ground = current_on_ground
 			current_on_ground = lply:OnGround()

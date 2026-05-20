@@ -290,30 +290,30 @@ if CLIENT then
 			addSnake(function(i,max) return {Vector(0,0),len * func(i / max),0,Vector(0,0)} end,8,4,false,function() vec[1] = ((math.cos(CurTime() * 2) / 6 + math.sin(CurTime() * 1) / 6 + math.cos(CurTime() / 4) / 6) + 1) / 2 * ScrW() vec[2] = ((math.sin(CurTime() / 2) / 6 + math.cos(CurTime() * 1) / 6 + math.cos(CurTime() / 1) / 6) + 1) / 2 * ScrH() return vec end,nil,nil)
 		end--]]
 
-		hook.Add("HUDPaint","debildebilich",zmeyka_lmao)
+		hook.Add("HUDPaint","ZC_DrawSnakeGame",zmeyka_lmao)
 
 		if zc_zmeyka_legs:GetBool() then hg.start_snake() end
 	end
 
-	hook.Add("ContextMenuOpen","zmeyka_test",function()
+	hook.Add("ContextMenuOpen","ZC_HandleSnakeGameControls",function()
 		if not zc_zmeyka:GetBool() then return end
 
 		--startZmeyka(lply:UserID())
 	end)
 
-	hook.Add("ContextMenuClosed","zmeyka_test",function()
-		--hook.Remove("HUDPaint","debildebilich",zmeyka_lmao)
+	hook.Add("ContextMenuClosed","ZC_HandleSnakeGameControls",function()
+		--hook.Remove("HUDPaint","ZC_DrawSnakeGame",zmeyka_lmao)
 	end)
 
-	hook.Add("radialOptions","zmeyka_test",function()
+	hook.Add("ZC_RadialOptions","ZC_HandleSnakeGameControls",function()
 		if not zc_zmeyka:GetBool() then return end
 
 		if not snakes[lply:UserID()] then startZmeyka(lply:UserID()) end
 	end)
 
-	hook.Add("RadialMenuPressed","zmeyka_test",function()
+	hook.Add("ZC_RadialMenuPressed","ZC_HandleSnakeGameControls",function()
 		snakes = {}
-		hook.Remove("HUDPaint","debildebilich",zmeyka_lmao)
+		hook.Remove("HUDPaint","ZC_DrawSnakeGame",zmeyka_lmao)
 	end)
 
 	local modes = {}
@@ -621,8 +621,8 @@ if CLIENT then
 
 	hg.start_snake = start_snake
 
-	hook.Add("HUDPaint","new_snake",function() render_segments() end)
-	hook.Add("Think","new_snake",function() think_segments() end)
+	hook.Add("HUDPaint","ZC_UpdateSnakeGame",function() render_segments() end)
+	hook.Add("Think","ZC_UpdateSnakeGame",function() think_segments() end)
 else
 	util.AddNetworkString("zmeyka_net")
 
@@ -758,10 +758,10 @@ end
 		end
 	end
 
-	hook.Add("ContextMenuOpen","zmeyka_new",function()
+	hook.Add("ContextMenuOpen","ZC_OpenSnakeContextMenu",function()
 		start_snake()
 	end)
 
-	hook.Add("HUDPaint","new_snake",function() render_segments() end)
-	hook.Add("Think","new_snake",function() think_segments() end)
+	hook.Add("HUDPaint","ZC_UpdateSnakeGame",function() render_segments() end)
+	hook.Add("Think","ZC_UpdateSnakeGame",function() think_segments() end)
 end*/

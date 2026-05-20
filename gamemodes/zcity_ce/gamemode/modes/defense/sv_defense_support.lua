@@ -716,7 +716,7 @@ net.Receive("defense_commander_menu", function(len, ply)
     net.Send(ply)
 end)
 
-hook.Add("RoundEnd", "CleanupSupportTeam", function()
+hook.Add("ZC_OnRoundEnd", "ZC_CleanupSupportTeam", function()
     for _, ent in ents.Iterator() do
         if IsValid(ent) and ent.IsSupportTeamMember then
             SafeRemoveEntity(ent)

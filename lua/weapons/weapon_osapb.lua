@@ -218,7 +218,7 @@ SWEP.InspectAnimWepAng = {
 }
 
 if CLIENT then
-	hook.Add("PostEntityFireBullets","osapbflash",function(self, bullet)
+	hook.Add("ZC_PostEntityFireBullets","ZC_ApplyOsapbFlashEffect",function(self, bullet)
 		if bullet.AmmoType ~= "18x45mm Flash Defense" then return end
 		if not lply:Alive() then return end
 		if lply.organism and lply.organism.unconscious then return end

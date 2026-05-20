@@ -102,18 +102,18 @@ function zb.GetAllPoints(forceupdate)
         allpoints[k] = pointgroups
     end
 
-    hook.Run("ZB_AfterAllPoints",zb.Points)
+    hook.Run("ZC_AfterMapPointsLoaded",zb.Points)
 
     return allpoints
 end
 
-hook.Add("InitPostEntity", "ZCityInitMapPoints", function()
+hook.Add("InitPostEntity", "ZC_InitMapPoints", function()
     zb.GetAllPoints(true)
 end)
 
 //zb.GetAllPoints()
 
-hook.Add( "Initialize", "LoadMapPoints", zb.CreateMapDir )
+hook.Add( "Initialize", "ZC_LoadMapPoints", zb.CreateMapDir )
 --PrintTable(zb.Points.Example.Points)
 -- pointData = { pos = Vector(), ang = Angle() } // Point table
 COMMANDS.pointnew = {function(ply,args)
@@ -324,6 +324,6 @@ end
 end--]]
 
 
-hook.Add("PostCleanupMap","no_t_ct_spawns",function()
+hook.Add("PostCleanupMap","ZC_ClearTeamSpawnPoints",function()
     zb.tdm_checkpoints()
 end)

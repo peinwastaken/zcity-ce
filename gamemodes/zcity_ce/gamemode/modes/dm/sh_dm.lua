@@ -10,7 +10,7 @@ function MODE.GetZoneRadius()
 	return (dist * math.max(((zb.ROUND_START + MODE.ZoneTimeToShrink) - CurTime()) / MODE.ZoneTimeToShrink, 0.025))
 end
 
-function MODE:HG_MovementCalc_2( mul, ply, cmd, mv )
+function MODE:ZC_CalculateMovementModifiers( mul, ply, cmd, mv )
     if (zb.ROUND_START or 0) + 7.5 > CurTime() and cmd then 
         cmd:RemoveKey(IN_ATTACK)
         cmd:RemoveKey(IN_ATTACK2)
@@ -26,7 +26,7 @@ function MODE:HG_MovementCalc_2( mul, ply, cmd, mv )
     end
 end
 
-function MODE:PlayerCanLegAttack( ply )
+function MODE:ZC_CanPlayerLegAttack( ply )
 	if (zb.ROUND_START or 0) + 20 > CurTime() then
 		return false
 	end

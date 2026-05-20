@@ -92,7 +92,7 @@ function SWEP:OnReloaded()
 	if self.newammotype then
 		self:ApplyAmmoChanges(self.newammotype)
 	end
-	hook.Run("OnReloadedWep", self)
+	hook.Run("ZC_OnWeaponReloaded", self)
 end
 
 SWEP.CanSuicide = true
@@ -213,13 +213,13 @@ function SWEP:DrawWeaponSelection( x, y, wide, tall, alpha )
 end
 
 if CLIENT then
-	hook.Add("OnGlobalVarSet","hg-weapons",function(key,var)
+	hook.Add("ZC_OnGlobalVarSet","ZC_Weapons",function(key,var)
 		if key == "weapons" then
 			hg.weapons = var
 		end
 	end)
 
-	hook.Add("OnNetVarSet","weapons-net-var",function(index,key,var)
+	hook.Add("ZC_OnNetVarSet","ZC_WeaponsNetVar",function(index,key,var)
 		if key == "attachments" then
 			local ent = Entity(index)
 
@@ -341,7 +341,7 @@ end
 if CLIENT then
 	EmitSound = hg.EmitSound
 
-	hook.Add("InitPostEntity", "just_in_case_wep", function()
+	hook.Add("InitPostEntity", "ZC_RestoreWeaponEmitSound", function()
 		EmitSound = hg.EmitSound
 	end)
 end
@@ -448,7 +448,7 @@ function SWEP:CanPrimaryAttack()
 end
 
 if SERVER then
-	hook.Add("Player Think","huyhuy",function(ply)
+	hook.Add("ZC_PlayerThink","ZC_UpdateWeaponThink",function(ply)
 		local wep = ply:GetActiveWeapon()
 		if (!wep.ishgweapon and !wep.ismelee2) or !wep.CanSuicide then ply.suiciding = false end
 	end)
@@ -577,7 +577,7 @@ SWEP.NewSoundSupressor = nil
 if SERVER then
 	util.AddNetworkString("resettinnitus")
 
-	hook.Add("PlayerSpawn","ResetTinnitus",function(ply)
+	hook.Add("PlayerSpawn","ZC_ResetTinnitus",function(ply)
 		if OverrideSpawn then return end
 		net.Start("resettinnitus")
 		net.WritePlayer(ply)
@@ -596,7 +596,7 @@ else
 		ply.TinnitusFactor = 0
 	end)
 
-	hook.Add("Player Think", "TinnitusPadaet", function(ply, ent)
+	hook.Add("ZC_PlayerThink", "ZC_TinnitusDecay", function(ply, ent)
 		if (ply.TinnitusFactor or 0) > 0 then
 			ply.TinnitusFactor = math.min(math.max((ply.TinnitusFactor or 0) - 0.5, 0),300)
 		end
@@ -654,7 +654,7 @@ function SWEP:EmitShoot()
 	local nearDist = (GetViewEntity() == ply or GetViewEntity():GetPos():Distance( self:GetPos() ) < 150)
 
 	if GetGlobalBool("zc_shoot_tinnitus", false) and nearDist and !self.Supressor and !hadEarProtection then
-		local result = hook.Run("ZC_DisableShootTinnitus",lply,insideVal)
+		local result = hook.Run("ZC_ShouldDisableShootTinnitus",lply,insideVal)
 		if !result then
 			lply.TinnitusFactor = (lply.TinnitusFactor or 0) + ( (self.Primary.Force * (self.NumBullet or 1) ) / 3) + insideVal
 			if lply.TinnitusFactor > 32 then
@@ -926,12 +926,12 @@ if CLIENT then
 end
 
 if CLIENT then
-	hook.Add("Think", "homigrad-weapons", function()
+	hook.Add("Think", "ZC_UpdateWeaponClientState", function()
 		for _,wep in ipairs(hg.weapons) do
 			--local wep = ply:GetActiveWeapon()
 
 			if not IsValid(wep) or not wep.Step or (not IsValid(wep:GetOwner()) and wep:GetVelocity():LengthSqr() < 5) then continue end
-			--hook_Run("SWEPStep", wep)
+			--hook_Run("ZC_WeaponStep", wep)
 			if wep.NotSeen or not wep.shouldTransmit then continue end
 			//if (wep.lasttimetick or 0) > CurTime() then continue end
 			local owner = wep:GetOwner()
@@ -944,7 +944,7 @@ if CLIENT then
 		end
 	end)
 
-	hook.Add("Player Think", "HomigradWeaponStep", function(ply)
+	hook.Add("ZC_PlayerThink", "ZC_UpdateActiveWeaponStep", function(ply)
 		local wep = ply:GetActiveWeapon()
 		if wep and IsValid(wep) and wep.Step then
 			wep:Step()
@@ -952,7 +952,7 @@ if CLIENT then
 	end)
 end
 
-hook.Add("Player Think", "suicidingaa", function(ply)
+hook.Add("ZC_PlayerThink", "ZC_HandleWeaponSuicide", function(ply)
 	if SERVER then
 		ply:SetNWBool("suiciding", ply.suiciding)
 	end
@@ -1018,7 +1018,7 @@ else
 end
 
 if SERVER then
-	hook.Add("Player Think", "removesuiciding", function(ply)
+	hook.Add("ZC_PlayerThink", "ZC_ClearWeaponSuicide", function(ply)
 		local wep = ply:GetActiveWeapon()
 
 		if !ishgweapon(wep) or !wep.CanSuicide or (ply:GetNWFloat("willsuicide", 0) < CurTime() - 1) then
@@ -1027,7 +1027,7 @@ if SERVER then
 	end)
 end
 
-hook.Add("PlayerSwitchWeapon", "cantswitchwhenithappens", function(ply)
+hook.Add("PlayerSwitchWeapon", "ZC_BlockWeaponSwitchDuringAction", function(ply)
 	if ply:GetNWFloat("willsuicide", 0) > 0 then
 		return true
 	end
@@ -1180,7 +1180,7 @@ function SWEP:CoreStep()
 
 		if not (inv["Weapons"] and inv["Weapons"]["hg_sling"] and not self:IsPistolHoldType()) then
 			//hg.drop(owner, self)
-			hook.Run("PlayerDropWeapon", owner)
+			hook.Run("ZC_PlayerDropWeapon", owner)
 		end
 	end
 
@@ -1198,9 +1198,9 @@ function SWEP:CoreStep()
 			local inv = owner:GetNetVar("Inventory",{})
 			if not (inv["Weapons"] and inv["Weapons"]["hg_sling"] and not self:IsPistolHoldType()) then
 				hg.drop(owner, self)
-				hook.Run("PlayerDropWeapon", owner)
+				hook.Run("ZC_PlayerDropWeapon", owner)
 			else
-				hook.Run("PlayerDropWeapon", owner)
+				hook.Run("ZC_PlayerDropWeapon", owner)
 				owner:SetActiveWeapon(owner:GetWeapon("weapon_hands_sh"))
 			end
 		end
@@ -1334,7 +1334,7 @@ function SWEP:CoreStep()
 	if SERVER then self:DrawAttachments() end
 end
 
-if SERVER then hook.Add("UpdateAnimation", "fuckgmodok", function(ply) ply:RemoveGesture(ACT_GMOD_NOCLIP_LAYER) end) end
+if SERVER then hook.Add("UpdateAnimation", "ZC_RemoveNoclipGesture", function(ply) ply:RemoveGesture(ACT_GMOD_NOCLIP_LAYER) end) end
 if CLIENT then
 	local nilTbl = {}
 	function SWEP:CustomAmmoDisplay()
@@ -1958,7 +1958,7 @@ local addvec = Vector(0,0,0)
 local addvec2 = Vector(0,0,0)
 
 if SERVER then
-	hook.Add("Player Think", "sethuynyis", function(ply)
+	hook.Add("ZC_PlayerThink", "ZC_UpdateWeaponHolsterState", function(ply)
 		local dtime = CurTime() - (ply.lastcalley or (CurTime() - 10))
 		if dtime < 0.1 then return end
 		ply.lastcalley = CurTime()
@@ -2350,7 +2350,7 @@ if CLIENT then
 	end
 end
 
-hook.Add( "EntityEmitSound", "WeaponDropSound", function( t )
+hook.Add( "EntityEmitSound", "ZC_WeaponDropSound", function( t )
 	--print(string.find(t.SoundName,"physics/metal/weapon_impact_*"))
 	if string.find(t.SoundName,"physics/metal/weapon_impact_*") then
 		t.SoundName = "weapon_impact_soft"..math_random(1,3)..".wav"
@@ -2374,7 +2374,7 @@ end)
 ["DSP"] =       0
 ]]
 
-hook.Add("PreRegisterSWEP", "precachemodels", function(self, class)
+hook.Add("PreRegisterSWEP", "ZC_PrecacheWeaponModels", function(self, class)
 	if self.ishgwep or self.Base == "homigrad_base" then
 		if self.WorldModel then util.PrecacheModel( self.WorldModel ) end
 		if self.WorldModelFake then util.PrecacheModel( self.WorldModelFake ) end
@@ -2459,7 +2459,7 @@ function SWEP:GetBipodPosAng()
 	return posa, anga, anga2
 end
 
-hook.Add("HG.InputMouseApply", "restrictMouseMovement", function(tbl)
+hook.Add("ZC_InputMouseApply", "ZC_RestrictMouseMovement", function(tbl)
     local wep = lply:GetActiveWeapon()
 
     if ishgweapon(wep) then
@@ -2488,7 +2488,7 @@ hook.Add("HG.InputMouseApply", "restrictMouseMovement", function(tbl)
     end
 end)
 
-hook.Add("HG_MovementCalc_2", "moveWithWeapon", function(mul, ply, cmd, mv)
+hook.Add("ZC_CalculateMovementModifiers", "ZC_MoveWithWeapon", function(mul, ply, cmd, mv)
 	local wep = ply:GetActiveWeapon()
 
     if ishgweapon(wep) then

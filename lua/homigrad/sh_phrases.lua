@@ -306,7 +306,7 @@ if CLIENT then
 		net.SendToServer()
 	end)
 
-	hook.Add("radialOptions", "4", function()
+	hook.Add("ZC_RadialOptions", "ZC_PhraseRadialOption", function()
 		local organism = lply.organism or {}
 
 		if lply:Alive() and not organism.unconscious and lply.PlayerClassName ~= "Gordon" then

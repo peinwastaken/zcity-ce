@@ -55,7 +55,7 @@ function hg.AddArmor(ply, equipment, ent)
 		return false
 	end
 
-	local can = hook.Run("CanEquipArmor", ply, equipment)
+	local can = hook.Run("ZC_CanEquipArmor", ply, equipment)
 
 	if(can == false)then
 		return nil
@@ -518,7 +518,7 @@ hg.organism.input_list.protovisor = function(org, bone, dmg, dmgInfo, ...)
 	return protect
 end
 
-hook.Add("HG_ReplacePhrase", "MaskMuffed", function(ply, phrase, muffed, pitch)
+hook.Add("ZC_ReplacePhrase", "ZC_MaskMuffed", function(ply, phrase, muffed, pitch)
 	if IsValid(ply) and ply.armors and ply.armors["face"] == "mask2" then
 		return ply, phrase, true, pitch
 	end

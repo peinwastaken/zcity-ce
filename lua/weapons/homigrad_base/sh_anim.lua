@@ -11,7 +11,7 @@ function SWEP:SetHold(value)
 	self:SetWeaponHoldType(value)
 end
 
-hook.Add("Bones", "homigrad-weapons-bone", function(ply)
+hook.Add("ZC_UpdatePlayerBones", "ZC_UpdateWeaponBones", function(ply)
 	local wep = ply:GetActiveWeapon()
 	local func = wep.Animation
 
@@ -256,7 +256,7 @@ local ang9 = Angle(30, 0, 0)
 local ang10 = Angle(35, 0, 0)
 local ang11 = Angle(20, 0, 0)
 
-hook.Add("Bones", "homigrad-lean-bone", function(ply, dtime)
+hook.Add("ZC_UpdatePlayerBones", "ZC_UpdateWeaponLeanBones", function(ply, dtime)
 	ply.weightmul = weightmul or hg.CalculateWeight(ply, 140)
 
 	local ragdollcombat = hg.RagdollCombatInUse(ply)

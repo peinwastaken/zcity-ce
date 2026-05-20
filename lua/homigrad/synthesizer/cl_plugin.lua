@@ -531,7 +531,7 @@ local vocals = {
 	PLUGIN.TTSQueue = PLUGIN.TTSQueue or {}
 	PLUGIN.TTSQueueCurrent = PLUGIN.TTSQueueCurrent or 0
 
-	hook.Add("Think", "Synthesizer", function()
+	hook.Add("Think", "ZC_Synthesizer", function()
 		for id, queue_line in pairs(PLUGIN.TTSQueue) do
 			-- print(id)
 			PLUGIN.TTSQueueCurrent = id

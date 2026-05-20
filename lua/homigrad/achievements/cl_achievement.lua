@@ -229,7 +229,7 @@ net.Receive("hg_NewAchievement",function()
 end)
 
 local _, ach_clr2 = Color(200,25,25), Color(100,25,25)
-hook.Add("HUDPaint","hg_NewAchievement", function()
+hook.Add("HUDPaint","ZC_NewAchievement", function()
     local frametime = FrameTime() * 10
     for i = 1, #AchTable do
         local ach = AchTable[i]

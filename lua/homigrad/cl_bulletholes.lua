@@ -11,7 +11,7 @@ hg.ConVars = hg.ConVars or {}
 local zc_bulletholesfps = CreateConVar("zc_bulletholesfps", "0", FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED, "How much fps should the view inside bullet holes be (0 = max)", 0, 300)
 local zc_bulletholes = CreateConVar("zc_bulletholes", "0", FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED, "Enable R6S bulletholes feature", 0, 1)
 
-hook.Add("PostRender", "ZCity.BulletHoles.UpdateRenderTarget", function()
+hook.Add("PostRender", "ZC_BulletHolesUpdateRenderTarget", function()
     if !zc_bulletholes:GetBool() then return end
     local holes = GetNetVar("BulletHoles")
     local view = render.GetViewSetup()
@@ -76,7 +76,7 @@ hook.Add("PostRender", "ZCity.BulletHoles.UpdateRenderTarget", function()
     end
 end)
 
-hook.Add("PreDrawEffects","bulletholes-test",function()
+hook.Add("PreDrawEffects","ZC_DrawBulletHoleMeshes",function()
     if !zc_bulletholes:GetBool() then return end
     local holes = GetNetVar("BulletHoles")
 

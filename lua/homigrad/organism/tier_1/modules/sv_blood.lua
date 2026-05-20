@@ -288,5 +288,5 @@ function hg.organism.CoughBlood(org)
 end
 
 function hg.organism.BloodDroplet2(owner, org, wound, dir, artery)
-	hook.Run("HG_BloodParticleStartedDropping", owner, org, wound, dir, artery)
+	hook.Run("ZC_OnBloodParticleStartedDropping", owner, org, wound, dir, artery)
 end

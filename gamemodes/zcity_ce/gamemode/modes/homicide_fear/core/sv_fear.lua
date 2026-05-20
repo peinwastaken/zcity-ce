@@ -66,22 +66,22 @@ function MODE:RandomStuff()
 		crysound = CreateSound(door, snd)
 		crysound:Play()
 
-		hook.Add("PlayerUse", "dooruse"..door:EntIndex(), function(ply, ent)
+		hook.Add("PlayerUse", "ZC_FearDoorUse" .. door:EntIndex(), function(ply, ent)
 			if ent == door then
 				crysound:Stop()
 				crysound = nil
 			end
 
-			hook.Remove("PlayerUse", "dooruse"..ent:EntIndex())
+			hook.Remove("PlayerUse", "ZC_FearDoorUse" .. ent:EntIndex())
 		end)
 
-		hooks[#hooks + 1] = "dooruse"..door:EntIndex()
+		hooks[#hooks + 1] = "ZC_FearDoorUse" .. door:EntIndex()
 
 		return
 	end
 end
 
-hook.Add("PostCleanupMap", "removehooksass", function()
+hook.Add("PostCleanupMap", "ZC_ClearFearDoorHooks", function()
 	for _, hooka in ipairs(hooks) do
 		hook.Remove("PlayerUse", hooka)
 	end
@@ -602,15 +602,15 @@ function MODE:PlayerDeath(ply)
 	end)
 end
 
-function MODE:Ragdoll_Create(ply, ent)
+function MODE:ZC_OnPlayerRagdollCreated(ply, ent)
 	ent:SetCustomCollisionCheck(true)
 	ent:CollisionRulesChanged()
 end
 
-function MODE:HG_PlayerCanHearPlayersVoice(listener, talker)
+function MODE:ZC_CanHearPlayerVoice(listener, talker)
 	if listener:GetNetVar("disappearance") or talker:GetNetVar("disappearance") then return true end
 end
 
-function MODE:HG_PlayerCanSeePlayersChat(listener, talker)
+function MODE:ZC_CanSeePlayerChat(listener, talker)
 	if listener:GetNetVar("disappearance") or talker:GetNetVar("disappearance") then return true end
 end

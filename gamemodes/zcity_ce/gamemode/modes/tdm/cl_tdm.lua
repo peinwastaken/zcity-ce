@@ -24,7 +24,7 @@ local teams = {
 	},
 }
 
-hook.Add( "StartCommand", "TDM_DisallowMoveOrShoting", function( ply, mv )
+hook.Add( "StartCommand", "ZC_BlockTdmMovement", function( ply, mv )
 	--; BLYAT NY NAXUA PISAT VSE V ODNY LINIY BLYAAA
 	if zb.CROUND == "tdm" and (zb.ROUND_START or 0) + 20 > CurTime() then
 		mv:RemoveKey(IN_ATTACK)

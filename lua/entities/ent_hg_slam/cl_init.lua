@@ -12,7 +12,7 @@ local laserMaterial = CreateMaterial("tripmine_laser", "UnlitGeneric", {
 
 function ENT:CreateLaserHook()
 	self.HookAdded = true
-	hook.Add("PostDrawOpaqueRenderables","SlamRender"..self:EntIndex(),function() -- a crutch cuz draw is not being called if entity is not in player view
+	hook.Add("PostDrawOpaqueRenderables","ZC_DrawSlamLaser" .. self:EntIndex(),function() -- a crutch cuz draw is not being called if entity is not in player view
 		if not self.TraceStart or not self.TraceHitPos then return end
 
 		render.SetMaterial(laserMaterial)
@@ -32,5 +32,5 @@ function ENT:Draw()
 end
 
 function ENT:OnRemove()
-	hook.Remove("PostDrawOpaqueRenderables","SlaMRender"..self:EntIndex())
+	hook.Remove("PostDrawOpaqueRenderables","ZC_DrawSlamLaser" .. self:EntIndex())
 end
