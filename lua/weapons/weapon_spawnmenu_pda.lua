@@ -127,9 +127,9 @@ local CategoresAllowed = {
 local KgInTime = 40
 
 if SERVER then
-    util.AddNetworkString("Deliver")
+    util.AddNetworkString("ZC_PdaDelivery")
 
-    net.Receive("Deliver",function( len, ply )
+    net.Receive("ZC_PdaDelivery",function( len, ply )
         local wep = IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon() or false
         if not wep or wep:GetClass() ~= "weapon_spawnmenu_pda" then return end
         ply.DeliverCD = ply.DeliverCD or 0
@@ -191,7 +191,7 @@ if SERVER then
     function SWEP:AddNotificate(txt, isFunc)
         isFunc = isFunc or false
         if self:GetOwner():IsPlayer() then
-            net.Start("Deliver")
+            net.Start("ZC_PdaDelivery")
                 net.WriteString( txt )
                 net.WriteEntity( self )
             net.Send(self:GetOwner())
@@ -203,7 +203,7 @@ end
 
 if SERVER then return end
 
-net.Receive("Deliver",function()
+net.Receive("ZC_PdaDelivery",function()
     local txt = net.ReadString()
     local ent = net.ReadEntity()
 
@@ -341,7 +341,7 @@ Cost: Free]])
 
             function button:DoClick()
 
-                net.Start("Deliver")
+                net.Start("ZC_PdaDelivery")
                     net.WriteTable(swep.Cart)
                 net.SendToServer()
 

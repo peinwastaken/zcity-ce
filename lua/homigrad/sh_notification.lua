@@ -95,7 +95,7 @@ if CLIENT then
 		return CreateNotificationBerserk(...)
 	end
 
-	net.Receive("HGNotificate",function()
+	net.Receive("ZC_Notify",function()
 		local msg = net.ReadString()
 		local clr = net.ReadColor()
 
@@ -104,7 +104,7 @@ if CLIENT then
 		CreateNotification(msg, showtime, clr)
 	end)
 
-	net.Receive("HGNotificateBerserk",function()
+	net.Receive("ZC_BerserkNotify",function()
 		local msg = net.ReadString()
 		local clr = net.ReadColor()
 

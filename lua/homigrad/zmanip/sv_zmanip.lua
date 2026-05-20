@@ -1,7 +1,7 @@
-util.AddNetworkString("RunZManipAnim")
+util.AddNetworkString("ZC_ZManipRunAnimation")
 
 function hg.RunZManipAnim(ply, anim, revers, timeOveride, additionalTbl)
-	net.Start("RunZManipAnim")
+	net.Start("ZC_ZManipRunAnimation")
 		net.WritePlayer(ply)
 		net.WriteString(anim or "")
 		net.WriteBool(revers or false)

@@ -8,11 +8,11 @@ if CLIENT then
     local queuePanelInstance = nil
     local selectedModes = {}
 
-    net.Receive("ZB_SendModesInfo", function()
+    net.Receive("ZC_ModesInfoSend", function()
         zb.availableModes = net.ReadTable()
     end)
 
-    net.Receive("ZB_SendRoundList", function()
+    net.Receive("ZC_RoundListSend", function()
         zb.RoundList = net.ReadTable()
         zb.nextround = net.ReadString()
         table.insert(zb.RoundList, 1, zb.nextround)
@@ -22,12 +22,12 @@ if CLIENT then
         end
     end)
 
-    net.Receive("ZB_NotifyRoundListChange", function()
+    net.Receive("ZC_RoundListChangeNotice", function()
         local playerName = net.ReadString()
 
         chat.AddText(uiColors.menuChatName, playerName, uiColors.white, " has modified the game mode queue")
 
-        net.Start("ZB_RequestRoundList")
+        net.Start("ZC_RoundListRequest")
         net.SendToServer()
     end)
 
@@ -90,7 +90,7 @@ if CLIENT then
                     table.insert(zb.RoundList, index - 1, item)
                     queue:QueueUpdate()
 
-                    /*net.Start("ZB_UpdateRoundList")
+                    /*net.Start("ZC_RoundListUpdate")
                         net.WriteTable(zb.RoundList)
                         net.WriteBool(false)
                     net.SendToServer()*/
@@ -108,7 +108,7 @@ if CLIENT then
                     table.insert(zb.RoundList, index + 1, item)
                     queue:QueueUpdate()
 
-                    /*net.Start("ZB_UpdateRoundList")
+                    /*net.Start("ZC_RoundListUpdate")
                         net.WriteTable(zb.RoundList)
                         net.WriteBool(false)
                     net.SendToServer()*/
@@ -124,7 +124,7 @@ if CLIENT then
                 table.remove(zb.RoundList, index)
                 queue:QueueUpdate()
 
-                /*net.Start("ZB_UpdateRoundList")
+                /*net.Start("ZC_RoundListUpdate")
                     net.WriteTable(zb.RoundList)
                     net.WriteBool(false)
                 net.SendToServer()*/
@@ -176,7 +176,7 @@ if CLIENT then
             //if #zb.RoundList > 0 then
                 local tbl = table.Copy(zb.RoundList)
                 //table.insert(tbl, 1, zb.nextround)
-                net.Start("ZB_UpdateRoundList")
+                net.Start("ZC_RoundListUpdate")
                     net.WriteTable(tbl)
                 net.SendToServer()
 
@@ -195,7 +195,7 @@ if CLIENT then
             zb.RoundList = {}
             queuePanel:QueueUpdate()
 
-            /*net.Start("ZB_UpdateRoundList")
+            /*net.Start("ZC_RoundListUpdate")
                 net.WriteTable({})
                 net.WriteBool(false)
             net.SendToServer()*/
@@ -347,7 +347,7 @@ if CLIENT then
                 selectBtn:DockMargin(5, 7, 5, 7)
                 selectBtn:SetText("Select")
                 selectBtn.DoClick = function()
-                    net.Start("AdminSetGameMode")
+                    net.Start("ZC_AdminSetGameMode")
                     net.WriteString(command)
                     net.WriteString(mode.key)
                     net.WriteBool(false)
@@ -395,7 +395,7 @@ if CLIENT then
             if selectedCount > 0 then
                 queuePanel:QueueUpdate()
 
-                /*net.Start("ZB_UpdateRoundList")
+                /*net.Start("ZC_RoundListUpdate")
                     net.WriteTable(zb.RoundList)
                     net.WriteBool(false)
                 net.SendToServer()*/
@@ -424,7 +424,7 @@ if CLIENT then
             if selectedCount > 0 then
                 queuePanel:QueueUpdate()
 
-                /*net.Start("ZB_UpdateRoundList")
+                /*net.Start("ZC_RoundListUpdate")
                     net.WriteTable(zb.RoundList)
                     net.WriteBool(false)
                 net.SendToServer()*/
@@ -473,7 +473,7 @@ if CLIENT then
         refreshBtn:DockMargin(5, 5, 5, 5)
         refreshBtn:SetTall(30)
         refreshBtn.DoClick = function()
-            net.Start("ZB_RequestRoundList")
+            net.Start("ZC_RoundListRequest")
             net.SendToServer()
         end
 
@@ -482,7 +482,7 @@ if CLIENT then
 
         timer.Create("QueueAutoRefresh", 5, 0, function()
             if IsValid(frame) then
-                //net.Start("ZB_RequestRoundList")
+                //net.Start("ZC_RoundListRequest")
                 //net.SendToServer()
             else
                 timer.Remove("QueueAutoRefresh")
@@ -494,7 +494,7 @@ if CLIENT then
             queuePanelInstance = nil
         end
 
-        net.Start("ZB_RequestRoundList")
+        net.Start("ZC_RoundListRequest")
         net.SendToServer()
     end
 
@@ -546,7 +546,7 @@ if CLIENT then
         endRoundBtn:SetSize(300, 40)
         StyleElement(endRoundBtn)
         endRoundBtn.DoClick = function()
-			net.Start("AdminEndRound")
+			net.Start("ZC_AdminEndRound")
 			net.SendToServer()
 			frame:Close()
         end
@@ -561,7 +561,7 @@ if CLIENT then
     hook.Add("InitPostEntity", "ZC_RequestModeData", function()
         if LocalPlayer():IsAdmin() then
             timer.Simple(2, function()
-                net.Start("ZB_RequestRoundList")
+                net.Start("ZC_RoundListRequest")
                 net.SendToServer()
             end)
         end

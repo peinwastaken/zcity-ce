@@ -49,7 +49,7 @@ function SWEP:ApplyAmmoChanges(type_)
 	--self.Primary.Force = ammotype.Force
 
 	if SERVER then
-		net.Start("syncAmmoChanges")
+		net.Start("ZC_AmmoChangesSync")
 		net.WriteEntity(self)
 		net.WriteInt(type_, 4)
 		net.Broadcast()
@@ -58,9 +58,9 @@ end
 
 
 if SERVER then
-	util.AddNetworkString("syncAmmoChanges")
+	util.AddNetworkString("ZC_AmmoChangesSync")
 else
-	net.Receive("syncAmmoChanges", function()
+	net.Receive("ZC_AmmoChangesSync", function()
 		local self = net.ReadEntity()
 		local type_ = net.ReadInt(4)
 		if self.ApplyAmmoChanges then

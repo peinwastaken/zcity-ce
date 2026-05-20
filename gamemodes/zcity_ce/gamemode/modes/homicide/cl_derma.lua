@@ -192,7 +192,7 @@ function PANEL:Construct()
 
 		//sel.Clicked = true
 
-		//net.Start("HMCD(StartPlayersRoleSelection)")
+		//net.Start("ZC_HomicideRoleSelectionStart")
 		//net.SendToServer()
 	end
 	button_ready.Paint = function(sel, w, h)

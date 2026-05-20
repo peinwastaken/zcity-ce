@@ -83,7 +83,7 @@ end
 
 if CLIENT then
     hg_firematch = hg_firematch or {}
-    net.Receive("Mathces",function()
+    net.Receive("ZC_MatchesIgnite",function()
         local ent = net.ReadEntity()
         if not IsValid(ent) then return end
         local eff = ent:CreateParticleEffect("Lighter_flame",1,{PATTACH_CUSTOMORIGIN,ent,ent:GetPos()})
@@ -103,7 +103,7 @@ if CLIENT then
         end)
     end)
 else
-    util.AddNetworkString("Mathces")
+    util.AddNetworkString("ZC_MatchesIgnite")
 end
 
 function SWEP:PrimaryAttack()

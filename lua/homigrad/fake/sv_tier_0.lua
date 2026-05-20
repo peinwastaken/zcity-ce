@@ -354,10 +354,10 @@ function hg.Ragdoll_Create(ply)
 end
 
 local Ragdoll_Create = hg.Ragdoll_Create
-util.AddNetworkString("Player Ragdoll")
+util.AddNetworkString("ZC_PlayerRagdoll")
 local function NET_Fake(self, ply, send)
 	ply:SetNWEntity("FakeRagdoll",self)
-	net.Start("Player Ragdoll")
+	net.Start("ZC_PlayerRagdoll")
 	net.WriteEntity(ply)
 	net.WriteEntity(self)
 	--net.WriteInt(self:EntIndex(),32)
@@ -370,7 +370,7 @@ end
 
 local function NET_Fake2(num, ply, send)
 	ply:SetNWEntity("FakeRagdoll", Entity(num))
-	net.Start("Player Ragdoll")
+	net.Start("ZC_PlayerRagdoll")
 	net.WriteEntity(ply)
 	net.WriteEntity(Entity(num) or NULL)
 	--net.WriteInt(num,32)
@@ -382,7 +382,7 @@ local function NET_Fake2(num, ply, send)
 end
 
 local function NET_Up(ply, send)
-	net.Start("Player Ragdoll")
+	net.Start("ZC_PlayerRagdoll")
 	net.WriteEntity(ply)
 	net.WriteEntity(NULL)
 	--net.WriteInt(0,32)
@@ -644,9 +644,9 @@ hook.Add("PlayerSpawn", "ZC_BlockOverrideSpawnFallback", function() if OverrideS
 hook.Add("ZC_PlayerSpawn", "ZC_BlockCustomOverrideSpawn", function() if OverrideSpawn then return false end end)
 hook.Add("ZC_PlayerSpawn", "ZC_BlockCustomOverrideSpawnFallback", function() if OverrideSpawn then return false end end)
 
-util.AddNetworkString("Override Spawn")
+util.AddNetworkString("ZC_OverrideSpawn")
 function hg.OverrideSpawn(ply)
-	net.Start("Override Spawn")
+	net.Start("ZC_OverrideSpawn")
 	net.WriteEntity(ply)
 	net.Broadcast()
 end

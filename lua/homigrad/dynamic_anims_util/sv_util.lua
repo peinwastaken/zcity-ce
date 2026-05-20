@@ -1,6 +1,6 @@
 --
 
-util.AddNetworkString("DynamicAnims_SendGesture")
+util.AddNetworkString("ZC_DynamicAnimGesture")
 
 local PLAYER = FindMetaTable("Player")
 function PLAYER:PlayCustomAnims(anim, autoStop, speed, needForceLook, autostopAdjust, tSvCallbacks)
@@ -65,7 +65,7 @@ function PLAYER:PlayCustomAnimAsGesture(anim, weight, anim_time, start_time, aut
 	self:AddVCDSequenceToGestureSlot(GESTURE_SLOT_CUSTOM, AnimID, start_time or 0, autokill)
 	self:AnimSetGestureWeight(GESTURE_SLOT_CUSTOM, weight or 1)
 
-	net.Start("DynamicAnims_SendGesture")
+	net.Start("ZC_DynamicAnimGesture")
 		net.WriteEntity(self)
 		net.WriteInt(AnimID, 16)
 		net.WriteFloat(weight or 1)

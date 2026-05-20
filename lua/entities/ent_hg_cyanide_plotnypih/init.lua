@@ -2,7 +2,7 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
-util.AddNetworkString("chlorine_gas")
+util.AddNetworkString("ZC_ChlorineGas")
 function ENT:Initialize()
 	self.spawntime = CurTime()
 	self.particles = {}
@@ -68,7 +68,7 @@ function ENT:Think()
 
 
 	self:NextThink(CurTime() + 1)
-	net.Start("chlorine_gas")
+	net.Start("ZC_ChlorineGas")
 		net.WriteTable(self.particles)
 	net.Broadcast()
 	return true
@@ -76,7 +76,7 @@ end
 
 function ENT:OnRemove()
 	self.particles = {}
-	net.Start("chlorine_gas")
+	net.Start("ZC_ChlorineGas")
 	net.WriteTable(self.particles)
 	net.Broadcast()
 end

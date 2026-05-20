@@ -143,7 +143,7 @@ local plyMeta = FindMetaTable("Player")
 
 function plyMeta:GetAwards()
     if CLIENT then
-        net.Start("zb_xp_get")
+        net.Start("ZC_ExperienceGet")
             net.WriteEntity(self)
         net.SendToServer()
     end
@@ -152,7 +152,7 @@ end
 
 function plyMeta:GetStatVal(dataName, fallback)
     if not CLIENT then return end
-    net.Start("get_svPData")
+    net.Start("ZC_PlayerDataGet")
         net.WriteEntity( self )
         net.WriteString( dataName )
     net.SendToServer()
@@ -163,13 +163,13 @@ function plyMeta:GetStatVal(dataName, fallback)
 end
 
 if SERVER then
-    util.AddNetworkString("get_svPData")
+    util.AddNetworkString("ZC_PlayerDataGet")
 
-    net.Receive( "get_svPData", function( len, ply )
+    net.Receive( "ZC_PlayerDataGet", function( len, ply )
         local ent = net.ReadEntity()
         local dataName = net.ReadString()
         if not ent["Get"..dataName] then return end
-        net.Start("get_svPData")
+        net.Start("ZC_PlayerDataGet")
             net.WriteEntity( ent )
             net.WriteString( dataName )
             net.WriteFloat( ent["Get"..dataName] and ent["Get"..dataName](ent) or 0 )
@@ -200,7 +200,7 @@ if SERVER then
         end)
     end)
 else
-    net.Receive( "get_svPData", function()
+    net.Receive( "ZC_PlayerDataGet", function()
         local ent = net.ReadEntity()
         local dataName = net.ReadString()
         local dataType = net.ReadFloat()

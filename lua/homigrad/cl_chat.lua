@@ -70,14 +70,14 @@ end)
 		ZChatOpen = false
 		ZChatWhisper = false
 
-		net.Start("ChatWhisper")
+		net.Start("ZC_ChatWhisper")
 			net.WriteBool(false)
 		net.SendToServer()
 	end)
 
 	hook.Add("Think", "ZC_ChatWhisper", function()
 		if(input.IsKeyDown(KEY_LALT) and !ZChatWhisper)then
-			net.Start("ChatWhisper")
+			net.Start("ZC_ChatWhisper")
 				net.WriteBool(true)
 			net.SendToServer()
 
@@ -85,7 +85,7 @@ end)
 		end
 
 		if(!input.IsKeyDown(KEY_LALT) and ZChatWhisper)then
-			net.Start("ChatWhisper")
+			net.Start("ZC_ChatWhisper")
 				net.WriteBool(false)
 			net.SendToServer()
 

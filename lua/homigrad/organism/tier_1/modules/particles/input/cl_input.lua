@@ -84,7 +84,7 @@ local function impact(pos,vel,mul)
 	end
 end
 
-net.Receive("hg_bloodimpact", function()
+net.Receive("ZC_BloodImpact", function()
 	local pos = net.ReadVector()
 	local vel = net.ReadVector() * 500
 	local mul = net.ReadFloat()
@@ -145,7 +145,7 @@ end)
 
 hg.explode = explode
 
-net.Receive("addfountain",function()
+net.Receive("ZC_AddBloodFountain",function()
 	local ent = net.ReadEntity()
 	local force = net.ReadVector()
 
@@ -164,7 +164,7 @@ net.Receive("addfountain",function()
 	end
 end)
 
-net.Receive("bloodsquirt", function()
+net.Receive("ZC_BloodSquirt", function()
 	local ent = net.ReadEntity()
 
 	if not IsValid(ent) then return end
@@ -200,7 +200,7 @@ net.Receive("bloodsquirt", function()
 	timer.Adjust(name, 0)
 end)
 
---net.Receive("blood particle explode", function() explode(net.ReadVector()) end)
+--net.Receive("ZC_BloodParticleExplode", function() explode(net.ReadVector()) end)
 
 --[[concommand.Add("testpart", function()
 	if not LocalPlayer():IsAdmin() then return end
@@ -208,7 +208,7 @@ end)
 	addBloodPart(pos, Vector(25, 0, 0), mat_huy, math.random(10, 15), math.random(10, 15))
 end)]]
 
-net.Receive("bloodsquirt2", function()
+net.Receive("ZC_BloodSquirtAlt", function()
 	local ent = net.ReadEntity()
 
 	if not IsValid(ent) then return end

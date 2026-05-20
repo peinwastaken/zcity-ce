@@ -461,7 +461,7 @@ local function TryBindPendingFakeRagdoll(ply, ragdoll, ragdoll_index)
 	hook_Run("ZC_OnRagdollEntityCreated", ply, ragdoll, "FakeRagdoll")
 end
 
-net.Receive("Player Ragdoll", function()
+net.Receive("ZC_PlayerRagdoll", function()
 	--local ply, ragdoll_index = net.ReadEntity(), net.ReadInt(32) --,net_ReadTable()
 	local ply, ragdoll, ragdoll_index = net.ReadEntity(), net.ReadEntity2() --,net_ReadTable()
 	if not ragdoll_index or not IsValid(ply) then return end
@@ -759,7 +759,7 @@ end)
 
 local override = {}
 hg.override = override
-net.Receive("Override Spawn", function() override[net.ReadEntity()] = true end)
+net.Receive("ZC_OverrideSpawn", function() override[net.ReadEntity()] = true end)
 hook.Add("ZC_PlayerSpawn", "ZC_BlockOverrideSpawnClient", function(ply)
 	if override[ply] then
 		override[ply] = nil

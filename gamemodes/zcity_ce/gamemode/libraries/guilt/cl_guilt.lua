@@ -19,11 +19,11 @@ end)
 concommand.Add("hg_getkarma",function(ply)
     if not ply:IsAdmin() then return end
 
-    net.Start("get_karma")
+    net.Start("ZC_KarmaGet")
     net.SendToServer()
 end)
 
-net.Receive("get_karma",function(len)
+net.Receive("ZC_KarmaGet",function(len)
     local tbl = net.ReadTable()
     local printTbl = "\nPlayers karma: \n"
 
@@ -35,13 +35,13 @@ net.Receive("get_karma",function(len)
 end)
 
 concommand.Add("hg_guilt_menu",function(ply, cmd, args)
-    net.Start("open_guilt_menu")
+    net.Start("ZC_GuiltMenuOpen")
     net.SendToServer()
 end)
 
 local OpenMenu
 
-net.Receive("open_guilt_menu", function()
+net.Receive("ZC_GuiltMenuOpen", function()
     local tbl = net.ReadTable()
 
     OpenMenu(tbl)
@@ -163,7 +163,7 @@ OpenMenu = function(tbl)
 		end
 
 		function but:DoClick()
-            net.Start("forgive_player")
+            net.Start("ZC_GuiltForgivePlayer")
             net.WriteEntity(ply)
             net.SendToServer()
             --self:Remove()

@@ -1,10 +1,10 @@
 --;; ===================================
 --;; RTV Modded RTVded :troll:
 --;; ===================================
-util.AddNetworkString("ZB_RockTheVote_start")
-util.AddNetworkString("ZB_RockTheVote_vote")
-util.AddNetworkString("ZB_RockTheVote_voteCLreg")
-util.AddNetworkString("ZB_RockTheVote_end")
+util.AddNetworkString("ZC_RockTheVoteStart")
+util.AddNetworkString("ZC_RockTheVoteVote")
+util.AddNetworkString("ZC_RockTheVoteVoteRegister")
+util.AddNetworkString("ZC_RockTheVoteEnd")
 zb = zb or {}
 local cooldown = {}
 local votes = {}
@@ -141,7 +141,7 @@ hook.Add("InitPostEntity", "ZC_LoadRtvMaps", function()
     getmaps()
 end)
 
-net.Receive("ZB_RockTheVote_vote", function(len, ply)
+net.Receive("ZC_RockTheVoteVote", function(len, ply)
     if not zb.votestarted then return end
     if cooldown[ply:EntIndex()] and cooldown[ply:EntIndex()] > CurTime() then return end
 
@@ -162,7 +162,7 @@ net.Receive("ZB_RockTheVote_vote", function(len, ply)
 
     votes[map] = (votes[map] or 0) + playerVoteWeight[playerIdx]
 
-    net.Start("ZB_RockTheVote_voteCLreg")
+    net.Start("ZC_RockTheVoteVoteRegister")
         net.WriteTable(votes)
     net.Broadcast()
 end)
@@ -230,7 +230,7 @@ function zb.EndRTV()
 
     file.Write(popularityPath, util.TableToJSON(mapPopularity))
 
-    net.Start("ZB_RockTheVote_end")
+    net.Start("ZC_RockTheVoteEnd")
         net.WriteString(winmap)
     net.Broadcast()
 
@@ -430,7 +430,7 @@ function zb.StartRTV(time)
 
     table.insert(finalmaps, "random")
 
-    net.Start("ZB_RockTheVote_start")
+    net.Start("ZC_RockTheVoteStart")
         net.WriteTable(finalmaps)
         net.WriteFloat(rtvtime)
     net.Broadcast()
@@ -441,9 +441,9 @@ function zb.StartRTV(time)
     hook.Add("Think", "ZC_RtvThink", zb.ThinkRTV)
 end
 
-util.AddNetworkString("RTVMenu")
+util.AddNetworkString("ZC_RTVMenu")
 function zb.RTVMenu(ply)
-    net.Start("RTVMenu")
+    net.Start("ZC_RTVMenu")
     net.Send(ply)
 end
 

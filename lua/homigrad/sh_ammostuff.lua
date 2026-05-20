@@ -2,7 +2,7 @@
 HGAmmo_MaxKeyBits = 13
 
 if(SERVER)then
-	util.AddNetworkString("HGAmmo(TranslateSilkToEntity)")
+	util.AddNetworkString("ZC_AmmoSilkToEntity")
 else
 	HGAmmo_PhysSilkTranslationExpectedEntitiesTable = HGAmmo_PhysSilkTranslationExpectedEntitiesTable or {}
 	HGAmmo_PhysSilkTranslationTable = HGAmmo_PhysSilkTranslationTable or {}
@@ -50,7 +50,7 @@ else
 		end
 	end)
 
-	net.Receive("HGAmmo(TranslateSilkToEntity)", function(len, ply)
+	net.Receive("ZC_AmmoSilkToEntity", function(len, ply)
 		-- Entity(1):ChatPrint(12312)
 		local bullet_key = net.ReadUInt(hg.PhysBullet.MaxKeyBits)
 		local ent_id = net.ReadUInt(HGAmmo_MaxKeyBits)
@@ -194,7 +194,7 @@ local function onstopped_explosive(self, last_unsure_penetration_pos, reason, tr
 				ParticleEffect("pcf_jack_airsplode_small3",pos + vector_up * 1,-vector_up:Angle())
 			end)
 
-			net.Start("projectileFarSound")
+			net.Start("ZC_ProjectileFarSound")
 				net.WriteString("m67/m67_detonate_01.wav")
 				net.WriteString("m67/m67_detonate_far_dist_03.wav")
 				net.WriteVector(pos)
@@ -2942,7 +2942,7 @@ if CLIENT then
             end
             DermaButton.DoClick = function()
                 --print( math.min(ammodrop,v),game.GetAmmoName( k ))
-                net.Start( "drop_ammo" )
+                net.Start( "ZC_DropAmmo" )
                     net.WriteFloat( k )
                     net.WriteFloat( math.min(ammodrop,v) )
                 net.SendToServer()
@@ -2950,7 +2950,7 @@ if CLIENT then
             end
 
             DermaButton.DoRightClick = function()
-                net.Start( "drop_ammo" )
+                net.Start( "ZC_DropAmmo" )
                     net.WriteFloat( k )
                     net.WriteFloat( math.min(v,v) )
                 net.SendToServer()
@@ -2992,9 +2992,9 @@ if CLIENT then
 end
 
 if SERVER then
-    util.AddNetworkString( "drop_ammo" )
+    util.AddNetworkString( "ZC_DropAmmo" )
 
-    net.Receive( "drop_ammo", function( len, ply )
+    net.Receive( "ZC_DropAmmo", function( len, ply )
         if !ply:Alive() or ply.organism.unconscious or !ply.organism.canmove then return end
         local ammotype = net.ReadFloat()
         local count = net.ReadFloat()

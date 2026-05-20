@@ -1,5 +1,5 @@
 if SERVER then
-    util.AddNetworkString("bloody_decal_1")
+    util.AddNetworkString("ZC_BloodyDecal")
 
     return
 end
@@ -103,7 +103,7 @@ function AddDecalToEnt2(ent, entIndex, tex, clear, x, y, rot, size, alpha) -- ad
 end
 
 local matBlood = Material("zbattle/blood")
-net.Receive("bloody_decal_1", function()
+net.Receive("ZC_BloodyDecal", function()
 	local self = net.ReadEntity()
 
 	if IsValid(self) then

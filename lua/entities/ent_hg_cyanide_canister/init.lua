@@ -2,7 +2,7 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
-util.AddNetworkString("cyanide_debug")
+util.AddNetworkString("ZC_CyanideDebug")
 function ENT:Initialize()
 	self.spawntime = CurTime()
 	self.particles = {}
@@ -81,7 +81,7 @@ function ENT:Think()
 			end
 		end
 	end
-	--[[net.Start("cyanide_debug")
+	--[[net.Start("ZC_CyanideDebug")
 	net.WriteTable(self.particles)
 	net.Broadcast()--]]
 	self:NextThink(CurTime() + 1)
@@ -90,7 +90,7 @@ end
 
 function ENT:OnRemove()
 	self.particles = {}
-	net.Start("cyanide_debug")
+	net.Start("ZC_CyanideDebug")
 	net.WriteTable(self.particles)
 	net.Broadcast()
 end

@@ -245,7 +245,7 @@ local function cock(self,time)
 
 	if CLIENT and LocalPlayer() == self:GetOwner() then return end
 
-	net.Start("hgwep draw")
+	net.Start("ZC_WeaponDraw")
 		net.WriteEntity(self)
 		net.WriteBool(self.drawBullet)
 		net.WriteFloat(CurTime())
@@ -295,7 +295,7 @@ function SWEP:Reload(time)
 		self.reload = self.LastReload + self.StaminaReloadTime
 		self.dwr_reverbDisable = true
 		self:PlayAnim(self.AnimList["reload"] or "reload", self.StaminaReloadTime, false, nil, false, true)
-		net.Start("hgwep reload")
+		net.Start("ZC_WeaponReload")
 			net.WriteEntity(self)
 			net.WriteFloat(self.LastReload)
 			net.WriteInt(self:Clip1(),10)

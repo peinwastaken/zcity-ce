@@ -1,8 +1,8 @@
 local MODE = MODE
 
-util.AddNetworkString("defense_commander_points")
-util.AddNetworkString("defense_commander_notification")
-util.AddNetworkString("defense_player_role_assigned")
+util.AddNetworkString("ZC_DefenseCommanderPoints")
+util.AddNetworkString("ZC_DefenseCommanderNotice")
+util.AddNetworkString("ZC_DefensePlayerRoleAssigned")
 
 function MODE:ClearPlayerRoles()
     for _, ply in player.Iterator() do
@@ -18,7 +18,7 @@ function MODE:AddCommanderPoints(points)
             local currentPoints = ply:GetNWInt("CommanderPoints", 0)
             ply:SetNWInt("CommanderPoints", currentPoints + points)
 
-            net.Start("defense_commander_notification")
+            net.Start("ZC_DefenseCommanderNotice")
             net.WriteString("You've received " .. points .. " supply points!")
             net.WriteInt(points, 16)
             net.Send(ply)
@@ -59,7 +59,7 @@ function MODE:OnWaveComplete()
                 local currentPoints = ply:GetNWInt("CommanderPoints", 0)
                 ply:SetNWInt("CommanderPoints", currentPoints + pointsPerWave)
 
-                net.Start("defense_commander_notification")
+                net.Start("ZC_DefenseCommanderNotice")
                 net.WriteString("You received double points for defeating the boss!")
                 net.WriteInt(pointsPerWave, 16)
                 net.Send(ply)
@@ -132,7 +132,7 @@ function MODE:AssignPlayerRoles()
         commander:SetNWInt("CommanderPoints", DEFENSE_COMMANDER_ECONOMY.STARTING_POINTS)
 
 
-        net.Start("defense_player_role_assigned")
+        net.Start("ZC_DefensePlayerRoleAssigned")
         net.WriteString("Commander")
         net.Send(commander)
 
@@ -244,7 +244,7 @@ function SetCommanderRoleByID(playerID)
     if IsValid(ply) then
         ply:SetNWString("PlayerRole", "Commander")
 
-        net.Start("defense_player_role_assigned")
+        net.Start("ZC_DefensePlayerRoleAssigned")
         net.WriteString("Commander")
         net.Send(ply)
 

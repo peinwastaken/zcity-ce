@@ -92,7 +92,7 @@ function ENT:PhysicsCollide(data, phys)
 			takeent = self.wep,
 		}
 
-		net.Start("organism_send")
+		net.Start("ZC_OrganismSync")
 
 		local tbl = {}
 		tbl.LodgedEntities = org.LodgedEntities

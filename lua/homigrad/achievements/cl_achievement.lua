@@ -203,7 +203,7 @@ function hg.achievements.LoadAchievements()
     if time_wait > CurTime() then return end
     time_wait = CurTime() + 2
 
-    net.Start("req_ach")
+    net.Start("ZC_AchievementRequest")
     net.SendToServer()
 end
 
@@ -211,7 +211,7 @@ function hg.achievements.GetLocalAchievements()
     return hg.achievements.achievements_data.player_achievements[tostring(LocalPlayer():SteamID())]
 end
 
-net.Receive("req_ach",function()
+net.Receive("ZC_AchievementRequest",function()
     hg.achievements.achievements_data.created_achevements = net.ReadTable()
     hg.achievements.achievements_data.player_achievements[tostring(LocalPlayer():SteamID())] = net.ReadTable()
 
@@ -222,7 +222,7 @@ end)
 
 hg.achievements.NewAchievements = hg.achievements.NewAchievements or {}
 local AchTable = hg.achievements.NewAchievements
-net.Receive("hg_NewAchievement",function()
+net.Receive("ZC_AchievementUnlocked",function()
     local Ach = {time = CurTime() + 7.5,name = net.ReadString(),img = net.ReadString()}
     table.insert(AchTable,1,Ach)
 	surface.PlaySound("homigrad/vgui/achievement_earned.wav")

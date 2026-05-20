@@ -1,5 +1,5 @@
-util.AddNetworkString("hg_add_equipment")
-util.AddNetworkString("hg_drop_equipment")
+util.AddNetworkString("ZC_EquipmentAdd")
+util.AddNetworkString("ZC_EquipmentDrop")
 
 function hg.SetArmorRestrictions(ply, restrictions)
 	if not IsValid(ply) then return end
@@ -25,7 +25,7 @@ function hg.CanEquipArmorPiece(ply, equipment)
 	return not isRestricted
 end
 
-net.Receive("hg_drop_equipment", function(len, ply)
+net.Receive("ZC_EquipmentDrop", function(len, ply)
     local equipment = net.ReadString()
 
     if equipment == "hg_flashlight" then
@@ -216,7 +216,7 @@ function hg.DropArmor(ply, equipment)
 end
 
 -- armorstuff
-util.AddNetworkString("AddFlash")
+util.AddNetworkString("ZC_AddFlash")
 
 local ArmorEffect
 local force
@@ -237,7 +237,7 @@ local function protec(org, bone, dmg, dmgInfo, placement, armor, scale, scalepro
 			org.owner:EmitSound("homigrad/physics/shield/bullet_hit_shield_0"..math.random(7)..".wav", 80, math.random(95, 105))
 
 			org.owner:AddTinnitus(3, true)
-			net.Start("AddFlash")
+			net.Start("ZC_AddFlash")
 				net.WriteVector(hg.eye(org.owner) + org.owner:GetForward() * 3)
 				net.WriteFloat(3)
 				net.WriteInt(100, 20)

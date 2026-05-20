@@ -33,7 +33,7 @@ local function PlaySndDist(snd,snd2,pos,isOnWater,watersnd)
 end
 local effectPerMSec = 0
 local effectCDCurTime = 0
-net.Receive("hg_booom",function()
+net.Receive("ZC_ExplosionEffect",function()
     local pos = net.ReadVector()
     local type = net.ReadString()
     if effectCDCurTime < CurTime() then

@@ -160,7 +160,7 @@ function hg.RunZManipAnim(ply, anim, revers, timeOveride, addtbl)
 	zmdl:SetSequence(tbl.seq)
 end
 
-net.Receive("RunZManipAnim", function()
+net.Receive("ZC_ZManipRunAnimation", function()
 	local ply = net.ReadPlayer()
 	local anim = net.ReadString()
 	local revers = net.ReadBool()

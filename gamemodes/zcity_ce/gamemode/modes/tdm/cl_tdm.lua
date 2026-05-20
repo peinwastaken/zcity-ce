@@ -2,7 +2,7 @@ MODE.name = "tdm"
 
 local MODE = MODE
 
-net.Receive("tdm_start",function()
+net.Receive("ZC_TeamDeathmatchStart",function()
     surface.PlaySound("csgo_round.wav")
 	zb.rtype = net.ReadString()
 	hg.DynaMusic:Start( "swat4" )
@@ -87,7 +87,7 @@ end
 
 local CreateEndMenu
 
-net.Receive("tdm_roundend",function()
+net.Receive("ZC_TeamDeathmatchRoundEnd",function()
     CreateEndMenu()
 end)
 
@@ -400,7 +400,7 @@ local function OpenBuyMenu()
 			BuyBtn.Item = {k,n}
 
 			function BuyBtn:DoClick()
-				net.Start("tdm_buyitem")
+				net.Start("ZC_TeamDeathmatchBuyItem")
 					net.WriteTable(self.Item)
 				net.SendToServer()
 			end
@@ -433,7 +433,7 @@ local function OpenBuyMenu()
 					amm.huy = {"Ammo", name}
 
 					function amm:DoClick()
-						net.Start("tdm_buyitem")
+						net.Start("ZC_TeamDeathmatchBuyItem")
 							net.WriteTable(amm.huy)
 						net.SendToServer()
 					end
@@ -460,7 +460,7 @@ local function OpenBuyMenu()
 					Attach.Attachment = {k,n,AttachN}
 
 					function Attach:DoClick()
-						net.Start("tdm_buyitem")
+						net.Start("ZC_TeamDeathmatchBuyItem")
 							net.WriteTable(self.Attachment)
 						net.SendToServer()
 					end
@@ -506,5 +506,5 @@ local function OpenBuyMenu()
 
 end
 
-net.Receive("tdm_open_buymenu",function() OpenBuyMenu() end)
+net.Receive("ZC_TeamDeathmatchOpenBuyMenu",function() OpenBuyMenu() end)
 TDM_OpenedBuyMenu = TDM_OpenedBuyMenu or nil

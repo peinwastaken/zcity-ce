@@ -142,7 +142,7 @@ if SERVER then
 		end
 	end
 
-	util.AddNetworkString("projectileFarSound")
+	util.AddNetworkString("ZC_ProjectileFarSound")
 	function ENT:Detonate()
 		if self.Exploded then return end
 		if self.Removed then return end
@@ -154,7 +154,7 @@ if SERVER then
 		local offset = VectorRand() * 10
 		SelfPos = SelfPos + offset
 
-		net.Start("projectileFarSound")
+		net.Start("ZC_ProjectileFarSound")
 			net.WriteString(self.Sound)
 			net.WriteString(self.SoundFar)
 			net.WriteVector(SelfPos)
@@ -305,7 +305,7 @@ elseif CLIENT then
 		end)
 	end
 
-	net.Receive("projectileFarSound",function()
+	net.Receive("ZC_ProjectileFarSound",function()
 		local snd = net.ReadString() or ""
 		local sndfar = net.ReadString() or ""
 		local pos = net.ReadVector() or Vector(0,0,0)

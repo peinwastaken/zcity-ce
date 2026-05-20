@@ -314,7 +314,7 @@ function ABNORMALTIESHELP:OpenStats(Recipe)
 	end
 	
 	if(ABNORMALTIESHELP.Stats[Recipe].Requirement)then
-		net.Start("Abnormalties(SendOpenedPage)")
+		net.Start("ZC_AbnormalityHelpPage")
 			net.WriteUInt(Recipe, 8)
 		net.SendToServer()
 	end
@@ -325,7 +325,7 @@ concommand.Add("abnormalties_help",function()
 end)
 
 --\\Networking
-net.Receive("Abnormalties(SendOpenedPage)", function(len, ply)
+net.Receive("ZC_AbnormalityHelpPage", function(len, ply)
 	local page = net.ReadUInt(8)
 	local page_name = net.ReadString()
 	local page_desc = net.ReadString()

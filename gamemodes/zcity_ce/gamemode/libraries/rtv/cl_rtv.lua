@@ -64,7 +64,7 @@ function zb.RTVMenu()
 
         function MapButton:DoClick()
             if VoteCD > CurTime() then return end
-            net.Start("ZB_RockTheVote_vote")
+            net.Start("ZC_RockTheVoteVote")
                 net.WriteString(self.Map)
             net.SendToServer()
             VoteCD = CurTime() + 1
@@ -105,7 +105,7 @@ function zb.StartRTV()
     rtvStarted = true
 end
 
-net.Receive("RTVMenu", function()
+net.Receive("ZC_RTVMenu", function()
     zb.RTVMenu()
 end)
 
@@ -120,6 +120,6 @@ end
 
 -- NETWORKING
 
-net.Receive("ZB_RockTheVote_start", zb.StartRTV)
-net.Receive("ZB_RockTheVote_voteCLreg", zb.RTVregVote)
-net.Receive("ZB_RockTheVote_end", zb.EndRTV)
+net.Receive("ZC_RockTheVoteStart", zb.StartRTV)
+net.Receive("ZC_RockTheVoteVoteRegister", zb.RTVregVote)
+net.Receive("ZC_RockTheVoteEnd", zb.EndRTV)

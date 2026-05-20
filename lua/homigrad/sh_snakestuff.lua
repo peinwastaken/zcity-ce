@@ -183,7 +183,7 @@ if CLIENT then
 			if (time_send or 0) < CurTime() and k == lply:UserID() then
 				time_send = CurTime() + zmeyka_netsendtime
 
-				net.Start("zmeyka_net")
+				net.Start("ZC_SnakeGameSync")
 				net.WriteVector(segments[leading_part][1])
 				net.WriteFloat(segments[leading_part][3])
 				--net.WriteVector(segments[#segments][1])
@@ -405,7 +405,7 @@ if CLIENT then
 		CreateOptionsMenu()
 	end)
 
-	net.Receive("zmeyka_net",function()
+	net.Receive("ZC_SnakeGameSync",function()
 		snakes_poses = net.ReadTable()
 
 		for i,snake in pairs(snakes_poses) do
@@ -624,11 +624,11 @@ if CLIENT then
 	hook.Add("HUDPaint","ZC_UpdateSnakeGame",function() render_segments() end)
 	hook.Add("Think","ZC_UpdateSnakeGame",function() think_segments() end)
 else
-	util.AddNetworkString("zmeyka_net")
+	util.AddNetworkString("ZC_SnakeGameSync")
 
 	local snakes = {}
 
-	net.Receive("zmeyka_net",function(len,ply)
+	net.Receive("ZC_SnakeGameSync",function(len,ply)
 		if ply:Alive() then return end
 		if (ply.time_zmeyka_net or 0) > CurTime() then return end
 		ply.time_zmeyka_net = CurTime() + zmeyka_netsendtime
@@ -643,7 +643,7 @@ else
 
 		ply:CallOnRemove("removesnake",function() snakes[id] = nil end)
 
-		net.Start("zmeyka_net")
+		net.Start("ZC_SnakeGameSync")
 		net.WriteTable(snakes)
 		net.Send(ply)
 	end)

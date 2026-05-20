@@ -7,9 +7,9 @@ if SERVER then AddCSLuaFile() end
 
 --\\Nets
 	if(SERVER)then
-		util.AddNetworkString("Abnormalties_ShootWeapon")
+		util.AddNetworkString("ZC_AbnormalityWeaponFire")
 	else
-		net.Receive("Abnormalties_ShootWeapon", function()
+		net.Receive("ZC_AbnormalityWeaponFire", function()
 			local wep = net.ReadEntity()
 
 			if(IsValid(wep) and wep.Abnormalties_ShootableWeapon)then
@@ -465,7 +465,7 @@ function SWEP:Step()
 					self:EmitShoot()
 					self:PrimarySpread()
 
-					net.Start("Abnormalties_ShootWeapon")
+					net.Start("ZC_AbnormalityWeaponFire")
 						net.WriteEntity(self)
 					net.Send(owner)
 				end

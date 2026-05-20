@@ -45,19 +45,19 @@ local defensePlayerSpawnOffsets = {
 
 
 
-util.AddNetworkString("defense_start_vote")
-util.AddNetworkString("defense_submit_vote")
-util.AddNetworkString("defense_change_vote")
-util.AddNetworkString("defense_vote_result")
-util.AddNetworkString("defense_vote_update")
-util.AddNetworkString("defense_show_selected_mode")
-util.AddNetworkString("npc_defense_start")
-util.AddNetworkString("npc_defense_newwave")
-util.AddNetworkString("npc_defense_roundend")
-util.AddNetworkString("npc_defense_prepphase")
-util.AddNetworkString("StartWaveMusic")
-util.AddNetworkString("StopWaveMusic")
-util.AddNetworkString("defense_boss_incoming")
+util.AddNetworkString("ZC_DefenseStartVote")
+util.AddNetworkString("ZC_DefenseSubmitVote")
+util.AddNetworkString("ZC_DefenseChangeVote")
+util.AddNetworkString("ZC_DefenseVoteResult")
+util.AddNetworkString("ZC_DefenseVoteUpdate")
+util.AddNetworkString("ZC_DefenseShowSelectedMode")
+util.AddNetworkString("ZC_DefenseStart")
+util.AddNetworkString("ZC_DefenseNewWave")
+util.AddNetworkString("ZC_DefenseRoundEnd")
+util.AddNetworkString("ZC_DefensePrepPhase")
+util.AddNetworkString("ZC_DefenseWaveMusicStart")
+util.AddNetworkString("ZC_DefenseWaveMusicStop")
+util.AddNetworkString("ZC_DefenseBossIncoming")
 
 MODE.VoteTime = 15
 MODE.VoteResults = {
@@ -108,7 +108,7 @@ function MODE:StartWave()
     self.WaveActive = true
 
     if DEFENSE_MUSIC.WAVE[self.Wave] then
-        net.Start("StartWaveMusic")
+        net.Start("ZC_DefenseWaveMusicStart")
         net.WriteString(DEFENSE_MUSIC.WAVE[self.Wave])
         net.Broadcast()
     end
@@ -119,11 +119,11 @@ function MODE:EndWave()
     self.WaveSpawnInProgress = false
     self:ClearAllTimers()
 
-    net.Start("StopWaveMusic")
+    net.Start("ZC_DefenseWaveMusicStop")
     net.Broadcast()
 
     if DEFENSE_MUSIC.WAITING[self.Wave] and zb.ROUND_STATE == 1 then
-        net.Start("StartWaveMusic")
+        net.Start("ZC_DefenseWaveMusicStart")
         net.WriteString(DEFENSE_MUSIC.WAITING[self.Wave])
         net.Broadcast()
     end
@@ -282,7 +282,7 @@ function MODE:StartVoting()
     }
     self.VoteInProgress = true
 
-    net.Start("defense_start_vote")
+    net.Start("ZC_DefenseStartVote")
     net.WriteFloat(CurTime() + self.VoteTime)
     net.Broadcast()
 
@@ -297,7 +297,7 @@ function MODE:StartVoting()
 
     self:CreateTimer("vote_update_timer", 1, self.VoteTime, function()
         if self.VotesChanged or CurTime() - self.LastVoteUpdate > 5 then
-            net.Start("defense_vote_update")
+            net.Start("ZC_DefenseVoteUpdate")
             net.WriteTable(self.VoteResults)
             net.Broadcast()
 
@@ -342,19 +342,19 @@ function MODE:EndVoting()
         self.TotalWaves = 6
     end
 
-    net.Start("defense_vote_result")
+    net.Start("ZC_DefenseVoteResult")
     net.WriteString(self.CurrentSubMode)
     net.WriteTable(self.VoteResults)
     net.Broadcast()
 
-    net.Start("defense_show_selected_mode")
+    net.Start("ZC_DefenseShowSelectedMode")
     net.WriteString(self.CurrentSubMode)
     net.Broadcast()
 
     self.VoteInProgress = false
 
     timer.Simple(3, function()
-        net.Start("npc_defense_start")
+        net.Start("ZC_DefenseStart")
         net.Broadcast()
         self:StartPrepPhase()
     end)
@@ -371,7 +371,7 @@ function MODE:StartPrepPhase()
         ply.HasVoted = nil
     end
 
-    net.Start("npc_defense_prepphase")
+    net.Start("ZC_DefensePrepPhase")
     net.Broadcast()
 
     self:GiveEquipment()
@@ -383,7 +383,7 @@ function MODE:StartPrepPhase()
         self:SpawnWave()
     end)
 
-    net.Start("npc_defense_newwave")
+    net.Start("ZC_DefenseNewWave")
         net.WriteFloat(CurTime() + 30)
         net.WriteInt(self.Wave, 4)
     net.Broadcast()
@@ -419,7 +419,7 @@ end
 
 function MODE:RoundStart()
     if DEFENSE_MUSIC.WAITING[0] then
-        net.Start("StartWaveMusic")
+        net.Start("ZC_DefenseWaveMusicStart")
         net.WriteString(DEFENSE_MUSIC.WAITING[0])
         net.Broadcast()
     end
@@ -557,7 +557,7 @@ function MODE:RoundThink()
 end
 
 function MODE:EndRound()
-    net.Start("npc_defense_roundend")
+    net.Start("ZC_DefenseRoundEnd")
     net.Broadcast()
     self:EndWave()
     self:ClearPlayerRoles()
@@ -609,7 +609,7 @@ function MODE:ClearAllTimers()
     self.Timers = {}
 end
 
-net.Receive("defense_submit_vote", function(len, ply)
+net.Receive("ZC_DefenseSubmitVote", function(len, ply)
     if not IsValid(ply) then return end
 
 
@@ -630,7 +630,7 @@ net.Receive("defense_submit_vote", function(len, ply)
         MODE.VotesChanged = true
 
         if CurTime() - MODE.LastVoteUpdate > 2 or math.random(1, 3) == 1 then
-            net.Start("defense_vote_update")
+            net.Start("ZC_DefenseVoteUpdate")
             net.WriteTable(MODE.VoteResults)
             net.Broadcast()
             MODE.LastVoteUpdate = CurTime()
@@ -639,7 +639,7 @@ net.Receive("defense_submit_vote", function(len, ply)
     end
 end)
 
-net.Receive("defense_change_vote", function(len, ply)
+net.Receive("ZC_DefenseChangeVote", function(len, ply)
     if not IsValid(ply) then return end
 
     if not ply.LastVoteChangeTime then ply.LastVoteChangeTime = 0 end
@@ -663,7 +663,7 @@ net.Receive("defense_change_vote", function(len, ply)
     MODE.VotesChanged = true
 
     if CurTime() - MODE.LastVoteUpdate > 1 then
-        net.Start("defense_vote_update")
+        net.Start("ZC_DefenseVoteUpdate")
         net.WriteTable(MODE.VoteResults)
         net.Broadcast()
         MODE.LastVoteUpdate = CurTime()

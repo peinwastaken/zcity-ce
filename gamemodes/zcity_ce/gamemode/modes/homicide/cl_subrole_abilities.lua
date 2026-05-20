@@ -1,7 +1,7 @@
 local MODE = MODE
 
 --\\Neck Break
-net.Receive("HMCD_BeingVictimOfNeckBreak", function(len, ply)
+net.Receive("ZC_HomicideNeckBreakVictim", function(len, ply)
 	LocalPlayer().BeingVictimOfNeckBreak = net.ReadBool()
 	
 	if(LocalPlayer().BeingVictimOfNeckBreak)then
@@ -11,7 +11,7 @@ net.Receive("HMCD_BeingVictimOfNeckBreak", function(len, ply)
 	end
 end)
 
-net.Receive("HMCD_BreakingOtherNeck", function(len, ply)
+net.Receive("ZC_HomicideNeckBreakAttack", function(len, ply)
 	local status = net.ReadBool()
 	local attacker_ply = net.ReadEntity()
 	
@@ -30,7 +30,7 @@ end)
 --//
 
 --\\
-net.Receive("HMCD_BeingVictimOfDisarmament", function(len, ply)
+net.Receive("ZC_HomicideDisarmVictim", function(len, ply)
 	LocalPlayer().BeingVictimOfDisarmament = net.ReadBool()
 	
 	if(LocalPlayer().BeingVictimOfDisarmament)then
@@ -40,7 +40,7 @@ net.Receive("HMCD_BeingVictimOfDisarmament", function(len, ply)
 	end
 end)
 
-net.Receive("HMCD_DisarmingOther", function(len, ply)
+net.Receive("ZC_HomicideDisarmAttack", function(len, ply)
 	local status = net.ReadBool()
 	
 	if(status)then
@@ -54,7 +54,7 @@ end)
 --//
 
 --\\Chemical resistance
-net.Receive("HMCD_UpdateChemicalResistance", function(len, ply)
+net.Receive("ZC_HomicideChemicalResistance", function(len, ply)
 	local chemical_name = net.ReadString()
 	
 	if(chemical_name == "")then

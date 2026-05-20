@@ -755,7 +755,7 @@ end, "huynuck")]]
 
 hook.Add("RenderScene", "ZC_RenderCustomCameraScene", renderscene)
 
-net.Receive("LookAway",function()
+net.Receive("ZC_LookAway",function()
 	local ply = net.ReadEntity()
 	local LookX = net.ReadFloat()
 	local LookY = net.ReadFloat()
@@ -770,7 +770,7 @@ hook.Add("ZC_UpdatePlayerBones","ZC_HeadTurnAway",function(ply)
 	if (ply.head_netsendtime or 0) < CurTime() and ply == LocalPlayer() and (hg.IsChanged(LookX, "LookX") or hg.IsChanged(LookY, "LookY")) then
 		ply.head_netsendtime = CurTime() + 0.1
 
-		net.Start("LookAway", true)
+		net.Start("ZC_LookAway", true)
 			net.WriteFloat(LookX)
 			net.WriteFloat(LookY)
 		net.SendToServer()

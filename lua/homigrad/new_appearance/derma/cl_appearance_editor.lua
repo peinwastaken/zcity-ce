@@ -484,7 +484,7 @@ function PANEL:PostInit()
     function ApplyButton:DoClick()
         hg.Appearance.CreateAppearanceFile(hg.Appearance.SelectedAppearance:GetString(),main.AppearanceTable)
 
-        net.Start("OnlyGet_Appearance")
+        net.Start("ZC_AppearanceFetchOnly")
             net.WriteTable(main.AppearanceTable)
         net.SendToServer()
 

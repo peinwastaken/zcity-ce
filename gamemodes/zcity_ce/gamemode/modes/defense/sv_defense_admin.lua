@@ -2,8 +2,8 @@ local function HasAccess(ply)
     return ply:IsAdmin() or ply:IsSuperAdmin()
 end
 
-util.AddNetworkString("defense_admin_wave_menu")
-util.AddNetworkString("defense_admin_wave_skip")
+util.AddNetworkString("ZC_DefenseAdminWaveMenu")
+util.AddNetworkString("ZC_DefenseAdminWaveSkip")
 
 
 concommand.Add("defense_waves_admin", function(ply, cmd, args)
@@ -23,7 +23,7 @@ concommand.Add("defense_waves_admin", function(ply, cmd, args)
     local isActive = MODE:IsWaveActive() or false
     local subMode = MODE.CurrentSubMode or "STANDARD"
     
-    net.Start("defense_admin_wave_menu")
+    net.Start("ZC_DefenseAdminWaveMenu")
     net.WriteString(subMode)
     net.WriteInt(currentWave, 8)
     net.WriteInt(totalWaves, 8)
@@ -32,7 +32,7 @@ concommand.Add("defense_waves_admin", function(ply, cmd, args)
 end)
 
 
-net.Receive("defense_admin_wave_skip", function(len, ply)
+net.Receive("ZC_DefenseAdminWaveSkip", function(len, ply)
     if not HasAccess(ply) then return end
     
     local MODE = CurrentRound()
@@ -55,7 +55,7 @@ net.Receive("defense_admin_wave_skip", function(len, ply)
     MODE:ClearAllTimers()
     
 
-    net.Start("StopWaveMusic")
+    net.Start("ZC_DefenseWaveMusicStop")
     net.Broadcast()
     
 
@@ -106,7 +106,7 @@ net.Receive("defense_admin_wave_skip", function(len, ply)
             local currentPoints = player:GetNWInt("CommanderPoints", 0)
             player:SetNWInt("CommanderPoints", currentPoints + 500)
             
-            net.Start("defense_commander_notification")
+            net.Start("ZC_DefenseCommanderNotice")
             net.WriteString("500 points for freeeeee!!!")
             net.WriteInt(500, 16)
             net.Send(player)

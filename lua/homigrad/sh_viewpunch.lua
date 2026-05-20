@@ -275,7 +275,7 @@ local IsValid = IsValid
 			end
 		end)
 
-		net.Receive("ViewPunch", function(len)
+		net.Receive("ZC_ViewPunch", function(len)
 			local ang = net.ReadAngle()
 
 			ViewPunch(ang)
@@ -283,10 +283,10 @@ local IsValid = IsValid
 	else
 		local PLAYER = FindMetaTable("Player")
 
-		util.AddNetworkString("ViewPunch")
+		util.AddNetworkString("ZC_ViewPunch")
 
 		function PLAYER:ViewPunch(ang)
-			net.Start("ViewPunch")
+			net.Start("ZC_ViewPunch")
 			net.WriteAngle(ang)
 			net.Send(self)
 		end

@@ -143,7 +143,7 @@ hook.Add("PostCleanupMap", "ZC_ProfessionsAbilities", function()
 	MODE.FootStepsAmt = 0
 end)
 
-net.Receive("HMCD_Professions_Abilities_AddFootstep", function()
+net.Receive("ZC_HomicideFootstep", function()
 	MODE.AddFootstep(net.ReadVector(), net.ReadFloat(), net.ReadBool(), net.ReadColor(false))
 end)
 

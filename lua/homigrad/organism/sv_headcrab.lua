@@ -1,5 +1,5 @@
 local PLAYER = FindMetaTable("Player")
-util.AddNetworkString("hg_headcrab")
+util.AddNetworkString("ZC_HeadcrabControl")
 function PLAYER:AddHeadcrab(headcrab)
 	if self.PlayerClassName == "headcrabzombie" then return end
     --self.organism.headcrabon = headcrab
@@ -8,7 +8,7 @@ function PLAYER:AddHeadcrab(headcrab)
     self.organism.headcrabon = headcrab and CurTime()
 	self.organism.headcrabevent = false
 
-    --[[net.Start("hg_headcrab")
+    --[[net.Start("ZC_HeadcrabControl")
     net.WriteEntity(self)
     net.WriteString(headcrab)
     net.Broadcast()--]]

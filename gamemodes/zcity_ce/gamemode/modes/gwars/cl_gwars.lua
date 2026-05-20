@@ -6,7 +6,7 @@ local ended
 
 local MusicVolume = GetConVar("snd_musicvolume")
 
-net.Receive("gwars_start", function()
+net.Receive("ZC_GangWarsStart", function()
 	surface.PlaySound("zbattle/nigshit.mp3")
 	zb.RemoveFade()
 	playstart = true
@@ -150,7 +150,7 @@ function MODE:HUDPaint()
 end
 
 local CreateEndMenu
-net.Receive("gwars_roundend", function()
+net.Receive("ZC_GangWarsRoundEnd", function()
 	ended = true
 	CreateEndMenu()
 end)

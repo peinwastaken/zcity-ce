@@ -50,7 +50,7 @@ function MODE:AssignTeams()
 	end
 end
 
-util.AddNetworkString("criresp_start")
+util.AddNetworkString("ZC_CrisisResponseStart")
 function MODE:Intermission()
 	game.CleanUpMap()
 
@@ -61,7 +61,7 @@ function MODE:Intermission()
 		ply:SetupTeam(ply:Team())
 	end
 
-	net.Start("criresp_start")
+	net.Start("ZC_CrisisResponseStart")
 	net.Broadcast()
 
 end
@@ -263,7 +263,7 @@ end
 function MODE:CanSpawn()
 end
 
-util.AddNetworkString("cri_roundend")
+util.AddNetworkString("ZC_CrisisResponseRoundEnd")
 function MODE:EndRound()
 	for _,ply in player.Iterator() do
 		if timer.Exists("SWATSpawn"..ply:EntIndex()) then
@@ -277,7 +277,7 @@ function MODE:EndRound()
 	local _, winner = zb:CheckWinner(self:CheckAlivePlayers())
 
 	timer.Simple(2,function()
-		net.Start("cri_roundend")
+		net.Start("ZC_CrisisResponseRoundEnd")
 			net.WriteBool(winner)
 		net.Broadcast()
 	end)

@@ -15,7 +15,7 @@ hook.Add("NetworkEntityCreated", "ZC_RegisterRadioEntity", function(ent)
     end
 end)
 
-net.Receive("RadioChangeValue", function(len, ply)
+net.Receive("ZC_RadioChangeValue", function(len, ply)
 	local val = net.ReadFloat()
 	local index = net.ReadInt(32)
 
@@ -26,7 +26,7 @@ net.Receive("RadioChangeValue", function(len, ply)
 	end
 end)
 
-net.Receive("RadioChangeVolume", function(len, ply)
+net.Receive("ZC_RadioChangeVolume", function(len, ply)
 	local val = net.ReadFloat()
 	local index = net.ReadInt(32)
 
@@ -38,7 +38,7 @@ net.Receive("RadioChangeVolume", function(len, ply)
 	end
 end)
 
-net.Receive("RadioPause", function(len, ply)
+net.Receive("ZC_RadioPause", function(len, ply)
 	local val = net.ReadBool()
 	local index = net.ReadInt(32)
 
@@ -53,7 +53,7 @@ net.Receive("RadioPause", function(len, ply)
 	end
 end)
 
-net.Receive("RadioStop", function(len, ply)
+net.Receive("ZC_RadioStop", function(len, ply)
 	local index = net.ReadInt(32)
 
 	if playingents[index] then
@@ -64,7 +64,7 @@ net.Receive("RadioStop", function(len, ply)
 	end
 end)
 
-net.Receive("RadioLooping", function(len, ply)
+net.Receive("ZC_RadioLooping", function(len, ply)
 	local val = net.ReadBool()
 	local index = net.ReadInt(32)
 
@@ -81,7 +81,7 @@ local red = Color(150,0,0)
 
 BlurBackground = BlurBackground or hg.DrawBlur
 
-net.Receive("RadioURLInput", function()
+net.Receive("ZC_RadioUrlInput", function()
 	if IsValid(frame) then return end
 	local ent = net.ReadEntity()
 	frame = vgui.Create("ZFrame")
@@ -134,7 +134,7 @@ net.Receive("RadioURLInput", function()
 	urlEntry:SetPaintBackground(false)
 
 	urlEntry.OnEnter = function()
-		net.Start("RadioURLInput")
+		net.Start("ZC_RadioUrlInput")
 		net.WriteString(urlEntry:GetValue())
 		net.WriteEntity(ent)
 		net.SendToServer()
@@ -157,7 +157,7 @@ net.Receive("RadioURLInput", function()
 	--playButton:SetFont("HomigradFont")
 	playButton:SetTextColor(Color(255,255,255))
 	playButton.DoClick = function()
-		net.Start("RadioURLInput")
+		net.Start("ZC_RadioUrlInput")
 		net.WriteString(urlEntry:GetValue())
 		net.WriteEntity(ent)
 		net.SendToServer()
@@ -179,7 +179,7 @@ net.Receive("RadioURLInput", function()
 	--playButton:SetFont("HomigradFont")
 	stopButton:SetTextColor(Color(255,255,255))
 	stopButton.DoClick = function()
-		net.Start("RadioStop")
+		net.Start("ZC_RadioStop")
 			net.WriteEntity(ent)
 		net.SendToServer()
 		frame:Close()
@@ -200,7 +200,7 @@ net.Receive("RadioURLInput", function()
 	--playButton:SetFont("HomigradFont")
 	stopButton:SetTextColor(Color(255,255,255))
 	stopButton.DoClick = function()
-		net.Start("RadioLooping")
+		net.Start("ZC_RadioLooping")
 			local snd = playingents[ent:EntIndex()][3]
 			net.WriteBool(IsValid(snd) and not snd:IsLooping() or false)
 			net.WriteEntity(ent)
@@ -223,7 +223,7 @@ net.Receive("RadioURLInput", function()
 	--playButton:SetFont("HomigradFont")
 	pauseButton:SetTextColor(Color(255,255,255))
 	pauseButton.DoClick = function()
-		net.Start("RadioPause")
+		net.Start("ZC_RadioPause")
 			local snd = playingents[ent:EntIndex()][3]
 			net.WriteBool(IsValid(snd) and snd:GetState() != GMOD_CHANNEL_PAUSED or false)
 			net.WriteEntity(ent)
@@ -267,7 +267,7 @@ net.Receive("RadioURLInput", function()
 				playingents[ent:EntIndex()][3]:SetTime(val)
 			else
 				if DermaNumSlider.isedited then
-					net.Start("RadioChangeValue")
+					net.Start("ZC_RadioChangeValue")
 					net.WriteFloat(val)
 					net.WriteInt(ent:EntIndex(),32)
 					net.SendToServer()
@@ -298,7 +298,7 @@ net.Receive("RadioURLInput", function()
 				playingents[ent:EntIndex()][5] = val/100
 			else
 				if DermaNumSlider.isedited then
-					net.Start("RadioChangeVolume")
+					net.Start("ZC_RadioChangeVolume")
 						net.WriteFloat(val/100)
 						net.WriteInt(ent:EntIndex(),32)
 					net.SendToServer()
@@ -345,7 +345,7 @@ end
 
 playingents = playingents or {}
 
-net.Receive("PlayRadioSound", function()
+net.Receive("ZC_RadioPlaySound", function()
 	local url = net.ReadString()
 	local index = net.ReadInt(32)
 	local ent = Entity(index)

@@ -55,8 +55,8 @@ if SERVER then
 end
 
 if SERVER then
-	util.AddNetworkString("gas particle")
-	util.AddNetworkString("gasoline_path")
+	util.AddNetworkString("ZC_GasParticle")
+	util.AddNetworkString("ZC_GasolinePath")
 
 	local time = CurTime()
 	local CurTime = CurTime
@@ -102,7 +102,7 @@ if SERVER then
 			end
 		end
 
-		net.Start("gasoline_path")
+		net.Start("ZC_GasolinePath")
 		net.WriteTable(hg.gasolinePath)
 		net.Broadcast()
 	end)
@@ -175,7 +175,7 @@ if SERVER then
 					tr.Entity.shouldburn = tr.Entity.shouldburn and tr.Entity.shouldburn + 1 or 1
 				end
 
-				net.Start("gas particle")
+				net.Start("ZC_GasParticle")
 				net.WriteVector(pos + high_point)
 				net.WriteVector(vector_up * 0 + ent:GetVelocity() + VectorRand(-15, 15) + (pos + high_point - (center + ent:GetPos())):GetNormalized() * 60)
 				net.WriteEntity(ent)
@@ -229,14 +229,14 @@ if SERVER then
 		end
 	end)
 else
-	net.Receive("drums_debug", function()
+	net.Receive("ZC_LiquidDrumDebug", function()
 		hg.drums = net.ReadTable()
 	end)
 
 	hg.effparticles = hg.effparticles or {}
 
 	local oldgas = {}
-	net.Receive("gasoline_path", function()
+	net.Receive("ZC_GasolinePath", function()
 		table.CopyFromTo(hg.gasolinePath, oldgas)
 
 		hg.gasolinePath = net.ReadTable()

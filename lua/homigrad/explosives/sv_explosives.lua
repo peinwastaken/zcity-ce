@@ -1,5 +1,5 @@
 --
-util.AddNetworkString("hg_booom")
+util.AddNetworkString("ZC_ExplosionEffect")
 hg = hg or {}
 
 function hg.FindOtherExplosive(inflictor,pos,radius)
@@ -37,7 +37,7 @@ local ExpTypes = {
 		--ParticleEffect("pcf_jack_incendiary_ground_sm2",SelfPos + vector_up * 1,vector_up:Angle())
 		hg.ExplosionEffect(SelfPos, Force / 0.2, 80)
 
-        net.Start("hg_booom")
+        net.Start("ZC_ExplosionEffect")
             net.WriteVector(SelfPos)
             net.WriteString("Fire")
         net.Broadcast()
@@ -158,7 +158,7 @@ local ExpTypes = {
         --ParticleEffect("pcf_jack_groundsplode_medium",SelfPos + vector_up * 1,vector_up:Angle())
 		hg.ExplosionEffect(SelfPos, Force / 0.2, 80)
 
-        net.Start("hg_booom")
+        net.Start("ZC_ExplosionEffect")
             net.WriteVector(SelfPos)
             net.WriteString("Sharpnel")
         net.Broadcast()
@@ -265,7 +265,7 @@ local ExpTypes = {
         --ParticleEffect("pcf_jack_groundsplode_small",SelfPos + vector_up * 1,vector_up:Angle())
 		hg.ExplosionEffect(SelfPos, Force / 0.2, 80)
 
-        net.Start("hg_booom")
+        net.Start("ZC_ExplosionEffect")
             net.WriteVector(SelfPos)
             net.WriteString("Normal")
         net.Broadcast()

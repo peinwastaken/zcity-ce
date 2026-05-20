@@ -2,7 +2,7 @@ local PANEL = {}
 local sw, sh = ScrW(), ScrH()    
 local color_white = Color(255,255,255)
 
-net.Receive("zb_cs_round_intermission", function()
+net.Receive("ZC_CStrikeRoundIntermission", function()
 	plyteam = net.ReadBool()
 	rounds = net.ReadInt(6)
 	vgui.Create("zb_cs_round_intermission")

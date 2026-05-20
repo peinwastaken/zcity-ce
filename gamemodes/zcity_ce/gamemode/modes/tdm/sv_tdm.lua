@@ -23,7 +23,7 @@ end
 
 MODE.ForBigMaps = true
 
-util.AddNetworkString("tdm_start")
+util.AddNetworkString("ZC_TeamDeathmatchStart")
 function MODE:Intermission()
 	game.CleanUpMap()
 
@@ -33,7 +33,7 @@ function MODE:Intermission()
 		ply:SetNWInt( "TDM_Money", self.StartMoney )
 	end
 
-	net.Start("tdm_start")
+	net.Start("ZC_TeamDeathmatchStart")
 	net.Broadcast()
 end
 
@@ -137,10 +137,10 @@ end
 function MODE:CanSpawn()
 end
 
-util.AddNetworkString("tdm_roundend")
+util.AddNetworkString("ZC_TeamDeathmatchRoundEnd")
 function MODE:EndRound()
 	timer.Simple(2,function()
-		net.Start("tdm_roundend")
+		net.Start("ZC_TeamDeathmatchRoundEnd")
 		net.Broadcast()
 	end)
 	local _, winner = zb:CheckWinner(self:CheckAlivePlayers())
@@ -158,17 +158,17 @@ end
 
 function MODE:PlayerDeath(ply)
 end
-util.AddNetworkString( "tdm_open_buymenu" )
+util.AddNetworkString( "ZC_TeamDeathmatchOpenBuyMenu" )
 function MODE:ShowSpare1(ply ) -- OpenMenu
 	if not ply:Alive() then return end
-	net.Start( "tdm_open_buymenu" )
+	net.Start( "ZC_TeamDeathmatchOpenBuyMenu" )
 	net.Send( ply )
 end
 
-util.AddNetworkString( "tdm_buyitem" )
+util.AddNetworkString( "ZC_TeamDeathmatchBuyItem" )
 
 local AttachmentPrice = 50
-net.Receive("tdm_buyitem",function(len,ply)
+net.Receive("ZC_TeamDeathmatchBuyItem",function(len,ply)
 	if !CurrentRound().buymenu then return end
 	if ((zb.ROUND_START or 0) + 40 < CurTime()) then ply:ChatPrint("Time's up!") return end
 	local tItem = net.ReadTable()

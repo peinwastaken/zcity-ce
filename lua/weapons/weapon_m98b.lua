@@ -270,7 +270,7 @@ function SWEP:Step_Reload(time)
 end
 
 if SERVER then return end
---[[net.Receive("hgwep reload", function()
+--[[net.Receive("ZC_WeaponReload", function()
 	local self = net.ReadEntity()
 	local time = net.ReadFloat()
 	if self.Reload then self:Reload(time) end

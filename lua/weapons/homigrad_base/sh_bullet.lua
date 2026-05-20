@@ -796,7 +796,7 @@ function SWEP:PostFireBullet()
 end
 
 if CLIENT then
-	net.Receive("reject shell",function()
+	net.Receive("ZC_WeaponShellEject",function()
 		local ent = net.ReadEntity()
 		if ent and ent.RejectShell then
 			ent:RejectShell(net.ReadString())
@@ -836,9 +836,9 @@ if CLIENT then
 		util.Effect(shell, effectdata)
 	end
 else
-	util.AddNetworkString("reject shell")
+	util.AddNetworkString("ZC_WeaponShellEject")
 	function SWEP:RejectShell(shell)
-		net.Start("reject shell")
+		net.Start("ZC_WeaponShellEject")
 			net.WriteEntity(self)
 			net.WriteString(shell)
 		net.Broadcast()

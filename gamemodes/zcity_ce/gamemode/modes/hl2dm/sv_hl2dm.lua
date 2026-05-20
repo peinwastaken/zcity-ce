@@ -17,7 +17,7 @@ function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
 	return 1, true--returning true so guilt bans
 end
 
-util.AddNetworkString("hl2dm_start")
+util.AddNetworkString("ZC_HL2DeathmatchStart")
 function MODE:Intermission()
 	game.CleanUpMap()
 
@@ -25,7 +25,7 @@ function MODE:Intermission()
 		ply:SetupTeam(ply:Team())
 	end
 
-	net.Start("hl2dm_start")
+	net.Start("ZC_HL2DeathmatchStart")
 	net.Broadcast()
 end
 
@@ -134,11 +134,11 @@ end
 function MODE:CanSpawn()
 end
 
-util.AddNetworkString("hl2dm_roundend")
+util.AddNetworkString("ZC_HL2DeathmatchRoundEnd")
 function MODE:EndRound()
 	self:ClearPlayerRoles()
 	timer.Simple(2,function()
-		net.Start("hl2dm_roundend")
+		net.Start("ZC_HL2DeathmatchRoundEnd")
 		net.Broadcast()
 	end)
 end
@@ -156,7 +156,7 @@ function MODE:CanLaunch()
     return false]]
 end
 
-util.AddNetworkString("ZB_RequestAirStrike")
+util.AddNetworkString("ZC_AirStrikeRequest")
 
 local ACD_NextAirstrikeTime = 0
 local ACD_MaxStrikes = 2
@@ -218,7 +218,7 @@ local function AirStrike(pos, normal, ply)
 end
 
 
-net.Receive("ZB_RequestAirStrike", function(len, ply)
+net.Receive("ZC_AirStrikeRequest", function(len, ply)
 	if not ply.leader then return end
 
     if ACD_StrikesLeft[ply] == nil then

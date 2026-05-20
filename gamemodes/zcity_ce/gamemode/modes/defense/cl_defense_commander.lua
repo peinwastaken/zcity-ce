@@ -475,7 +475,7 @@ function CreateCommanderMenu()
             return
         end
         
-        net.Start("defense_commander_purchase")
+        net.Start("ZC_DefenseCommanderPurchase")
         net.WriteTable(currentCart)
         net.SendToServer()
         
@@ -671,13 +671,13 @@ function CreateCommanderMenu()
 end
 
 
-net.Receive("defense_commander_menu", function()
+net.Receive("ZC_DefenseCommanderMenu", function()
     availableItems = net.ReadTable()
     CreateCommanderMenu()
 end)
 
 
-net.Receive("defense_commander_notification", function()
+net.Receive("ZC_DefenseCommanderNotice", function()
     local message = net.ReadString()
     local pointChange = net.ReadInt(16)
     
@@ -703,7 +703,7 @@ hook.Add("ZC_RadialOptions", "ZC_CommanderSupplyMenu", function()
         local points = ply:GetNWInt("CommanderPoints", 0)
         local tbl = {
             function()
-                net.Start("defense_commander_menu")
+                net.Start("ZC_DefenseCommanderMenu")
                 net.SendToServer()
             end,
             "Order Supplies (" .. points .. " pts)"
@@ -874,7 +874,7 @@ hook.Add("InitPostEntity", "ZC_ResetCommanderHintFlag", function()
     COMMANDER_HINT.shownThisRound = false
 end)
 
-net.Receive("npc_defense_start", function()
+net.Receive("ZC_DefenseStart", function()
     COMMANDER_HINT.shownThisRound = false
 end)
 
@@ -923,13 +923,13 @@ timer.Create("CommanderHintChecker", 1, 0, function()
 end)
 
 
-net.Receive("npc_defense_start", function()
+net.Receive("ZC_DefenseStart", function()
     COMMANDER_HINT.shownThisRound = false
     timer.Simple(2, CheckAndShowCommanderHint)
     print("[DEFENSE] Reset hint status on defense start")
 end)
 
-net.Receive("npc_defense_prepphase", function()
+net.Receive("ZC_DefensePrepPhase", function()
     timer.Simple(1, CheckAndShowCommanderHint)
     print("[DEFENSE] Checking hint on prep phase")
 end)

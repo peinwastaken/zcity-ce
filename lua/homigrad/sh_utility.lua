@@ -84,7 +84,7 @@ hg.ConVars = hg.ConVars or {}
 --//
 --\\ custom KeyDown
 	if CLIENT then
-		net.Receive("ZB_KeyDown2", function(len)
+		net.Receive("ZC_KeyDownState", function(len)
 			local key = net.ReadInt(26)
 			local down = net.ReadBool()
 			local ply = net.ReadEntity()
@@ -1017,20 +1017,20 @@ local IsValid = IsValid
 	-- 	concommand.Add("hg_change_standposture", function(ply, cmd, args)
 	-- 		if not args[1] and not isnumber(args[1]) and not printed then print([[I am such a gas person]]) printed = true end
 	-- 		local pos = math.Round(args[1] or -1)
-	-- 		net.Start("change_standposture")
+	-- 		net.Start("ZC_StandPostureChange")
 	-- 		net.WriteInt(pos, 8)
 	-- 		net.SendToServer()
 	-- 	end)
 
-	-- 	net.Receive("change_standposture", function()
+	-- 	net.Receive("ZC_StandPostureChange", function()
 	-- 		local ply = net.ReadEntity()
 	-- 		local pos = net.ReadInt(8)
 
 	-- 		ply.standposture = pos
 	-- 	end)
 	-- else
-	-- 	util.AddNetworkString("change_standposture")
-	-- 	net.Receive("change_standposture", function(len, ply)
+	-- 	util.AddNetworkString("ZC_StandPostureChange")
+	-- 	net.Receive("ZC_StandPostureChange", function(len, ply)
 	-- 		local pos = net.ReadInt(8)
 	-- 		do return end
 	-- 		if (ply.change_posture_cooldown or 0) > CurTime() then return end
@@ -1047,7 +1047,7 @@ local IsValid = IsValid
 	-- 			ply.standposture = ply.standposture or 0
 	-- 			ply.standposture = (ply.standposture + 1) >= 3 and 0 or ply.standposture + 1
 	-- 		end
-	-- 		net.Start("change_standposture")
+	-- 		net.Start("ZC_StandPostureChange")
 	-- 		net.WriteEntity(ply)
 	-- 		net.WriteInt(ply.standposture, 9)
 	-- 		net.Broadcast()
@@ -1680,7 +1680,7 @@ duplicator.Allow( "homigrad_base" )
 
 --\\ Custom Screen Shake
 if SERVER then
-	util.AddNetworkString("util.ScreenShake")
+	util.AddNetworkString("ZC_ScreenShake")
 end
 
 hg.OldScreenShake = hg.OldScreenShake or util.ScreenShake
@@ -1713,7 +1713,7 @@ function util.ScreenShake(vPos, nAmplitude, nFrequency, nDuration, nRadius, bAir
 		end
 		crf = crf or crfFilter
 		--print(crf)
-		net.Start("util.ScreenShake")
+		net.Start("ZC_ScreenShake")
 			net.WriteVector(vPos)
 			net.WriteFloat(nAmplitude)
 			net.WriteFloat(nFrequency)
@@ -1749,7 +1749,7 @@ end
 
 if CLIENT then
 	-- Clientside receive
-	net.Receive("util.ScreenShake",function()
+	net.Receive("ZC_ScreenShake",function()
 		local vPos = net.ReadVector()
 		local nAmplitude = net.ReadFloat()
 		local nFrequency = net.ReadFloat()

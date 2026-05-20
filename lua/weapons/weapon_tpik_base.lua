@@ -468,9 +468,9 @@ end
 SWEP.tries = 10
 
 if SERVER then
-    util.AddNetworkString("melee_attack2")
+    util.AddNetworkString("ZC_MeleeAttackAlt")
 elseif CLIENT then
-    net.Receive("melee_attack2",function()
+    net.Receive("ZC_MeleeAttackAlt",function()
         local tbl = net.ReadTable()
         local ent = net.ReadEntity()
         local sendtoclient = net.ReadBool()
@@ -486,7 +486,7 @@ end
 function SWEP:PlayAnim(anim,time,cycling,callbackFuncName,reverse,sendtoclient)
     if SERVER then
         sendtoclient = true
-        net.Start("melee_attack2")
+        net.Start("ZC_MeleeAttackAlt")
             local netTbl = {
                 anim = anim,
                 time = time,

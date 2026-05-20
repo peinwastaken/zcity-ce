@@ -244,7 +244,7 @@ function SWEP:ShiftDrum(val)
 	end
 
 	--[[if SERVER then
-		net.Start("hg_senddrum")
+		net.Start("ZC_RevolverDrumSync")
 		net.WriteInt(self:EntIndex(),32)
 		net.WriteString(stringythingy)
 		net.Broadcast()
@@ -320,7 +320,7 @@ if SERVER then
 end
 
 if SERVER then
-	util.AddNetworkString("hg_senddrum")
+	util.AddNetworkString("ZC_RevolverDrumSync")
 
 	function SWEP:SendDrum()
 		local stringythingy = ""
@@ -328,7 +328,7 @@ if SERVER then
 			stringythingy = stringythingy..tostring(self.Drum[i]).." "
 		end
 
-		--[[net.Start("hg_senddrum")
+		--[[net.Start("ZC_RevolverDrumSync")
 		net.WriteInt(self:EntIndex(),32)
 		net.WriteString(stringythingy)
 		net.Broadcast()--]]
@@ -336,7 +336,7 @@ if SERVER then
 		self:SetNWString("drum",stringythingy)
 	end
 else
-	net.Receive("hg_senddrum",function()
+	net.Receive("ZC_RevolverDrumSync",function()
 		local self = Entity(net.ReadInt(32))
 		local drumtbl = string.Split(net.ReadString()," ")
 

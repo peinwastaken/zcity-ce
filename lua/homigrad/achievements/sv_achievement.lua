@@ -131,7 +131,7 @@ local function isAchievementCompleted(ply, key, val)
     return val >= ach.needed_value and (hg.achievements.achievements_data.player_achievements[ply:SteamID64()][key].value or 0) < val
 end
 
-util.AddNetworkString("hg_NewAchievement")
+util.AddNetworkString("ZC_AchievementUnlocked")
 
 function hg.achievements.SetPlayerAchievement(ply, key, val)
     --print("Triggered achievement for player " .. ply:Name() .. " ; " .. ply:SteamID() .. ": " .. (key or "none") .. ", value " .. (val or "none"))
@@ -142,7 +142,7 @@ function hg.achievements.SetPlayerAchievement(ply, key, val)
 
     if isAchievementCompleted(ply, key, val) then
         local ach = hg.achievements.achievements_data.created_achevements[key]
-        net.Start("hg_NewAchievement")
+        net.Start("ZC_AchievementUnlocked")
             net.WriteString(ach.name)
             net.WriteString(ach.img)
         net.Send(ply)
@@ -158,12 +158,12 @@ function hg.achievements.AddPlayerAchievement(ply, key, val)
     hg.achievements.SetPlayerAchievement(ply, key, math.Approach(ach.value or ach_info.start_value, ach_info.needed_value, val))
 end
 
-util.AddNetworkString("req_ach")
+util.AddNetworkString("ZC_AchievementRequest")
 
-net.Receive("req_ach", function(len, ply)
+net.Receive("ZC_AchievementRequest", function(len, ply)
     if (ply.ach_cooldown or 0) > CurTime() then return end
     ply.ach_cooldown = CurTime() + 2
-    net.Start("req_ach")
+    net.Start("ZC_AchievementRequest")
         net.WriteTable(hg.achievements.GetAchievements())
         net.WriteTable(hg.achievements.GetPlayerAchievements(ply))
     net.Send(ply)

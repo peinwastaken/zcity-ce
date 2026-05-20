@@ -13,8 +13,8 @@ MODE.Chance = 0.04
 
 -- MODE.MapSize = mapsize
 
-util.AddNetworkString("dm_start")
-util.AddNetworkString("dm_end")
+util.AddNetworkString("ZC_DeathmatchStart")
+util.AddNetworkString("ZC_DeathmatchEnd")
 
 function MODE:CanLaunch()
     return true//(zb.GetWorldSize() >= ZBATTLE_BIGMAP)
@@ -51,7 +51,7 @@ function MODE:Intermission()
 	zonepoint = centerpoint
 	zonedistance = dist
 
-	net.Start("dm_start")
+	net.Start("ZC_DeathmatchStart")
 		net.WriteVector(zonepoint)
 		net.WriteFloat(zonedistance)
 	net.Broadcast()
@@ -289,7 +289,7 @@ function MODE:EndRound()
 	end
 
 	timer.Simple(2,function()
-		net.Start("dm_end")
+		net.Start("ZC_DeathmatchEnd")
 		local ent = zb:CheckAlive(true)[1]
 
 		if IsValid(ent) then

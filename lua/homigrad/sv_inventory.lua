@@ -366,8 +366,8 @@ local functions = {
     -- end,
 }
 
-util.AddNetworkString("ply_take_item")
-net.Receive("ply_take_item", function(len, ply)
+util.AddNetworkString("ZC_PlayerTakeItem")
+net.Receive("ZC_PlayerTakeItem", function(len, ply)
     if (ply.cooldown_takeitem or 0) > CurTime() then return end
     ply.cooldown_takeitem = CurTime() + 0.5
 
@@ -388,7 +388,7 @@ net.Receive("ply_take_item", function(len, ply)
     ent:SyncArmor()
 end)
 
-util.AddNetworkString("should_open_inv")
+util.AddNetworkString("ZC_InventoryShouldOpen")
 local playerMeta = FindMetaTable("Player")
 function playerMeta:OpenInventory(ent)
     hook.Run("ZC_OnInventoryOpened",self,ent)
@@ -397,7 +397,7 @@ function playerMeta:OpenInventory(ent)
     if ent:IsPlayer() then hg.RenewInv(ent) end
     if self:IsPlayer() then hg.RenewInv(self) end
     self.cooldown_takeitem = CurTime() + 0.5
-    net.Start("should_open_inv")
+    net.Start("ZC_InventoryShouldOpen")
     net.WriteEntity(ent)
     net.Send(self)
 end

@@ -48,7 +48,7 @@ function netstream.Hook(name, Callback)
 end;
 
 if (SERVER) then
-	util.AddNetworkString("NetStreamDS");
+	util.AddNetworkString("ZC_NetStreamData");
 
 	-- A function to start a net stream.
 	function netstream.Start(player, name, ...)
@@ -79,7 +79,7 @@ if (SERVER) then
 		local encodedData = pon.encode(dataTable);
 			
 		if (encodedData and #encodedData > 0 and bShouldSend) then
-			net.Start("NetStreamDS");
+			net.Start("ZC_NetStreamData");
 				net.WriteString(name);
 				net.WriteUInt(#encodedData, 32);
 				net.WriteData(encodedData, #encodedData);
@@ -87,7 +87,7 @@ if (SERVER) then
 		end;
 	end;
 	
-	net.Receive("NetStreamDS", function(length, player)
+	net.Receive("ZC_NetStreamData", function(length, player)
 		local NS_DS_NAME = net.ReadString();
 		local NS_DS_LENGTH = net.ReadUInt(32);
 		local NS_DS_DATA = net.ReadData(NS_DS_LENGTH);
@@ -123,7 +123,7 @@ else
 		local encodedData = pon.encode(dataTable);
 		
 		if (encodedData and #encodedData > 0) then
-			net.Start("NetStreamDS");
+			net.Start("ZC_NetStreamData");
 				net.WriteString(name);
 				net.WriteUInt(#encodedData, 32);
 				net.WriteData(encodedData, #encodedData);
@@ -131,7 +131,7 @@ else
 		end;
 	end;
 	
-	net.Receive("NetStreamDS", function(length)
+	net.Receive("ZC_NetStreamData", function(length)
 		local NS_DS_NAME = net.ReadString();
 		local NS_DS_LENGTH = net.ReadUInt(32);
 		local NS_DS_DATA = net.ReadData(NS_DS_LENGTH);

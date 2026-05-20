@@ -16,7 +16,7 @@ MODE.TypeSounds = {
 	["supermario"] = "snd_jack_hmcd_psycho.mp3"
 }
 local fade = 0
-net.Receive("HMCD_RoundStart",function()
+net.Receive("ZC_HomicideRoundStart",function()
 	for _, ply in player.Iterator() do
 		ply.isTraitor = false
 		ply.isGunner = false
@@ -411,7 +411,7 @@ end
 
 local CreateEndMenu
 
-net.Receive("hmcd_roundend", function()
+net.Receive("ZC_HomicideRoundEnd", function()
 	local traitors, gunners = {}, {}
 
 	for key = 1, net.ReadUInt(MODE.TraitorExpectedAmtBits) do
@@ -442,7 +442,7 @@ net.Receive("hmcd_roundend", function()
 	CreateEndMenu(traitor)
 end)
 
-net.Receive("hmcd_announce_traitor_lose", function()
+net.Receive("ZC_HomicideTraitorLose", function()
 	local traitor = net.ReadEntity()
 	local traitor_alive = net.ReadBool()
 
@@ -613,7 +613,7 @@ function MODE:RoundStart()
 end
 
 --\\
-net.Receive("HMCD(StartPlayersRoleSelection)", function()
+net.Receive("ZC_HomicideRoleSelectionStart", function()
 	local role = net.ReadString()
 
 	hg.SelectPlayerRole(role)
@@ -642,13 +642,13 @@ function hg.SelectPlayerRole(role, mode)
 	end
 end
 
-net.Receive("HMCD(EndPlayersRoleSelection)", function()
+net.Receive("ZC_HomicideRoleSelectionEnd", function()
 	if(IsValid(VGUI_HMCD_RolePanelList))then
 		VGUI_HMCD_RolePanelList:Remove()
 	end
 end)
 
-net.Receive("HMCD(SetSubRole)", function(len, ply)
+net.Receive("ZC_HomicideSetSubRole", function(len, ply)
 	lply.SubRole = net.ReadString()
 end)
 --//

@@ -130,7 +130,7 @@ end
 local CreateMenu
 
 local bomb
-net.Receive("bomb_look",function()
+net.Receive("ZC_BombLook",function()
 	if IsValid(bomb) then
 		bomb.islooked = false
 	end
@@ -307,7 +307,7 @@ CreateMenu = function(bomb)
 			return
 		end
 		surface.PlaySound("weapons/tfa_ins2_sr25_eft/m14_empty.wav")
-		net.Start("bomb_enter")
+		net.Start("ZC_BombEnter")
 		net.WriteString(txt)
 		net.SendToServer()
 	end

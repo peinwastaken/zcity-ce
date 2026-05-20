@@ -146,11 +146,11 @@ if SERVER then
 		ply.cooldown_grab = CurTime() + 0.1
 	end)
 
-	util.AddNetworkString("weaponInv")
+	util.AddNetworkString("ZC_WeaponInventory")
 	local packet = {}
 	function weaponInv.Sync(ply)
 		if ply:IsNPC() then return end
-		net.Start("weaponInv")
+		net.Start("ZC_WeaponInventory")
 		packet[1] = ply.weaponInv
 		packet[2] = ply.ammoInv
 		net.WriteTable(packet)
@@ -161,7 +161,7 @@ else
 	weaponInv.invAmmo = weaponInv.invAmmo or {}
 	local invWeapon = weaponInv.invWeapon
 	local invAmmo = weaponInv.invAmmo
-	net.Receive("weaponInv", function()
+	net.Receive("ZC_WeaponInventory", function()
 		local packet = net.ReadTable()
 		for k in pairs(invWeapon) do
 			invWeapon[k] = nil

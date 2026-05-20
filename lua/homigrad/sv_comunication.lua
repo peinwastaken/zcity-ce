@@ -2,9 +2,9 @@ local chat_dist_normal = 3000
 local chat_dist_whisper = 100
 
 --\\Whisper
-	util.AddNetworkString("ChatWhisper")
+	util.AddNetworkString("ZC_ChatWhisper")
 
-	net.Receive("ChatWhisper", function(len, ply)
+	net.Receive("ZC_ChatWhisper", function(len, ply)
 		ply.ChatWhisper = net.ReadBool()
 	end)
 --//

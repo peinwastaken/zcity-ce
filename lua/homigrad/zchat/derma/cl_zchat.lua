@@ -360,7 +360,7 @@ function PANEL:OnMessageSent()
 			hg.chat.messageHistory[#hg.chat.messageHistory + 1] = text
 		end
 
-		net.Start("zChatMessage")
+		net.Start("ZC_ChatMessage")
 			net.WriteString(text)
 		net.SendToServer()
 	end

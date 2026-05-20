@@ -189,7 +189,7 @@ if CLIENT then
 			end
 
 			but.DoClick = function()
-				net.Start("choose_poison")
+				net.Start("ZC_PoisonSelect")
 				net.WriteEntity(wep)
 				net.SendToServer()
 
@@ -211,9 +211,9 @@ if CLIENT then
 end
 
 if SERVER then
-	util.AddNetworkString("choose_poison")
+	util.AddNetworkString("ZC_PoisonSelect")
 
-	net.Receive("choose_poison", function(len, ply)
+	net.Receive("ZC_PoisonSelect", function(len, ply)
 		local wep = net.ReadEntity()
 		if not IsValid(ply) or not ply:Alive() or ply.organism.unconscious then return end
 

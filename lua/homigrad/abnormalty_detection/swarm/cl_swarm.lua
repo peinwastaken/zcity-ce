@@ -8,7 +8,7 @@ SWARM_CV_BleedDmg = GetConVar("zc_swarm_bleeddmg")
 function SWARM:Psych(time)
 	SWARM_PsychEnd = CurTime() + time
 end
-net.Receive("SWARM(Psych)",function(len, plycaller)
+net.Receive("ZC_SwarmPsych",function(len, plycaller)
 	SWARM:Psych(net.ReadUInt(4))
 end)
 
@@ -16,7 +16,7 @@ function SWARM:Knockout(time,aftertime)
 	SWARM_KnockoutEnd = CurTime() + time
 	SWARM_AfterKnockoutTime = aftertime
 end
-net.Receive("SWARM(Knockout)",function(len, plycaller)
+net.Receive("ZC_SwarmKnockout",function(len, plycaller)
 	SWARM:Knockout(net.ReadFloat(),net.ReadUInt(4))
 end)
 
@@ -24,7 +24,7 @@ function SWARM:ApplyBleed(time)
 	SWARM_Bleed = (SWARM_Bleed or 0) + time
 	SWARM_NextBleed = CurTime()+SWARM_CV_BleedCD:GetFloat()
 end
-net.Receive("SWARM(ApplyBleed)",function(len, plycaller)
+net.Receive("ZC_SwarmApplyBleed",function(len, plycaller)
 	SWARM:ApplyBleed(net.ReadFloat())
 end)
 

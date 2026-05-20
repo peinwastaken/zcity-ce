@@ -2,9 +2,9 @@ hg.Abnormalties = hg.Abnormalties or {}
 local PLUGIN = hg.Abnormalties
 
 SetGlobalBool("AbnormaltiesEnabled", false)
-util.AddNetworkString("Abnormalties(ShowTranslation)")
-util.AddNetworkString("Abnormalties(ShowMessage)")
-util.AddNetworkString("Abnormalties(SendOpenedPage)")
+util.AddNetworkString("ZC_AbnormalityTranslation")
+util.AddNetworkString("ZC_AbnormalityMessage")
+util.AddNetworkString("ZC_AbnormalityHelpPage")
 
 --\\Settings
 	--=\\Other
@@ -545,7 +545,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 
 --\\??
 	function PLUGIN.ShowTranslation(ply, abnormalty)
-		net.Start("Abnormalties(ShowTranslation)")
+		net.Start("ZC_AbnormalityTranslation")
 
 			for abnormalty_name, amt in pairs(abnormalty) do
 				if(amt != 0)then
@@ -559,7 +559,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 	end
 
 	function PLUGIN.ShowMessage(ply, msg)
-		net.Start("Abnormalties(ShowMessage)")
+		net.Start("ZC_AbnormalityMessage")
 			net.WriteString(msg)
 		net.Send(ply)
 	end
@@ -567,7 +567,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 	function PLUGIN.ShowMessageInSphere(msg, pos, radius)
 		for _, ent in ipairs(ents.FindInSphere(pos, radius)) do
 			if(ent:IsPlayer())then
-				net.Start("Abnormalties(ShowMessage)")
+				net.Start("ZC_AbnormalityMessage")
 					net.WriteString(msg)
 				net.Send(ent)
 			end

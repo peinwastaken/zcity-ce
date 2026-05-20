@@ -40,7 +40,7 @@ function hg.organism.CanBreath(org)
 end
 
 local function insta_send_holdingbreath(org)
-	net.Start("organism_send") // send only disorientation (to avoid overloading net), and immediately
+	net.Start("ZC_OrganismSync") // send only disorientation (to avoid overloading net), and immediately
 
 	local tbl = {}
 	tbl.holdingbreath = org.holdingbreath

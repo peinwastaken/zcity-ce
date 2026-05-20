@@ -236,7 +236,7 @@ players : 1 humans, 0 bots (20 max)
 		suppressionVec = Vector(0, 0, 0)
 		suppressionDist = 0
 		suppressionDistAdd = 0
-		net.Receive("add_supression", function()
+		net.Receive("ZC_AddSuppression", function()
 			if not IsValid(lply) or not lply:IsPlayer() then return end
 			if !lply:Alive() or !lply.organism or lply.organism.unconscious then return end
 
@@ -928,7 +928,7 @@ players : 1 humans, 0 bots (20 max)
 			AddTinnitus(time,needSound)
 		end
 
-		net.Receive("send_tinnitus",function()
+		net.Receive("ZC_TinnitusSend",function()
 			local time = net.ReadFloat()
 			local bool = net.ReadBool()
 			AddTinnitus(time,bool)

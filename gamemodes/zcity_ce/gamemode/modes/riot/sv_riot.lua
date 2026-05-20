@@ -41,8 +41,8 @@ function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
     return 1, true
 end
 
-util.AddNetworkString("riot_start")
-util.AddNetworkString("riot_roundend")
+util.AddNetworkString("ZC_RiotStart")
+util.AddNetworkString("ZC_RiotRoundEnd")
 
 function MODE:Intermission()
     game.CleanUpMap()
@@ -53,7 +53,7 @@ function MODE:Intermission()
 		ply:SetupTeam(ply:Team())
 	end
 
-    net.Start("riot_start")
+    net.Start("ZC_RiotStart")
     net.Broadcast()
 end
 
@@ -80,7 +80,7 @@ end
 
 function MODE:EndRound()
     timer.Simple(2,function()
-        net.Start("riot_roundend")
+        net.Start("ZC_RiotRoundEnd")
         net.Broadcast()
     end)
 end

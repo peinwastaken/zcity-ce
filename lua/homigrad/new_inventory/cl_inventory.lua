@@ -11,7 +11,7 @@ hook.Add("PlayerButtonDown", "ZC_NewInventoryPlayerButtonDown", function(ply, ke
 			local icon = type(wep.WepSelectIcon) == "IMaterial" and wep.WepSelectIcon or (type(wep.WepSelectIcon2) == "IMaterial" and wep.WepSelectIcon2)
 			tbl1[#tbl1 + 1] = {
 				function()
-					net.Start("NI_SelectWeapon")
+					net.Start("ZC_InventorySelectWeapon")
 					net.WriteEntity(wep)
 					net.SendToServer()
 					if wep ~= ply:GetActiveWeapon() then

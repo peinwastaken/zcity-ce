@@ -2,7 +2,7 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
-util.AddNetworkString("flashbang")
+util.AddNetworkString("ZC_Flashbang")
 
 function ENT:InitAdd()
     self:Activate()
@@ -27,7 +27,7 @@ function ENT:Explode()
     hg.EmitAISound(SelfPos, 512, 16, 1)
 
 
-    --[[net.Start("projectileFarSound")
+    --[[net.Start("ZC_ProjectileFarSound")
         net.WriteString(self.SoundMain)
         net.WriteString(self.SoundFar)
         net.WriteVector(SelfPos)
@@ -64,7 +64,7 @@ function ENT:Explode()
         if not ply:IsPlayer() or not ply:Alive() then continue end
 
         if hg.isVisible(ply:GetShootPos(), SelfPos, {ply, self}, MASK_VISIBLE) then
-            net.Start("flashbang")
+            net.Start("ZC_Flashbang")
                 net.WriteVector(SelfPos)
             net.Send(ply)
         end

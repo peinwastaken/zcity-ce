@@ -187,14 +187,14 @@ musMeta:AddMusic(Music, 3, "am_music/battle_intensive/penthouse(intense).mp3" )
 DMusic:AddSequence( "splinter_cell", "Penthouse", Music )
 
 if SERVER then
-    util.AddNetworkString("DMusic")
+    util.AddNetworkString("ZC_DynamicMusic")
     function DMusic:AddPanic(ply,ammout)
-        net.Start("DMusic")
+        net.Start("ZC_DynamicMusic")
             net.WriteFloat(ammout)
         net.Send(ply)
     end
 elseif CLIENT then
-    net.Receive("DMusic",function()
+    net.Receive("ZC_DynamicMusic",function()
         local ammout = net.ReadFloat()
 
         DMusic.threaded = DMusic.threaded + ammout

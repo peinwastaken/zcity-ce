@@ -1,16 +1,16 @@
 local MODE = MODE
 
-util.AddNetworkString("HMCD_BeingVictimOfNeckBreak")	--; So here I decided to skip the parentheses, nice coding style, any questions?
-util.AddNetworkString("HMCD_BreakingOtherNeck")
-util.AddNetworkString("HMCD_BeingVictimOfDisarmament")
-util.AddNetworkString("HMCD_DisarmingOther")
-util.AddNetworkString("HMCD_UpdateChemicalResistance")
+util.AddNetworkString("ZC_HomicideNeckBreakVictim")	--; So here I decided to skip the parentheses, nice coding style, any questions?
+util.AddNetworkString("ZC_HomicideNeckBreakAttack")
+util.AddNetworkString("ZC_HomicideDisarmVictim")
+util.AddNetworkString("ZC_HomicideDisarmAttack")
+util.AddNetworkString("ZC_HomicideChemicalResistance")
 
 --\\Chemical resistance
 	function MODE.NetworkChemicalResistanceOfPlayer(ply)
 		ply.PassiveAbility_ChemicalAccumulation = ply.PassiveAbility_ChemicalAccumulation or {}
 
-		net.Start("HMCD_UpdateChemicalResistance")
+		net.Start("ZC_HomicideChemicalResistance")
 
 		for chemical_name, amt in pairs(ply.PassiveAbility_ChemicalAccumulation) do
 			net.WriteString(chemical_name)

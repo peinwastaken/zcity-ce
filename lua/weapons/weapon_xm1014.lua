@@ -191,7 +191,7 @@ local function cock(self,time)
 
 	if CLIENT and LocalPlayer() == self:GetOwner() then return end
 
-	net.Start("hgwep draw")
+	net.Start("ZC_WeaponDraw")
 	net.WriteEntity(self)
 	net.WriteBool(self.drawBullet)
 	net.WriteFloat(CurTime())

@@ -23,8 +23,8 @@ end
 function ENT:OnRemove()
 end
 
-util.AddNetworkString("bomb_look")
-util.AddNetworkString("bomb_enter")
+util.AddNetworkString("ZC_BombLook")
+util.AddNetworkString("ZC_BombEnter")
 
 function BombInSite(pos, site)
 	local pts = zb.GetMapPoints( "BOMB_ZONE_"..(site == 1 and "A" or "B") )
@@ -42,7 +42,7 @@ function BombInSite(pos, site)
 	return (#pts >= 2 and pos:WithinAABox(vec1, vec2))
 end
 
-net.Receive("bomb_enter",function(len, ply)
+net.Receive("ZC_BombEnter",function(len, ply)
 	if !ply:Alive() then return end
 
 	local org = ply.organism
@@ -161,7 +161,7 @@ function ENT:Use(activator)
 	self.user = activator
 	activator.bomb = self
 
-	net.Start("bomb_look")
+	net.Start("ZC_BombLook")
 	net.WriteEntity(self)
 	net.Send(activator)
 end
@@ -205,7 +205,7 @@ function ENT:Think()
 	end
 
 	if self.user and not self:IsPlayerHolding() then
-		net.Start("bomb_look")
+		net.Start("ZC_BombLook")
 		net.WriteEntity(NULL)
 		net.Send(self.user)
 		self.user.bomb = nil

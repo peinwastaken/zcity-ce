@@ -2,7 +2,7 @@ MODE.name = "riot"
 
 local MODE = MODE
 
-net.Receive("riot_start", function()
+net.Receive("ZC_RiotStart", function()
     if RiotSound then
         RiotSound:Stop()
         RiotSound = nil
@@ -72,7 +72,7 @@ end
 
 local CreateEndMenu
 
-net.Receive("riot_roundend",function()
+net.Receive("ZC_RiotRoundEnd",function()
     CreateEndMenu()
 end)
 

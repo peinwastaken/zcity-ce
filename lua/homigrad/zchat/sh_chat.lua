@@ -51,7 +51,7 @@ if CLIENT then
 		end
 	end)
 
-	net.Receive("zChatMessage", function(len)
+	net.Receive("ZC_ChatMessage", function(len)
 		local speaker = net.ReadEntity()
 		local text = net.ReadString()
 		local bWhisper = net.ReadBool()
@@ -68,7 +68,7 @@ if CLIENT then
 		CHAT_SPEAKER = nil
 	end)
 
-	net.Receive("zChatGlobalMessage", function(len)
+	net.Receive("ZC_ChatGlobalMessage", function(len)
 		local buffer = net.ReadTable()
 
 		chat.AddText(unpack(buffer))
@@ -178,13 +178,13 @@ if CLIENT then
 	end)
 
 	hook.Add("StartChat", "ZC_TypingBool", function()
-		net.Start("zChatTyping")
+		net.Start("ZC_ChatTyping")
 			net.WriteBool(true)
 		net.SendToServer()
 	end)
 
 	hook.Add("FinishChat", "ZC_TypingBool", function()
-		net.Start("zChatTyping")
+		net.Start("ZC_ChatTyping")
 			net.WriteBool(false)
 		net.SendToServer()
 	end)
@@ -204,11 +204,11 @@ if CLIENT then
 		end
 	end)
 else
-	util.AddNetworkString("zChatMessage")
-	util.AddNetworkString("zChatGlobalMessage")
-	util.AddNetworkString("zChatTyping")
+	util.AddNetworkString("ZC_ChatMessage")
+	util.AddNetworkString("ZC_ChatGlobalMessage")
+	util.AddNetworkString("ZC_ChatTyping")
 
-	net.Receive("zChatMessage", function(len, ply)
+	net.Receive("ZC_ChatMessage", function(len, ply)
 		local text = net.ReadString()
 
 		local maxLen = maxLength:GetInt()
@@ -242,7 +242,7 @@ else
 			end
 		end
 
-		net.Start("zChatMessage")
+		net.Start("ZC_ChatMessage")
 			net.WriteEntity(ply)
 			net.WriteString(text)
 			net.WriteBool(ply.ChatWhisper)
@@ -264,7 +264,7 @@ else
 		return ""
 	end)
 
-	net.Receive("zChatTyping", function(len, ply)
+	net.Receive("ZC_ChatTyping", function(len, ply)
 		ply:SetNetVar("bIsTyping", net.ReadBool())
 	end)
 
@@ -275,13 +275,13 @@ else
 	end
 
 	function META:zChatPrint(...)
-		net.Start("zChatGlobalMessage")
+		net.Start("ZC_ChatGlobalMessage")
 			net.WriteTable({...})
 		net.Send(self)
 	end
 
 	function zChatPrint(...)
-		net.Start("zChatGlobalMessage")
+		net.Start("ZC_ChatGlobalMessage")
 			net.WriteTable({...})
 		net.Broadcast()
 	end

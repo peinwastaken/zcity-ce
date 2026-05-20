@@ -67,7 +67,7 @@ module[2] = function(owner, org, mulTime)
 		if mat and mat:GetAngles():Right()[3] < 0.25 then
 			org.vomitInThroat = nil
 
-			net.Start("bloodsquirt2")
+			net.Start("ZC_BloodSquirtAlt")
 			net.WriteEntity(ent)
 			net.WriteString(bon)
 			net.WriteMatrix(mat)
@@ -225,7 +225,7 @@ module[2] = function(owner, org, mulTime)
 	org.bleed = (bleedoutspeed + bleedoutspeed2)
 end
 
-util.AddNetworkString("bloodsquirt2")
+util.AddNetworkString("ZC_BloodSquirtAlt")
 
 function hg.organism.Vomit(owner, snd)
 	if !hg.IsValidPlayer(owner) then return end
@@ -254,7 +254,7 @@ function hg.organism.Vomit(owner, snd)
 		owner:SetNetVar("zableval_masku", true)
 	else
 		if !on_spine then
-			net.Start("bloodsquirt2")
+			net.Start("ZC_BloodSquirtAlt")
 			net.WriteEntity(ent)
 			net.WriteString(bon)
 			net.WriteMatrix(mat)
@@ -275,7 +275,7 @@ function hg.organism.CoughBlood(org)
 	if math.random(5) == 1 then
 		org.vomitInThroat = nil
 
-		net.Start("bloodsquirt2")
+		net.Start("ZC_BloodSquirtAlt")
 		net.WriteEntity(ent)
 		net.WriteString(bon)
 		net.WriteMatrix(mat)

@@ -167,7 +167,7 @@ function ESP:Init()
 end
 
 function ESP:SetupNetworking()
-	net.Receive("AS_Sync", function()
+	net.Receive("ZC_AdminEspSync", function()
 		ESP.Enabled = net.ReadBool()
 		ESP.InAdminMode = net.ReadBool()
 		ESP.AllESP = net.ReadBool()

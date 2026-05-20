@@ -1,6 +1,6 @@
 AddCSLuaFile()
 if CLIENT then
-	net.Receive("hgwep shoot", function()
+	net.Receive("ZC_WeaponShoot", function()
 		local self = net.ReadEntity()
 		local shoot = net.ReadBool()
 		local broadcastAnyways = net.ReadBool()

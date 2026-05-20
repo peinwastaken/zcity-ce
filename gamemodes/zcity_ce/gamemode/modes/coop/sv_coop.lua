@@ -144,7 +144,7 @@ MODE.ForBigMaps = true
 
 MODE.Chance = 1
 
-util.AddNetworkString("coop_start")
+util.AddNetworkString("ZC_CoopStart")
 
 function hg.ClearMapsTable()
     sql.Query("DROP TABLE IF EXISTS coop_maps;")
@@ -192,7 +192,7 @@ function MODE:Intermission()
         ply:SetupTeam(0)
     end
 
-    net.Start("coop_start")
+    net.Start("ZC_CoopStart")
     net.Broadcast()
 end
 
@@ -470,10 +470,10 @@ function MODE:GiveDefaultEquipment(ply, playerClass, hasGordon, medicCount, maxM
     return wasGordon, wasMedic, wasGrenadier
 end
 
-util.AddNetworkString("coop_roundend")
+util.AddNetworkString("ZC_CoopRoundEnd")
 function MODE:EndRound()
     timer.Simple(2, function()
-        net.Start("coop_roundend")
+        net.Start("ZC_CoopRoundEnd")
         net.Broadcast()
     end)
 end

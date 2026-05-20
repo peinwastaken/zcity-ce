@@ -26,7 +26,7 @@ function MODE:ChanceFunction(info)
     return zb.ModesChances["cstrike"] or self.Chance
 end
 
-util.AddNetworkString("zb_cs_round_intermission")
+util.AddNetworkString("ZC_CStrikeRoundIntermission")
 
 function MODE:DontKillPlayer(ply)
     return zb.RoundsLeft and (zb.RoundsLeft != self.Rounds)
@@ -98,7 +98,7 @@ function MODE:Intermission()
         if self.GameStarted then
             ply:SetNWInt( "TDM_Money", self.StartMoney )
         end
-        net.Start("zb_cs_round_intermission")
+        net.Start("ZC_CStrikeRoundIntermission")
         net.WriteBool(ply:Team() == 0)
         net.WriteInt(MODE.Rounds - zb.RoundsLeft or 0,6)
         net.Send(ply)
@@ -140,7 +140,7 @@ function MODE:Intermission()
 
     PrintMessage(HUD_PRINTTALK, "Round "..(self.Rounds - zb.RoundsLeft).." out of "..self.Rounds..".")
 
-	net.Start("tdm_start")
+	net.Start("ZC_TeamDeathmatchStart")
         net.WriteString(zb.rtype or "bomb")
         net.Broadcast()
 
@@ -180,7 +180,7 @@ function MODE:EndRound()
     zb.Winners = zb.Winners or {}
 
 	timer.Simple(2,function()
-		net.Start("tdm_roundend")
+		net.Start("ZC_TeamDeathmatchRoundEnd")
 		net.Broadcast()
 	end)
 

@@ -32,7 +32,7 @@ function PLUGIN.NetworkReceivedBulletUpdate()
 			if(bullet)then
 				bullet[key] = read()
 			else
-				net.Start("HG.Plugin[bullet](CreateBullet)")
+				net.Start("ZC_PhysBulletCreate")
 					PLUGIN.net_writekey(bullet_key)
 				net.SendToServer()
 			
@@ -42,15 +42,15 @@ function PLUGIN.NetworkReceivedBulletUpdate()
 	end
 end
 
-net.Receive("HG.Plugin[bullet](CreateBullet)", function(len)
+net.Receive("ZC_PhysBulletCreate", function(len)
 	PLUGIN.NetworkReceivedBulletCreate()
 end)
 
-net.Receive("HG.Plugin[bullet](UpdateBullet)", function(len)
+net.Receive("ZC_PhysBulletUpdate", function(len)
 	PLUGIN.NetworkReceivedBulletUpdate()
 end)
 
-net.Receive("HG.Plugin[bullet](RemoveBullet)", function(len)
+net.Receive("ZC_PhysBulletRemove", function(len)
 	local bullet_key = PLUGIN.net_readkey()
 	local bullet = PLUGIN.BulletsTable[bullet_key]
 	

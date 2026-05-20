@@ -1,7 +1,7 @@
-util.AddNetworkString("defense_commander_menu")
-util.AddNetworkString("defense_commander_purchase")
-util.AddNetworkString("RequestSupport")
-util.AddNetworkString("defense_commander_notification")
+util.AddNetworkString("ZC_DefenseCommanderMenu")
+util.AddNetworkString("ZC_DefenseCommanderPurchase")
+util.AddNetworkString("ZC_DefenseSupportRequest")
+util.AddNetworkString("ZC_DefenseCommanderNotice")
 
 local supportCooldown = 290
 local lastSupportRequest = 0
@@ -515,7 +515,7 @@ end
 
 
 
-net.Receive("RequestSupport", function(len, ply)
+net.Receive("ZC_DefenseSupportRequest", function(len, ply)
     if not ply.LastSupportRequestTime then ply.LastSupportRequestTime = 0 end
     if CurTime() - ply.LastSupportRequestTime < 2 then return end
     ply.LastSupportRequestTime = CurTime()
@@ -567,7 +567,7 @@ net.Receive("RequestSupport", function(len, ply)
 end)
 
 
-net.Receive("defense_commander_purchase", function(len, ply)
+net.Receive("ZC_DefenseCommanderPurchase", function(len, ply)
     if not ply.LastPurchaseTime then ply.LastPurchaseTime = 0 end
     if CurTime() - ply.LastPurchaseTime < 1 then return end
     ply.LastPurchaseTime = CurTime()
@@ -575,7 +575,7 @@ net.Receive("defense_commander_purchase", function(len, ply)
     if not IsValid(ply) or ply:GetNWString("PlayerRole") ~= "Commander" or not ply:Alive() then return end
 
     if ply.organism and ply.organism.unconscious then
-        net.Start("defense_commander_notification")
+        net.Start("ZC_DefenseCommanderNotice")
         net.WriteString("You cannot place orders in your current condition!")
         net.WriteInt(0, 16)
         net.Send(ply)
@@ -624,7 +624,7 @@ net.Receive("defense_commander_purchase", function(len, ply)
     local currentPoints = ply:GetNWInt("CommanderPoints", 0)
 
     if totalCost > currentPoints then
-        net.Start("defense_commander_notification")
+        net.Start("ZC_DefenseCommanderNotice")
         net.WriteString("Not enough supply points for this order!")
         net.WriteInt(0, 16)
         net.Send(ply)
@@ -634,7 +634,7 @@ net.Receive("defense_commander_purchase", function(len, ply)
 
     ply:SetNWInt("CommanderPoints", currentPoints - totalCost)
 
-    net.Start("defense_commander_notification")
+    net.Start("ZC_DefenseCommanderNotice")
     net.WriteString("Order placed successfully! Supply drop inbound.")
     net.WriteInt(-totalCost, 16)
     net.Send(ply)
@@ -677,7 +677,7 @@ net.Receive("defense_commander_purchase", function(len, ply)
                     local newPoints = ply:GetNWInt("CommanderPoints", 0) + refundAmount
                     ply:SetNWInt("CommanderPoints", newPoints)
 
-                    net.Start("defense_commander_notification")
+                    net.Start("ZC_DefenseCommanderNotice")
                     net.WriteString("No suitable drop location found. Points for non-special items refunded.")
                     net.WriteInt(refundAmount, 16)
                     net.Send(ply)
@@ -687,7 +687,7 @@ net.Receive("defense_commander_purchase", function(len, ply)
     end
 
     if not specialsSuccess and IsValid(ply) then
-        net.Start("defense_commander_notification")
+        net.Start("ZC_DefenseCommanderNotice")
         net.WriteString("Some special items could not be processed. Partial refund issued.")
         net.WriteInt(totalCost / 4, 16)
         net.Send(ply)
@@ -698,7 +698,7 @@ net.Receive("defense_commander_purchase", function(len, ply)
 end)
 
 
-net.Receive("defense_commander_menu", function(len, ply)
+net.Receive("ZC_DefenseCommanderMenu", function(len, ply)
 
     if not ply.LastMenuRequestTime then ply.LastMenuRequestTime = 0 end
     if CurTime() - ply.LastMenuRequestTime < 1 then return end
@@ -711,7 +711,7 @@ net.Receive("defense_commander_menu", function(len, ply)
     end
     ply.LastMenuSendTime = CurTime()
 
-    net.Start("defense_commander_menu")
+    net.Start("ZC_DefenseCommanderMenu")
     net.WriteTable(DEFENSE_COMMANDER_ITEMS)
     net.Send(ply)
 end)

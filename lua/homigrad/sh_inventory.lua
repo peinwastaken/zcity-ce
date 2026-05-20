@@ -21,7 +21,7 @@ if CLIENT then
 	end)
 
 	local OpenInv
-	net.Receive("should_open_inv", function()
+	net.Receive("ZC_InventoryShouldOpen", function()
 		local ent = net.ReadEntity()
 		OpenInv(ent)
 	end)
@@ -113,7 +113,7 @@ if CLIENT then
 	local function TakeItem(tblIndex, thing, item, owner)
 		local item = istable(item) and item or {item}
 
-		net.Start("ply_take_item")
+		net.Start("ZC_PlayerTakeItem")
 			net.WriteString(tblIndex)
 			net.WriteString(thing)
 			net.WriteTable(item)

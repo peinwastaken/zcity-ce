@@ -14,7 +14,7 @@ function PLAYER:CanSpawn()
 	return ( CurrentRound and CurrentRound() and CurrentRound().CanSpawn and CurrentRound():CanSpawn(self)) or (zb.ROUND_STATE == 0)
 end
 
-util.AddNetworkString("ZB_SpectatePlayer")
+util.AddNetworkString("ZC_SpectatePlayer")
 
 function PLAYER:GiveEquipment(team_)
 end
@@ -234,9 +234,9 @@ RunConsoleCommand("mp_show_voice_icons", "0")
 
 local hullscale = Vector(1, 1, 1)
 
-util.AddNetworkString("ZB_ChooseSpecPly")
+util.AddNetworkString("ZC_SpectateChoosePlayer")
 
-net.Receive("ZB_ChooseSpecPly",function(len,ply)
+net.Receive("ZC_SpectateChoosePlayer",function(len,ply)
 	if ply:Alive() then return end
 
 	local key = net.ReadInt(32)
@@ -253,7 +253,7 @@ net.Receive("ZB_ChooseSpecPly",function(len,ply)
 		ply.chosenspect = ply.chosenspect + 1
 		if ply.chosenspect > #tbl then ply.chosenspect = 1 end
 
-		net.Start("ZB_SpectatePlayer")
+		net.Start("ZC_SpectatePlayer")
 		net.WriteEntity(tbl[ply.chosenspect] or NULL)
 		net.WriteEntity(tbl[ply.chosenspect == 1 and #tbl or ply.chosenspect - 1] or NULL)
 		net.WriteInt(ply.viewmode, 4)
@@ -264,7 +264,7 @@ net.Receive("ZB_ChooseSpecPly",function(len,ply)
 		ply.chosenspect = ply.chosenspect - 1
 		if ply.chosenspect < 1 then ply.chosenspect = #tbl end
 
-		net.Start("ZB_SpectatePlayer")
+		net.Start("ZC_SpectatePlayer")
 		net.WriteEntity(tbl[ply.chosenspect] or NULL)
 		net.WriteEntity(tbl[ply.chosenspect == #tbl and 1 or ply.chosenspect + 1] or NULL)
 		net.WriteInt(ply.viewmode, 4)
@@ -274,7 +274,7 @@ net.Receive("ZB_ChooseSpecPly",function(len,ply)
 	if key == IN_RELOAD then
 		ply.viewmode = (ply.viewmode % 3) + 1
 
-		net.Start("ZB_SpectatePlayer")
+		net.Start("ZC_SpectatePlayer")
 		net.WriteEntity(tbl[ply.chosenspect] or NULL)
 		net.WriteEntity(tbl[ply.chosenspect == 1 and #tbl or ply.chosenspect - 1] or NULL)
 		net.WriteInt(ply.viewmode, 4)
@@ -395,8 +395,8 @@ function GM:IsSpawnpointSuitable( pl, spawnpointent, bMakeSuitable )
 	return true
 end
 
-util.AddNetworkString("ZB_SpecMode")
-net.Receive("ZB_SpecMode",function(len,ply)
+util.AddNetworkString("ZC_SpectateMode")
+net.Receive("ZC_SpectateMode",function(len,ply)
 	local bool = net.ReadBool()
 
 	local enable = !hook.Run("ZC_CanJoinSpectators", ply)
@@ -423,13 +423,13 @@ for i, map in ipairs(ents.FindByClass("coop_mapend")) do
 end
 --]]
 
-util.AddNetworkString("updtime")
+util.AddNetworkString("ZC_RoundTimeUpdate")
 
 function hg.UpdateRoundTime(time, time2, time3)
 	zb.ROUND_TIME = time or zb.ROUND_TIME
 	zb.ROUND_START = time2 or zb.ROUND_START or CurTime()
 	zb.ROUND_BEGIN = time3 or zb.ROUND_BEGIN or CurTime() + 5
-	net.Start("updtime")
+	net.Start("ZC_RoundTimeUpdate")
 	net.WriteFloat(zb.ROUND_TIME)
 	net.WriteFloat(zb.ROUND_START)
 	net.WriteFloat(zb.ROUND_BEGIN)

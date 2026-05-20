@@ -8,13 +8,13 @@ local EventersList = {}
 ZonePos = ZonePos or Vector(0,0,0)
 
 
-net.Receive("event_start",function()
+net.Receive("ZC_EventStart",function()
     roundend = false
     zb.RemoveFade()
 end)
 
 
-net.Receive("event_eventers_update", function()
+net.Receive("ZC_EventParticipantsUpdate", function()
     EventersList = {}
     local data = net.ReadTable()
     for _, id in ipairs(data) do
@@ -68,7 +68,7 @@ end
 local CreateEndMenu = nil
 local wonply = nil
 
-net.Receive("event_end",function()
+net.Receive("ZC_EventEnd",function()
 	local ent = net.ReadEntity()
 	wonply = nil
 	if IsValid(ent) then
@@ -366,7 +366,7 @@ local function CreateLootPollingMenu()
             return
         end
 
-        net.Start("event_loot_add")
+        net.Start("ZC_EventLootAdd")
         net.WriteTable({
             weight = weight,
             class = class
@@ -420,7 +420,7 @@ local function CreateLootPollingMenu()
             local line = itemList:GetLine(selected)
             if not line or not line.ItemIndex then return end
 
-            net.Start("event_loot_remove")
+            net.Start("ZC_EventLootRemove")
             net.WriteUInt(line.ItemIndex, 16)
             net.SendToServer()
         end
@@ -503,7 +503,7 @@ local function CreateLootPollingMenu()
 end
 
 
-net.Receive("event_loot_sync", function()
+net.Receive("ZC_EventLootSync", function()
     eventLootTable = net.ReadTable()
 
     if IsValid(LootPollingMenu) then
@@ -518,6 +518,6 @@ concommand.Add("zb_event_loot_menu", function()
 end)
 
 
-net.Receive("event_loot_request", function()
+net.Receive("ZC_EventLootRequest", function()
     CreateLootPollingMenu()
 end)

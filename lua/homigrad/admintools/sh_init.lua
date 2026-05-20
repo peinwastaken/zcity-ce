@@ -23,7 +23,7 @@ function plyMeta:ZCTools_GetAccess( bSAdmin )
 end
 
 if CLIENT then
-    net.Receive("HG_AdminTools",function()
+    net.Receive("ZC_AdminTools",function()
         local func = net.ReadString()
         local args = net.ReadTable()
         if hg.AdminTools[func] then
@@ -110,10 +110,10 @@ end
 
 if not SERVER then return end
 
-util.AddNetworkString("HG_AdminTools")
+util.AddNetworkString("ZC_AdminTools")
 
 function hg.AdminTools:SendNet(strFunc,tArgs,entPly)
-    net.Start("HG_AdminTools")
+    net.Start("ZC_AdminTools")
         net.WriteString( strFunc )
         net.WriteTable( tArgs )
     if IsValid( entPly ) then

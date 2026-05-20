@@ -2,9 +2,9 @@ local function IsAdmin(ply)
     return ply:IsAdmin() or ply:IsSuperAdmin()
 end
 
-util.AddNetworkString("defense_admin_command")
+util.AddNetworkString("ZC_DefenseAdminCommand")
 
-net.Receive("defense_admin_command", function(len, ply)
+net.Receive("ZC_DefenseAdminCommand", function(len, ply)
     if not IsAdmin(ply) then return end
 
     local command = net.ReadString()

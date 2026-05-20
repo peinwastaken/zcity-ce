@@ -202,7 +202,7 @@ function ENT:Explode()
 		util.Effect("eff_jack_genericboom", effectdata)
 	end
 
-	net.Start("projectileFarSound")
+	net.Start("ZC_ProjectileFarSound")
 		net.WriteString(self.Sound[math.random(#self.Sound)])
 		net.WriteString(self.SoundFar[math.random(#self.SoundFar)])
 		net.WriteVector(self:GetPos())

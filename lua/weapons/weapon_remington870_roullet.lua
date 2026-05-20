@@ -242,14 +242,14 @@ function SWEP:NextBullet()
 
 	self.Primary.Ammo = (self:GetChamber() != "Nothing" and self:GetChamber()) or (self.RealAmmoType or self.Primary.Ammo)
 	if SERVER then
-		net.Start("syncAmmoChanges")
+		net.Start("ZC_AmmoChangesSync")
 			net.WriteEntity(self)
 			net.WriteInt(ammoTypes[self.Primary.Ammo], 4)
 		net.Broadcast()
 	end
 
 	if SERVER then
-		net.Start("hgwep draw")
+		net.Start("ZC_WeaponDraw")
 			net.WriteEntity(self)
 			net.WriteBool(self.drawBullet)
 			net.WriteFloat(CurTime())
@@ -321,7 +321,7 @@ function SWEP:InsertAmmo(need)
 	end
 
 	if SERVER then
-		net.Start("hg_insertAmmo")
+		net.Start("ZC_InsertAmmo")
 			net.WriteEntity(self)
 			net.WriteInt(self:Clip1(),10)
 		net.Broadcast()
@@ -395,7 +395,7 @@ end
 function SWEP:PrimaryShootPre()
 	self.Primary.Ammo = (self:GetChamber() != "Nothing" and self:GetChamber()) or (self.RealAmmoType or self.Primary.Ammo)
 	if SERVER then
-		net.Start("syncAmmoChanges")
+		net.Start("ZC_AmmoChangesSync")
 			net.WriteEntity(self)
 			net.WriteInt(ammoTypes[self.Primary.Ammo], 4)
 		net.Broadcast()

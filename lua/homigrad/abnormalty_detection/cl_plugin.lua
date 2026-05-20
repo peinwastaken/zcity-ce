@@ -8,7 +8,7 @@ PLUGIN.MainColor = Color(150, 0, 0)
 --//
 -- abnormalties_help
 --\\
-net.Receive("Abnormalties(ShowTranslation)", function(len, ply)
+net.Receive("ZC_AbnormalityTranslation", function(len, ply)
 	local abnormalty = {}
 	local abnormalty_name = net.ReadString()
 	local abnormalty_amt = net.ReadUInt(32)
@@ -28,7 +28,7 @@ net.Receive("Abnormalties(ShowTranslation)", function(len, ply)
 	PLUGIN.ShowTranslation(abnormalty)
 end)
 
-net.Receive("Abnormalties(ShowMessage)", function(len, ply)
+net.Receive("ZC_AbnormalityMessage", function(len, ply)
 	local msg = net.ReadString()
 	
 	PLUGIN.ShowMessage(msg)

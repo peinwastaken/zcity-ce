@@ -1,6 +1,6 @@
 --
-util.AddNetworkString("Get_Appearance")
-util.AddNetworkString("OnlyGet_Appearance")
+util.AddNetworkString("ZC_AppearanceGet")
+util.AddNetworkString("ZC_AppearanceFetchOnly")
 hg.Appearance = hg.Appearance or {}
 local APmodule = hg.Appearance
 
@@ -132,7 +132,7 @@ function ApplyAppearance(Client,tAppearance,bRandom,bResponeIsValid,bUseCahsed)
         tAppearance = Client.CachedAppearance or tAppearance
         --Client:ChatPrint(tAppearance.AModel)
         if !APmodule.AppearanceValidater(tAppearance) then tAppearance = APmodule.GetRandomAppearance() end
-        net.Start("OnlyGet_Appearance")
+        net.Start("ZC_AppearanceFetchOnly")
         net.Send(Client)
         WearAppearance(Client,tAppearance)
         return
@@ -140,7 +140,7 @@ function ApplyAppearance(Client,tAppearance,bRandom,bResponeIsValid,bUseCahsed)
 
     if !bResponeIsValid then
         tWaitResponse[Client] = CurTime() + 3
-        net.Start("Get_Appearance")
+        net.Start("ZC_AppearanceGet")
         net.Send(Client)
     return end
     if !tWaitResponse[Client] then return end
@@ -154,7 +154,7 @@ function ApplyAppearance(Client,tAppearance,bRandom,bResponeIsValid,bUseCahsed)
     WearAppearance(Client,tAppearance)
 end
 
-net.Receive("Get_Appearance",function(len,client)
+net.Receive("ZC_AppearanceGet",function(len,client)
     local tAppearance = net.ReadTable()
     local bRandom = net.ReadBool()
     if !APmodule.AppearanceValidater(tAppearance) then bRandom = true end
@@ -162,7 +162,7 @@ net.Receive("Get_Appearance",function(len,client)
     ApplyAppearance(client,tAppearance, table.IsEmpty(tAppearance) and true or bRandom,true)
 end)
 
-net.Receive("OnlyGet_Appearance",function(len,client)
+net.Receive("ZC_AppearanceFetchOnly",function(len,client)
     local tAppearance = net.ReadTable()
     local bRandom = !tAppearance or table.IsEmpty(tAppearance)
     --client:ChatPrint(bRandom)

@@ -2,14 +2,14 @@ local MODE = MODE
 MODE.SendFootStepEvery = 3
 -- MODE.SendFootStepEvery = 1
 
-util.AddNetworkString("HMCD_Professions_Abilities_AddFootstep")
-util.AddNetworkString("HMCD_Professions_Abilities_DisplayOrganismInfo")
+util.AddNetworkString("ZC_HomicideFootstep")
+util.AddNetworkString("ZC_HomicideOrganismInfo")
 
 function MODE.DisplayOrganismInfo(organism, ply)
 	local text_info = ""
 	text_info = text_info .. " Saturation" .. organism.o2 .. "\n"
 
-	net.Start("HMCD_Professions_Abilities_DisplayOrganismInfo")
+	net.Start("ZC_HomicideOrganismInfo")
 		net.WriteString(text_info)
 	net.Send(ply)
 end
@@ -22,7 +22,7 @@ hook.Add("ZC_PlayerFootstepNotify", "ZC_ProfessionsAbilities", function(ply, pos
 	if(ply.ProfessionAbility_FootstepsAmt >= MODE.SendFootStepEvery)then
 		ply.ProfessionAbility_FootstepsAmt = 0
 
-		net.Start("HMCD_Professions_Abilities_AddFootstep")
+		net.Start("ZC_HomicideFootstep")
 			net.WriteVector(pos)
 			net.WriteFloat(ply:EyeAngles().y)
 			net.WriteBool(foot == 0)

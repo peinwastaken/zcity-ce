@@ -251,11 +251,11 @@ MODE.TraitorActions = {
 
 SetGlobalBool("RolesPlus_Enable", true)
 
-util.AddNetworkString("HMCDPoliceRole")
-util.AddNetworkString("HMCD(StartPlayersRoleSelection)")
-util.AddNetworkString("HMCD(EndPlayersRoleSelection)")
-util.AddNetworkString("HMCD(SetSubRole)")
-util.AddNetworkString("hmcd_announce_traitor_lose")
+util.AddNetworkString("ZC_HomicidePoliceRole")
+util.AddNetworkString("ZC_HomicideRoleSelectionStart")
+util.AddNetworkString("ZC_HomicideRoleSelectionEnd")
+util.AddNetworkString("ZC_HomicideSetSubRole")
+util.AddNetworkString("ZC_HomicideTraitorLose")
 
 MODE.Type = MODE.Type or "standard"
 MODE.Types = MODE.Types or {}
@@ -642,7 +642,7 @@ local modes = {
 	"gunfreezone",
 }
 
-util.AddNetworkString("HMCD_RoundStart")
+util.AddNetworkString("ZC_HomicideRoundStart")
 
 function MODE:GetPlySpawn(ply)
 end
@@ -791,7 +791,7 @@ function MODE:Intermission()
 
 	for k, ply in player.Iterator() do
 		if(MODE.ShouldStartRoleRound())then
-			net.Start("HMCD_RoundStart")	--; TODO Structure description
+			net.Start("ZC_HomicideRoundStart")	--; TODO Structure description
 				net.WriteBool(ply.isTraitor)	--; Is Traitor
 				net.WriteBool(ply.isGunner)	--; Is Gunner
 				net.WriteString(self.Type)	--; Round Type
@@ -1161,7 +1161,7 @@ function MODE.StartPlayersRoleSelection()
 
 	for _, ply in player.Iterator() do
 		if(ply.isTraitor and ply.MainTraitor)then	--; REDO
-			net.Start("HMCD(StartPlayersRoleSelection)")
+			net.Start("ZC_HomicideRoleSelectionStart")
 				net.WriteString("Traitor")
 			net.Send(ply)
 
@@ -1170,7 +1170,7 @@ function MODE.StartPlayersRoleSelection()
 	end
 end
 
-net.Receive("HMCD(StartPlayersRoleSelection)", function(len, ply)
+net.Receive("ZC_HomicideRoleSelectionStart", function(len, ply)
 	if(MODE.ChoosingPlayersList[ply])then
 		MODE.ChoosingPlayersList[ply] = nil
 
@@ -1182,8 +1182,8 @@ end)
 // ...
 
 
-util.AddNetworkString("HMCD_TraitorDeathState")
-util.AddNetworkString("HMCD_RequestTraitorStatuses")
+util.AddNetworkString("ZC_HomicideTraitorDeathState")
+util.AddNetworkString("ZC_HomicideRequestTraitors")
 
 
 function MODE:SendTraitorDeathState(traitor, is_alive)
@@ -1198,7 +1198,7 @@ function MODE:SendTraitorDeathState(traitor, is_alive)
         end
     end
 
-    net.Start("HMCD_TraitorDeathState")
+    net.Start("ZC_HomicideTraitorDeathState")
     net.WriteString(name)
     net.WriteBool(is_alive)
     net.Send(recipients)
@@ -1228,7 +1228,7 @@ hook.Add("PlayerCanPickupWeapon", "ZC_TraitorRadioPickup", function( ply, weapon
     end
 end)
 
-net.Receive("HMCD_RequestTraitorStatuses", function(len, ply)
+net.Receive("ZC_HomicideRequestTraitors", function(len, ply)
     if not ply.isTraitor or not ply.MainTraitor then return end
 
 
@@ -1236,7 +1236,7 @@ net.Receive("HMCD_RequestTraitorStatuses", function(len, ply)
         if other_ply.isTraitor and other_ply.CurAppearance then
             local is_alive = other_ply:Alive() and (not other_ply.organism or not other_ply.organism.incapacitated)
 
-            net.Start("HMCD_TraitorDeathState")
+            net.Start("ZC_HomicideTraitorDeathState")
             net.WriteString(other_ply.CurAppearance.AName)
             net.WriteBool(is_alive)
             net.Send(ply)
@@ -1258,7 +1258,7 @@ function MODE:ShouldRoundEnd()
 		else
 			MODE.StartRoundTime = nil
 
-			net.Start("HMCD(EndPlayersRoleSelection)")
+			net.Start("ZC_HomicideRoleSelectionEnd")
 			net.Broadcast()
 			MODE.SpawnPlayers(true)
 		end
@@ -1305,7 +1305,7 @@ end
 function MODE:CanSpawn()
 end
 
-util.AddNetworkString("hmcd_roundend")
+util.AddNetworkString("ZC_HomicideRoundEnd")
 
 function MODE:EndRound()
 	timer.Remove("HMCDSpawnSWAT")
@@ -1348,7 +1348,7 @@ function MODE:EndRound()
 	end
 
 	if(not winner)then
-		net.Start("hmcd_roundend")
+		net.Start("ZC_HomicideRoundEnd")
 			net.WriteUInt(#traitors, MODE.TraitorExpectedAmtBits)
 
 			for _, traitor in ipairs(traitors) do
@@ -1371,7 +1371,7 @@ function MODE:EndRound()
 				PrintMessage(HUD_PRINTTALK, "All traitors were stopped.")
 
 				for _, traitor in ipairs(traitors) do
-					net.Start("hmcd_announce_traitor_lose")
+					net.Start("ZC_HomicideTraitorLose")
 						net.WriteEntity(traitor)
 						net.WriteBool(traitor:Alive())
 					net.Broadcast()
@@ -1423,7 +1423,7 @@ function MODE:EndRound()
 			else
 				PrintMessage(HUD_PRINTTALK, self.Types[self.Type].Messages[winner]..(winner == 0 and (" killed.") or ""))
 				for _, traitor in ipairs(traitors) do
-					net.Start("hmcd_announce_traitor_lose")
+					net.Start("ZC_HomicideTraitorLose")
 						net.WriteEntity(traitor)
 						net.WriteBool(traitor:Alive())
 					net.Broadcast()
@@ -1435,7 +1435,7 @@ function MODE:EndRound()
 	end
 
 	timer.Simple(2,function()
-		net.Start("hmcd_roundend")
+		net.Start("ZC_HomicideRoundEnd")
 			net.WriteUInt(#traitors, MODE.TraitorExpectedAmtBits)
 
 			for _, traitor in ipairs(traitors) do
@@ -1525,7 +1525,7 @@ function MODE:CanLaunch()
 	return true
 end
 
-util.AddNetworkString("hmcd_roundend")
+util.AddNetworkString("ZC_HomicideRoundEnd")
 
 MODE.NextRoundMainTraitors = MODE.NextRoundMainTraitors or {}
 
@@ -1549,7 +1549,7 @@ hook.Add("ZC_OnRoundStateChange", "ZC_ResetNextRoundMainTraitors", function(old,
     end
 end)
 
-util.AddNetworkString("HMCD_UpdateTraitorAssistants")
+util.AddNetworkString("ZC_HomicideTraitorAssistants")
 
 function MODE.SpawnPlayers(spawn_with_subroles)
     local gunner_found = false
@@ -1743,7 +1743,7 @@ function MODE.SpawnPlayers(spawn_with_subroles)
                 end
 
 
-                net.Start("HMCD_RoundStart")
+                net.Start("ZC_HomicideRoundStart")
                     net.WriteBool(this_player.isTraitor)
                     net.WriteBool(this_player.isGunner)
                     net.WriteString(MODE.Type)
@@ -1770,7 +1770,7 @@ function MODE.SpawnPlayers(spawn_with_subroles)
 
                         timer.Simple(0.5, function()
                             if IsValid(this_player) and this_player.isTraitor and this_player.MainTraitor then
-                                net.Start("HMCD_UpdateTraitorAssistants")
+                                net.Start("ZC_HomicideTraitorAssistants")
                                     net.WriteUInt(#traitor_assistants, 8)
 
                                     for _, info in ipairs(traitor_assistants) do
@@ -1820,7 +1820,7 @@ hook.Add("PlayerSpawn", "ZC_UpdateTraitorsList", function(ply)
 					end
 				end
 
-				net.Start("HMCD_UpdateTraitorAssistants")
+				net.Start("ZC_HomicideTraitorAssistants")
 				net.WriteUInt(#traitor_assistants, 8)
 
 				for _, info in ipairs(traitor_assistants) do
@@ -1865,7 +1865,7 @@ hook.Add("PlayerDeath", "ZC_UpdateTraitorsList", function(ply)
 						end
 					end
 
-					net.Start("HMCD_UpdateTraitorAssistants")
+					net.Start("ZC_HomicideTraitorAssistants")
 					net.WriteUInt(#traitor_assistants, 8)
 
 					for _, info in ipairs(traitor_assistants) do

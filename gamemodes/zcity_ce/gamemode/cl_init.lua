@@ -14,7 +14,7 @@ zb.ROUND_STATE = 0
 --0 = players can join, 1 = round is active, 2 = endround
 spect,prevspect,viewmode = nil,nil,1
 local hullscale = Vector(0,0,0)
-net.Receive("ZB_SpectatePlayer", function(len)
+net.Receive("ZC_SpectatePlayer", function(len)
 	spect = net.ReadEntity()
 	prevspect = net.ReadEntity()
 	viewmode = net.ReadInt(4)
@@ -34,7 +34,7 @@ zb.ROUND_TIME = zb.ROUND_TIME or 400
 zb.ROUND_START = zb.ROUND_START or CurTime()
 zb.ROUND_BEGIN = zb.ROUND_BEGIN or CurTime() + 5
 
-net.Receive("updtime",function()
+net.Receive("ZC_RoundTimeUpdate",function()
 	local time = net.ReadFloat()
 	local time2 = net.ReadFloat()
 	local time3 = net.ReadFloat()
@@ -122,7 +122,7 @@ hook.Add("ZC_CalculateView", "ZC_DeathSpectateView", function(ply, pos, angles, 
 		if lply:KeyDown(IN_ATTACK) then
 			if not keydownattack then
 				keydownattack = true
-				net.Start("ZB_ChooseSpecPly")
+				net.Start("ZC_SpectateChoosePlayer")
 				net.WriteInt(IN_ATTACK,32)
 				net.SendToServer()
 			end
@@ -133,7 +133,7 @@ hook.Add("ZC_CalculateView", "ZC_DeathSpectateView", function(ply, pos, angles, 
 		if lply:KeyDown(IN_ATTACK2) then
 			if not keydownattack2 then
 				keydownattack2 = true
-				net.Start("ZB_ChooseSpecPly")
+				net.Start("ZC_SpectateChoosePlayer")
 				net.WriteInt(IN_ATTACK2,32)
 				net.SendToServer()
 			end
@@ -144,7 +144,7 @@ hook.Add("ZC_CalculateView", "ZC_DeathSpectateView", function(ply, pos, angles, 
 		if lply:KeyDown(IN_RELOAD) then
 			if not keydownreload then
 				keydownreload = true
-				net.Start("ZB_ChooseSpecPly")
+				net.Start("ZC_SpectateChoosePlayer")
 				net.WriteInt(IN_RELOAD,32)
 				net.SendToServer()
 			end
@@ -263,7 +263,7 @@ hook.Add("RenderScreenspaceEffects", "ZC_FadeScreenspace", function()
 end)
 
 zb.ROUND_STATE = 0
-net.Receive("RoundInfo", function()
+net.Receive("ZC_RoundInfo", function()
 	local rnd = net.ReadString()
 
 	hook.Run("ZC_OnRoundInfoCalled", rnd)
@@ -628,7 +628,7 @@ function GM:ScoreboardShow()
 		SPECTATE:SetText("")
 
 		SPECTATE.DoClick = function()
-			net.Start("ZB_SpecMode")
+			net.Start("ZC_SpectateMode")
 				net.WriteBool(true)
 			net.SendToServer()
 			scoreBoardMenu:Remove()
@@ -653,7 +653,7 @@ function GM:ScoreboardShow()
 		PLAYING:SetText("")
 
 		PLAYING.DoClick = function()
-			net.Start("ZB_SpecMode")
+			net.Start("ZC_SpectateMode")
 				net.WriteBool(false)
 			net.SendToServer()
 			scoreBoardMenu:Remove()
@@ -853,7 +853,7 @@ end)
 
 -- light from lightning; I did not make the lightning itself, skill issue
 if CLIENT then
-	net.Receive("PunishLightningEffect", function()
+	net.Receive("ZC_PunishLightningEffect", function()
 		local target = net.ReadEntity()
 		if not IsValid(target) then return end
 		local dlight = DynamicLight(target:EntIndex())
@@ -872,7 +872,7 @@ end
 
 local lightningMaterial = Material("sprites/lgtning")
 
-net.Receive("AnotherLightningEffect", function()
+net.Receive("ZC_LightningStrikeEffect", function()
     local target = net.ReadEntity()
 	if not IsValid(target) then return end
     local points = {}

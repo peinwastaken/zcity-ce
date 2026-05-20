@@ -210,9 +210,9 @@ function plyMeta:GiveSuicides( ammout )
 end
 
 
-util.AddNetworkString("zb_xp_get")
+util.AddNetworkString("ZC_ExperienceGet")
 
-net.Receive("zb_xp_get",function(len,ply)
+net.Receive("ZC_ExperienceGet",function(len,ply)
 
     local steamID64 = ply:SteamID64()
 
@@ -223,7 +223,7 @@ net.Receive("zb_xp_get",function(len,ply)
 
     local get_ply = net.ReadEntity()
 
-    net.Start("zb_xp_get")
+    net.Start("ZC_ExperienceGet")
         --print( ply:GetExp() )
         net.WriteEntity( get_ply )
         net.WriteFloat( get_ply:GetSkill() )

@@ -18,7 +18,7 @@ if SERVER then
     hg.GunPositions = hg.GunPositions or {}
 
 
-    util.AddNetworkString("send_positioning")
+    util.AddNetworkString("ZC_GunPositioningSync")
     hook.Add("Think","ZC_GunPositionChanged",function()
         if time > CurTime() then return end
         time = CurTime() + 1
@@ -41,7 +41,7 @@ if SERVER then
             end
         end
 
-        net.Start("send_positioning",true)
+        net.Start("ZC_GunPositioningSync",true)
             net.WriteTable(NetworkingTable)
         net.Broadcast()
     end)
@@ -49,13 +49,13 @@ if SERVER then
     hook.Add("PlayerInitialSpawn", "ZC_SendGunPos", function(ply)
         hg.GunPositions[ply] = {ply:GetInfoNum("zc_gunorigin_x",0),ply:GetInfoNum("zc_gunorigin_y",0),ply:GetInfoNum("zc_gunorigin_z",0)}
         timer.Simple(1, function()
-            net.Start("send_positioning")
+            net.Start("ZC_GunPositioningSync")
                 net.WriteTable(hg.GunPositions)
             net.Send(ply)
         end)
     end)
 else
-    net.Receive("send_positioning",function()
+    net.Receive("ZC_GunPositioningSync",function()
         local net_tbl = net.ReadTable()
         hg.GunPositions = table.Merge(hg.GunPositions,net_tbl)
     end)

@@ -300,7 +300,7 @@ if CLIENT then
 		local i = (#args > 0 and mClamp(tonumber(args[1]),1,#phrases[gender])) or mRandom(#phrases[gender])
 		if (#args < 2 and not #args == 0) then return end
  		local num = (#args > 1 and mClamp(tonumber(args[2]),phrases[gender][tonumber(i)][3],phrases[gender][tonumber(i)][4])) or mRandom(phrases[gender][tonumber(i)][3], phrases[gender][tonumber(i)][4])
-		net.Start("hg_phrase")
+		net.Start("ZC_PhraseSync")
 		net.WriteInt(i, 8)
 		net.WriteInt(num, 8)
 		net.SendToServer()

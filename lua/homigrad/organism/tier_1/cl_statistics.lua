@@ -1,6 +1,6 @@
 hg.organism_ents = hg.organism_ents or {}
 
-net.Receive("organism_send", function()
+net.Receive("ZC_OrganismSync", function()
 	local org = net.ReadTable()
 	local force = net.ReadBool()
 	local spectatov_ne_trogaem = net.ReadBool()
@@ -62,7 +62,7 @@ hook.Add("ZC_PlayerDeath","ZC_RemoveOrganism",function(ply)
 end)
 
 --organism_otherply = organism_otherply or {}
---net.Receive("organism_sendply", function() organism_otherply = net.ReadTable() end)
+--net.Receive("ZC_OrganismPlayerSync", function() organism_otherply = net.ReadTable() end)
 local white = Color(255, 255, 255)
 local black = Color(0, 0, 0, 200)
 local list = {
@@ -441,7 +441,7 @@ hook.Add("ZC_PlayerSpawn","ZC_RemoveStatusScreens",function(ply)
 	hg.hits = {}
 end)
 
-/*net.Receive("tracePosesSend", function()
+/*net.Receive("ZC_TracePosesSend", function()
 	local tracePoses = net.ReadTable()
 	local ent = net.ReadEntity()
 	local hitBoxs = net.ReadTable()

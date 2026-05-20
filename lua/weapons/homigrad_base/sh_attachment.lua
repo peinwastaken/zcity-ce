@@ -363,7 +363,7 @@ function SWEP:Attachment_Transform(model,pos,ang,plc,att,attdata,available)
 end
 
 if SERVER then
-	util.AddNetworkString("hmcd_togglelaser")
+	util.AddNetworkString("ZC_WeaponToggleLaser")
 	local laserThingies = {
 		[0] = 1,
 		[1] = 0,
@@ -377,7 +377,7 @@ if SERVER then
 		if not wep:HasAttachment("underbarrel") then return end
 		wep.lasertoggle = laserThingies[wep.lasertoggle or 0]
 		ply:EmitSound("weapons/ump45/ump45_fireselect.wav", 65)
-		net.Start("hmcd_togglelaser")
+		net.Start("ZC_WeaponToggleLaser")
 		net.WriteEntity(wep)
 		net.WriteInt(wep.lasertoggle, 5)
 		net.Broadcast()
@@ -396,14 +396,14 @@ if SERVER then
 		if not wep:HasAttachment("underbarrel") then return false end
 		wep.lasertoggle = flashlightThingies[wep.lasertoggle or 0]
 		ply:EmitSound("weapons/ump45/ump45_fireselect.wav", 65)
-		net.Start("hmcd_togglelaser")
+		net.Start("ZC_WeaponToggleLaser")
 		net.WriteEntity(wep)
 		net.WriteInt(wep.lasertoggle, 5)
 		net.Broadcast()
 		return false
 	end)
 else
-	net.Receive("hmcd_togglelaser", function()
+	net.Receive("ZC_WeaponToggleLaser", function()
 		local wep = net.ReadEntity()
 		local turn = net.ReadInt(5)
 		wep.lasertoggle = turn
@@ -608,7 +608,7 @@ function SWEP:AttachAnim()
 end
 
 function SWEP:SyncAtts()
-	--net.Start("sync_atts")
+	--net.Start("ZC_AttachmentsSync")
 	--net.WriteEntity(self)
 	--net.SendToServer()
 end-- XD
@@ -616,21 +616,21 @@ end-- XD
 if CLIENT then
 	concommand.Add("ZB_AttachAdd", function(ply, cmd, args)
 		local att = args[1]
-		net.Start("ZB_AttachAdd")
+		net.Start("ZC_AttachmentAdd")
 		net.WriteString(att)
 		net.SendToServer()
 	end)
 
 	concommand.Add("ZB_AttachRemove", function(ply, cmd, args)
 		local att = args[1]
-		net.Start("ZB_AttachRemove")
+		net.Start("ZC_AttachmentRemove")
 		net.WriteString(att)
 		net.SendToServer()
 	end)
 
 	concommand.Add("ZB_AttachDrop", function(ply, cmd, args)
 		local att = args[1]
-		net.Start("ZB_AttachDrop")
+		net.Start("ZC_AttachmentDrop")
 		net.WriteString(att)
 		net.SendToServer()
 	end)

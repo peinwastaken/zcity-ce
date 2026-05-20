@@ -19,7 +19,7 @@ end
 function ENT:Use(activator, caller)
     if IsValid(caller) and caller:IsPlayer() then
         caller:SetNWEntity("Radio", self)
-        net.Start("RadioURLInput")
+        net.Start("ZC_RadioUrlInput")
         net.WriteEntity(self)
         net.Send(caller)
     end

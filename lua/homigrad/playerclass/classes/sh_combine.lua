@@ -748,9 +748,9 @@ if SERVER then
         end
     end)
 
-    util.AddNetworkString("CombineRadioStart")
-    util.AddNetworkString("CombineRadioEnd")
-    util.AddNetworkString("CombineChatMessage")
+    util.AddNetworkString("ZC_CombineRadioStart")
+    util.AddNetworkString("ZC_CombineRadioEnd")
+    util.AddNetworkString("ZC_CombineChatMessage")
 
     hook.Add("ZC_CanHearPlayerVoice","ZC_CombineRadio",function(listener,talker)
         if talker.PlayerClassName == "Combine" and listener.PlayerClassName == "Combine" and talker:Alive() then

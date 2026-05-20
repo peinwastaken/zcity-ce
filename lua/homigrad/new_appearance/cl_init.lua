@@ -26,9 +26,9 @@ function hg.Appearance.GetAppearanceList()
 end
 
 -- Send from client...
-net.Receive("Get_Appearance", function()
+net.Receive("ZC_AppearanceGet", function()
 	local forced_random = hg.Appearance.ForcedRandom:GetBool()
-    net.Start("Get_Appearance")
+    net.Start("ZC_AppearanceGet")
 		local tbl,reason
 
 		if not forced_random then
@@ -44,7 +44,7 @@ end)
 
 local function OnlyGetAppearance()
 	local forced_random = hg.Appearance.ForcedRandom:GetBool()
-    net.Start("OnlyGet_Appearance")
+    net.Start("ZC_AppearanceFetchOnly")
 		local tbl,reason
 
 		if not forced_random then
@@ -58,7 +58,7 @@ local function OnlyGetAppearance()
 	if not tbl and not forced_random and reason then lply:ChatPrint("[Appearance] file load failed - " .. reason) end
 end
 
-net.Receive("OnlyGet_Appearance", OnlyGetAppearance)
+net.Receive("ZC_AppearanceFetchOnly", OnlyGetAppearance)
 
 -- Render things
 

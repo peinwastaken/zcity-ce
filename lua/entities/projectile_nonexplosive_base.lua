@@ -93,7 +93,7 @@ if SERVER then
 				model = self:GetModel()
 			}
 
-			net.Start("organism_send")
+			net.Start("ZC_OrganismSync")
 
 			local tbl = {}
 			tbl.LodgedEntities = org.LodgedEntities
@@ -241,7 +241,7 @@ if SERVER then
 			ply:EmitSound("weapons/bow_deerhunter/arrow_load_0"..math.random(3)..".wav", 55)
 		end
 
-		net.Start("organism_send")
+		net.Start("ZC_OrganismSync")
 
 		local tbl = {}
 		tbl.LodgedEntities = org.LodgedEntities

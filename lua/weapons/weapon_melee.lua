@@ -1013,7 +1013,7 @@ function SWEP:IsClient()
 end
 
 function SWEP:AddDecal()
-    net.Start("bloody_decal_1")
+    net.Start("ZC_BloodyDecal")
     net.WriteEntity(self)
     net.SendPVS(self:GetPos())
 end
@@ -1661,9 +1661,9 @@ end
 SWEP.tries = 10
 
 if SERVER then
-    util.AddNetworkString("melee_attack")
+    util.AddNetworkString("ZC_MeleeAttack")
 elseif CLIENT then
-    net.Receive("melee_attack",function()
+    net.Receive("ZC_MeleeAttack",function()
         local tbl = net.ReadTable()
         local ent = net.ReadEntity()
         local sendtoclient = net.ReadBool()
@@ -1683,7 +1683,7 @@ end
 function SWEP:PlayAnim(anim, time, cycling, callback, reverse, sendtoclient)
     if SERVER then
         sendtoclient = sendtoclient or false
-        net.Start("melee_attack")
+        net.Start("ZC_MeleeAttack")
             local netTbl = {
                 anim = anim,
                 time = time,

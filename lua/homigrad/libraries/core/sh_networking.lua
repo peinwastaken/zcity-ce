@@ -7,7 +7,7 @@ if (CLIENT) then
     zb.net = zb.net or {}
     zb.net.globals = zb.net.globals or {}
 
-    net.Receive("zbGlobalVarSet", function()
+    net.Receive("ZC_GlobalVarSet", function()
         local key, var = net.ReadString(), net.ReadType()
 
     	zb.net.globals[key] = var
@@ -15,7 +15,7 @@ if (CLIENT) then
         hook.Run("ZC_OnGlobalVarSet", key, var)
     end)
 
-    net.Receive("zbNetVarSet", function()
+    net.Receive("ZC_NetVarSet", function()
         local index = net.ReadUInt(16)
 
 		local key = net.ReadString()
@@ -33,11 +33,11 @@ if (CLIENT) then
 		end
     end)
 	
-    net.Receive("zbNetVarDelete", function()
+    net.Receive("ZC_NetVarDelete", function()
     	zb.net[net.ReadUInt(16)] = nil
     end)
 
-    net.Receive("zbLocalVarSet", function()
+    net.Receive("ZC_LocalVarSet", function()
     	local key = net.ReadString()
     	local var = net.ReadType()
 
@@ -70,13 +70,13 @@ if (CLIENT) then
 	end)
 
 	function playerMeta:SyncVars()
-		net.Start("ZB_request_fullupdate")
+		net.Start("ZC_FullUpdateRequest")
 		net.SendToServer()
 	end
 else
-	util.AddNetworkString("ZB_request_fullupdate")
+	util.AddNetworkString("ZC_FullUpdateRequest")
 
-	net.Receive("ZB_request_fullupdate",function(len,ply)
+	net.Receive("ZC_FullUpdateRequest",function(len,ply)
 		ply.cooldown_sendnet = ply.cooldown_sendnet or 0
 		if ply.cooldown_sendnet < CurTime() then
 			ply.cooldown_sendnet = CurTime() + 1
@@ -102,10 +102,10 @@ else
     zb.net.locals = zb.net.locals or {}
     zb.net.globals = zb.net.globals or {}
 
-    util.AddNetworkString("zbGlobalVarSet")
-    util.AddNetworkString("zbLocalVarSet")
-    util.AddNetworkString("zbNetVarSet")
-    util.AddNetworkString("zbNetVarDelete")
+    util.AddNetworkString("ZC_GlobalVarSet")
+    util.AddNetworkString("ZC_LocalVarSet")
+    util.AddNetworkString("ZC_NetVarSet")
+    util.AddNetworkString("ZC_NetVarDelete")
 
     local function CheckBadType(name, object)
 		return false
@@ -134,7 +134,7 @@ else
 		
     	zb.net.globals[key] = value
 
-    	net.Start("zbGlobalVarSet", unreliable)
+    net.Start("ZC_GlobalVarSet", unreliable)
     	net.WriteString(key)
     	net.WriteType(value)
 
@@ -147,14 +147,14 @@ else
 	
     function playerMeta:SyncVars()
     	for k, v in pairs(zb.net.globals) do
-    		net.Start("zbGlobalVarSet")
+        net.Start("ZC_GlobalVarSet")
     			net.WriteString(k)
     			net.WriteType(v)
     		net.Send(self)
     	end
 
     	for k, v in pairs(zb.net.locals[self] or {}) do
-    		net.Start("zbLocalVarSet")
+        net.Start("ZC_LocalVarSet")
     			net.WriteString(k)
     			net.WriteType(v)
     		net.Send(self)
@@ -165,7 +165,7 @@ else
     			local index = entity:EntIndex()
 
     			for k, v in pairs(data) do
-    				net.Start("zbNetVarSet")
+                net.Start("ZC_NetVarSet")
     					net.WriteUInt(index, 16)
     					net.WriteString(k)
     					net.WriteType(v)
@@ -191,7 +191,7 @@ else
     	zb.net.locals[self] = zb.net.locals[self] or {}
     	zb.net.locals[self][key] = value
 
-    	net.Start("zbLocalVarSet")
+    net.Start("ZC_LocalVarSet")
     		net.WriteString(key)
     		net.WriteType(value)
     	net.Send(self)
@@ -220,7 +220,7 @@ else
 	end
 
     function entityMeta:SendNetVar(key, receiver)
-    	net.Start("zbNetVarSet")
+    net.Start("ZC_NetVarSet")
     	net.WriteUInt(self:EntIndex(), 16)
     	net.WriteString(key)
     	net.WriteType(zb.net.list[self] and zb.net.list[self][key])
@@ -236,7 +236,7 @@ else
     	zb.net.list[self] = nil
     	zb.net.locals[self] = nil
 
-    	net.Start("zbNetVarDelete")
+    net.Start("ZC_NetVarDelete")
     	net.WriteUInt(self:EntIndex(), 16)
 
     	if (receiver == nil) then

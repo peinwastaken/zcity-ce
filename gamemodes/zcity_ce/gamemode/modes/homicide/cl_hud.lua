@@ -251,7 +251,7 @@ end)
 
 
 
-net.Receive("HMCD_UpdateTraitorAssistants", function()
+net.Receive("ZC_HomicideTraitorAssistants", function()
     local count = net.ReadUInt(8)
     MODE.TraitorsLocal = {}
 
@@ -265,7 +265,7 @@ net.Receive("HMCD_UpdateTraitorAssistants", function()
 end)
 
 
-net.Receive("HMCD_TraitorDeathState", function()
+net.Receive("ZC_HomicideTraitorDeathState", function()
     local traitor_name = net.ReadString()
     local is_alive = net.ReadBool()
 
@@ -505,7 +505,7 @@ hook.Add("Think", "ZC_RequestTraitorStatus", function()
 	if not traitor_panel.next_status_request or traitor_panel.next_status_request < CurTime() then
 		traitor_panel.next_status_request = CurTime() + 2
 
-		net.Start("HMCD_RequestTraitorStatuses")
+		net.Start("ZC_HomicideRequestTraitors")
 		net.SendToServer()
 	end
 end)

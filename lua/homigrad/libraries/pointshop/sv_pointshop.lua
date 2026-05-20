@@ -219,18 +219,18 @@ end
 
 -- networking and other
 
-util.AddNetworkString("hg_pointshop_net")
+util.AddNetworkString("ZC_Pointshop")
 
 function PLUGIN:NET_SendPointShopVars( ply )
 
-    net.Start( "hg_pointshop_net" )
+    net.Start( "ZC_Pointshop" )
         net.WriteTable( ply:GetPointshopVars() )
     net.Send( ply )
 end
 
 --PLUGIN:NET_SendPointShopVars( Player(2) )
 
-util.AddNetworkString("hg_pointshop_send_notificate")
+util.AddNetworkString("ZC_PointshopNotify")
 
 function PLUGIN:NET_BuyItem( ply, uid )
     if not util.IsBinaryModuleInstalled("mysqloo") then return end
@@ -246,7 +246,7 @@ function PLUGIN:NET_BuyItem( ply, uid )
         yes, reason = ply:PS_TakePoints(hg.PointShop.Items[uid].PRICE, function() ply:PS_AddItem( uid ) end)
     end
 
-    net.Start( "hg_pointshop_send_notificate" )
+    net.Start( "ZC_PointshopNotify" )
         net.WriteString(reason)
     net.Send( ply )
 
@@ -257,7 +257,7 @@ function PLUGIN:NET_GetBuyedItems( ply )
     PLUGIN:NET_SendPointShopVars( ply )
 end
 
-net.Receive("hg_pointshop_net",function( _, ply )
+net.Receive("ZC_Pointshop",function( _, ply )
     if ply.PSNetCD and ply.PSNetCD > CurTime() then return end
 
     ply.PSNetCD = CurTime() + 0.01

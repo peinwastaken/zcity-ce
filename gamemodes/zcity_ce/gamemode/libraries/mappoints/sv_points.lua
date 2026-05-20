@@ -161,7 +161,7 @@ end,1,"Remove point (points) on the map\nArgs - pointGroup, pointNumber ( * - al
 -- Send points to the client
 
 function zb.SendPointsToPly(ply, shouldprint)
-    net.Start("zb_getallpoints")
+    net.Start("ZC_MapPointsGetAll")
         net.WriteTable(zb.GetAllPoints())
     net.Send(ply)
 
@@ -177,13 +177,13 @@ function zb.SendPoints()
         rf:AddPlayer(v)
     end
 
-    net.Start("zb_getallpoints")
+    net.Start("ZC_MapPointsGetAll")
         net.WriteTable(zb.GetAllPoints())
     net.Send(rf)
 end
 
 function zb.SendSpecificPointsToPly(ply, pointGroup, shouldprint)
-    net.Start("zb_getspecificpoints")
+    net.Start("ZC_MapPointsGetSpecific")
         net.WriteString(pointGroup)
         net.WriteTable(zb.GetAllPoints()[pointGroup])
     if IsValid(ply) then
@@ -226,7 +226,7 @@ function zb.TranslatePointsToVectors(tbl)
 	return newtbl
 end
 
-net.Receive("zb_getallpoints",function(len,ply)
+net.Receive("ZC_MapPointsGetAll",function(len,ply)
     if not ply:IsAdmin() then ply:ChatPrint("Points: Access denied") return end
 
     zb.SendPointsToPly(ply, true)

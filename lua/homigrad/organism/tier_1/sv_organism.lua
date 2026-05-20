@@ -109,8 +109,8 @@ end)
 
 local zc_unreliable_nets = ConVarExists("zc_unreliable_nets") and GetConVar("zc_unreliable_nets") or CreateConVar("zc_unreliable_nets", 0, FCVAR_ARCHIVE + FCVAR_SERVER_CAN_EXECUTE, "Toggle unreliable net messages for some of the expensive nets", 0, 1)
 
-util.AddNetworkString("organism_send")
-util.AddNetworkString("organism_sendply")
+util.AddNetworkString("ZC_OrganismSync")
+util.AddNetworkString("ZC_OrganismPlayerSync")
 local CurTime = CurTime
 local function send_organism(org, ply)
 	if not IsValid(org.owner) then return end
@@ -171,7 +171,7 @@ local function send_organism(org, ply)
 	sendtable.berserkActive2 = org.berserkActive2
 	sendtable.noradrenalineActive = org.noradrenalineActive
 
-	net.Start("organism_send", zc_unreliable_nets:GetBool())
+	net.Start("ZC_OrganismSync", zc_unreliable_nets:GetBool())
 	net.WriteTable(not zb.dev.IsDeveloper() and sendtable or org)
 	net.WriteBool(org.owner.fullsend)
 	net.WriteBool(false)
@@ -226,7 +226,7 @@ local function send_bareinfo(org)
 	rf:AddPVS(org.owner:GetPos())
 	if org.owner:IsPlayer() then rf:RemovePlayer(org.owner) end
 
-	net.Start("organism_send", zc_unreliable_nets:GetBool())
+	net.Start("ZC_OrganismSync", zc_unreliable_nets:GetBool())
 	net.WriteTable(not zb.dev.IsDeveloper() and sendtable or org)
 	net.WriteBool(org.owner.fullsend)
 	net.WriteBool(true)

@@ -1,6 +1,6 @@
 --
 local CurTime = CurTime
-util.AddNetworkString("hgwep reload")
+util.AddNetworkString("ZC_WeaponReload")
 function SWEP:Reload(time)
 	if self.reload then return end
 	if IsValid(self:GetOwner().FakeRagdoll) and self:GetOwner().FakeRagdoll.ConsLH then return end
@@ -15,7 +15,7 @@ function SWEP:Reload(time)
 	self.StaminaReloadTime = (self.StaminaReloadTime + (self:Clip1() > 0 and -self.StaminaReloadTime/3 or 0 ))
 	self.reload = self.LastReload + self.StaminaReloadTime
 	self.dwr_reverbDisable = true
-	net.Start("hgwep reload")
+	net.Start("ZC_WeaponReload")
 		net.WriteEntity(self)
 		net.WriteFloat(self.LastReload)
 		net.WriteInt(self:Clip1(),10)

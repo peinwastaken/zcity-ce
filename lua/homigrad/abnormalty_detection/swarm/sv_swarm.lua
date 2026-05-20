@@ -8,9 +8,9 @@ They do not resemble flowers anymore
 --They answer violence with violence and can quickly become deadly force
 
 --Achievements
-util.AddNetworkString("SWARM(Psych)")
-util.AddNetworkString("SWARM(Knockout)")
-util.AddNetworkString("SWARM(Bleed)")
+util.AddNetworkString("ZC_SwarmPsych")
+util.AddNetworkString("ZC_SwarmKnockout")
+util.AddNetworkString("ZC_SwarmBleed")
 
 SWARM={}
 SWARM.Msg='You die as Swarm bursts from you'
@@ -231,7 +231,7 @@ end)
 
 function SWARM:Psych(ply,time)
 	if(!ply:IsPlayer())then return end
-	net.Start("SWARM(Psych)")
+	net.Start("ZC_SwarmPsych")
 		net.WriteUInt(time,4)
 	net.Send(ply)
 
@@ -250,7 +250,7 @@ end
 
 function SWARM:Knockout(ply,time,aftertime)
 	if(!ply:IsPlayer())then return end
-	net.Start("SWARM(Knockout)")
+	net.Start("ZC_SwarmKnockout")
 		net.WriteFloat(time)
 		net.WriteUInt(aftertime or 0,4)
 	net.Send(ply)
@@ -264,7 +264,7 @@ end
 
 function SWARM:ApplyBleed(ply,time,attacker)
 	if(ply:IsPlayer())then
-		net.Start("SWARM(Bleed)")
+		net.Start("ZC_SwarmBleed")
 			net.WriteFloat(time)
 		net.Send(ply)
 	end

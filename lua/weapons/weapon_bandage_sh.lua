@@ -360,9 +360,9 @@ function SWEP:SecondaryAttack()
 end
 
 if SERVER then
-	util.AddNetworkString("select_mode")
+	util.AddNetworkString("ZC_MedicalModeSelect")
 else
-	net.Receive("select_mode",function()
+	net.Receive("ZC_MedicalModeSelect",function()
 		net.ReadEntity().mode = net.ReadInt(4)
 	end)
 end
@@ -371,7 +371,7 @@ function SWEP:Reload()
 	if SERVER and self:GetOwner():KeyPressed(IN_RELOAD) and #self.modeValuesdef > 1 then
 		self.mode = ((self.mode + 1) > self.modes) and 1 or (self.mode + 1)
 		--self:GetOwner():ChatPrint("You have chosen the " .. self.modeNames[self.mode] .. " mode")
-		net.Start("select_mode")
+		net.Start("ZC_MedicalModeSelect")
 		net.WriteEntity(self)
 		net.WriteInt(self.mode,4)
 		net.Broadcast()
@@ -732,7 +732,7 @@ end
 hg.TourniquetGuys = hg.TourniquetGuys or {}
 
 if SERVER then
-	util.AddNetworkString("send_tourniquets")
+	util.AddNetworkString("ZC_TourniquetSync")
 	local tourniqet_bones = {
 		["ValveBiped.Bip01_L_UpperArm"] = {
 			["ValveBiped.Bip01_L_Forearm"] = true,

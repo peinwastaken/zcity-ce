@@ -2,7 +2,7 @@ MODE.name = "coop"
 
 local MODE = MODE
 
-net.Receive("coop_start",function()
+net.Receive("ZC_CoopStart",function()
     surface.PlaySound("hl2mode1.wav")
 	zb.RemoveFade()
 	hg.DynaMusic:Start("hl_coop")
@@ -63,7 +63,7 @@ end
 
 local CreateEndMenu
 
-net.Receive("coop_roundend",function()
+net.Receive("ZC_CoopRoundEnd",function()
     CreateEndMenu()
 end)
 

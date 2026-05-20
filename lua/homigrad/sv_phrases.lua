@@ -286,8 +286,8 @@ hook.Add("PlayerSpawn","ZC_GiveRandomPitch",function(ply)
 	ply.VoicePitch = mRandom(93, 107)
 end)
 
-util.AddNetworkString("hg_phrase")
-net.Receive("hg_phrase", function(len, ply)
+util.AddNetworkString("ZC_PhraseSync")
+net.Receive("ZC_PhraseSync", function(len, ply)
 	if (ply.phrCld or 0) > CurTime() then return end
 	local result = hook.Run("ZC_CanUsePhrase", ply, cmd, args) // return here true to reject phrase
 	if result then return end

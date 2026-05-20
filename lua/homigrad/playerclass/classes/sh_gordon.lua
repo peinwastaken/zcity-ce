@@ -546,7 +546,7 @@ end)
 
 if CLIENT then
     local queen = {}
-    net.Receive("HEV_DAMAGE",function()
+    net.Receive("ZC_HEVDamage",function()
         local armors = lply.armors
         if not armors then return end
         if armors["head"] ~= "gordon_helmet" then return end
@@ -566,7 +566,7 @@ if CLIENT then
     end)
 
 elseif SERVER then
-    util.AddNetworkString("HEV_DAMAGE")
+    util.AddNetworkString("ZC_HEVDamage")
 
     local CheckBones = {
         "spine3",
@@ -614,7 +614,7 @@ elseif SERVER then
                 org.mannitol = org.brain * 2
                 --ply, msg, delay, msgKey, showTime, func, clr)
                 ply:Notify("HEV suit has detected a traumatic brain injury. Injecting mannitol.",true,"mannitol_hev",0.5,function(ply)
-                    net.Start("HEV_DAMAGE")
+                    net.Start("ZC_HEVDamage")
                         net.WriteString("hl1/fvox/automedic_on.wav")
                     net.Send(ply)
                 end, hev_color)
@@ -629,7 +629,7 @@ elseif SERVER then
                 org.needle = 0
 
                 ply:Notify("HEV suit has detected pneumothorax. Repairing.", true, "needle_hev", 0.5, function(ply)
-                    net.Start("HEV_DAMAGE")
+                    net.Start("ZC_HEVDamage")
                         net.WriteString("hl1/fvox/automedic_on.wav")
                     net.Send(ply)
                 end, hev_color)
@@ -649,7 +649,7 @@ elseif SERVER then
                     if administer > 0.1 then
                         ply:Notify("HEV suit has detected pain receptors almost reaching the threshold. Injecting morphine.", 10, "morphine_hev", 0.5,
                         function(ply)
-                            net.Start("HEV_DAMAGE")
+                            net.Start("ZC_HEVDamage")
                                 net.WriteString("hl1/fvox/morphine_shot.wav")
                             net.Send(ply)
                         end, hev_color)
@@ -659,7 +659,7 @@ elseif SERVER then
 
             if (org.CO > 10) or (org.COregen > 10) then
                 ply:Notify("HEV suit has detected a carbon monoxide presence in the organism. Neutralising.",60,"co_hev",0.5,function(ply)
-                    net.Start("HEV_DAMAGE")
+                    net.Start("ZC_HEVDamage")
                         net.WriteString("hl1/fvox/automedic_on.wav")
                     net.Send(ply)
                 end, hev_color)
@@ -691,7 +691,7 @@ elseif SERVER then
 
                 if bonesfixed then
                     ply:Notify("HEV suit has detected fractures. Repairing.",60,"bones_hev",0.5,function(ply)
-                        net.Start("HEV_DAMAGE")
+                        net.Start("ZC_HEVDamage")
                             net.WriteString("hl1/fvox/automedic_on.wav")
                         net.Send(ply)
                     end, hev_color)
@@ -737,7 +737,7 @@ elseif SERVER then
 
             if (org.pulse < 40) or (org.blood < 3000) or (org.o2[1] < 10) then
                 ply:Notify("HEV suit has detected a critically low pulse. Epinephrine injected. Auto-pulse enabled. Plasma injected.", 60, "pulse_hev", 0.5, function(ply)
-                    net.Start("HEV_DAMAGE")
+                    net.Start("ZC_HEVDamage")
                         net.WriteString("hl1/fvox/health_critical.wav")
                     net.Send(ply)
                 end, hev_color)
@@ -776,7 +776,7 @@ elseif SERVER then
                     if not IsValid(ply) or not ply:Alive() or ply.PlayerClassName ~= "Gordon" or ply.HEV.Medicine <= 0 then return end
 
                     if ply:Health() < 35 then
-                        net.Start("HEV_DAMAGE")
+                        net.Start("ZC_HEVDamage")
                             net.WriteString("hl1/fvox/health_critical.wav")
                         net.Send(ply)
                     end
@@ -788,7 +788,7 @@ elseif SERVER then
 
                     local org = ply.organism
 
-                    net.Start("HEV_DAMAGE")
+                    net.Start("ZC_HEVDamage")
                         net.WriteString("hl1/fvox/automedic_on.wav")
                     net.Send(ply)
 
@@ -813,7 +813,7 @@ elseif SERVER then
                         end
 
                         if oldMedicine ~= ply.HEV.Medicine then
-                            net.Start("HEV_DAMAGE")
+                            net.Start("ZC_HEVDamage")
                                 net.WriteString("hl1/fvox/medical_repaired.wav")
                             net.Send(ply)
                         end
@@ -826,7 +826,7 @@ elseif SERVER then
                         if ply.organism.internalBleed > 0.02 then
                             snd = "hl1/fvox/internal_bleeding.wav"
                         end
-                        net.Start("HEV_DAMAGE")
+                        net.Start("ZC_HEVDamage")
                             net.WriteString(snd)
                         net.Send(ply)
 
@@ -859,7 +859,7 @@ elseif SERVER then
                         ply:SetNetVar("arterialwounds", ply.organism.arterialwounds)
                         ply:SetNetVar("wounds", ply.organism.wounds)
                         if ply.organism.bleed > 0.025 then
-                            net.Start("HEV_DAMAGE")
+                            net.Start("ZC_HEVDamage")
                                 net.WriteString(snd)
                             net.Send(ply)
                         end

@@ -554,7 +554,7 @@ local vocals = {
 		}
 	end
 
-	net.Receive("Synthesizer(PlayOnPlayer)", function()
+	net.Receive("ZC_SynthesizerPlayOnPlayer", function()
 		PLUGIN.PlayVocalOnPlayer(net.ReadString(), net.ReadEntity())
 	end)
 --//

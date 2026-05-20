@@ -150,7 +150,7 @@ local function OpenContainer( ent )
 			cooldown = CurTime() + 0.5
 			surface.PlaySound("arc9_eft_shared/generic_mag_pouch_in" .. math.random(7) .. ".ogg")
 			grid.SoundKD = CurTime() + 0.2
-            net.Start( "ZBox_LootSystem_net" )
+            net.Start( "ZC_BoxLootSystem" )
                 net.WriteEntity(ent)
                 net.WriteUInt(k,10)
             net.SendToServer()
@@ -190,7 +190,7 @@ local function OpenContainer( ent )
     zbContainerMenu:SlideDown(0.5)
 end
 
-net.Receive( "ZBox_LootSystem_net", function( )
+net.Receive( "ZC_BoxLootSystem", function( )
     local ent = net.ReadEntity()
     hg.OpenedContainer = ent
     ent.Loot = util.JSONToTable( net.ReadString() )

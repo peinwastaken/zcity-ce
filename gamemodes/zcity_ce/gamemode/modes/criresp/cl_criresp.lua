@@ -2,7 +2,7 @@ local MODE = MODE
 MODE.name = "criresp"
 local song
 local songfade = 0
-net.Receive("criresp_start", function()
+net.Receive("ZC_CrisisResponseStart", function()
 	surface.PlaySound("zbattle/criresp.mp3")
 
 	timer.Simple(3, function()
@@ -85,7 +85,7 @@ function MODE:HUDPaint()
 end
 
 local CreateEndMenu
-net.Receive("cri_roundend", function() CreateEndMenu(net.ReadBool()) end)
+net.Receive("ZC_CrisisResponseRoundEnd", function() CreateEndMenu(net.ReadBool()) end)
 local colGray = Color(85, 85, 85, 255)
 local colRed = Color(130, 10, 10)
 local colRedUp = Color(160, 30, 30)

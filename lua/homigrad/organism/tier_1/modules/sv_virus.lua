@@ -1,4 +1,4 @@
-util.AddNetworkString("VirusStageUpdate")
+util.AddNetworkString("ZC_VirusStageUpdate")
 
 local VirusModule = {}
 hg.organism.module.virus = VirusModule
@@ -22,7 +22,7 @@ function VirusModule.InfectPlayer(ply)
         NextHPDamageTime = CurTime() + 5,
         NextOxygenIssueTime = CurTime() + math.random(10, 15)
     }
-    net.Start("VirusStageUpdate")
+    net.Start("ZC_VirusStageUpdate")
     net.WriteInt(ply.Virus.Stage, 8)
     net.Send(ply)
     --print(ply:Nick() .. " has been infected with the virus.")
@@ -67,7 +67,7 @@ function VirusModule.UpdateVirusStage(ply)
             ply.organism.unconscious = true
         end
 
-        net.Start("VirusStageUpdate")
+        net.Start("ZC_VirusStageUpdate")
         net.WriteInt(virus.Stage, 8)
         net.Send(ply)
     end

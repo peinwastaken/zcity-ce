@@ -2,7 +2,7 @@ if CLIENT then
 	concommand.Add("hg_unload_ammo", function(ply, cmd, args)
 		local wep = ply:GetActiveWeapon()
 		if wep and ishgweapon(wep) and wep:Clip1() > 0 and wep:CanUse() then
-			net.Start("unload_ammo")
+			net.Start("ZC_AmmoUnload")
 			net.WriteEntity(wep)
 			net.SendToServer()
 			wep:SetClip1(0)
@@ -15,14 +15,14 @@ if CLIENT then
 	    local type_ = math.Round(args[1])
 	    if wep and ishgweapon(wep) and (wep:Clip1() == 0 or wep.AllwaysChangeAmmo) and wep:CanUse() and wep.AmmoTypes and wep.AmmoTypes[type_] then
 	        ply:ChatPrint("Changed ammotype to: " .. wep.AmmoTypes[type_][1])
-	        net.Start("changeAmmoType")
+	        net.Start("ZC_AmmoTypeChange")
 	        net.WriteEntity(wep)
 	        net.WriteInt(type_, 4)
 	        net.SendToServer()
 	    end
 	end)
 
-	net.Receive("unload_ammo",function()
+	net.Receive("ZC_AmmoUnload",function()
 		local wep = net.ReadEntity()
 		if wep.AnimList["unload"] then
 			wep:PlayAnim("unload", wep.UnloadAnimTime)
@@ -34,10 +34,10 @@ if CLIENT then
 		end
 	end)
 else
-	util.AddNetworkString("unload_ammo")
-	util.AddNetworkString("changeAmmoType")
+	util.AddNetworkString("ZC_AmmoUnload")
+	util.AddNetworkString("ZC_AmmoTypeChange")
 
-	net.Receive("unload_ammo", function(len, ply)
+	net.Receive("ZC_AmmoUnload", function(len, ply)
 		local wep = net.ReadEntity()
         if ply:GetNWFloat("willsuicide", 0) > 0 then return end -- you cant escape.
         wep.drawBullet = nil
@@ -47,14 +47,14 @@ else
 			if wep.Unload then
 				wep:Unload()
 			end
-			net.Start("unload_ammo")
+			net.Start("ZC_AmmoUnload")
 			net.WriteEntity(wep)
 			net.Broadcast()
 			hg.GetCurrentCharacter(ply):EmitSound("snd_jack_hmcd_ammotake.wav")
 		end
 	end)
 
-	net.Receive("changeAmmoType", function(len, ply)
+	net.Receive("ZC_AmmoTypeChange", function(len, ply)
 	    local wep = net.ReadEntity()
 	    local type_ = net.ReadInt(4)
 	    if not IsValid(wep) then return end
@@ -97,20 +97,20 @@ if CLIENT then
 9 - somalian shooting
 ]]) printed = true end
 		local pos = math.Round(args[1] or -1)
-		net.Start("change_posture")
+		net.Start("ZC_WeaponPostureChange")
 		net.WriteInt(pos, 8)
 		net.SendToServer()
 	end)
 
-	net.Receive("change_posture", function()
+	net.Receive("ZC_WeaponPostureChange", function()
 		local ply = net.ReadEntity()
 		local pos = net.ReadInt(8)
 		
 		ply.posture = pos
 	end)
 else
-	util.AddNetworkString("change_posture")
-	net.Receive("change_posture", function(len, ply)
+	util.AddNetworkString("ZC_WeaponPostureChange")
+	net.Receive("ZC_WeaponPostureChange", function(len, ply)
 		local pos = net.ReadInt(8)
 
 		if (ply.change_posture_cooldown or 0) > CurTime() then return end
@@ -132,7 +132,7 @@ else
 			ply.posture = ply.posture or 0
 			ply.posture = (ply.posture + 1) > #hg.postures and 0 or ply.posture + 1
 		end
-		net.Start("change_posture")
+		net.Start("ZC_WeaponPostureChange")
 		net.WriteEntity(ply)
 		net.WriteInt(ply.posture, 9)
 		net.Broadcast()
@@ -140,19 +140,19 @@ else
 end
 
 if SERVER then
-	util.AddNetworkString("hg_viewgun")
+	util.AddNetworkString("ZC_WeaponInspect")
 
 	concommand.Add("hg_inspect", function(ply, cmd, args)
 		local gun = ply:GetActiveWeapon()
 		if not IsValid(gun) or not gun or not gun.AllowedInspect then return end
 		gun.inspect = CurTime() + 5
-		net.Start("hg_viewgun")
+		net.Start("ZC_WeaponInspect")
 		net.WriteEntity(gun)
 		net.WriteFloat(gun.inspect)
 		net.Broadcast()
 	end)
 else
-	net.Receive("hg_viewgun", function() 
+	net.Receive("ZC_WeaponInspect", function()
 		local ent = net.ReadEntity()
 		local time = net.ReadFloat()
 		ent.inspect = time

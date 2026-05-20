@@ -6,7 +6,7 @@ local MODE = MODE
 local highlightNPCs = {}
 
 
-net.Receive("npc_defense_start",function()
+net.Receive("ZC_DefenseStart",function()
     surface.PlaySound("csgo_round.wav")
 end)
 
@@ -29,7 +29,7 @@ end
 
 local NextWave_Time = 0
 
-net.Receive("npc_defense_newwave", function()
+net.Receive("ZC_DefenseNewWave", function()
 	local time = net.ReadFloat()
 	NextWave_Time = time
 end)
@@ -72,7 +72,7 @@ function MODE:HUDPaint()
 end
 
 
-net.Receive("defense_highlight_last_npcs", function()
+net.Receive("ZC_DefenseHighlightLastNPCs", function()
     local npcs = net.ReadTable()
     highlightNPCs = {}
 
@@ -111,7 +111,7 @@ end
 
 local CreateEndMenu
 
-net.Receive("npc_defense_roundend",function()
+net.Receive("ZC_DefenseRoundEnd",function()
     CreateEndMenu()
     StopCurrentMusic()
 end)
@@ -266,7 +266,7 @@ function createSupportMenu()
         button:SetText(text)
         button:SetSize(100, 30)
         button.DoClick = function()
-            net.Start("RequestSupport")
+            net.Start("ZC_DefenseSupportRequest")
             net.WriteString(command)
             net.SendToServer()
             frame:Close()
@@ -349,7 +349,7 @@ local function PlayMusic(musicFile)
     end)
 end
 
-net.Receive("StartWaveMusic", function()
+net.Receive("ZC_DefenseWaveMusicStart", function()
     local musicFile = net.ReadString()
 
     game.RemoveRagdolls()
@@ -361,7 +361,7 @@ net.Receive("StartWaveMusic", function()
     end
 end)
 
-net.Receive("StopWaveMusic", function()
+net.Receive("ZC_DefenseWaveMusicStop", function()
     StopCurrentMusic(true)
 end)
 
@@ -715,7 +715,7 @@ local function CreateVoteMenu()
                 surface.PlaySound("ui/buttonclick.wav")
 
 
-                net.Start("defense_change_vote")
+                net.Start("ZC_DefenseChangeVote")
                 net.WriteInt(selectedMode, 4)
                 net.SendToServer()
             end
@@ -765,7 +765,7 @@ local function CreateVoteMenu()
     CreateModeButton(3, 500)
 end
 
-net.Receive("defense_start_vote", function()
+net.Receive("ZC_DefenseStartVote", function()
     voteEndTime = net.ReadFloat()
     selectedMode = nil
     voteResults = {0, 0, 0}
@@ -773,7 +773,7 @@ net.Receive("defense_start_vote", function()
     CreateVoteMenu()
 end)
 
-net.Receive("defense_vote_update", function()
+net.Receive("ZC_DefenseVoteUpdate", function()
     voteResults = net.ReadTable()
     totalVotes = 0
     for _, votes in pairs(voteResults) do
@@ -781,7 +781,7 @@ net.Receive("defense_vote_update", function()
     end
 end)
 
-net.Receive("defense_vote_result", function()
+net.Receive("ZC_DefenseVoteResult", function()
     currentSubMode = net.ReadString()
     voteResults = net.ReadTable()
 
@@ -792,7 +792,7 @@ net.Receive("defense_vote_result", function()
     surface.PlaySound("buttons/button14.wav")
 end)
 
-net.Receive("defense_show_selected_mode", function()
+net.Receive("ZC_DefenseShowSelectedMode", function()
     local mode = net.ReadString()
     currentSubMode = mode
     showSelectedMode = true
@@ -855,7 +855,7 @@ end
 
 hook.Remove("ZC_RadialOptions", "ZC_CommanderSupportOptions")
 
-net.Receive("defense_submit_vote", function(len, ply)
+net.Receive("ZC_DefenseSubmitVote", function(len, ply)
     if not IsValid(ply) then return end
 
     local vote = net.ReadInt(4)
@@ -868,7 +868,7 @@ net.Receive("defense_submit_vote", function(len, ply)
         MODE.VoteResults[vote] = MODE.VoteResults[vote] + 1
         ply.HasVoted = vote
 
-        net.Start("defense_vote_update")
+        net.Start("ZC_DefenseVoteUpdate")
         net.WriteTable(MODE.VoteResults)
         net.Broadcast()
     end
@@ -910,7 +910,7 @@ local bossBannerColors = {
 }
 
 
-net.Receive("defense_boss_incoming", function()
+net.Receive("ZC_DefenseBossIncoming", function()
     bossWaveData.active = true
     bossWaveData.startTime = CurTime()
     bossWaveData.scale = 0

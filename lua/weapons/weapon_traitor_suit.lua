@@ -223,7 +223,7 @@ if CLIENT then
 
                 self.CostumeMenu:Close()
 
-                net.Start("SuitCostumeSelected")
+                net.Start("ZC_SuitCostumeSelected")
                 net.WriteInt(i, 8)
                 net.SendToServer()
 
@@ -234,7 +234,7 @@ if CLIENT then
         end
     end
 
-    net.Receive("SuitCostumeStatus", function()
+    net.Receive("ZC_SuitCostumeStatus", function()
         local wep = LocalPlayer():GetActiveWeapon()
         if IsValid(wep) and wep:GetClass() == "weapon_traitor_suit" then
             wep.IsCostumeActive = net.ReadBool()
@@ -243,10 +243,10 @@ if CLIENT then
 end
 
 if SERVER then
-    util.AddNetworkString("SuitCostumeSelected")
-    util.AddNetworkString("SuitCostumeStatus")
+    util.AddNetworkString("ZC_SuitCostumeSelected")
+    util.AddNetworkString("ZC_SuitCostumeStatus")
 
-    net.Receive("SuitCostumeSelected", function(len, ply)
+    net.Receive("ZC_SuitCostumeSelected", function(len, ply)
         local wep = ply:GetActiveWeapon()
         if IsValid(wep) and wep:GetClass() == "weapon_traitor_suit" then
             if wep.IsCostumeActive then return end
@@ -270,7 +270,7 @@ if SERVER then
 
                 wep.IsCostumeActive = true
 
-                net.Start("SuitCostumeStatus")
+                net.Start("ZC_SuitCostumeStatus")
                     net.WriteBool(true)
                 net.Send(ply)
 
@@ -291,13 +291,13 @@ function SWEP:SecondaryAttack()
 
             self.IsCostumeActive = false
 
-            net.Start("SuitCostumeStatus")
+            net.Start("ZC_SuitCostumeStatus")
             net.WriteBool(false)
             net.Send(self:GetOwner())
 
             self:GetOwner():SetNetVar("CurPluv", self.StoredPluv or "pluv")
         else
-            net.Start("SuitCostumeStatus")
+            net.Start("ZC_SuitCostumeStatus")
             net.WriteBool(false)
             net.Send(self:GetOwner())
         end

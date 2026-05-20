@@ -381,8 +381,8 @@ hook.Add("ZC_StartRound","ZC_ResetRoundHarm",function()
     zb.HarmDoneKarma = {}
 end)
 
-util.AddNetworkString("get_karma")
-net.Receive("get_karma",function(len, ply)
+util.AddNetworkString("ZC_KarmaGet")
+net.Receive("ZC_KarmaGet",function(len, ply)
     if not ply:IsAdmin() then return end
 
     local tbl = {}
@@ -391,7 +391,7 @@ net.Receive("get_karma",function(len, ply)
         tbl[pl:UserID()] = pl.Karma
     end
 
-    net.Start("get_karma")
+    net.Start("ZC_KarmaGet")
     net.WriteTable(tbl)
     net.Send(ply)
 end)
@@ -407,19 +407,19 @@ concommand.Add("hg_setkarma",function(ply,cmd,args)
     //newply:guilt_SetValue( ply.Karma or 100 )
 end)
 
-util.AddNetworkString("open_guilt_menu")
-util.AddNetworkString("forgive_player")
+util.AddNetworkString("ZC_GuiltMenuOpen")
+util.AddNetworkString("ZC_GuiltForgivePlayer")
 
-net.Receive("open_guilt_menu",function(len, ply)
+net.Receive("ZC_GuiltMenuOpen",function(len, ply)
     if ply:Alive() then return end
     local tbl = zb.HarmDoneKarma[ply] or {}
-    net.Start("open_guilt_menu")
+    net.Start("ZC_GuiltMenuOpen")
     net.WriteTable(tbl)
     net.Send(ply)
     //current round guilt
 end)
 
-net.Receive("forgive_player", function(len, ply)
+net.Receive("ZC_GuiltForgivePlayer", function(len, ply)
     local ent = net.ReadEntity()
     if not IsValid(ent) or not zb.HarmDoneKarma[ply] then return end
     local harm = zb.HarmDoneKarma[ply][ent]
@@ -431,7 +431,7 @@ net.Receive("forgive_player", function(len, ply)
 
     zb.HarmDone[ply][ent] = 0
     zb.HarmDoneKarma[ply][ent] = 0
-    net.Start("open_guilt_menu")
+    net.Start("ZC_GuiltMenuOpen")
     net.WriteTable(zb.HarmDoneKarma[ply])
     net.Send(ply)
 end)

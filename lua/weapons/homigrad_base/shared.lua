@@ -431,7 +431,7 @@ end
 
 local math_random = math.random
 local weapons_Get = weapons.Get
-if SERVER then util.AddNetworkString("hgwep shoot") end
+if SERVER then util.AddNetworkString("ZC_WeaponShoot") end
 
 --qol lmao
 function SWEP:CanPrimaryAttack()
@@ -499,7 +499,7 @@ function SWEP:PrimaryAttack(broadcast)
 	local huy = self:Shoot() ~= false
 
 	if SERVER and huy then
-		net.Start("hgwep shoot", true)
+		net.Start("ZC_WeaponShoot", true)
 		net.WriteEntity(self)
 		net.WriteBool(huy)
 		net.WriteBool(broadcast)
@@ -575,11 +575,11 @@ SWEP.NewSoundDist = nil
 SWEP.NewSoundSupressor = nil
 
 if SERVER then
-	util.AddNetworkString("resettinnitus")
+	util.AddNetworkString("ZC_TinnitusReset")
 
 	hook.Add("PlayerSpawn","ZC_ResetTinnitus",function(ply)
 		if OverrideSpawn then return end
-		net.Start("resettinnitus")
+		net.Start("ZC_TinnitusReset")
 		net.WritePlayer(ply)
 		net.Send(ply)
 	end)
@@ -591,7 +591,7 @@ if SERVER then
 		SetGlobalBool("zc_shoot_tinnitus",zc_shoot_tinnitus:GetBool())
 	end)
 else
-	net.Receive("resettinnitus", function(len, ply)
+	net.Receive("ZC_TinnitusReset", function(len, ply)
 		local ply = net.ReadPlayer() or ply
 		ply.TinnitusFactor = 0
 	end)
@@ -2226,9 +2226,9 @@ end
 SWEP.tries = 10
 
 if SERVER then
-    util.AddNetworkString("hg_animation")
+    util.AddNetworkString("ZC_WeaponAnimation")
 elseif CLIENT then
-    net.Receive("hg_animation",function()
+    net.Receive("ZC_WeaponAnimation",function()
         local tbl = net.ReadTable()
         local ent = net.ReadEntity()
         local sendtoclient = net.ReadBool()
@@ -2262,7 +2262,7 @@ function SWEP:PlayAnim(anim, data, cycling, callback, reverse, sendtoclient)
 	end
 
 	if SERVER then
-        net.Start("hg_animation")
+        net.Start("ZC_WeaponAnimation")
             local netTbl = {
                 anim = anim,
                 data = data,

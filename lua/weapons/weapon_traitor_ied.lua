@@ -167,7 +167,7 @@ function hg.ExplosionDisorientation(enta, tinnitus, disorientation)
 	enta.organism.owner:AddTinnitus(tinnitus)
 	enta.organism.disorientation = enta.organism.disorientation + (disorientation)
 
-	net.Start("organism_send") // send only disorientation (to avoid overloading net), and immediately
+	net.Start("ZC_OrganismSync") // send only disorientation (to avoid overloading net), and immediately
 	local tbl = {}
 	tbl.disorientation = enta.organism.disorientation
 	tbl.shock = enta.organism.shock
@@ -195,7 +195,7 @@ local function ExplodeTheItem(self,ent)
 	timer.Simple(0.4,function()
 		if not IsValid(ent) then return end
 		timer.Simple(0.1,function()
-			net.Start("projectileFarSound")
+			net.Start("ZC_ProjectileFarSound")
 				net.WriteString(table.Random(self.Sound))
 				net.WriteString(table.Random(self.SoundFar))
 				net.WriteVector(EntPos)
@@ -380,7 +380,7 @@ function SWEP:SecondaryAttack(calledFrom)
 
 			self.WorldModel = "models/saraphines/insurgency explosives/ied/insurgency_ied_phone.mdl"
 
-			net.Start("ied_have_the_bomb")
+			net.Start("ZC_IEDBombStatus")
 			net.WriteEntity(self)
 			net.Broadcast()
 
@@ -399,7 +399,7 @@ function SWEP:Initialize()
 end
 
 if CLIENT then
-	net.Receive("ied_have_the_bomb",function(len)
+	net.Receive("ZC_IEDBombStatus",function(len)
 		local self = net.ReadEntity()
 
 		self.WorldModel = "models/saraphines/insurgency explosives/ied/insurgency_ied_phone.mdl"
@@ -419,8 +419,8 @@ if CLIENT then
 end
 
 if SERVER then
-	util.AddNetworkString("ied_primary_attack")
-	util.AddNetworkString("ied_have_the_bomb")
+	util.AddNetworkString("ZC_IEDPrimaryAttack")
+	util.AddNetworkString("ZC_IEDBombStatus")
 	SWEP.nextattackhuy = 0
 	SWEP.PlantedOnSelf = false
 
@@ -447,7 +447,7 @@ if SERVER then
 
 				self.WorldModel = "models/saraphines/insurgency explosives/ied/insurgency_ied_phone.mdl"
 
-				net.Start("ied_have_the_bomb")
+				net.Start("ZC_IEDBombStatus")
 				net.WriteEntity(self)
 				net.Broadcast()
 
@@ -483,7 +483,7 @@ if SERVER then
 --
 		--	self.WorldModel = "models/saraphines/insurgency explosives/ied/insurgency_ied_phone.mdl"
 --
-		--	net.Start("ied_have_the_bomb")
+		--	net.Start("ZC_IEDBombStatus")
 		--	net.WriteEntity(self)
 		--	net.Broadcast()
 --

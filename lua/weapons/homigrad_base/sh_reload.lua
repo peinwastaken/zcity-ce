@@ -44,7 +44,7 @@ function SWEP:CanReload()
 end
 
 if SERVER then
-	util.AddNetworkString("hg_insertAmmo")
+	util.AddNetworkString("ZC_InsertAmmo")
 end
 
 function SWEP:InsertAmmo(need)
@@ -59,7 +59,7 @@ function SWEP:InsertAmmo(need)
 	owner:SetAmmo(primaryAmmoCount - need, primaryAmmo)
 
 	if SERVER then
-		net.Start("hg_insertAmmo")
+		net.Start("ZC_InsertAmmo")
 			net.WriteEntity(self)
 			net.WriteInt(self:Clip1(),10)
 		net.Broadcast()
@@ -67,7 +67,7 @@ function SWEP:InsertAmmo(need)
 end
 
 if CLIENT then
-	net.Receive("hg_insertAmmo",function()
+	net.Receive("ZC_InsertAmmo",function()
 		local ent = net.ReadEntity()
 		local ammo = net.ReadInt(10)
 
@@ -435,7 +435,7 @@ end
 if SERVER then return end
 
 SWEP.StaminaReloadMul = 1
-net.Receive("hgwep reload", function()
+net.Receive("ZC_WeaponReload", function()
 	local self = net.ReadEntity()
 	local time = net.ReadFloat()
 	if self and self.SetClip1 then self:SetClip1(net.ReadInt(10)) end

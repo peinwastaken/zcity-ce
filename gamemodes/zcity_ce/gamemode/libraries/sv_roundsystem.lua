@@ -1,10 +1,10 @@
 local player_GetAll = player.GetAll
 zb.modes = zb.modes or {}
 
-util.AddNetworkString("FadeScreen")
+util.AddNetworkString("ZC_FadeScreen")
 
 function zb.AddFade()
-	net.Start("FadeScreen")
+	net.Start("ZC_FadeScreen")
 	net.Broadcast()
 end
 
@@ -86,7 +86,7 @@ function zb:EndRound()
 
 	local mode, _ = CurrentRound()
 
-	net.Start("RoundInfo")
+	net.Start("ZC_RoundInfo")
 		net.WriteString(mode.name or "hmcd")
 		net.WriteInt(zb.ROUND_STATE, 4)
 	net.Broadcast()
@@ -171,7 +171,7 @@ function zb:EndRoundThink()
 			--PrintMessage(HUD_PRINTTALK, "Gamemode: " .. CurrentRound().PrintName or "None")
 
 			local mode, _ = CurrentRound()
-			net.Start("RoundInfo")
+			net.Start("ZC_RoundInfo")
 				net.WriteString(mode.name or "hmcd")
 				net.WriteInt(zb.ROUND_STATE, 4)
 			net.Broadcast()
@@ -198,7 +198,7 @@ end
 hook.Add("PlayerInitialSpawn", "ZC_SendRoundInfo", function(ply)
 	if zb.CROUND then
 		local mode,_ = CurrentRound()
-		net.Start("RoundInfo")
+		net.Start("ZC_RoundInfo")
 			net.WriteString(mode.name or "hmcd")
 			net.WriteInt(zb.ROUND_STATE, 4)
 		net.Send(ply)
@@ -207,7 +207,7 @@ hook.Add("PlayerInitialSpawn", "ZC_SendRoundInfo", function(ply)
 	if ply.SyncVars then ply:SyncVars() end
 end)
 
-util.AddNetworkString("RoundInfo")
+util.AddNetworkString("ZC_RoundInfo")
 function zb:Think(time)
 	if (zb.thinkTime or CurTime()) > time then return end
 	zb.thinkTime = time + 1
@@ -510,22 +510,22 @@ function zb.SetRoundList(newList)
 end
 
 
-util.AddNetworkString("ZB_SendModesInfo")
-util.AddNetworkString("ZB_SendRoundList")
-util.AddNetworkString("ZB_RequestRoundList")
-util.AddNetworkString("ZB_UpdateRoundList")
-util.AddNetworkString("ZB_NotifyRoundListChange")
+util.AddNetworkString("ZC_ModesInfoSend")
+util.AddNetworkString("ZC_RoundListSend")
+util.AddNetworkString("ZC_RoundListRequest")
+util.AddNetworkString("ZC_RoundListUpdate")
+util.AddNetworkString("ZC_RoundListChangeNotice")
 
 
 function zb.SendModesInfoToClient(ply)
-	net.Start("ZB_SendModesInfo")
+	net.Start("ZC_ModesInfoSend")
 		net.WriteTable(zb.GetModesInfo())
 	net.Send(ply)
 end
 
 
 function zb.SendRoundListToClient(ply)
-	net.Start("ZB_SendRoundList")
+	net.Start("ZC_RoundListSend")
 		net.WriteTable(zb.RoundList)
 		net.WriteString(zb.nextround or "")
 	net.Send(ply)
@@ -544,21 +544,21 @@ hook.Add("PlayerInitialSpawn", "ZC_SendModesOnSpawn", function(ply)
 end)
 
 
-net.Receive("ZB_RequestRoundList", function(len, ply)
+net.Receive("ZC_RoundListRequest", function(len, ply)
 	if IsValid(ply) and ply:IsAdmin() then
 		zb.SendModesInfoToClient(ply)
 		zb.SendRoundListToClient(ply)
 	end
 end)
 
-net.Receive("ZB_UpdateRoundList", function(len, ply)
+net.Receive("ZC_RoundListUpdate", function(len, ply)
 	if not IsValid(ply) or not ply:IsAdmin() then return end
 
 	local newList = net.ReadTable()
 
 	zb.SetRoundList(newList)
 
-	net.Start("ZB_NotifyRoundListChange")
+	net.Start("ZC_RoundListChangeNotice")
 		net.WriteString(ply:Nick())
 	net.Send(zb.GetAllAdmins())
 
@@ -580,7 +580,7 @@ function zb:RoundStart()
 	zb.ROUND_BEGIN = CurTime()
 	hg.UpdateRoundTime()
 
-	net.Start("RoundInfo")
+	net.Start("ZC_RoundInfo")
 		net.WriteString(mode.name or "hmcd")
 		net.WriteInt(zb.ROUND_STATE, 4)
 	net.Broadcast()
@@ -623,7 +623,7 @@ concommand.Add("zb_checkchances",function(ply) if ply:IsAdmin() then zb.CheckCha
 concommand.Add("zb_rerollchances",function(ply) if ply:IsAdmin() then zb.RerollChances() zb.CheckChances() end end)
 
 function zb.NotifyQueueEmptied()
-	net.Start("QueueEmptiedNotification")
+	net.Start("ZC_QueueEmptiedNotice")
 	net.Send(zb.GetAllAdmins())
 end
 
@@ -634,13 +634,13 @@ hook.Add("PlayerInitialSpawn", "ZC_SendGameModesToClient", function(ply)
 			table.insert(modesToSend, {key = key, name = mode.PrintName or mode.name})
 		end
 
-		net.Start("SendAvailableModes")
+		net.Start("ZC_AvailableModesSend")
 			net.WriteTable(modesToSend)
 		net.Send(ply)
 	end
 end)
 
-net.Receive("AdminSetGameMode", function(len, ply)
+net.Receive("ZC_AdminSetGameMode", function(len, ply)
 	if not ply:IsAdmin() then return end
 
 	local command = net.ReadString()
@@ -671,7 +671,7 @@ net.Receive("AdminSetGameMode", function(len, ply)
 	end
 end)
 
-net.Receive("AdminEndRound", function(len, ply)
+net.Receive("ZC_AdminEndRound", function(len, ply)
 	if not ply:IsAdmin() then return end
 
 	ply:ChatPrint("Round ended!")
@@ -680,13 +680,13 @@ end)
 
 function zb.SyncQueueToAdmins()
 	timer.Simple(0.1, function()
-		net.Start("SendGameQueue")
+		net.Start("ZC_GameQueueSend")
 		net.WriteTable(zb.QueuedModes)
 		net.Send(zb.GetAllAdmins())
 	end)
 end
 
-net.Receive("AdminSetGameQueue", function(len, ply)
+net.Receive("ZC_AdminSetGameQueue", function(len, ply)
 	if not ply:IsAdmin() then return end
 
 	local modeQueue = net.ReadTable()
@@ -698,7 +698,7 @@ net.Receive("AdminSetGameQueue", function(len, ply)
 
 
 		timer.Simple(0.2, function()
-			net.Start("QueueEmptiedNotification")
+			net.Start("ZC_QueueEmptiedNotice")
 			net.Send(zb.GetAllAdmins())
 		end)
 	else
@@ -721,7 +721,7 @@ function zb.NotifyQueueModified(ply, action)
 
 
 	if #recipients > 0 then
-		net.Start("QueueModifiedNotification")
+		net.Start("ZC_QueueModifiedNotice")
 		net.WriteString(IsValid(ply) and ply:Nick() or "Server")
 		net.WriteString(action)
 		net.Send(recipients)
@@ -784,14 +784,14 @@ COMMANDS.endround = {
 }
 
 if SERVER then
-	util.AddNetworkString("SendAvailableModes")
-	util.AddNetworkString("AdminSetGameMode")
-	util.AddNetworkString("AdminEndRound")
-	util.AddNetworkString("AdminSetGameQueue")
-	util.AddNetworkString("RequestGameQueue")
-	util.AddNetworkString("SendGameQueue")
-	util.AddNetworkString("QueueEmptiedNotification")
-	util.AddNetworkString("QueueModifiedNotification")
+	util.AddNetworkString("ZC_AvailableModesSend")
+	util.AddNetworkString("ZC_AdminSetGameMode")
+	util.AddNetworkString("ZC_AdminEndRound")
+	util.AddNetworkString("ZC_AdminSetGameQueue")
+	util.AddNetworkString("ZC_GameQueueRequest")
+	util.AddNetworkString("ZC_GameQueueSend")
+	util.AddNetworkString("ZC_QueueEmptiedNotice")
+	util.AddNetworkString("ZC_QueueModifiedNotice")
 
 	hook.Add("PlayerInitialSpawn", "ZC_SendGameModesToClient", function(ply)
 		if ply:IsAdmin() then
@@ -800,13 +800,13 @@ if SERVER then
 				table.insert(modesToSend, {key = key, name = mode.PrintName or mode.name})
 			end
 
-			net.Start("SendAvailableModes")
+			net.Start("ZC_AvailableModesSend")
 				net.WriteTable(modesToSend)
 			net.Send(ply)
 		end
 	end)
 
-	net.Receive("AdminSetGameMode", function(len, ply)
+	net.Receive("ZC_AdminSetGameMode", function(len, ply)
 		if not ply:IsAdmin() then return end
 
 		local command = net.ReadString()
@@ -844,13 +844,13 @@ if SERVER then
 
 	function zb.SyncQueueToAdmins()
 		timer.Simple(0.1, function()
-			net.Start("SendGameQueue")
+			net.Start("ZC_GameQueueSend")
 			net.WriteTable(zb.QueuedModes)
 			net.Send(zb.GetAllAdmins())
 		end)
 	end
 
-	net.Receive("AdminSetGameQueue", function(len, ply)
+	net.Receive("ZC_AdminSetGameQueue", function(len, ply)
 		if not ply:IsAdmin() then return end
 
 		local modeQueue = net.ReadTable()
@@ -862,7 +862,7 @@ if SERVER then
 
 
 			timer.Simple(0.2, function()
-				net.Start("QueueEmptiedNotification")
+				net.Start("ZC_QueueEmptiedNotice")
 				net.Send(zb.GetAllAdmins())
 			end)
 		else

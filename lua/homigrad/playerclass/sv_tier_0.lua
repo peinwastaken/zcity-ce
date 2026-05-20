@@ -10,7 +10,7 @@ function Player:SetPlayerClass(value, data)
 	if old and old.Off then old.Off(self) end
 	self.PlayerClassName = value
 	self:PlayerClassEvent("On", data) -- WHO WRITE THIS SHIT
-	net.Start("setupclass")
+	net.Start("ZC_PlayerClassSetup")
 		net.WriteEntity(self)
 		net.WriteString(value)
 		net.WriteString(self.PlayerClassNameOld or "")
@@ -31,11 +31,11 @@ function Player:GiveSwep(list, mulClip1) -- improved tdm.GiveSwep
 	end
 end
 
-util.AddNetworkString("setupclass")
+util.AddNetworkString("ZC_PlayerClassSetup")
 hook.Add("ZC_OnPlayerInitializeSpawn", "ZC_PlayerClass", function(plySend)
 	for _, ply in player.Iterator() do
 		if not ply:GetPlayerClass() then continue end
-		net.Start("setupclass")
+		net.Start("ZC_PlayerClassSetup")
 		net.WriteEntity(ply)
 		net.WriteString(ply:GetNWString("Class"))
 		net.WriteString(ply:GetNWString("ClassOld"))

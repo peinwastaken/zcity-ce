@@ -9,7 +9,7 @@ local syncQueue = {}
 local allESP = {}
 
 function ESP:Init()
-	util.AddNetworkString("AS_Sync")
+	util.AddNetworkString("ZC_AdminEspSync")
 
 	self:SetupHooks()
 	self:SetupCommands()
@@ -109,7 +109,7 @@ function ESP:DoSync(ply)
 	local inAdminMode = adminMode[steamId] or false
 	local isAllESP = allESP[steamId] or false
 
-	net.Start("AS_Sync")
+	net.Start("ZC_AdminEspSync")
 	net.WriteBool(enabled or isAllESP)
 	net.WriteBool(inAdminMode)
 	net.WriteBool(isAllESP)

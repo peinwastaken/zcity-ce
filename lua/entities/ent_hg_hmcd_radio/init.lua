@@ -28,28 +28,28 @@ hook.Add("OnEntityCreated", "ZC_RadioCreate", function( ent )
 	end
 end)
 
-util.AddNetworkString("RadioURLInput")
-util.AddNetworkString("PlayRadioSound")
-util.AddNetworkString("RadioChangeValue")
-util.AddNetworkString("RadioChangeVolume")
-util.AddNetworkString("RadioPause")
-util.AddNetworkString("RadioStop")
-util.AddNetworkString("RadioLooping")
-util.AddNetworkString("paint_radio")
+util.AddNetworkString("ZC_RadioUrlInput")
+util.AddNetworkString("ZC_RadioPlaySound")
+util.AddNetworkString("ZC_RadioChangeValue")
+util.AddNetworkString("ZC_RadioChangeVolume")
+util.AddNetworkString("ZC_RadioPause")
+util.AddNetworkString("ZC_RadioStop")
+util.AddNetworkString("ZC_RadioLooping")
+util.AddNetworkString("ZC_RadioPaint")
 
-net.Receive("RadioURLInput", function(len, ply)
+net.Receive("ZC_RadioUrlInput", function(len, ply)
 	local url = net.ReadString()
 	local ent = net.ReadEntity()
 	
 	if ent:GetClass() != "ent_hg_hmcd_radio" or (ent:GetPos():Distance(ply:EyePos()) > 75) then return end
 
-	net.Start("PlayRadioSound")
+	net.Start("ZC_RadioPlaySound")
 	net.WriteString(url)
 	net.WriteInt(ent:EntIndex(),32)
 	net.Broadcast()
 end)
 
-net.Receive("paint_radio", function(len, ply)
+net.Receive("ZC_RadioPaint", function(len, ply)
 	local url = net.ReadString()
 	local ent = net.ReadEntity()
 
@@ -58,68 +58,68 @@ net.Receive("paint_radio", function(len, ply)
 	ent:SetTextureURL( url )
 
 	
-	net.Start("paint_radio")
+	net.Start("ZC_RadioPaint")
 		net.WriteString( url )
 		net.WriteEntity( ent )
 	net.Broadcast()
 end)
 
-net.Receive("RadioChangeValue", function(len, ply)
+net.Receive("ZC_RadioChangeValue", function(len, ply)
 	local val = net.ReadFloat()
 	local index = net.ReadInt(32)
 	local ent = Entity(index)
 
 	if ent:GetClass() != "ent_hg_hmcd_radio" or (ent:GetPos():Distance(ply:EyePos()) > 75) then return end
 
-	net.Start("RadioChangeValue")
+	net.Start("ZC_RadioChangeValue")
 	net.WriteFloat(val)
 	net.WriteInt(index,32)
 	net.Broadcast()
 end)
 
-net.Receive("RadioChangeVolume", function(len, ply)
+net.Receive("ZC_RadioChangeVolume", function(len, ply)
 	local val = net.ReadFloat()
 	local index = net.ReadInt(32)
 	local ent = Entity(index)
 	
 	if ent:GetClass() != "ent_hg_hmcd_radio" or (ent:GetPos():Distance(ply:EyePos()) > 75) then return end
 
-	net.Start("RadioChangeVolume")
+	net.Start("ZC_RadioChangeVolume")
 	net.WriteFloat(val)
 	net.WriteInt(index,32)
 	net.Broadcast()
 end)
 
-net.Receive("RadioPause", function(len, ply)
+net.Receive("ZC_RadioPause", function(len, ply)
 	local bool = net.ReadBool()
 	local ent = net.ReadEntity()
 	
 	if ent:GetClass() != "ent_hg_hmcd_radio" or (ent:GetPos():Distance(ply:EyePos()) > 75) then return end
 	
-	net.Start("RadioPause")
+	net.Start("ZC_RadioPause")
 		net.WriteBool(bool)
 		net.WriteInt(ent:EntIndex(),32)
 	net.Broadcast()
 end)
 
-net.Receive("RadioLooping", function(len, ply)
+net.Receive("ZC_RadioLooping", function(len, ply)
 	local bool = net.ReadBool()
 	local ent = net.ReadEntity()
 
 	if ent:GetClass() != "ent_hg_hmcd_radio" or (ent:GetPos():Distance(ply:EyePos()) > 75) then return end
 
-	net.Start("RadioLooping")
+	net.Start("ZC_RadioLooping")
 		net.WriteBool(bool)
 		net.WriteInt(ent:EntIndex(),32)
 	net.Broadcast()
 end)
 
-net.Receive("RadioStop", function(len, ply)
+net.Receive("ZC_RadioStop", function(len, ply)
 	local ent = net.ReadEntity()
 
 	if ent:GetClass() != "ent_hg_hmcd_radio" or (ent:GetPos():Distance(ply:EyePos()) > 75) then return end
 
-	net.Start("RadioStop")
+	net.Start("ZC_RadioStop")
 		net.WriteInt(ent:EntIndex(),32)
 	net.Broadcast()
 end)

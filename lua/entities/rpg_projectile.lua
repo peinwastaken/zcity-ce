@@ -313,13 +313,13 @@ function ENT:Use(ply)
 end
 
 if SERVER then
-    util.AddNetworkString("rpg_explosion_sound")
+    util.AddNetworkString("ZC_RPGExplosionSound")
 end
 
 
 function ENT:PlayDistantExplosionSounds()
     if SERVER then
-        net.Start("rpg_explosion_sound")
+        net.Start("ZC_RPGExplosionSound")
         net.WriteVector(self:GetPos())
         net.WriteString(self.Sound)
         net.WriteString(self.SoundFar)
@@ -329,7 +329,7 @@ end
 
 --;; shared.lua shit
 if CLIENT then
-    net.Receive("rpg_explosion_sound", function()
+    net.Receive("ZC_RPGExplosionSound", function()
         local explosionPos = net.ReadVector()
         local closeSound = net.ReadString()
         local farSound = net.ReadString()

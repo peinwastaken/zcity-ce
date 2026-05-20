@@ -85,13 +85,13 @@ end
 function ENT:OnRemove()
 	self:StopLoopingSound(self.LoopSndID)
 end
-util.AddNetworkString("projectileFarSound")
+util.AddNetworkString("ZC_ProjectileFarSound")
 function ENT:Detonate()
 	if self.Exploded then return end
 	self.Exploded = true
 	local SelfPos, Owner = self:LocalToWorld(self:OBBCenter()), self
 
-	net.Start("projectileFarSound")
+	net.Start("ZC_ProjectileFarSound")
 		net.WriteString(self.Sound)
 		net.WriteString(self.SoundFar)
 		net.WriteVector(SelfPos)

@@ -10,10 +10,10 @@ local attachsounds = {
 	"arc9_eft_shared/weap_rifle_use.ogg"
 }
 
-util.AddNetworkString("ZB_AttachAdd")
-util.AddNetworkString("ZB_AttachRemove")
-util.AddNetworkString("ZB_AttachDrop")
-net.Receive("ZB_AttachAdd", function(len, ply)
+util.AddNetworkString("ZC_AttachmentAdd")
+util.AddNetworkString("ZC_AttachmentRemove")
+util.AddNetworkString("ZC_AttachmentDrop")
+net.Receive("ZC_AttachmentAdd", function(len, ply)
 	local att = net.ReadString()
 	local wep = ply:GetActiveWeapon()
 	hg.AddAttachment(ply,wep,att)
@@ -157,7 +157,7 @@ function hg.AddAttachmentForce(ply,wep,att)
 	end)
 end
 
-net.Receive("ZB_AttachRemove", function(len, ply)
+net.Receive("ZC_AttachmentRemove", function(len, ply)
 	local att = net.ReadString()
 	local wep = ply:GetActiveWeapon()
 	if not IsValid(wep) or not wep.attachments then return end
@@ -196,7 +196,7 @@ net.Receive("ZB_AttachRemove", function(len, ply)
 	end)
 end)
 
-net.Receive("ZB_AttachDrop", function(len, ply)
+net.Receive("ZC_AttachmentDrop", function(len, ply)
 	local att = net.ReadString()
 	local placement = nil
 	for _, tbl in pairs(hg.attachments) do
@@ -219,14 +219,14 @@ net.Receive("ZB_AttachDrop", function(len, ply)
 	end
 end)
 
-util.AddNetworkString("sync_atts")
-util.AddNetworkString("sync_atts_ply")
+util.AddNetworkString("ZC_AttachmentsSync")
+util.AddNetworkString("ZC_PlayerAttachmentsSync")
 function SWEP:SyncAtts(ply)
 	self:SetNetVar("attachments",self.attachments)
 	self:SendNetVar("attachments")
 end
 
-net.Receive("sync_atts", function(len, ply)
+net.Receive("ZC_AttachmentsSync", function(len, ply)
 	--local self = net.ReadEntity()
 	--if self:GetOwner() != ply then return end
 

@@ -222,7 +222,7 @@ function MODE:StartNewWave()
             self:StartWave()
         end)
 
-        net.Start("npc_defense_newwave")
+        net.Start("ZC_DefenseNewWave")
             net.WriteFloat(CurTime() + 60)
             net.WriteInt(self.Wave, 4)
         net.Broadcast()
@@ -269,13 +269,13 @@ function MODE:SpawnWave()
 
 
     if hasBoss then
-        net.Start("defense_boss_incoming")
+        net.Start("ZC_DefenseBossIncoming")
         net.Broadcast()
 
 
         for _, ply in player.Iterator() do
             if ply:GetNWString("PlayerRole") == "Commander" and ply:Alive() then
-                net.Start("defense_commander_notification")
+                net.Start("ZC_DefenseCommanderNotice")
                 net.WriteString("Boss wave! You'll receive double points after completing this wave!")
                 net.WriteInt(0, 16)
                 net.Send(ply)

@@ -128,11 +128,11 @@ function MODE.StartBreakingOtherNeck(ply, other_ply)
 	if(SERVER)then
 		other_ply:ViewPunch(Angle(0, -10, -10))
 
-		net.Start("HMCD_BeingVictimOfNeckBreak")
+		net.Start("ZC_HomicideNeckBreakVictim")
 			net.WriteBool(true)
 		net.Send(other_ply)
 
-		net.Start("HMCD_BreakingOtherNeck")
+		net.Start("ZC_HomicideNeckBreakAttack")
 			net.WriteBool(true)
 			net.WriteEntity(ply)
 			net.WriteEntity(other_ply)
@@ -146,11 +146,11 @@ function MODE.StopBreakingOtherNeck(ply)
 	end
 
 	if(SERVER and ply.Ability_NeckBreak and IsValid(ply.Ability_NeckBreak.Victim))then
-		net.Start("HMCD_BeingVictimOfNeckBreak")
+		net.Start("ZC_HomicideNeckBreakVictim")
 			net.WriteBool(false)
 		net.Send(ply.Ability_NeckBreak.Victim)
 
-		net.Start("HMCD_BreakingOtherNeck")
+		net.Start("ZC_HomicideNeckBreakAttack")
 			net.WriteBool(false)
 			net.WriteEntity(ply)
 		net.SendPVS(ply:GetShootPos())
@@ -279,11 +279,11 @@ function MODE.StartDisarmingOther(ply, other_ply)
 	if(SERVER)then
 		-- other_ply:ViewPunch(Angle(0, -10, -10))
 
-		net.Start("HMCD_BeingVictimOfDisarmament")
+		net.Start("ZC_HomicideDisarmVictim")
 			net.WriteBool(true)
 		net.Send(other_ply)
 
-		net.Start("HMCD_DisarmingOther")
+		net.Start("ZC_HomicideDisarmAttack")
 			net.WriteBool(true)
 			net.WriteEntity(other_ply)
 		net.Send(ply)
@@ -296,11 +296,11 @@ function MODE.StopDisarmingOther(ply)
 	end
 
 	if(SERVER and ply.Ability_Disarm and IsValid(ply.Ability_Disarm.Victim))then
-		net.Start("HMCD_BeingVictimOfDisarmament")
+		net.Start("ZC_HomicideDisarmVictim")
 			net.WriteBool(false)
 		net.Send(ply.Ability_Disarm.Victim)
 
-		net.Start("HMCD_DisarmingOther")
+		net.Start("ZC_HomicideDisarmAttack")
 			net.WriteBool(false)
 		net.Send(ply)
 	end

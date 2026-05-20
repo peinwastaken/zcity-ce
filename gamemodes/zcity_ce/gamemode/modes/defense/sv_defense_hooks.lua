@@ -1,4 +1,4 @@
-util.AddNetworkString("defense_highlight_last_npcs")
+util.AddNetworkString("ZC_DefenseHighlightLastNPCs")
 
 
 local npc_autoseek_timer = 0
@@ -396,7 +396,7 @@ hook.Add("Think", "ZC_DefenseNPCValidityCheck", function()
                     lastNPCList = table.Copy(remainingNPCs)
                     lastSentTime = CurTime()
 
-                    net.Start("defense_highlight_last_npcs")
+                    net.Start("ZC_DefenseHighlightLastNPCs")
                     net.WriteTable(remainingNPCs)
                     net.Broadcast()
                 end

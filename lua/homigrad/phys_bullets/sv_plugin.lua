@@ -10,9 +10,9 @@ PLUGIN.NetCDCreateBullet = 0.1
 PLUGIN.NetCDUpdateBullet = 1
 PLUGIN.NetCDRemoveBullet = 0.1 --; Unused
 
-util.AddNetworkString("HG.Plugin[bullet](CreateBullet)")
-util.AddNetworkString("HG.Plugin[bullet](UpdateBullet)")
-util.AddNetworkString("HG.Plugin[bullet](RemoveBullet)")
+util.AddNetworkString("ZC_PhysBulletCreate")
+util.AddNetworkString("ZC_PhysBulletUpdate")
+util.AddNetworkString("ZC_PhysBulletRemove")
 
 function PLUGIN.NetworkWriteBulletsTable(bullet, net_table)
 	for _, info in ipairs(net_table) do
@@ -38,7 +38,7 @@ function PLUGIN.NetworkBulletUpdate(bullet, ply, forced)
 		
 		PLUGIN.NetUpdateUsage = PLUGIN.NetUpdateUsage + recipients:GetCount()
 	
-		net.Start("HG.Plugin[bullet](UpdateBullet)", true)
+		net.Start("ZC_PhysBulletUpdate", true)
 			if(PLUGIN.NetworkWriteBulletsTable(bullet, PLUGIN.NetworkTableUpdate) == false)then
 				net.Abort()
 				return false
@@ -65,7 +65,7 @@ function PLUGIN.NetworkBulletFull(bullet, ply, forced)
 	
 		PLUGIN.NetCreateUsage = PLUGIN.NetCreateUsage + recipients:GetCount()
 	
-		net.Start("HG.Plugin[bullet](CreateBullet)", true)
+		net.Start("ZC_PhysBulletCreate", true)
 			if(PLUGIN.NetworkWriteBulletsTable(bullet, PLUGIN.NetworkTableFull) == false)then
 				net.Abort()
 				return false
@@ -80,7 +80,7 @@ function PLUGIN.NetworkBulletFull(bullet, ply, forced)
 end
 
 function PLUGIN.NetworkBulletRemove(bullet, ply)
-	net.Start("HG.Plugin[bullet](RemoveBullet)", true)
+	net.Start("ZC_PhysBulletRemove", true)
 		PLUGIN.net_writekey(bullet.Key)
 	
 	if(ply)then
@@ -90,7 +90,7 @@ function PLUGIN.NetworkBulletRemove(bullet, ply)
 	end
 end
 
-net.Receive("HG.Plugin[bullet](CreateBullet)", function(len, ply)
+net.Receive("ZC_PhysBulletCreate", function(len, ply)
 	-- if(not ply.HG_PHYSBULLET_LastFullNet or (ply.HG_PHYSBULLET_LastFullNet + PLUGIN.NetCDCreateBullet) <= CurTime())then
 	local bullet_key = PLUGIN.net_readkey()
 	local bullet = PLUGIN.BulletsTable[bullet_key]

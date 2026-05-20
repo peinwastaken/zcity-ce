@@ -68,11 +68,11 @@ function MODE:CheckInDarkness(ply)
 	return render.GetLightColor(ply:EyePos())
 end
 
-net.Receive("check_lightness", function(len)
+net.Receive("ZC_FearLightCheck", function(len)
 	local ply = net.ReadEntity()
 	
 	if IsValid(ply) then
-		net.Start("check_lightness")
+		net.Start("ZC_FearLightCheck")
 		net.WriteVector(MODE:CheckInDarkness(ply))
 		net.SendToServer()
 	end

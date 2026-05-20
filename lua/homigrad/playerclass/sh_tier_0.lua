@@ -30,7 +30,7 @@ function player.Event(ply, name, ...)
 end
 
 if SERVER then return end
-net.Receive("setupclass", function()
+net.Receive("ZC_PlayerClassSetup", function()
 	local ply = net.ReadEntity()
 	if not IsValid(ply) then --lol
 		return

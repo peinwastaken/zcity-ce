@@ -198,7 +198,7 @@ function hg.organism.AmputateLimb(org, limb)
 		org.shock = 100
 	end
 
-	net.Start("organism_send")
+	net.Start("ZC_OrganismSync")
 	local tbl = {}
 	tbl[limb.."amputated"] = true
 	tbl.owner = org.owner
@@ -305,8 +305,8 @@ hook.Add("PlayerDeathThink","ZC_Stoprespawning",function()
 	if zc_norespawn:GetBool() then return true end
 end)
 
-util.AddNetworkString("hg_bloodimpact")
-util.AddNetworkString("bloodsquirt")
+util.AddNetworkString("ZC_BloodImpact")
+util.AddNetworkString("ZC_BloodSquirt")
 
 function hg.NPCDamage(ent,dmgInfo,npcdmg)
 	local tr = hg.GetTraceDamage(ent, dmgInfo:GetDamagePosition(), dmgInfo:GetDamageForce())
@@ -611,7 +611,7 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 			/*if IsValid(ent) then
 				timer.Create("Blood_burst"..ent:EntIndex(),0.02,1,function()
 					if IsValid(ent) and ent.bloodamt then
-						net.Start("hg_bloodimpact")
+						net.Start("ZC_BloodImpact")
 						net.WriteVector(outputHole[#outputHole])
 						net.WriteVector(-outputDir)
 						net.WriteFloat(dmg)
@@ -693,7 +693,7 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 		timer.Simple(0, function()
 			timer.Create("Blood_burst_input"..ent:EntIndex(), 0.02, 1, function()
 				if not IsValid(ent) then return end
-				net.Start("hg_bloodimpact")
+				net.Start("ZC_BloodImpact")
 				net.WriteVector(inputHole[1])
 				net.WriteVector(dir / 2)
 				net.WriteFloat(dmg)
@@ -910,7 +910,7 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 				if !rag.bloodsquirted and !rag.headexploded and (hitgroup == HITGROUP_HEAD) and (bit.band(dmgtype, DMG_BULLET + DMG_BUCKSHOT) > 0) and math.random(4) == 1 and org.pulse > 30 then
 					rag.bloodsquirted = true
 
-					net.Start("bloodsquirt")
+					net.Start("ZC_BloodSquirt")
 					net.WriteEntity(rag)
 					net.WriteString(bonename)
 					net.WriteMatrix(mat)
@@ -919,7 +919,7 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 					net.Broadcast()
 
 					if outputHole and #outputHole > 0 then
-						net.Start("bloodsquirt")
+						net.Start("ZC_BloodSquirt")
 						net.WriteEntity(rag)
 						net.WriteString(bonename)
 						net.WriteMatrix(mat)
@@ -974,7 +974,7 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 	-- EFFECT
 	if dmgInfo:IsDamageType(DMG_BULLET + DMG_BUCKSHOT) then
 		if dmgBlood > 1 and #inputHole > 0 then
-			net.Start("hg_bloodimpact")
+			net.Start("ZC_BloodImpact")
 			net.WriteVector(dmgPos)
 			net.WriteVector(dirCool / 15)
 			net.WriteFloat(dmg / 10)
@@ -1457,7 +1457,12 @@ hook.Add("ZC_OnRagdollCollide", "ZC_Organism", function(ragdoll, data)
 	if data.DeltaTime < 0.25 then return end
 	if not ragdoll:IsRagdoll() then return end
 	if data.HitEntity:IsPlayerHolding() then return end
-	velocityDamage(ragdoll, data)
+
+	timer.Simple(0, function()
+		if IsValid(ragdoll) then
+			velocityDamage(ragdoll, data)
+		end
+	end)
 	--if data.Speed < 250 then return end
 	--if data.HitEntity:IsPlayer() then hg.Fake(data.HitEntity) end
 end)

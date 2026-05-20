@@ -14,24 +14,24 @@ zb.Points.RandomSpawns.Color = Color(122,122,0)
 zb.Points.RandomSpawns.Name = "RandomSpawns"
 
 if SERVER then
-    util.AddNetworkString("zb_getallpoints")
-    util.AddNetworkString("zb_getspecificpoints")
+    util.AddNetworkString("ZC_MapPointsGetAll")
+    util.AddNetworkString("ZC_MapPointsGetSpecific")
 end
 
 if CLIENT then
     function zb.GetAllPoints()
         if not LocalPlayer():IsAdmin() then return false end
-        net.Start("zb_getallpoints")
+        net.Start("ZC_MapPointsGetAll")
         net.SendToServer()
     end
 
     zb.ClPoints = zb.ClPoints or {}
 
-    net.Receive("zb_getallpoints",function()
+    net.Receive("ZC_MapPointsGetAll",function()
         zb.ClPoints = net.ReadTable()
     end)
 
-    net.Receive("zb_getspecificpoints", function()
+    net.Receive("ZC_MapPointsGetSpecific", function()
         local pointGroup = net.ReadString()
         zb.ClPoints[pointGroup] = net.ReadTable()
     end)

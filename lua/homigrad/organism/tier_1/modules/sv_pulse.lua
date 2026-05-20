@@ -128,14 +128,14 @@ module[2] = function(owner, org, timeValue)
 end
 
 --if org.heartstop then org.needunconscious = true end --not quite...
-util.AddNetworkString("pulse")
+util.AddNetworkString("ZC_Pulse")
 function hg.organism.Pulse(owner, org, timeValue)
 	if org.o2[1] > 1 and org.alive and org.heart < 1 and org.brain < 0.6 then
 		--org.brain = max(org.brain - timeValue / 30, 0) --regen
 	end--brain damage is usually permanent
 
 	if owner:IsPlayer() and owner:Alive() then
-		net.Start("pulse")
+		net.Start("ZC_Pulse")
 		net.Send(owner)
 	end
 end

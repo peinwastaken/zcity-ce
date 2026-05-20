@@ -12,13 +12,13 @@ if SERVER then
     cvars.AddChangeCallback("zc_pluvtown", function(name, old, new)
         PLUGIN.UpdateStatus()
 
-        net.Start("UpdatePluvTownStatus")
+        net.Start("ZC_PluvTownStatusUpdate")
         net.Broadcast()
     end)
 
-    util.AddNetworkString("UpdatePluvTownStatus")
+    util.AddNetworkString("ZC_PluvTownStatusUpdate")
 else
-    net.Receive("UpdatePluvTownStatus", function()
+    net.Receive("ZC_PluvTownStatusUpdate", function()
         PLUGIN.UpdateStatus()
     end)
 end

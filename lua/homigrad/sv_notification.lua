@@ -1,5 +1,5 @@
-util.AddNetworkString("HGNotificate")
-util.AddNetworkString("HGNotificateBerserk")
+util.AddNetworkString("ZC_Notify")
+util.AddNetworkString("ZC_BerserkNotify")
 
 --local zc_old_notificate = ConVarExists("zc_old_notificate") and GetConVar("zc_old_notificate") or CreateConVar("zc_old_notificate",0,FCVAR_SERVER_CAN_EXECUTE,"enable old notifications (chatprints)",0,1)
 local hev_color = Color(255,125,0)
@@ -56,7 +56,7 @@ local function CreateNotification(ply, msg, delay, msgKey, showTime, func, clr)
             if func(ply) then return end
         end
 
-        net.Start("HGNotificate")
+        net.Start("ZC_Notify")
         net.WriteString(msg)
         //net.WriteFloat(showTime or 3)
         net.WriteColor(clr2)
@@ -119,7 +119,7 @@ local function CreateNotificationBerserk(ply, msg, delay, msgKey, showTime, func
             return
         end
 
-        net.Start("HGNotificateBerserk")
+        net.Start("ZC_BerserkNotify")
         net.WriteString(msg)
         //net.WriteFloat(showTime or 3)
         net.WriteColor(clr2)

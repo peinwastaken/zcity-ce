@@ -1,6 +1,6 @@
-util.AddNetworkString("NI_SelectWeapon")
+util.AddNetworkString("ZC_InventorySelectWeapon")
 
-net.Receive("NI_SelectWeapon", function(len, ply)
+net.Receive("ZC_InventorySelectWeapon", function(len, ply)
 	if not GetGlobalBool("RadialInventory", false) then return end
 
 	local wep = net.ReadEntity()

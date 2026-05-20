@@ -1,7 +1,7 @@
 print("[ZBattle] Test library loaded!")
 if CLIENT then
     local fade = 0
-    net.Receive("ZB_ScreenFade",function()
+    net.Receive("ZC_ScreenFade",function()
         faded = true
         fade = 0
         timer.Simple(6,function()

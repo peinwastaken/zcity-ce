@@ -50,14 +50,14 @@ function EXP.Menu( ply )
 end
 
 function EXP.OpenMenu( ply )
-    net.Start("zb_xp_get")
+    net.Start("ZC_ExperienceGet")
         net.WriteEntity( ply )
     net.SendToServer()
 end
 
 EXP.OpenedAccount = EXP.OpenedAccount or nil
 local needCallback = false
-net.Receive("zb_xp_get",function()
+net.Receive("ZC_ExperienceGet",function()
     local ply = net.ReadEntity()
     ply.skill = net.ReadFloat()
     ply.exp = net.ReadInt(19)

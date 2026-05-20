@@ -20,7 +20,7 @@ function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
 	return 1, true--returning true so guilt bans
 end
 
-util.AddNetworkString("gwars_start")
+util.AddNetworkString("ZC_GangWarsStart")
 function MODE:Intermission()
 	game.CleanUpMap()
 
@@ -33,7 +33,7 @@ function MODE:Intermission()
 		ply:SetupTeam(ply:Team())
 	end
 
-	net.Start("gwars_start")
+	net.Start("ZC_GangWarsStart")
 	net.Broadcast()
 end
 
@@ -204,10 +204,10 @@ end
 function MODE:CanSpawn()
 end
 
-util.AddNetworkString("gwars_roundend")
+util.AddNetworkString("ZC_GangWarsRoundEnd")
 function MODE:EndRound()
 	timer.Simple(2,function()
-		net.Start("gwars_roundend")
+		net.Start("ZC_GangWarsRoundEnd")
 		net.Broadcast()
 	end)
 

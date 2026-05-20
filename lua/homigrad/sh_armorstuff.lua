@@ -747,7 +747,7 @@ hg.armor.face = {
 }
 
 if CLIENT then
-	net.Receive("AddFlash", function()
+	net.Receive("ZC_AddFlash", function()
 		local pos = net.ReadVector()
 		local time = net.ReadFloat()
 		local size = net.ReadInt(20)

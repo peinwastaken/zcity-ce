@@ -405,14 +405,14 @@ if CLIENT then
 
 	concommand.Add("hg_add_equipment", function(ply, cmd, args)
 		local att = args[1]
-		net.Start("hg_add_equipment")
+		net.Start("ZC_EquipmentAdd")
 		net.WriteString(att)
 		net.SendToServer()
 	end)
 
 	concommand.Add("hg_drop_equipment", function(ply, cmd, args)
 		local att = args[1]
-		net.Start("hg_drop_equipment")
+		net.Start("ZC_EquipmentDrop")
 		net.WriteString(att)
 		net.SendToServer()
 	end)

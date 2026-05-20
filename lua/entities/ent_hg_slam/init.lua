@@ -106,7 +106,7 @@ function ENT:ActivateExplosive()
 		end
 	end)
 
-	net.Start("projectileFarSound")
+	net.Start("ZC_ProjectileFarSound")
 		net.WriteString(table.Random(self.Sound))
 		net.WriteString(table.Random(self.SoundFar))
 		net.WriteVector(selfPos)

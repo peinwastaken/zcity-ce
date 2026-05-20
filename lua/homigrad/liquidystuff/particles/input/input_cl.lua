@@ -14,7 +14,7 @@ function addGasPart(pos, vel, mat, w, h, ent)
 	gasparticles[#gasparticles + 1] = {pos, pos2, vel, mat, w, h, ent}
 end
 
-net.Receive("gas particle", function() addGasPart(net.ReadVector(), net.ReadVector(), mats[math.random(#mats)], math.random(5, 8), math.random(5, 8), net.ReadEntity()) end)
+net.Receive("ZC_GasParticle", function() addGasPart(net.ReadVector(), net.ReadVector(), mats[math.random(#mats)], math.random(5, 8), math.random(5, 8), net.ReadEntity()) end)
 --[[
 hook.Add("Think","ZC_LiquidDrumPour",function()
 	for i = 1, #drums do

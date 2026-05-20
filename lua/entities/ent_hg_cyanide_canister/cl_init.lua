@@ -7,7 +7,7 @@ end
 local tbl = {}
 local oldtbl = {}
 local sendtime = CurTime() + 1
-net.Receive("cyanide_debug",function()
+net.Receive("ZC_CyanideDebug",function()
 	table.CopyFromTo(tbl,oldtbl)
 	tbl = net.ReadTable()
 	sendtime = CurTime() + 1

@@ -1,5 +1,5 @@
 --
-util.AddNetworkString("addpredictable")
+util.AddNetworkString("ZC_AddPredictable")
 function SWEP:CreateWorldModel()
 	local model = ents.Create("prop_physics")--ents.Create("homigrad_gun")
 	model:SetNoDraw(not hg.show_weapons)

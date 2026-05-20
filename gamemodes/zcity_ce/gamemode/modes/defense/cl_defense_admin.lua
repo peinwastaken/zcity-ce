@@ -154,7 +154,7 @@ function CreateAdminWaveMenu(subMode, currentWave, totalWaves, isActive)
         end
         
         waveBtn.DoClick = function()
-            net.Start("defense_admin_wave_skip")
+            net.Start("ZC_DefenseAdminWaveSkip")
             net.WriteInt(i, 8)
             net.SendToServer()
             
@@ -175,7 +175,7 @@ function CreateAdminWaveMenu(subMode, currentWave, totalWaves, isActive)
 end
 
 
-net.Receive("defense_admin_wave_menu", function()
+net.Receive("ZC_DefenseAdminWaveMenu", function()
     local subMode = net.ReadString()
     local currentWave = net.ReadInt(8)
     local totalWaves = net.ReadInt(8)

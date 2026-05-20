@@ -69,8 +69,8 @@ function AS:SetPlayerData(ply, module, data)
 end
 
 if SERVER then
-	util.AddNetworkString("AdminSystem_Sync")
-	util.AddNetworkString("AdminSystem_ModuleAction")
+	util.AddNetworkString("ZC_AdminSystemSync")
+	util.AddNetworkString("ZC_AdminModuleAction")
 end
 
 function AS:GetCurrentMode()

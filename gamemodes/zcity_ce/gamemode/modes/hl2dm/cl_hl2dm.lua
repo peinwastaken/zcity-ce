@@ -2,7 +2,7 @@ MODE.name = "hl2dm"
 
 local MODE = MODE
 
-net.Receive("hl2dm_start",function()
+net.Receive("ZC_HL2DeathmatchStart",function()
     surface.PlaySound("hl2mode1.wav")
 	zb.RemoveFade()
 	hg.DynaMusic:Start( "hl_coop" )
@@ -86,7 +86,7 @@ hook.Add("ZC_RadialOptions", "ZC_CombineAirstrike", function()
     if lply:GetNWString("PlayerRole") == "Elite" and not org.unconscious then -- that's a feature apparently
 		local tbl = {
 			function()
-				net.Start("ZB_RequestAirStrike")
+				net.Start("ZC_AirStrikeRequest")
 				net.SendToServer()
 			end,
 			"Request Airstrike"
@@ -97,7 +97,7 @@ end)
 
 local CreateEndMenu
 
-net.Receive("hl2dm_roundend", function()
+net.Receive("ZC_HL2DeathmatchRoundEnd", function()
 	surface.PlaySound("ambient/alarms/warningbell1.wav")
 
     CreateEndMenu()

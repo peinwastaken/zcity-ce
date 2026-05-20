@@ -135,7 +135,7 @@ SWEP.availableAttachments = {
 function SWEP:ModelCreated(model)
 	/*if SERVER then
 		if math.random(100) <= 5 then
-			net.Start("gdraco")
+			net.Start("ZC_DracoGoldVariant")
 			net.WriteEntity(self)
 			net.Broadcast()
 			self.WorldModel = "models/draco/w_gdraco.mdl"
@@ -147,9 +147,9 @@ function SWEP:ModelCreated(model)
 end
 
 if SERVER then
-	util.AddNetworkString("gdraco")
+	util.AddNetworkString("ZC_DracoGoldVariant")
 else
-	net.Receive("gdraco", function(len)
+	net.Receive("ZC_DracoGoldVariant", function(len)
 		local self = net.ReadEntity()
 		self.WorldModel = "models/draco/w_gdraco.mdl"
 		self.ViewModel = "models/draco/w_gdraco.mdl"
@@ -162,9 +162,9 @@ SWEP.punchspeed = 1
 local recoilAng1 = {Angle(-0.03, -0.03, 0), Angle(-0.05, 0.03, 0)}
 local recoilAng2 = {Angle(-0.015, -0.015, 0), Angle(-0.025, 0.015, 0)}
 if SERVER then
-	util.AddNetworkString("send_huyhuy2")
+	util.AddNetworkString("ZC_DracoStanceSync")
 else
-	net.Receive("send_huyhuy2", function(len)
+	net.Receive("ZC_DracoStanceSync", function(len)
 		local self = net.ReadEntity()
 		local twohands = net.ReadBool()
 		--print(twohands)
@@ -196,7 +196,7 @@ function SWEP:Step()
 
 				self.LHPos = not twohands and Vector(-1,-2,-3) or Vector(14,0.1,-3.9)
 				self.LHAng = not twohands and Angle(-0,0,-100) or Angle(-110,-90,-90)
-				net.Start("send_huyhuy2")
+				net.Start("ZC_DracoStanceSync")
 				net.WriteEntity(self)
 				net.WriteBool(twohands)
 				net.Broadcast()
@@ -215,7 +215,7 @@ function SWEP:ReloadStart()
 	self.OldHoldType = self.HoldType
 	self.HoldType = "ar2"
 	if SERVER then
-		net.Start("send_huyhuy2")
+		net.Start("ZC_DracoStanceSync")
 			net.WriteEntity(self)
 			net.WriteBool(true)
 		net.Broadcast()
@@ -229,7 +229,7 @@ function SWEP:ReloadEnd()
 	local Fuck = self.HoldType == self.OldHoldType
 	self.HoldType = self.OldHoldType or self.HoldType
 	if SERVER then
-		net.Start("send_huyhuy2")
+		net.Start("ZC_DracoStanceSync")
 			net.WriteEntity(self)
 			net.WriteBool(Fuck)
 		net.Broadcast()

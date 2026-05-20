@@ -108,7 +108,7 @@ end
 
 SWEP.reloadCoolDown = 0
 if SERVER then
-	util.AddNetworkString("hgwep draw")
+	util.AddNetworkString("ZC_WeaponDraw")
 	function SWEP:Reload(time)
 		if not self:CanUse() then return end
 		local ply = self:GetOwner()
@@ -121,7 +121,7 @@ if SERVER then
 				self:Draw(true)
 			end
 			if CLIENT and LocalPlayer() == self:GetOwner() then ViewPunch(AngleRand(0, -10)) end
-			net.Start("hgwep draw")
+			net.Start("ZC_WeaponDraw")
 			net.WriteEntity(self)
 			net.WriteBool(self.drawBullet)
 			net.WriteFloat(CurTime())
@@ -156,7 +156,7 @@ if SERVER then
 		self.StaminaReloadTime = self.ReloadTime * ( IsValid( self:GetOwner() ) and org and org.stamina and org.pain and (2 - (self:GetOwner().organism.stamina[1] / 180 ) ) + (( org.pain / 40 ) + (org.larm/3) + (org.rarm/3)) or 1 )
 		self.reload = self.LastReload + self.StaminaReloadTime
 		self.dwr_reverbDisable = true
-		net.Start("hgwep reload")
+		net.Start("ZC_WeaponReload")
 			net.WriteEntity(self)
 			net.WriteFloat(self.LastReload)
 			net.WriteInt(self:Clip1(),10)
@@ -181,7 +181,7 @@ else
 		--self:GetOwner():SetAnimation(PLAYER_RELOAD)
 	end
 
-	net.Receive("hgwep draw", function()
+	net.Receive("ZC_WeaponDraw", function()
 		local self = net.ReadEntity()
 		local drawBullet = net.ReadBool()
 		local time = net.ReadFloat()
@@ -205,7 +205,7 @@ function SWEP:ReloadEnd()
 		if not self.drawBullet then
 			self.AnimStart_Draw = CurTime()
 			self:Draw(true)
-			net.Start("hgwep draw")
+			net.Start("ZC_WeaponDraw")
 			net.WriteEntity(self)
 			net.WriteBool(self.drawBullet)
 			net.WriteFloat(CurTime())

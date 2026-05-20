@@ -11,7 +11,7 @@ local function IsLookingAt(ply, targetVec)
 	return view.angles:Forward():Dot(diff)
 end
 
-net.Receive("flashbang",function()
+net.Receive("ZC_Flashbang",function()
 	local pos = net.ReadVector()
 	local time = math.Clamp(5200-(lply:GetPos():Distance(pos)), 1, 5)
 

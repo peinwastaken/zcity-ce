@@ -195,7 +195,7 @@ function MODE:Intermission()
 
 	for _, ply in player.Iterator() do
 		if(MODE.ShouldStartRoleRound())then
-			net.Start("HMCD_RoundStart")	--; TODO Structure description
+			net.Start("ZC_HomicideRoundStart")	--; TODO Structure description
 				net.WriteBool(ply.isTraitor)	--; Is Traitor
 				net.WriteBool(ply.isGunner)	--; Is Gunner
 				net.WriteString(self.Type)	--; Round Type
@@ -275,7 +275,7 @@ function MODE:EndRound()
 	end
 
 	timer.Simple(2,function()
-		net.Start("hmcd_roundend")
+		net.Start("ZC_HomicideRoundEnd")
 			net.WriteUInt(#traitors, MODE.TraitorExpectedAmtBits)
 
 			for _, traitor in ipairs(traitors) do
@@ -310,12 +310,12 @@ function MODE:CheckInAGroup(ply)
 	return flag
 end
 
-util.AddNetworkString("check_lightness")
+util.AddNetworkString("ZC_FearLightCheck")
 
 local checkedPlayer
 local checkPlayers = {}
 local maxLen = math.sqrt(3)
-net.Receive("check_lightness", function(len, ply)
+net.Receive("ZC_FearLightCheck", function(len, ply)
 	local vec = net.ReadVector()
 
 	if vec:Length() > maxLen then return end
@@ -481,7 +481,7 @@ function MODE:RoundThink()
 			checkedPlayer = ply
 			ply.lastcheckedcolor = MODE.saved.TimePlayed
 
-			net.Start("check_lightness")
+			net.Start("ZC_FearLightCheck")
 			net.WriteEntity(ply)
 			net.Broadcast()
 

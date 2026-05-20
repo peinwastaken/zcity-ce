@@ -112,7 +112,7 @@ end
 
 local headpos_male, headpos_female, headang = Vector(0,0,5), Vector(-2,0,4), Angle(0,0,-0)
 
-util.AddNetworkString("addfountain")
+util.AddNetworkString("ZC_AddBloodFountain")
 
 hg.fountains = hg.fountains or {}
 local headboom_mdl = Model("models/gleb/zcity/headboom.mdl")
@@ -182,7 +182,7 @@ function Gib_Input(rag, bone, force)
 		rag.noHead = true
 		rag:SetNWString("PlayerName", "Beheaded body")
 
-		net.Start("addfountain")
+		net.Start("ZC_AddBloodFountain")
 		net.WriteEntity(rag)
 		net.WriteVector(force or vector_origin)
 		net.Broadcast()

@@ -91,11 +91,11 @@ function ENT:Use( activator ) --| Crate data is sent only when opening so it doe
     self:OpenContainer( activator )
 end
 
-util.AddNetworkString( "ZBox_LootSystem_net" )
+util.AddNetworkString( "ZC_BoxLootSystem" )
 
 function ZBox.LootSystem.SendLootTable( ent, ply, tbl ) --| Send cool net messages.
 
-    net.Start( "ZBox_LootSystem_net" )
+    net.Start( "ZC_BoxLootSystem" )
         net.WriteEntity( ent )
         net.WriteString( util.TableToJSON( tbl ) ) --| Why waste extra resources on a table; let's just convert it to a string lol.
     net.Send( ply )--"resources" has one "s", idiot
@@ -103,7 +103,7 @@ function ZBox.LootSystem.SendLootTable( ent, ply, tbl ) --| Send cool net messag
     return true
 end
 
-net.Receive( "ZBox_LootSystem_net", function( len, ply )
+net.Receive( "ZC_BoxLootSystem", function( len, ply )
     local Container = net.ReadEntity()
     Container.TakeCD = Container.TakeCD or 0
     if Container.TakeCD > CurTime() then

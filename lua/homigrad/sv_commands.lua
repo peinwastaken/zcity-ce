@@ -110,9 +110,9 @@ COMMANDS.help = {function(ply,args)
 end,0}
 
 if SERVER then
-    util.AddNetworkString("PunishLightningEffect")
-    util.AddNetworkString("AnotherLightningEffect")
-    util.AddNetworkString("PluvCommand")
+    util.AddNetworkString("ZC_PunishLightningEffect")
+    util.AddNetworkString("ZC_LightningStrikeEffect")
+    util.AddNetworkString("ZC_PluvCommand")
 
     COMMANDS.zc_god = {function(ply)
         if not ply.organism then return end
@@ -155,11 +155,11 @@ if SERVER then
 
         target = hg.GetCurrentCharacter(target)
 
-        net.Start("AnotherLightningEffect")
+        net.Start("ZC_LightningStrikeEffect")
         net.WriteEntity(target)
         net.Broadcast()
 
-        net.Start("PunishLightningEffect")
+        net.Start("ZC_PunishLightningEffect")
         net.WriteEntity(target)
         net.Broadcast()
 
@@ -176,7 +176,7 @@ if SERVER then
     end, 2, "ник игрока"}
 
     COMMANDS.pluv = {function(ply, args)
-        net.Start("PluvCommand")
+        net.Start("ZC_PluvCommand")
         net.Send(ply)
     end, 0}
 

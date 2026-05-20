@@ -152,7 +152,7 @@ What it does?:
 }
 
 --\\Networking
-net.Receive("Abnormalties(SendOpenedPage)", function(len, ply)
+net.Receive("ZC_AbnormalityHelpPage", function(len, ply)
 	local page = net.ReadUInt(8)
 	local page_info = ABNORMALTIESHELP.Stats[page]
 
@@ -164,7 +164,7 @@ net.Receive("Abnormalties(SendOpenedPage)", function(len, ply)
 			if(knowledge[page_info.Requirement] and ply.AbnormaltiesLastPagesUpdates[page] != ABNORMALTIESHELP.LastUpdate)then
 				ply.AbnormaltiesLastPagesUpdates[page] = ABNORMALTIESHELP.LastUpdate
 				
-				net.Start("Abnormalties(SendOpenedPage)")
+				net.Start("ZC_AbnormalityHelpPage")
 					net.WriteUInt(page, 8)
 					net.WriteString(page_info.Name)
 					net.WriteString(page_info.Desc)

@@ -19,7 +19,7 @@ PLUGIN.Version = 1
 			if(!ply.NextVocalTime or ply.NextVocalTime <= CurTime())then
 				ply.NextVocalTime = CurTime() + 5
 				
-				net.Start("Synthesizer(PlayOnPlayer)")
+				net.Start("ZC_SynthesizerPlayOnPlayer")
 					net.WriteString(utf8.sub(text, 1, 20))
 					net.WriteEntity(ply)
 				net.SendPAS(ply:GetShootPos())
@@ -30,7 +30,7 @@ PLUGIN.Version = 1
 	end
 
 	if(SERVER)then
-		util.AddNetworkString("Synthesizer(PlayOnPlayer)")
+		util.AddNetworkString("ZC_SynthesizerPlayOnPlayer")
 		SetGlobalBool("Synthesizer_Enable_Chat", false)
 
 		hook.Add("ZC_OnPlayerSay", "ZC_Synthesizer", function(ply, txtTbl, text)

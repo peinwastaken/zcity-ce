@@ -14,14 +14,14 @@ MODE.EventersList = {}
 MODE.LootEnabled = false
 
 
-util.AddNetworkString("event_start")
-util.AddNetworkString("event_end")
-util.AddNetworkString("event_eventers_update")
-util.AddNetworkString("event_loot_update")
-util.AddNetworkString("event_loot_sync")
-util.AddNetworkString("event_loot_add")
-util.AddNetworkString("event_loot_remove")
-util.AddNetworkString("event_loot_request")
+util.AddNetworkString("ZC_EventStart")
+util.AddNetworkString("ZC_EventEnd")
+util.AddNetworkString("ZC_EventParticipantsUpdate")
+util.AddNetworkString("ZC_EventLootUpdate")
+util.AddNetworkString("ZC_EventLootSync")
+util.AddNetworkString("ZC_EventLootAdd")
+util.AddNetworkString("ZC_EventLootRemove")
+util.AddNetworkString("ZC_EventLootRequest")
 
 function MODE:CanLaunch()
     return true
@@ -42,7 +42,7 @@ function MODE:Intermission()
 	local rndpoints = zb.GetMapPoints("RandomSpawns")
 	zonepoint = table.Random(rndpoints)
 
-	net.Start("event_start")
+	net.Start("ZC_EventStart")
 	net.Broadcast()
 end
 
@@ -86,7 +86,7 @@ function MODE:RoundStart()
         end
     end
 
-    net.Start("event_eventers_update")
+    net.Start("ZC_EventParticipantsUpdate")
     local data = {}
     for id, _ in pairs(self.EventersList) do
         table.insert(data, id)
@@ -202,10 +202,10 @@ function MODE:GetLootTable()
     return self.LootTable[2][2]
 end
 
-net.Receive("event_loot_request", function(len, ply)
+net.Receive("ZC_EventLootRequest", function(len, ply)
     if not ply:IsAdmin() and not MODE.EventersList[ply:SteamID()] then return end
 
-    net.Start("event_loot_sync")
+    net.Start("ZC_EventLootSync")
     net.WriteTable(MODE.CustomLootTable[1][2] or {})
     net.Send(ply)
 end)
@@ -260,7 +260,7 @@ hook.Add("Initialize", "ZC_EventLoadLootTable", function()
     end)
 end)
 
-net.Receive("event_loot_add", function(len, ply)
+net.Receive("ZC_EventLootAdd", function(len, ply)
     if not ply:IsAdmin() and not MODE.EventersList[ply:SteamID()] then return end
 
     local itemData = net.ReadTable()
@@ -278,14 +278,14 @@ net.Receive("event_loot_add", function(len, ply)
         end
     end
 
-    net.Start("event_loot_sync")
+    net.Start("ZC_EventLootSync")
     net.WriteTable(MODE.CustomLootTable[1][2])
     net.Send(recipients)
 
     ply:ChatPrint("Added item: " .. itemData.class .. " with weight " .. itemData.weight)
 end)
 
-net.Receive("event_loot_remove", function(len, ply)
+net.Receive("ZC_EventLootRemove", function(len, ply)
     if not ply:IsAdmin() and not MODE.EventersList[ply:SteamID()] then return end
 
     local itemIndex = net.ReadUInt(16)
@@ -304,7 +304,7 @@ net.Receive("event_loot_remove", function(len, ply)
         end
     end
 
-    net.Start("event_loot_sync")
+    net.Start("ZC_EventLootSync")
     net.WriteTable(MODE.CustomLootTable[1][2])
     net.Send(recipients)
 
@@ -327,7 +327,7 @@ concommand.Add("zb_event_loot_reset", function(ply, _, _, _)
         end
     end
 
-    net.Start("event_loot_sync")
+    net.Start("ZC_EventLootSync")
     net.WriteTable(MODE.CustomLootTable[1][2])
     net.Send(recipients)
 
@@ -347,7 +347,7 @@ concommand.Add("zb_event_lootpoll", function(ply, _, _, _)
         return
     end
 
-    net.Start("event_loot_request")
+    net.Start("ZC_EventLootRequest")
     net.Send(ply)
 end)
 
@@ -397,7 +397,7 @@ end)
 hook.Add("PlayerInitialSpawn", "ZC_EventLootSync", function(ply)
     timer.Simple(5, function()
         if IsValid(ply) and (ply:IsAdmin() or MODE.EventersList[ply:SteamID()]) then
-            net.Start("event_loot_sync")
+            net.Start("ZC_EventLootSync")
             net.WriteTable(MODE.CustomLootTable[1][2] or {})
             net.Send(ply)
         end
@@ -441,7 +441,7 @@ concommand.Add("zb_event_eventer_add", function(ply, _, _, args)
             zb.GiveRole(target, "Eventer", Color(50, 200, 50))
         end
 
-        net.Start("event_eventers_update")
+        net.Start("ZC_EventParticipantsUpdate")
         local data = {}
         for id, _ in pairs(MODE.EventersList) do
             table.insert(data, id)
@@ -463,7 +463,7 @@ concommand.Add("zb_event_eventer_remove", function(ply, _, _, args)
             zb.GiveRole(target, GetGlobalString("ZB_EventRole","Player"), Color(190,15,15))
         end
 
-        net.Start("event_eventers_update")
+        net.Start("ZC_EventParticipantsUpdate")
         local data = {}
         for id, _ in pairs(MODE.EventersList) do
             table.insert(data, id)
@@ -496,7 +496,7 @@ function MODE:EndRound()
     end
 
     timer.Simple(2, function()
-        net.Start("event_end")
+        net.Start("ZC_EventEnd")
         local ent = zb:CheckAlive(true)[1]
         net.WriteEntity(IsValid(ent) and ent:Alive() and ent or NULL)
         net.Broadcast()

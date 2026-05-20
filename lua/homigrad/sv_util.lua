@@ -330,8 +330,8 @@ end )
 local MaxLookX,MinLookX = 55,-55
 local MaxLookY,MinLookY = 45,-45
 
-util.AddNetworkString("LookAway")
-net.Receive("LookAway",function(len,ply)
+util.AddNetworkString("ZC_LookAway")
+net.Receive("ZC_LookAway",function(len,ply)
 	if len > 64 or !IsValid(ply) then return end
 	if (ply.cooldown_lookaway or 0) > CurTime() then return end
 	ply.cooldown_lookaway = CurTime() + 0.1
@@ -351,7 +351,7 @@ net.Receive("LookAway",function(len,ply)
 		hg.BreakNeck(ply)
 	end
 
-	net.Start("LookAway", true)
+	net.Start("ZC_LookAway", true)
 		net.WriteEntity(ply)
 		net.WriteFloat(LookX)
 		net.WriteFloat(LookY)
@@ -372,9 +372,9 @@ function hg.EmitAISound(pos, vol, dur, typ) -- https://developer.valvesoftware.c
 	SafeRemoveEntityDelayed(snd, dur + .5)
 end
 
-util.AddNetworkString("ZB_KeyDown2")
+util.AddNetworkString("ZC_KeyDownState")
 hook.Add("KeyPress", "ZC_BroadcastKeyPressState", function(ply, key)
-	net.Start("ZB_KeyDown2")
+	net.Start("ZC_KeyDownState")
 		net.WriteInt(key, 26)
 		net.WriteBool( ply.organism.canmove )
 		net.WriteEntity(ply)
@@ -382,7 +382,7 @@ hook.Add("KeyPress", "ZC_BroadcastKeyPressState", function(ply, key)
 end)
 
 hook.Add("KeyRelease", "ZC_BroadcastKeyReleaseState", function(ply, key)
-	net.Start("ZB_KeyDown2")
+	net.Start("ZC_KeyDownState")
 		net.WriteInt(key, 26)
 		net.WriteBool(false)
 		net.WriteEntity(ply)
@@ -422,7 +422,7 @@ hook.Add("ZC_PlayerThink", "ZC_DropNonHolsterableWeapons", function(ply)
 	end
 end)
 
-util.AddNetworkString( "DoPlayerFlinch" )
+util.AddNetworkString( "ZC_PlayerFlinch" )
 
 hook.Add( "ScalePlayerDamage", "ZC_FlinchPlayersOnHit", function(ply, grp)
 	if ply:IsPlayer() then
@@ -447,7 +447,7 @@ hook.Add( "ScalePlayerDamage", "ZC_FlinchPlayersOnHit", function(ply, grp)
 			group = ACT_FLINCH_PHYSICS
 		end
 
-		net.Start( "DoPlayerFlinch" )
+		net.Start( "ZC_PlayerFlinch" )
 			net.WriteInt( group, 32 )
 			net.WriteEntity( ply )
 		net.Broadcast()
@@ -455,7 +455,7 @@ hook.Add( "ScalePlayerDamage", "ZC_FlinchPlayersOnHit", function(ply, grp)
 end )
 
 
-util.AddNetworkString("add_supression")
+util.AddNetworkString("ZC_AddSuppression")
 
 local function IsLookingAt(ply, targetVec)
 	if !IsValid(ply) or !ply:IsPlayer() then return true end
@@ -556,7 +556,7 @@ function entMeta.EmitSound(self,soundName,soundLevel,pitch,volume,channel,soundF
 end
 
 function hg.ExplosionEffect(pos, dis, dmg)
-	net.Start("add_supression") -- i think this useless for now
+	net.Start("ZC_AddSuppression") -- i think this useless for now
 	net.WriteVector(pos)
 	net.Broadcast()
 end
@@ -1819,11 +1819,11 @@ hook.Add("OnEntityCreated", "ZC_ReplaceJeepWithCustomVehicle", function(ent)
 	end
 end)
 
-util.AddNetworkString("send_tinnitus")
+util.AddNetworkString("ZC_TinnitusSend")
 function plymeta:AddTinnitus(time,needSound)
 	needSound = needSound or false
 
-	net.Start("send_tinnitus")
+	net.Start("ZC_TinnitusSend")
 		net.WriteFloat(time)
 		net.WriteBool(needSound)
 	net.Send(self)

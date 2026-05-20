@@ -4,7 +4,7 @@ local MODE = MODE
 
 local zc_deathmatch_nozone = ConVarExists("zc_deathmatch_nozone") and GetConVar("zc_deathmatch_nozone") or CreateConVar("zc_deathmatch_nozone", 0, FCVAR_REPLICATED, "Allows to disable deathmatch mode zone.", 0, 1)
 
-net.Receive("dm_start",function()
+net.Receive("ZC_DeathmatchStart",function()
 	roundend = false
 
 	hg.DynaMusic:Start( "mirrors_edge" )
@@ -122,7 +122,7 @@ end
 local CreateEndMenu = nil
 local wonply = nil
 
-net.Receive("dm_end",function()
+net.Receive("ZC_DeathmatchEnd",function()
 	local ent = net.ReadEntity()
 	local most_violent_player = net.ReadEntity()
 

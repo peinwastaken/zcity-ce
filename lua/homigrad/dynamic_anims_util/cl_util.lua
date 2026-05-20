@@ -28,7 +28,7 @@ hook.Add("CalcMainActivity", "ZC_SLCAnimActivity", function(ply, vel)
 	end
 end)
 
-net.Receive("DynamicAnims_SendGesture", function()
+net.Receive("ZC_DynamicAnimGesture", function()
 	local ent = net.ReadEntity()
 	local AnimID = net.ReadInt(16)
 	local weight = net.ReadFloat()
