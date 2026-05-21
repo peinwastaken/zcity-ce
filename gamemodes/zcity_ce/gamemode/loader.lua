@@ -151,6 +151,10 @@ local function LoadModes()
 	if SERVER and !file.Exists(chancesfile,  "DATA") then
 		file.Write(chancesfile, util.TableToJSON(zb.ModesChances, true))
 	end
+
+	if SERVER then
+		zb.modeconfig.LoadAll()
+	end
 end
 
 LoadModes()

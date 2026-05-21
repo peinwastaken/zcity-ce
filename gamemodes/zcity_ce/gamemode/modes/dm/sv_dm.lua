@@ -2,15 +2,6 @@ local MODE = MODE
 
 local zc_deathmatch_nozone = ConVarExists("zc_deathmatch_nozone") and GetConVar("zc_deathmatch_nozone") or CreateConVar("zc_deathmatch_nozone", 0, FCVAR_REPLICATED, "Allows to disable deathmatch mode zone.", 0, 1)
 
-MODE.name = "dm"
-MODE.PrintName = "Deathmatch"
-MODE.LootSpawn = false
-MODE.GuiltDisabled = true
-MODE.randomSpawns = true
-
-MODE.ForBigMaps = false
-MODE.Chance = 0.04
-
 -- MODE.MapSize = mapsize
 
 util.AddNetworkString("ZC_DeathmatchStart")
