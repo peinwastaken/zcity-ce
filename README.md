@@ -1,6 +1,6 @@
 # Z-City CE
 
-Z-City CE (Community Edition) is a modified fork of the original [Z-City](https://github.com/uzelezz123/Z-City).
+Z-City CE (Community Edition) is a modified version of the original [Z-City](https://github.com/uzelezz123/Z-City).
 
 This fork focuses on:
 
@@ -9,7 +9,7 @@ This fork focuses on:
 - Quality of life additions
 - no furry shit
 
-Original project by uzelezz
+Original project by uzelezz123
 
 ## The numbers in the version number indicate:
 
