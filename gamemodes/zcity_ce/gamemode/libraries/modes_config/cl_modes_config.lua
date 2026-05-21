@@ -34,8 +34,6 @@ net.Receive("ZC_SendAllModeConfigs", function()
 
       mode[settingId] = settingValue
       loaded = loaded + 1
-
-      print(mode[settingId])
     end
   end
 
