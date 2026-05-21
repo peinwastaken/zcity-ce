@@ -23,20 +23,50 @@ local function CreateSettingToggleButton(mode, setting, settingPairs, parent)
   return button
 end
 
-local function CreateSettingValueInput(mode, setting, settingPairs, parent)
+local function CreateSettingTextInput(mode, setting, settingPairs, parent)
+  local variable = setting.variable
   local entry = vgui.Create("DTextEntry", parent)
-  entry.type = type(setting.value)
   entry:SetTall(15)
   entry:SetWide(100)
   entry:SetTextColor(zc.colors.ui.white)
-  entry:SetValue(mode[setting.variable])
+  entry:SetValue(mode[variable])
   entry:DockMargin(15, 10, 0, 10)
 
-  entry.OnEnter = function(self)
-    settingPairs[setting.variable] = self:GetValue()
+  local OnUpdate = function(self)
+    local value = self:GetValue()
+    settingPairs[variable] = value
   end
 
+  entry.OnEnter = OnUpdate
+  entry.OnLoseFocus = OnUpdate
+
   return entry
+end
+
+local function CreateSettingNumberInput(mode, setting, settingPairs, parent)
+  local variable = setting.variable
+  local wang = vgui.Create("DNumberWang", parent)
+  wang:SetTall(15)
+  wang:SetWide(100)
+  wang:SetValue(mode[variable])
+  wang:DockMargin(15, 10, 0, 10)
+  wang.Paint = function(self, w, h)
+    surface.SetDrawColor(zc.colors.ui.errorBright)
+    surface.DrawOutlinedRect(0, 0, w, h, 1)
+
+    local textColor = zc.colors.ui.white
+    local highlightColor = zc.colors.ui.secondaryColor
+    local caretColor = zc.colors.ui.white
+    self:DrawTextEntryText(textColor, highlightColor, caretColor)
+  end
+
+  local OnUpdate = function(self, value)
+    settingPairs[variable] = value
+  end
+
+  wang.OnValueChanged = OnUpdate
+
+  return wang
 end
 
 local function CreateButton(label, parent)
@@ -76,12 +106,16 @@ local function CreateConfigRow(mode, setting, settingPairs, parent)
   settingDesc:SetText(setting.description)
   settingDesc:Dock(TOP)
 
-  local settingType = type(mode[setting.variable])
+  local variable = setting.variable
+  local settingType = type(mode[variable])
   if (settingType == "boolean") then
     local button = CreateSettingToggleButton(mode, setting, settingPairs, row)
     button:Dock(RIGHT)
-  elseif settingType == "number" || settingType == "string" then
-    local textEntry = CreateSettingValueInput(mode, setting, settingPairs, row)
+  elseif settingType == "number" or tonumber(mode[variable]) then
+    local numberEntry = CreateSettingNumberInput(mode, setting, settingPairs, row)
+    numberEntry:Dock(RIGHT)
+  elseif settingType == "string" then
+    local textEntry = CreateSettingTextInput(mode, setting, settingPairs, row)
     textEntry:Dock(RIGHT)
   end
 
