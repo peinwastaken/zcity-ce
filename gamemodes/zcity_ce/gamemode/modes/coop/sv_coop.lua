@@ -1,17 +1,10 @@
-MODE.name = "coop"
-MODE.PrintName = "CO-OP"
-MODE.randomSpawns = false
+local MODE = MODE
 
-MODE.ROUND_TIME = 9000
 hg.NextMap = ""
-
 
 local coop_rts = CreateConVar("zc_coop_rts", "1", FCVAR_PROTECTED, "Toggle NPC rebel possess in Half-Life 2 CO-OP mode", 0, 1)
 local coop_rts_cmb = CreateConVar("zc_coop_rts_cmb", "1", FCVAR_PROTECTED, "Toggle NPC combine possess in Half-Life 2 CO-OP mode if zc_coop_rts is enabled", 0, 1)
 local coop_rts_zmb = CreateConVar("zc_coop_rts_zmb", "0", FCVAR_PROTECTED, "Toggle NPC zombie possess in Half-Life 2 CO-OP mode if zc_coop_rts is enabled", 0, 1) --!! WIP
-
-MODE.LootSpawn = false
-
 
 MODE.Lootables = {}
 for model, _ in pairs(hg.loot_boxes or {}) do
@@ -46,9 +39,9 @@ end
 
 function MODE:GetLootTable()
     local currentMap = game.GetMap()
-    local mapData = self.Maps[currentMap] or {PlayerEqipment = "rebel"}
+    local mapData = self.Maps[currentMap] or {PlayerEquipment = "rebel"}
 
-    local lootData = mapData.PlayerEqipment == "rebel" and self.LootTable[2] or self.LootTable[1]
+    local lootData = mapData.PlayerEquipment == "rebel" and self.LootTable[2] or self.LootTable[1]
     return lootData[2]
 end
 
@@ -139,10 +132,6 @@ hook.Add("EntityTakeDamage","ZC_BlockCoopFriendlyDamage",function(ent,dmginfo)
 		end
     end
 end)
-
-MODE.ForBigMaps = true
-
-MODE.Chance = 1
 
 util.AddNetworkString("ZC_CoopStart")
 
@@ -304,8 +293,8 @@ function MODE:GiveEquipment()
         local hasGordon = false
 
         local currentMap = game.GetMap()
-        local mapData = self.Maps[currentMap] or {PlayerEqipment = "rebel"}
-        local playerClass = mapData.PlayerEqipment
+        local mapData = self.Maps[currentMap] or {PlayerEquipment = "rebel"}
+        local playerClass = mapData.PlayerEquipment
 
         local maxMedics = math.max(1, math.min(3, math.floor(#players / 5)))
         local maxGrenadier = math.max(1, math.min(3, math.floor(#players / 5)))
@@ -543,8 +532,8 @@ local function PossessNPC(ply, npc)
 	local isZombie = zombieNPCClasses[npcClass]
 
     local currentMap = game.GetMap()
-    local mapData = CurrentRound().Maps[currentMap] or {PlayerEqipment = "rebel"}
-    local playerClass = mapData.PlayerEqipment
+    local mapData = CurrentRound().Maps[currentMap] or {PlayerEquipment = "rebel"}
+    local playerClass = mapData.PlayerEquipment
 
     npc:Remove()
 

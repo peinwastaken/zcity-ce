@@ -1,15 +1,5 @@
 local MODE = MODE
 
-MODE.name = "tdm"
-MODE.BuyTime = 40
-MODE.StartMoney = 6500
-MODE.start_time = 20
-MODE.buymenu = true
-
-MODE.ROUND_TIME = 240
-
-MODE.Chance = 0.04
-
 function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
 	return 1, true--returning true so guilt bans
 end

@@ -1,11 +1,35 @@
 local MODE = MODE
 
 MODE.base = "hmcd"
-
+MODE.GuiltDisabled = true
+MODE.PoliceTime = 9999
 MODE.PrintName = "Homicide2"
 MODE.name = "fear"
 MODE.Events = MODE.Events or {}
 MODE.StartedEvents = MODE.StartedEvents or {}
+
+MODE.Config = {
+	["id"] = MODE.name or "fear",
+	["printname"] = MODE.PrintName or "Homicide2",
+	["settings"] = {
+		{
+			["id"] = "guiltdisabled",
+			["label"] = "Disable guilt system",
+			["description"] = "Disable guilt/karma for fear mode",
+			["default"] = true,
+			["value"] = MODE.GuiltDisabled,
+			["variable"] = "GuiltDisabled"
+		},
+		{
+			["id"] = "policetime",
+			["label"] = "Police time",
+			["description"] = "Police spawn time or timer used by the mode",
+			["default"] = 9999,
+			["value"] = MODE.PoliceTime,
+			["variable"] = "PoliceTime"
+		}
+	}
+}
 
 function MODE:CreateTimer(name, delay, repetitions, func)
 	self.saved.Timers = self.saved.Timers or {}

@@ -1,11 +1,4 @@
-MODE.name = "hl2dm"
-MODE.PrintName = "Half-Life 2 Deathmatch"
-
-MODE.Chance = 0.05
-
-MODE.LootSpawn = false
-
-MODE.ForBigMaps = true
+local MODE = MODE
 
 function MODE:ClearPlayerRoles() -- Thanks to Deka!!
     for _, ply in player.Iterator() do

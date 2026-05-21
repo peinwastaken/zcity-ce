@@ -1,10 +1,104 @@
 local MODE = MODE
+
 MODE.name = "hmcd"
 MODE.PrintName = "Homicide"
-
+MODE.FadeScreenTime = 1.5
+MODE.DefaultRoundStartTime = 6 -- legacy variable, mostly unused
+MODE.RoleChooseRoundStartTime = 10
+MODE.GuiltDisabled = MODE.GuiltDisabled or false
+MODE.start_time = 1
+MODE.end_time = 7
+MODE.ROUND_TIME = 600
+MODE.randomSpawns = true
+MODE.shouldfreeze = true
+MODE.PoliceAllowed = false
+MODE.OverrideSpawn = true
+MODE.LootSpawn = true
+MODE.LootOnTime = true
+MODE.Chance = 0.2 -- this is mostly unused
+MODE.LootDivTime = 500
 --\\
 MODE.TraitorExpectedAmtBits = 13
 --//
+
+MODE.Config = {
+	["id"] = "hmcd",
+	["printname"] = "Homicide",
+	["settings"] = {
+		{
+			["id"] = "fade_time",
+			["label"] = "Fade screen time",
+			["description"] = "Duration of fade in/out during round transitions",
+			["default"] = 1.5,
+			["value"] = MODE.FadeScreenTime,
+			["variable"] = "FadeScreenTime"
+		},
+		{
+			["id"] = "rolechoose_round_start",
+			["label"] = "Role choose start time",
+			["description"] = "Countdown length for role selection phase",
+			["default"] = 10,
+			["value"] = MODE.RoleChooseRoundStartTime,
+			["variable"] = "RoleChooseRoundStartTime"
+		},
+		{
+			["id"] = "pre_round_start",
+			["label"] = "Pre-round start delay",
+			["description"] = "Delay (seconds) before a round starts. Used by the round system as CurrentRound().start_time",
+			["default"] = 1,
+			["value"] = MODE.start_time,
+			["variable"] = "start_time"
+		},
+		{
+			["id"] = "post_round_end",
+			["label"] = "Post-round end delay",
+			["description"] = "Delay (seconds) after round end before intermission/actions; used as CurrentRound().end_time",
+			["default"] = 7,
+			["value"] = MODE.end_time,
+			["variable"] = "end_time"
+		},
+		{
+			["id"] = "round_time",
+			["label"] = "Round length",
+			["description"] = "Main round duration in seconds; used by round end checks and HUD timers (MODE.ROUND_TIME)",
+			["default"] = 600,
+			["value"] = MODE.ROUND_TIME,
+			["variable"] = "ROUND_TIME"
+		},
+		{
+			["id"] = "default_round_start",
+			["label"] = "Legacy default round start",
+			["description"] = "Legacy/auxiliary default start time. This value is not used by the main round system (use 'Pre-round start delay' / start_time). Kept for compatibility.",
+			["default"] = MODE.DefaultRoundStartTime,
+			["value"] = MODE.DefaultRoundStartTime,
+			["variable"] = "DefaultRoundStartTime"
+		},
+		{
+			["id"] = "chance",
+			["label"] = "Pick chance",
+			["description"] = "Chance for this gamemode (and its subtypes) to be picked by the round system",
+			["default"] = 0.2,
+			["value"] = MODE.Chance,
+			["variable"] = "Chance"
+		},
+		{
+			["id"] = "lootspawn",
+			["label"] = "Spawn loot",
+			["description"] = "Enables loot spawning for this gamemode",
+			["default"] = true,
+			["value"] = MODE.LootSpawn,
+			["variable"] = "LootSpawn"
+		},
+		{
+			["id"] = "guiltdisabled",
+			["label"] = "Disable guilt system",
+			["description"] = "Disables guilt/karma system for this gamemode",
+			["default"] = false,
+			["value"] = MODE.GuiltDisabled,
+			["variable"] = "GuiltDisabled"
+		}
+	}
+}
 
 --\\Sub Roles
 MODE.ConVarName_SubRole_Traitor_SOE = "zc_hmcd_subrole_traitor_soe"
@@ -21,7 +115,6 @@ end
 MODE.SubRoles = {
 	--=\\Traitor
 	--==\\
-	--; https://youtu.be/zP7ux8WsYYI?si=S-Uw2EAehGR5WD3D
 	["traitor_default"] = {
 		Name = "Defoko",
 		Description = [[Default.
@@ -299,11 +392,6 @@ MODE.Professions = {
 --//
 
 --\\
---; The variable names came out a little messed up; need to think about improving them
---; terrible
-MODE.FadeScreenTime = 1.5
-MODE.DefaultRoundStartTime = 6
-MODE.RoleChooseRoundStartTime = 10
 
 MODE.RoleChooseRoundTypes = {
 	["standard"] = {

@@ -1,17 +1,5 @@
 local MODE = MODE
 
-MODE.KillMoney = 1000
-MODE.StartMoney = 1000
-MODE.start_time = 20
-
-MODE.Rounds = 5
-
-MODE.ROUND_TIME = 240
-
-MODE.ForBigMaps = false -- if it can launch, then it doesn't really matter
-
-MODE.CooldownRounds = 5 -- 5 rounds of cs, 5 rounds without cs (at least 5)
-
 function MODE:ChanceFunction(info)
     if info.rounds then
         for i = #info.rounds, #info.rounds - self.CooldownRounds + 1, -1 do

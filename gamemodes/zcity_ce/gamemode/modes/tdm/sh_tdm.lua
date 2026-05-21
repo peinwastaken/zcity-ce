@@ -1,5 +1,68 @@
 local MODE = MODE
 
+MODE.name = "tdm"
+MODE.BuyTime = 40
+MODE.StartMoney = 6500
+MODE.start_time = 20
+MODE.buymenu = true
+MODE.ROUND_TIME = 240
+MODE.Chance = 0.04
+
+MODE.Config = {
+    ["id"] = MODE.name or "tdm",
+    ["printname"] = MODE.PrintName or "Team Deathmatch",
+    ["settings"] = {
+        {
+            ["id"] = "start_time",
+            ["label"] = "Round start delay",
+            ["description"] = "Delay before round start (s)",
+            ["default"] = 20,
+            ["value"] = MODE.start_time,
+            ["variable"] = "start_time"
+        },
+        {
+            ["id"] = "round_time",
+            ["label"] = "Round length",
+            ["description"] = "Round duration (s)",
+            ["default"] = 240,
+            ["value"] = MODE.ROUND_TIME,
+            ["variable"] = "ROUND_TIME"
+        },
+        {
+            ["id"] = "chance",
+            ["label"] = "Pick chance",
+            ["description"] = "Chance for this gamemode to be picked by the round system",
+            ["default"] = 0.04,
+            ["value"] = MODE.Chance,
+            ["variable"] = "Chance"
+        },
+        {
+            ["id"] = "buytime",
+            ["label"] = "Buy time",
+            ["description"] = "Duration of buy phase (s)",
+            ["default"] = 40,
+            ["value"] = MODE.BuyTime,
+            ["variable"] = "BuyTime"
+        },
+        {
+            ["id"] = "startmoney",
+            ["label"] = "Start money",
+            ["description"] = "Money players start with",
+            ["default"] = 6500,
+            ["value"] = MODE.StartMoney,
+            ["variable"] = "StartMoney"
+        },
+        {
+            ["id"] = "buymenu",
+            ["label"] = "Buy menu enabled",
+            ["description"] = "Whether buy menu is available",
+            ["default"] = true,
+            ["value"] = MODE.buymenu,
+            ["variable"] = "buymenu"
+        }
+    }
+}
+
 zb = zb or {}
 zb.Points = zb.Points or {}
 

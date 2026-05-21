@@ -1,3 +1,42 @@
+local MODE = MODE
+
+MODE.name = "hl2dm"
+MODE.PrintName = "Half-Life 2 Deathmatch"
+MODE.Chance = 0.05
+MODE.LootSpawn = false
+MODE.ForBigMaps = true
+
+MODE.Config = {
+    ["id"] = MODE.name or "hl2dm",
+    ["printname"] = MODE.PrintName or "Half-Life 2 Deathmatch",
+    ["settings"] = {
+        {
+            ["id"] = "chance",
+            ["label"] = "Pick chance",
+            ["description"] = "Chance for this gamemode to be picked by the round system",
+            ["default"] = 0.05,
+            ["value"] = MODE.Chance,
+            ["variable"] = "Chance"
+        },
+        {
+            ["id"] = "lootspawn",
+            ["label"] = "Spawn loot",
+            ["description"] = "Enable loot spawning for this gamemode",
+            ["default"] = false,
+            ["value"] = MODE.LootSpawn,
+            ["variable"] = "LootSpawn"
+        },
+        {
+            ["id"] = "forbigmaps",
+            ["label"] = "Supports large maps",
+            ["description"] = "Should this gamemode be picked for big maps?",
+            ["default"] = true,
+            ["value"] = MODE.ForBigMaps,
+            ["variable"] = "ForBigMaps"
+        }
+    }
+}
+
 zb = zb or {}
 
 --[[ Ideas

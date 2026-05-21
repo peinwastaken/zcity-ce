@@ -1,10 +1,4 @@
-MODE.name = "criresp"
-MODE.PrintName = "Crisis Response"
-
-MODE.ForBigMaps = false
-MODE.ROUND_TIME = 480
-
-MODE.Chance = 0.05
+local MODE = MODE
 
 function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
 	return 1, true--returning true so guilt bans

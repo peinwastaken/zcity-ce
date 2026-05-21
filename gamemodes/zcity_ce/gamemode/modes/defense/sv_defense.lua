@@ -8,16 +8,6 @@
 ]]--
 
 local MODE = MODE
-MODE.Timers = MODE.Timers or {}
-MODE.name = "defense"
-MODE.PrintName = "NPC Defense"
-MODE.randomSpawns = true
-MODE.ROUND_TIME = 10000
-MODE.TotalWaves = 6
-MODE.CurrentSubMode = "STANDARD"
-MODE.LootSpawn = true
-MODE.ForBigMaps = true
-MODE.Chance = 0.02
 
 local defenseDefaultPlayerSpawns = {
     "info_player_deathmatch", "info_player_combine", "info_player_rebel",
@@ -59,7 +49,6 @@ util.AddNetworkString("ZC_DefenseWaveMusicStart")
 util.AddNetworkString("ZC_DefenseWaveMusicStop")
 util.AddNetworkString("ZC_DefenseBossIncoming")
 
-MODE.VoteTime = 15
 MODE.VoteResults = {
     [1] = 0,
     [2] = 0,

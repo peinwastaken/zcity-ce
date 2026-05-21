@@ -1,21 +1,4 @@
 local MODE = MODE
-MODE.start_time = 1
-MODE.end_time = 7
-
-MODE.ROUND_TIME = 600
-
-MODE.randomSpawns = true
-
-MODE.shouldfreeze = true
-
-MODE.PoliceAllowed = false
-MODE.OverrideSpawn = true
-
-MODE.LootSpawn = true
-MODE.LootOnTime = true
-
-MODE.Chance = 0.2 -- this is mostly unused
-MODE.LootDivTime = 500
 
 local TRAITOR_FAIRNESS_BASE_WEIGHT = 1 -- Every eligible player starts with this much weight.
 local TRAITOR_FAIRNESS_MISS_WEIGHT = 0.02 -- Added per eligible round missed. Higher means stronger pity and fewer repeats.

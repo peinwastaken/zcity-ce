@@ -328,8 +328,8 @@ hook.Add("PlayerSpawn", "ZC_CoopPersistenceMidRoundSpawn", function(ply)
             end
         else
             local currentMap = game.GetMap()
-            local mapData = CurrentRound().Maps[currentMap] or {PlayerEqipment = "rebel"}
-            local playerClass = mapData.PlayerEqipment
+            local mapData = CurrentRound().Maps[currentMap] or {PlayerEquipment = "rebel"}
+            local playerClass = mapData.PlayerEquipment
 
             local inv = ply:GetNetVar("Inventory", {})
             inv["Weapons"] = inv["Weapons"] or {}

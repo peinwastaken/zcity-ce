@@ -1,8 +1,5 @@
 local MODE = MODE
 
-MODE.GuiltDisabled = true
-MODE.PoliceTime = 9999
-
 function MODE:AfterBaseInheritance()
 	self.Types.standard2 = self.Types.standard
 	self.Types.soe2 = self.Types.soe

@@ -1,13 +1,4 @@
-MODE.name = "gwars"
-MODE.PrintName = "Gang Wars"
-
-MODE.ForBigMaps = false
-MODE.ROUND_TIME = 180
-
-MODE.Chance = 0.02
-
-MODE.OverideSpawnPos = true
-MODE.LootSpawn = false
+local MODE = MODE
 
 function MODE:CanLaunch()
 	return true
