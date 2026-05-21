@@ -26,15 +26,6 @@ local RandomEvents = {
             end)
         end
     end,
-    ["Fart"] = function( owner, org )
-        owner:EmitSound("snd_jack_hmcd_fart.wav")
-        for i = 1, 30 do
-            timer.Simple(i/60,function()
-                if not IsValid(owner) then return end
-                owner:ViewPunch(AngleRand(-.1,.1))
-            end)
-        end 
-    end,
     ["Cough"] = function( owner, org )
         owner:EmitSound(ThatPlyIsFemale(owner) and "zcitysnd/female/cough_"..math.random(1,6)..".mp3" or "zcitysnd/male/cough_"..math.random(1,6)..".mp3", 75, 100, 1)
         timer.Simple(.3,function()
