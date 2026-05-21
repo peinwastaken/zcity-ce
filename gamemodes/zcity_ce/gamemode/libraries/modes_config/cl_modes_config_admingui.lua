@@ -1,89 +1,3 @@
-local function CreateSettingToggleButton(mode, setting, settingPairs, parent)
-  local button = vgui.Create("DButton", parent)
-  button.enabled = mode[setting.variable]
-  button:SetTall(15)
-  button:SetText("Enabled")
-  button:SizeToContentsX(30)
-  button:DockMargin(15, 10, 0, 10)
-
-  button.DoClick = function(self)
-    local newValue = !self.enabled
-    self.enabled = newValue
-    settingPairs[setting.variable] = self.enabled
-  end
-
-  button.Paint = function(self, w, h)
-    local enabled = self.enabled
-    local text = enabled and "Enabled" or "Disabled"
-    surface.SetDrawColor(enabled and zc.colors.ui.successBright or zc.colors.ui.errorBright)
-    surface.DrawOutlinedRect(0, 0, w, h, 1)
-    self:SetText(text)
-  end
-
-  return button
-end
-
-local function CreateSettingTextInput(mode, setting, settingPairs, parent)
-  local variable = setting.variable
-  local entry = vgui.Create("DTextEntry", parent)
-  entry:SetTall(15)
-  entry:SetWide(100)
-  entry:SetTextColor(zc.colors.ui.white)
-  entry:SetValue(mode[variable])
-  entry:DockMargin(15, 10, 0, 10)
-
-  local OnUpdate = function(self)
-    local value = self:GetValue()
-    settingPairs[variable] = value
-  end
-
-  entry.OnEnter = OnUpdate
-  entry.OnLoseFocus = OnUpdate
-
-  return entry
-end
-
-local function CreateSettingNumberInput(mode, setting, settingPairs, parent)
-  local variable = setting.variable
-  local wang = vgui.Create("DNumberWang", parent)
-  wang:SetTall(15)
-  wang:SetWide(100)
-  wang:SetValue(mode[variable])
-  wang:DockMargin(15, 10, 0, 10)
-  wang.Paint = function(self, w, h)
-    surface.SetDrawColor(zc.colors.ui.errorBright)
-    surface.DrawOutlinedRect(0, 0, w, h, 1)
-
-    local textColor = zc.colors.ui.white
-    local highlightColor = zc.colors.ui.secondaryColor
-    local caretColor = zc.colors.ui.white
-    self:DrawTextEntryText(textColor, highlightColor, caretColor)
-  end
-
-  local OnUpdate = function(self, value)
-    settingPairs[variable] = value
-  end
-
-  wang.OnValueChanged = OnUpdate
-
-  return wang
-end
-
-local function CreateButton(label, parent)
-  local button = vgui.Create("DButton", parent)
-  button:SetTall(15)
-  button:SetText(label)
-  button:SizeToContentsX(30)
-  button:DockMargin(15, 10, 0, 10)
-
-  button.Paint = function(self, w, h)
-    surface.SetDrawColor(zc.colors.ui.errorBright)
-    surface.DrawOutlinedRect(0, 0, w, h, 1)
-  end
-
-  return button
-end
-
 local function CreateConfigRow(mode, setting, settingPairs, parent)
   local row = vgui.Create("DPanel", parent)
   row:DockPadding(15, 5, 15, 5)
@@ -107,16 +21,31 @@ local function CreateConfigRow(mode, setting, settingPairs, parent)
   settingDesc:Dock(TOP)
 
   local variable = setting.variable
-  local settingType = type(mode[variable])
-  if (settingType == "boolean") then
-    local button = CreateSettingToggleButton(mode, setting, settingPairs, row)
-    button:Dock(RIGHT)
-  elseif settingType == "number" or tonumber(mode[variable]) then
-    local numberEntry = CreateSettingNumberInput(mode, setting, settingPairs, row)
-    numberEntry:Dock(RIGHT)
+  local settingType = type(settingPairs[variable])
+  if settingType == "boolean" then
+    local btn = vgui.Create("ZSettingToggle", row)
+    btn:DockMargin(15, 10, 0, 10)
+    btn:Dock(RIGHT)
+    btn:SetValue(settingPairs[variable])
+    btn:SetOnChanged(function(val)
+      settingPairs[variable] = val
+    end)
+  elseif settingType == "number" then
+    local num = vgui.Create("ZSettingNumber", row)
+    num:DockMargin(15, 10, 0, 10)
+    num:Dock(RIGHT)
+    num:SetValue(settingPairs[variable])
+    num:SetOnChanged(function(val)
+      settingPairs[variable] = val
+    end)
   elseif settingType == "string" then
-    local textEntry = CreateSettingTextInput(mode, setting, settingPairs, row)
-    textEntry:Dock(RIGHT)
+    local txt = vgui.Create("ZSettingText", row)
+    txt:DockMargin(15, 10, 0, 10)
+    txt:Dock(RIGHT)
+    txt:SetValue(settingPairs[variable])
+    txt:SetOnChanged(function(val)
+      settingPairs[variable] = val
+    end)
   end
 
   // fix layout
@@ -193,8 +122,10 @@ local function OpenAdminConfigMenu(modeId)
     surface.DrawRect(0, 0, w, h)
   end
 
-  local saveButton = CreateButton("Save settings", controlsPanel)
+  local saveButton = vgui.Create("ZButton", controlsPanel)
+  saveButton:SetText("Save settings")
   saveButton:SetTall(40)
+  saveButton:SetWide(100)
   saveButton:Center()
   saveButton.DoClick = function()
     parent:Close()
