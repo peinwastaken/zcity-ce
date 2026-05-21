@@ -1,7 +1,10 @@
+local loaded = false
+
 local modeconfig = {}
 zb.modeconfig = modeconfig or {}
 
 net.Receive("ZC_SendModeConfig", function()
+  if loaded then return end
   local id = net.ReadString()
   local settings = net.ReadTable()
 
@@ -43,3 +46,6 @@ hook.Add("InitPostEntity", "ZC_RequestModeConfigsOnJoin", function()
   net.Start("ZC_RequestModeConfigsOnJoin")
   net.SendToServer()
 end)
+
+net.Start("ZC_RequestModeConfigsOnJoin")
+net.SendToServer()
