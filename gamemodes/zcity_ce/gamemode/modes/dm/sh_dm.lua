@@ -15,24 +15,16 @@ MODE.Config = {
     ["printname"] = "Deathmatch",
     ["settings"] = {
         {
-            ["id"] = "mapsize",
-            ["label"] = "Map Size",
-            ["description"] = "Defines the playable map size",
-            ["default"] = 7500,
-            ["value"] = 7500,
-            ["variable"] = "MapSize"
-        },
-        {
             ["id"] = "zonetime",
-            ["label"] = "Zone Shrink Time",
-            ["description"] = "Time before the zone starts shrinking",
+            ["label"] = "Zone shrink time",
+            ["description"] = "Time for the zone to fully shrink",
             ["default"] = 120,
             ["value"] = 120,
             ["variable"] = "ZoneTimeToShrink"
         },
         {
             ["id"] = "lootspawn",
-            ["label"] = "Spawn Loot",
+            ["label"] = "Spawn loot",
             ["description"] = "Enables loot spawning for this gamemode",
             ["default"] = false,
             ["value"] = false,
@@ -40,31 +32,23 @@ MODE.Config = {
         },
         {
             ["id"] = "guiltdisabled",
-            ["label"] = "Disable Guilt System",
+            ["label"] = "Disable guilt system",
             ["description"] = "Disables guilt/karma system for this gamemode",
             ["default"] = true,
             ["value"] = true,
             ["variable"] = "GuiltDisabled"
         },
         {
-            ["id"] = "randomspawns",
-            ["label"] = "Random Spawns",
-            ["description"] = "Enables random spawnpoints for this gamemode",
-            ["default"] = true,
-            ["value"] = true,
-            ["variable"] = "randomSpawns"
-        },
-        {
             ["id"] = "forbigmaps",
-            ["label"] = "Large Map Mode",
-            ["description"] = "Is this gamemode designed for big maps?",
+            ["label"] = "Supports large maps",
+            ["description"] = "Should this gamemode be picked for big maps?",
             ["default"] = false,
             ["value"] = false,
             ["variable"] = "ForBigMaps"
         },
         {
             ["id"] = "chance",
-            ["label"] = "Spawn Chance",
+            ["label"] = "Pick chance",
             ["description"] = "Chance for this gamemode to be picked by the round system",
             ["default"] = 0.04,
             ["value"] = 0.04,
