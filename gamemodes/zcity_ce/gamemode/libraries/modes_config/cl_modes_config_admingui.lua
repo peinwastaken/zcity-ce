@@ -34,6 +34,7 @@ local function CreateConfigRow(mode, setting, settingPairs, parent)
     local num = vgui.Create("ZSettingNumber", row)
     num:DockMargin(15, 10, 0, 10)
     num:Dock(RIGHT)
+    num:SetMinMax(-99999, 99999)
     num:SetValue(settingPairs[variable])
     num:SetOnChanged(function(val)
       settingPairs[variable] = val
