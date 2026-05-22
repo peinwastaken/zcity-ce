@@ -14,7 +14,13 @@ local playervote = {}
 local mappull = {}
 local playerVoteWeight = {}
 
+local function IsValidMapName(map)
+    return type(map) == "string" and map ~= ""
+end
+
 local function GetMapFamily(map)
+    if not IsValidMapName(map) then return nil end
+
     if string.find(string.lower(map), "smalltown") then
         return "smalltown"
     end
@@ -84,7 +90,7 @@ end
 local function getmaps()
     table.Empty(mappull)
 
-    local maps = file.Find("maps/*.bsp", "GAME")
+    local maps = file.Find("maps/*.bsp", "GAME") or {}
 
     --[[
     if hg and hg.xmas then
@@ -103,11 +109,28 @@ local function getmaps()
     ]]
 
     for _, map in ipairs(maps) do
+        if not IsValidMapName(map) then continue end
+
         map = map:sub(1, -5)
         local mapstr = map:Split("_")
         if (allowedPrefix[mapstr[1]] or not string.find(map, "_")) and not blacklist[map] then
             table.insert(mappull, map)
         end
+    end
+end
+
+local function GetRandomMap()
+    if #mappull == 0 then
+        getmaps()
+    end
+
+    if #mappull > 0 then
+        return mappull[math.random(#mappull)]
+    end
+
+    local currentMap = game.GetMap()
+    if IsValidMapName(currentMap) then
+        return currentMap
     end
 end
 
@@ -178,8 +201,16 @@ function zb.EndRTV()
 		winmap = "random"
 	end
 
-    if winmap == "random" then
-        winmap = mappull[math.random(#mappull)]
+    if winmap == "random" or not IsValidMapName(winmap) then
+        winmap = GetRandomMap()
+    end
+
+    if not IsValidMapName(winmap) then
+        ErrorNoHalt("[zcity] RTV ended without any valid maps; aborting map change.\n")
+        zb.votestarted = false
+        endStarted = false
+        hook.Remove("Think", "ZC_RtvThink")
+        return
     end
 
     local mapFamily = GetMapFamily(winmap)
@@ -424,8 +455,15 @@ function zb.StartRTV(time)
     end
 
     if #finalmaps == 0 then
-        local rndMap = mappull[ math.random(#mappull) ]
-        table.insert(finalmaps, rndMap)
+        local rndMap = GetRandomMap()
+        if IsValidMapName(rndMap) then
+            table.insert(finalmaps, rndMap)
+        end
+    end
+
+    if #finalmaps == 0 then
+        ErrorNoHalt("[zcity] RTV could not find any valid maps to vote on.\n")
+        return
     end
 
     table.insert(finalmaps, "random")
