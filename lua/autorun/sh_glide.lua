@@ -292,6 +292,21 @@ do
     end
 end
 
+do
+    local function IsWebAudioAvailable()
+        return WebAudio ~= nil
+    end
+
+    function Glide.ShouldIncludeLuaFile( path )
+        if CLIENT and path == "glide/client/engine_stream_webaudio.lua" and not IsWebAudioAvailable() then
+            Glide.PrintDev( "Skipping optional file: %s (WebAudio module is unavailable)", path )
+            return false
+        end
+
+        return true
+    end
+end
+
 function Glide.IncludeDir( dirPath, doInclude, doTransfer )
     local files = file.Find( dirPath .. "*.lua", "LUA" )
     local path
@@ -299,7 +314,7 @@ function Glide.IncludeDir( dirPath, doInclude, doTransfer )
     for _, fileName in ipairs( files ) do
         path = dirPath .. fileName
 
-        if doInclude then
+        if doInclude and Glide.ShouldIncludeLuaFile( path ) then
             Glide.PrintDev( "Including file: %s", path )
             include( path )
         end
