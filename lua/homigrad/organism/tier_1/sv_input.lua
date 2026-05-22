@@ -1232,7 +1232,7 @@ local function velocityDamage(ent, data)
 			return
 		end
 	end
-
+	
 	data.HitEntity.lasttouched = data.HitEntity.lasttouched or {}
 	data.HitEntity.lasttouched[ent] = CurTime()
 
@@ -1458,11 +1458,7 @@ hook.Add("ZC_OnRagdollCollide", "ZC_Organism", function(ragdoll, data)
 	if not ragdoll:IsRagdoll() then return end
 	if data.HitEntity:IsPlayerHolding() then return end
 
-	timer.Simple(0, function()
-		if IsValid(ragdoll) then
-			velocityDamage(ragdoll, data)
-		end
-	end)
+	velocityDamage(ragdoll, data)
 	--if data.Speed < 250 then return end
 	--if data.HitEntity:IsPlayer() then hg.Fake(data.HitEntity) end
 end)
