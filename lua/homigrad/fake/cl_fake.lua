@@ -414,65 +414,59 @@ end
 
 hg.CalcViewFake = CalcView
 
-local MAX_EDICT_BITS = 13
-
-function net.ReadEntity2()
-
-	local i = net.ReadUInt( MAX_EDICT_BITS )
-	if ( !i ) then return end
-
-	return Entity( i ), i
-
-end
-
 --hook.Add("EntityNetworkedVarChanged","ZC_DebugFakeRagdollNetVarChange",function()
 
 --end)
 
 local hook_Run = hook.Run
-local pendingFakeRagdolls = {}
-local pendingFakeRagdollIndexes = {}
+local queuedRagdolls = {}
+local MAX_BITS = 13
 
-local function ClearPendingFakeRagdoll(ply)
-	local oldIndex = pendingFakeRagdollIndexes[ply]
+local function AddRagdollIndexToQueue(ply, index)
+	queuedRagdolls[ply] = index
+end
 
-	if oldIndex then
-		pendingFakeRagdolls[oldIndex] = nil
-		pendingFakeRagdollIndexes[ply] = nil
+local function ClearRagdollIndexForPlayer(ply)
+	print("clearing ragdoll from queue for " .. tostring(ply))
+	queuedRagdolls[ply] = nil
+end
+
+hook.Add("Think", "ZC_TryResolvePlayerRagdollIndex", function()
+	for ply, index in pairs(queuedRagdolls) do
+		if index and ply.ragdoll_index == 0 then
+			ClearRagdollIndexForPlayer(ply)
+			continue 
+		end
+
+		local ragdoll = Entity(index)
+
+		if IsValid(ragdoll) then
+			ClearRagdollIndexForPlayer(ply)
+			hook_Run("ZC_OnRagdollEntityCreated", ply, ragdoll, "FakeRagdoll")
+		end
 	end
-end
+end)
 
-local function QueuePendingFakeRagdoll(ply, ragdoll_index)
-	ClearPendingFakeRagdoll(ply)
+net.Receive("ZC_PlayerRagdoll", function()
+	local ply = net.ReadEntity()
+	local ragdoll_index = net.ReadUInt( MAX_BITS )
+	local ragdoll = Entity(ragdoll_index)
+	local isEnteringRagdoll = net.ReadBool()
+	if !IsValid(ply) then print(tostring(ply) .. " is not valid") return end
 
-	pendingFakeRagdolls[ragdoll_index] = ply
-	pendingFakeRagdollIndexes[ply] = ragdoll_index
-end
-
-local function TryBindPendingFakeRagdoll(ply, ragdoll, ragdoll_index)
 	ply.ragdoll_index = ragdoll_index
-
-	if not IsValid(ragdoll) then
-		QueuePendingFakeRagdoll(ply, ragdoll_index)
+	
+	// in the common event our ragdoll isnt networked yet..
+	// ..add it to a "queue" and let ZC_TryResolvePlayerRagdollIndex figure it out..
+	// ..because its no longer our responsibility
+	// but this is stupid
+	if isEnteringRagdoll and !IsValid(ragdoll) then
+		AddRagdollIndexToQueue(ply, ragdoll_index)
 		return
 	end
 
-	ClearPendingFakeRagdoll(ply)
-	hook_Run("ZC_OnRagdollEntityCreated", ply, ragdoll, "FakeRagdoll")
-end
-
-net.Receive("ZC_PlayerRagdoll", function()
-	--local ply, ragdoll_index = net.ReadEntity(), net.ReadInt(32) --,net_ReadTable()
-	local ply, ragdoll, ragdoll_index = net.ReadEntity(), net.ReadEntity2() --,net_ReadTable()
-	if not ragdoll_index or not IsValid(ply) then return end
-	--print(ragdoll)
-
-	ply.ragdoll_index = ragdoll_index
-
-	if ragdoll_index > 0 then
-		TryBindPendingFakeRagdoll(ply, ragdoll, ragdoll_index)
-	else
-		ClearPendingFakeRagdoll(ply)
+	if isEnteringRagdoll then
+		hook_Run("ZC_OnRagdollEntityCreated", ply, ragdoll, "FakeRagdoll")
 	end
 end)
 
@@ -502,15 +496,9 @@ hook.Add("NetworkEntityCreated", "ZC_GiveRenderOverride", function(ragdoll)
 				break
 			end
 		end
-
-		local ragdoll_index = ragdoll:EntIndex()
-		local pendingPly = pendingFakeRagdolls[ragdoll_index]
-
-		if IsValid(pendingPly) then
-			TryBindPendingFakeRagdoll(pendingPly, ragdoll, ragdoll_index)
-		end
 	end
 end)
+
 --h
 hook.Add("ZC_OnRagdollEntityCreated", "ZC_RagdollFinder", function(ply, ent, key)
 	if not IsValid(ply) then return end
@@ -539,8 +527,6 @@ hook.Add("ZC_OnRagdollEntityCreated", "ZC_RagdollFinder", function(ply, ent, key
 	--ply:SetNWEntity("FakeRagdoll", ent)
 	--if not IsValid(oldrag) then oldrag = ent end
 	hook.Run("ZC_TransferServerRagdollDecals", ply, ent)
-
-
 
 	local ragdoll = ply.FakeRagdoll
 
@@ -677,8 +663,6 @@ local function funcrag(ply, name, oldval, ragdoll)
 			QueuePendingFakeRagdoll(ply, ragdoll_index)
 			return
 		end
-
-		ClearPendingFakeRagdoll(ply)
 	end
 
 	pcall(hook.Run, "RagdollEntityCreated", ply, ragdoll, name)

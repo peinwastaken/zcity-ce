@@ -355,12 +355,13 @@ end
 
 local Ragdoll_Create = hg.Ragdoll_Create
 util.AddNetworkString("ZC_PlayerRagdoll")
-local function NET_Fake(self, ply, send)
-	ply:SetNWEntity("FakeRagdoll",self)
+local function NET_Fake(ragdoll, ply, send)
+	print(ply, ragdoll)
+	ply:SetNWEntity("FakeRagdoll", ragdoll)
 	net.Start("ZC_PlayerRagdoll")
 	net.WriteEntity(ply)
-	net.WriteEntity(self)
-	--net.WriteInt(self:EntIndex(),32)
+	net.WriteEntity(ragdoll)
+	net.WriteBool(true)
 	if IsValid(send) and send:IsPlayer() then
 		net.Send(send)
 	else
@@ -369,6 +370,7 @@ local function NET_Fake(self, ply, send)
 end
 
 local function NET_Fake2(num, ply, send)
+	print("calling net fake2")
 	ply:SetNWEntity("FakeRagdoll", Entity(num))
 	net.Start("ZC_PlayerRagdoll")
 	net.WriteEntity(ply)
@@ -385,7 +387,7 @@ local function NET_Up(ply, send)
 	net.Start("ZC_PlayerRagdoll")
 	net.WriteEntity(ply)
 	net.WriteEntity(NULL)
-	--net.WriteInt(0,32)
+	net.WriteBool(false)
 	if IsValid(send) and send:IsPlayer() then
 		net.Send(send)
 	else
