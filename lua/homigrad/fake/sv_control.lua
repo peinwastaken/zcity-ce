@@ -103,6 +103,7 @@ local forceArm_dump = 450
 
 local vector_zero = Vector(0,0,0)
 local vector_usehull = Vector(6, 6, 6)
+local FAKE_JUMP_IMPULSE_PER_MASS = 180
 
 CreateConVar("zc_shitty_fake", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY, "enable shitty fake", 0, 1)
 
@@ -116,6 +117,8 @@ hook.Add("Think", "ZC_UpdateFakeRagdollControl", function()
 	//for ply, ragdoll in pairs(hg.ragdollFake) do
 	for _, ply in player.Iterator() do
 		local inUse = controlUseCvar:GetBool() or ply:KeyDown(IN_USE)
+		if hg.GetFakeState and hg.GetFakeState(ply) ~= ((hg.FAKE_STATE and hg.FAKE_STATE.ACTIVE) or 1) then continue end
+
 		local ragdoll = hg.ragdollFake[ply]//ply.FakeRagdoll
 		if not IsValid(ragdoll) then
 			//hg.ragdollFake[ply] = nil
@@ -171,15 +174,26 @@ hook.Add("Think", "ZC_UpdateFakeRagdollControl", function()
 			inmove = true
 
 			local ragbonecount = ragdoll:GetPhysicsObjectCount()
+			local wantsJump = ragdollcombat and ply:KeyDown(IN_JUMP)
+			if wantsJump and !ply.jumpedfake then
+				ply.jumpedfake = true
+				for physNum = 0, ragbonecount - 1 do
+					local phys = ragdoll:GetPhysicsObjectNum(physNum)
+					if not IsValid(phys) then continue end
+
+					phys:Wake()
+					phys:ApplyForceCenter(vector_up * phys:GetMass() * FAKE_JUMP_IMPULSE_PER_MASS)
+				end
+			end
+
 			for i = 0, ragbonecount - 1 do
 				local bone = ragdoll:TranslatePhysBoneToBone(i)
 				local bonepos, boneang = ply:GetBonePosition(bone)
 				if bonepos and boneang then
 					local physobj = ragdoll:GetPhysicsObjectNum(i)
-					local mass = physobj:GetMass() / 5
-
-
 					if IsValid(physobj) then
+						local bonename = ragdoll:GetBoneName(bone)
+						local mass = physobj:GetMass() / 5
 						local bone_impulse = ply.HitBones and ply.HitBones[bonename] or CurTime()
 						local amt_impulse = (2 - math.Clamp(bone_impulse - CurTime(),0,2)) / 2
 
@@ -195,13 +209,7 @@ hook.Add("Think", "ZC_UpdateFakeRagdollControl", function()
 
 						physobj:Wake()
 
-						if hg.RagdollCombatInUse(ply) and ply:KeyDown(IN_JUMP) then
-							if !ply.jumpedfake then
-								ply.jumpedfake = true
-
-								physobj:ApplyForceCenter(vector_up * 15000)
-							end
-						else
+						if !wantsJump then
 							ply.jumpedfake = nil
 							physobj:ComputeShadowControl(p)
 						end

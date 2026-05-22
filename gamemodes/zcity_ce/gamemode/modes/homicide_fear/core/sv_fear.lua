@@ -600,8 +600,15 @@ function MODE:PlayerDeath(ply)
 end
 
 function MODE:ZC_OnPlayerRagdollCreated(ply, ent)
-	ent:SetCustomCollisionCheck(true)
-	ent:CollisionRulesChanged()
+	if hg.QueueCollisionRulesChanged then
+		hg.QueueCollisionRulesChanged(ent, nil, true)
+	else
+		timer.Simple(0, function()
+			if not IsValid(ent) then return end
+			ent:SetCustomCollisionCheck(true)
+			ent:CollisionRulesChanged()
+		end)
+	end
 end
 
 function MODE:ZC_CanHearPlayerVoice(listener, talker)

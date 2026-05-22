@@ -82,6 +82,69 @@ hg.cacheModel = cacheModel
 
 local IdealMassPlayer = hg.IdealMassPlayer
 
+local MAX_FAKE_TRANSITION_SPEED = 4000
+
+local function CopyVelocity(vec)
+	if not isvector(vec) then return end
+
+	local velocity = Vector(vec.x, vec.y, vec.z)
+	if velocity:LengthSqr() > MAX_FAKE_TRANSITION_SPEED * MAX_FAKE_TRANSITION_SPEED then
+		velocity = velocity:GetNormalized() * MAX_FAKE_TRANSITION_SPEED
+	end
+
+	return velocity
+end
+
+function hg.QueueFakeVelocity(ply, velocity, duration)
+	if not IsValid(ply) then return end
+
+	velocity = CopyVelocity(velocity)
+	if not velocity then return end
+
+	ply.ZCFakeVelocityOverride = velocity
+	ply.ZCFakeVelocityOverrideUntil = CurTime() + (duration or 0.2)
+end
+
+local function ConsumeFakeVelocity(ply)
+	local velocity = ply.ZCFakeVelocityOverride
+	local expires = ply.ZCFakeVelocityOverrideUntil or 0
+
+	ply.ZCFakeVelocityOverride = nil
+	ply.ZCFakeVelocityOverrideUntil = nil
+
+	if velocity and expires >= CurTime() then
+		return CopyVelocity(velocity) or vecZero
+	end
+
+	return CopyVelocity(ply:GetVelocity()) or vecZero
+end
+
+local function GetRagdollMassVelocity(ragdoll)
+	if not IsValid(ragdoll) or not ragdoll.GetPhysicsObjectCount then return vecZero end
+
+	local velocity = Vector(0, 0, 0)
+	local totalMass = 0
+
+	for physNum = 0, ragdoll:GetPhysicsObjectCount() - 1 do
+		local phys = ragdoll:GetPhysicsObjectNum(physNum)
+		if not IsValid(phys) then continue end
+
+		local mass = math.max(phys:GetMass(), 0)
+		if mass <= 0 then continue end
+
+		velocity:Add(phys:GetVelocity() * mass)
+		totalMass = totalMass + mass
+	end
+
+	if totalMass > 0 then
+		velocity:Div(totalMass)
+		return CopyVelocity(velocity) or vecZero
+	end
+
+	local phys = ragdoll:GetPhysicsObject()
+	return IsValid(phys) and (CopyVelocity(phys:GetVelocity()) or vecZero) or vecZero
+end
+
 local fixbones = {
 	["ValveBiped.Bip01_Pelvis"] = true,
 	["ValveBiped.Bip01_L_Thigh"] = true,
@@ -161,7 +224,7 @@ function hg.Ragdoll_Create(ply)
 		end
 	end)
 	ragdoll:AddCallback("PhysicsCollide", function(outEnt, data) hook_Run("ZC_OnRagdollCollide", ragdoll, data) end)
-	local velocity = ply:GetVelocity()
+	local velocity = ConsumeFakeVelocity(ply)
 	--local phys = ragdoll:GetPhysicsObject()
 	--if IsValid(phys) then --phys:SetMass(20)
 	--end
@@ -194,8 +257,6 @@ function hg.Ragdoll_Create(ply)
 		--print(ragdoll:GetBoneName(ragdoll:TranslatePhysBoneToBone(hg.cachedmodels[model][ragdoll:GetBoneName(bone)])),ragdoll:GetBoneName(bone),IdealMassPlayer[ragdoll:GetBoneName(bone)])
 
 		phys:SetMass(IdealMassPlayer[ragdoll:GetBoneName(bone)] or 4)
-		phys:SetVelocity(velocity)
-		phys:ApplyForceCenter(vel)
 
 		--phys:SetContents(bit.band(phys:GetContents(), bit.bnot(MASK_SHOT)))
 
@@ -310,6 +371,8 @@ function hg.Ragdoll_Create(ply)
 		--[[if !string.find(ragdoll:GetBoneName(bone),"L") then
 			phys:EnableMotion(false)
 		end--]]
+		phys:SetVelocity(velocity)
+		phys:ApplyForceCenter(vel)
 		phys:Wake()
 	end
 
@@ -320,7 +383,8 @@ function hg.Ragdoll_Create(ply)
 	--print(ragdoll:GetNetVar("Accessories","none"))
 	--end)
 
-	ply:SetNWEntity("FakeRagdoll",ragdoll)
+	-- FakeRagdoll NWEntity is assigned by the lifecycle sync layer after
+	-- the ragdoll gets a sequence id.
 
 	ragdoll:SetNWEntity("ply", ply)
 	--ply:SetPos(ragdoll:GetPos())
@@ -355,13 +419,56 @@ end
 
 local Ragdoll_Create = hg.Ragdoll_Create
 util.AddNetworkString("ZC_PlayerRagdoll")
-local function NET_Fake(ragdoll, ply, send)
-	print(ply, ragdoll)
-	ply:SetNWEntity("FakeRagdoll", ragdoll)
+
+hg.FAKE_STATE = hg.FAKE_STATE or {
+	NONE = 0,
+	ACTIVE = 1,
+	RESTORING = 2,
+	DEATH = 3,
+}
+
+local FAKE_STATE_NONE = hg.FAKE_STATE.NONE
+local FAKE_STATE_ACTIVE = hg.FAKE_STATE.ACTIVE
+local FAKE_STATE_RESTORING = hg.FAKE_STATE.RESTORING
+local FAKE_STATE_DEATH = hg.FAKE_STATE.DEATH
+local FAKE_STATE_NAMES = {
+	[FAKE_STATE_NONE] = "none",
+	[FAKE_STATE_ACTIVE] = "active",
+	[FAKE_STATE_RESTORING] = "restoring",
+	[FAKE_STATE_DEATH] = "death",
+}
+local FAKE_ENTITY_INDEX_BITS = 13
+
+local zc_fake_debug = ConVarExists("zc_fake_debug") and GetConVar("zc_fake_debug") or CreateConVar("zc_fake_debug", "0", FCVAR_ARCHIVE, "Log fake ragdoll lifecycle transitions", 0, 1)
+
+local function NextFakeSequence(ply)
+	local seq = (ply.ZCFakeSequence or 0) + 1
+	if seq >= 4294967295 then seq = 1 end
+	ply.ZCFakeSequence = seq
+
+	return seq
+end
+
+function hg.GetFakeSequence(ply)
+	return IsValid(ply) and (ply.ZCFakeSequence or 0) or 0
+end
+
+function hg.GetFakeState(ply)
+	return IsValid(ply) and (ply.ZCFakeState or FAKE_STATE_NONE) or FAKE_STATE_NONE
+end
+
+function hg.IsFakeLifecycle(ply, state, seq)
+	return IsValid(ply) and ply.ZCFakeState == state and (seq == nil or ply.ZCFakeSequence == seq)
+end
+
+local function SyncFakeLifecycle(ply, state, ragdoll, send)
 	net.Start("ZC_PlayerRagdoll")
 	net.WriteEntity(ply)
-	net.WriteEntity(ragdoll)
-	net.WriteBool(true)
+	net.WriteUInt(ply.ZCFakeSequence or 0, 32)
+	net.WriteUInt(state, 3)
+	net.WriteUInt(IsValid(ragdoll) and ragdoll:EntIndex() or 0, FAKE_ENTITY_INDEX_BITS)
+	net.WriteEntity(IsValid(ragdoll) and ragdoll or NULL)
+
 	if IsValid(send) and send:IsPlayer() then
 		net.Send(send)
 	else
@@ -369,31 +476,44 @@ local function NET_Fake(ragdoll, ply, send)
 	end
 end
 
-local function NET_Fake2(num, ply, send)
-	print("calling net fake2")
-	ply:SetNWEntity("FakeRagdoll", Entity(num))
-	net.Start("ZC_PlayerRagdoll")
-	net.WriteEntity(ply)
-	net.WriteEntity(Entity(num) or NULL)
-	--net.WriteInt(num,32)
-	if IsValid(send) and send:IsPlayer() then
-		net.Send(send)
+local function MirrorFakeLifecycle(ply, state, ragdoll)
+	ply.ZCFakeState = state
+	ply:SetNWInt("FakeRagdollSeq", ply.ZCFakeSequence or 0)
+	ply:SetNWInt("FakeRagdollState", state)
+
+	if state == FAKE_STATE_ACTIVE or state == FAKE_STATE_DEATH then
+		if IsValid(ragdoll) then
+			ply.FakeRagdoll = ragdoll
+			hg.ragdollFake[ply] = ragdoll
+			ply:SetNWEntity("FakeRagdoll", ragdoll)
+			ragdoll:SetNWEntity("ply", ply)
+			ragdoll.ply = ply
+			ragdoll.ZCFakeSequence = ply.ZCFakeSequence
+		end
 	else
-		net.Broadcast()
+		ply.FakeRagdoll = nil
+		hg.ragdollFake[ply] = nil
+		ply:SetNWEntity("FakeRagdoll", NULL)
 	end
 end
 
-local function NET_Up(ply, send)
-	net.Start("ZC_PlayerRagdoll")
-	net.WriteEntity(ply)
-	net.WriteEntity(NULL)
-	net.WriteBool(false)
-	if IsValid(send) and send:IsPlayer() then
-		net.Send(send)
-	else
-		net.Broadcast()
+local function SetFakeLifecycle(ply, state, ragdoll, send)
+	if not IsValid(ply) then return 0 end
+
+	local seq = NextFakeSequence(ply)
+	MirrorFakeLifecycle(ply, state, ragdoll)
+	SyncFakeLifecycle(ply, state, ragdoll, send)
+
+	if zc_fake_debug:GetBool() then
+		print(string.format("[ZC fake] %s -> %s seq=%d rag=%s", tostring(ply), FAKE_STATE_NAMES[state] or tostring(state), seq, tostring(ragdoll)))
 	end
+
+	hook_Run("ZC_FakeStateChanged", ply, state, ragdoll, seq, FAKE_STATE_NAMES[state])
+
+	return seq
 end
+
+hg.SetFakeLifecycle = SetFakeLifecycle
 
 hook.Add("PlayerSpawn", "ZC_HandleFakeRagdollPlayerSpawn", function(ply)
 	ply:RemoveFlags(FL_NOTARGET)
@@ -403,7 +523,6 @@ hook.Add("PlayerSpawn", "ZC_HandleFakeRagdollPlayerSpawn", function(ply)
 		ply:SetNWEntity("RagdollDeath", NULL)
 		ply.gottarespawn = nil
 	end
-	--NET_Fake2(0, ply)
 	timer.Simple(.1, function()
 		if IsValid(ply.organism) then
 			ply.organism.holdingbreath = false
@@ -434,11 +553,14 @@ hook.Add("DoPlayerDeath", "ZC_CreateFakeRagdollOnDeath", function(ply)
 	--if not IsValid(ragdoll) then return end
 	if (not ply.Removed) and not IsValid(ragdoll) then
 		ragdoll = Ragdoll_Create(ply)
-		ply.FakeRagdoll = ragdoll
-		NET_Fake(ragdoll, ply)
+		SetFakeLifecycle(ply, FAKE_STATE_DEATH, ragdoll)
 	end
 
 	if not IsValid(ragdoll) then return end
+	if ply.ZCFakeState ~= FAKE_STATE_DEATH then
+		SetFakeLifecycle(ply, FAKE_STATE_DEATH, ragdoll)
+	end
+
 	if IsValid(ragdoll.bull) then ragdoll.bull:Remove() end
 
 	ply:SetNWEntity("RagdollDeath", ragdoll)
@@ -464,10 +586,11 @@ end)
 local function RemoveRag(self, ply)
 	if self.override then return end
 	if not IsValid(ply) or ply.FakeRagdoll ~= self then return end
-	ply.FakeRagdoll = nil
+	if self.ZCFakeSequence and self.ZCFakeSequence ~= ply.ZCFakeSequence then return end
+
 	ply.Removed = true
 	if ply:Alive() then ply:Kill() end
-	NET_Fake2(-1, ply)
+	SetFakeLifecycle(ply, FAKE_STATE_NONE, NULL)
 	ply.Removed = false
 end
 
@@ -538,16 +661,13 @@ function hg.Fake(ply, huyragdoll, no_freemove, force)
 	local ragdoll = IsValid(huyragdoll) and huyragdoll or Ragdoll_Create(ply, true)
 
 	if IsValid(huyragdoll) then
-		ply:SetNWEntity("FakeRagdoll", ragdoll)
 		ragdoll:SetNWEntity("ply", ply)
 		hook_Run("ZC_OnPlayerRagdollCreated", ply, ragdoll)
 	end
 	if !IsValid(ragdoll) then return end
 	ragdoll:CallOnRemove("Fake", RemoveRag, ply)
 	ply.fakecd = CurTime() + 1// + ply.organism.shock / 10
-	NET_Fake(ragdoll, ply)
-
-	ply.FakeRagdoll = ragdoll
+	local fakeSeq = SetFakeLifecycle(ply, FAKE_STATE_ACTIVE, ragdoll)
 
 	if IsValid(ply.FakeRagdollOld) then
 		ply.FakeRagdollOld:Remove()
@@ -567,20 +687,21 @@ function hg.Fake(ply, huyragdoll, no_freemove, force)
 	hook_Run("ZC_OnFakeRagdollCreated", ply, ragdoll, listArmor)
 
 	--timer.Simple(0,function()
-		ply:DrawWorldModel(false)
-		ply:DrawShadow(false)
-		local pos = ply:GetPos()
-		//ply:Spectate(OBS_MODE_FREEZECAM)
-		//ply:UnSpectate()
-		--ply:SetSolidFlags(bit.bor(ply:GetSolidFlags(), FSOLID_NOT_SOLID, FSOLID_TRIGGER, FSOLID_USE_TRIGGER_BOUNDS))
-		ply:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
-		ply:SetPos(pos)
-		ply:SetNoDraw(false)
-		ply:SetRenderMode(RENDERMODE_NONE)
-		//ply:ExitVehicle()
+	ply:DrawWorldModel(false)
+	ply:DrawShadow(false)
+	local pos = ply:GetPos()
+	//ply:Spectate(OBS_MODE_FREEZECAM)
+	//ply:UnSpectate()
+	--ply:SetSolidFlags(bit.bor(ply:GetSolidFlags(), FSOLID_NOT_SOLID, FSOLID_TRIGGER, FSOLID_USE_TRIGGER_BOUNDS))
+	ply:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
+	ply:SetPos(pos)
+	ply:SetNoDraw(false)
+	ply:SetRenderMode(RENDERMODE_NONE)
+	//ply:ExitVehicle()
 	--end)
 
 	timer.Simple(0, function() -- bandaid shitfix for now
+		if not hg.IsFakeLifecycle(ply, FAKE_STATE_ACTIVE, fakeSeq) then return end
 		ply:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
 	end)
 
@@ -589,6 +710,7 @@ function hg.Fake(ply, huyragdoll, no_freemove, force)
 	ply:AllowFlashlight(false)
 	if ply:IsOnFire() then
 		timer.Simple(0.1,function()
+			if not hg.IsFakeLifecycle(ply, FAKE_STATE_ACTIVE, fakeSeq) or not IsValid(ragdoll) then return end
 			--ragdoll:Ignite(30 * ((ragdoll.shouldburn or 0) + 1),16)
 			ply:Extinguish()
 			--ragdoll.fires = ply.fires
@@ -674,7 +796,7 @@ hook.Add("ZC_PlayerSpawn", "ZC_RemoveRagdoll", function(ply)
 		ragdoll:SetNWEntity("ply", NULL)
 	end
 
-	ply:SetNWEntity("FakeRagdoll", NULL)
+	SetFakeLifecycle(ply, FAKE_STATE_NONE, NULL)
 	ply:SetNWEntity("RagdollDeath", NULL)
 end)
 
@@ -726,7 +848,7 @@ function hg.FakeUp(ply, forced, instant)
 	ply.FakeRagdollOld = ragdoll
 	ply.OldRagdoll = ragdoll
 	ply:SetNWEntity("FakeRagdollOld", ragdoll)
-	ply.FakeRagdoll = nil
+	local restoreSeq = SetFakeLifecycle(ply, FAKE_STATE_RESTORING, ragdoll)
 
 	ply:ConCommand("+duck")
 	timer.Simple(0.5,function()
@@ -737,6 +859,7 @@ function hg.FakeUp(ply, forced, instant)
 
 	if IsValid(ragdoll) and ragdoll:IsOnFire() then
 		timer.Simple(0.1,function()
+			if not hg.IsFakeLifecycle(ply, FAKE_STATE_RESTORING, restoreSeq) then return end
 			--ply.fires = ragdoll.fires
 			--ply:Ignite(30 * ((ply.shouldburn or 0) + 1),16)
 			if ragdoll.fires then
@@ -779,17 +902,16 @@ function hg.FakeUp(ply, forced, instant)
 	OverrideSpawn = nil
 
 	if IsValid(ragdoll) then
-		local phys = ragdoll:GetPhysicsObject()
-		ply:SetVelocity(-ply:GetVelocity() + (IsValid(phys) and phys:GetVelocity() or vecZero)) --how the fuck does this work
+		local restoreVelocity = GetRagdollMassVelocity(ragdoll)
 		--hg.SetFreemove(ply, true)
 
 		if pos then
 			ply:SetPos(pos)
 		end
 
-		ragdoll.override = true
+		ply:SetVelocity(-ply:GetVelocity() + restoreVelocity)
 
-		NET_Up(ply)
+		ragdoll.override = true
 
 		if not instant then
 			ply:SetRenderMode(RENDERMODE_NORMAL)
@@ -798,6 +920,8 @@ function hg.FakeUp(ply, forced, instant)
 			ply:DrawShadow(false)
 
 			timer.Create("faking_up"..ply:EntIndex(), 1, 1, function()
+				if not hg.IsFakeLifecycle(ply, FAKE_STATE_RESTORING, restoreSeq) then return end
+
 				if IsValid(ragdoll) then
 					local posit = ragdoll:GetBoneMatrix(ragdoll:LookupBone("ValveBiped.Bip01_Spine4")):GetTranslation()
 					//pos = hg.GetUpPos(ply, posit, 50, 50) or oldpos
@@ -807,14 +931,13 @@ function hg.FakeUp(ply, forced, instant)
 					ragdoll:Remove()
 				end
 
-				ply:SetNWEntity("FakeRagdoll",NULL)
+				SetFakeLifecycle(ply, FAKE_STATE_NONE, NULL)
 
 				ply:DrawShadow(true)
 				ply:SetRenderMode(RENDERMODE_NORMAL)
 				ply:SetCollisionGroup(COLLISION_GROUP_PLAYER)
 
 				--ply:SetSolidFlags(bit.band(ply:GetSolidFlags(), bit.bnot(FSOLID_NOT_SOLID), bit.bnot(FSOLID_TRIGGER), bit.bnot(FSOLID_USE_TRIGGER_BOUNDS)))
-				hg.ragdollFake[ply] = nil
 				ply:SetMoveType(MOVETYPE_WALK)
 
 				if pos then
@@ -828,9 +951,7 @@ function hg.FakeUp(ply, forced, instant)
 			ply:SetMoveType(ply.switchingseat and MOVETYPE_NONE or MOVETYPE_WALK)
 
 			--ply:SetSolidFlags(bit.band(ply:GetSolidFlags(), bit.bnot(FSOLID_NOT_SOLID), bit.bnot(FSOLID_TRIGGER), bit.bnot(FSOLID_USE_TRIGGER_BOUNDS)))
-			hg.ragdollFake[ply] = nil
-			NET_Up(ply)
-			ply:SetNWEntity("FakeRagdoll",NULL)
+			SetFakeLifecycle(ply, FAKE_STATE_NONE, NULL)
 
 			if IsValid(ragdoll) then
 				ragdoll:Remove()
@@ -922,6 +1043,9 @@ hook.Add("PlayerEnteredVehicle","ZC_AllowWeapons",function(ply,veh,role)
 	//local veh2 = veh:GetParent()
 
 	timer.Create("EnterVehicleRag"..ply:EntIndex(), (veh:GetVehicleClass() == "Pod") and 0.5 or 1, 1, function()
+		if not IsValid(ply) or not IsValid(veh) or not ply:Alive() or not ply:InVehicle() or ply:GetVehicle() ~= veh then return end
+		if hg.GetFakeState(ply) ~= FAKE_STATE_NONE then return end
+
 		ply:SetEyeAngles(angle_zero)
 		hg.Fake(ply, nil, nil, true)
 

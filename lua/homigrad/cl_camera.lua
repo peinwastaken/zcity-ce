@@ -318,13 +318,16 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 
 
 
-	local ragdoll = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply:GetNWEntity("FakeRagdoll")
+	local fakeState = hg.GetFakeState and hg.GetFakeState(ply)
+	local canUseFakeCamera = not fakeState or fakeState == ((hg.FAKE_STATE and hg.FAKE_STATE.ACTIVE) or 1) or fakeState == ((hg.FAKE_STATE and hg.FAKE_STATE.DEATH) or 3)
+	local ragdoll = canUseFakeCamera and (IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply:GetNWEntity("FakeRagdoll")) or NULL
 	if IsValid(ragdoll) then
 		follow = ragdoll
 	end
 
 	if IsValid(follow) then
-		return hg.CalcViewFake(ply, origin, angles, fov, znear, zfar)
+		local fakeView = hg.CalcViewFake(ply, origin, angles, fov, znear, zfar)
+		if fakeView then return fakeView end
 	end
 	if ply:InVehicle() then
 		ply.lockcamera = false//true
@@ -465,7 +468,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		view.angles = angles
 		view.drawviewer = true
 		view.fov = 95 + lerpfovadd + lerpfovadd2
-		return view
+		return (hg.ApplyFakeCameraBlendOut and hg.ApplyFakeCameraBlendOut(ply, view)) or view
 	end
 
 	view.znear = 1 -- 3
@@ -522,7 +525,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		view.angles:Add(-vpang)
 		view.angles[3] = view.angles[3] + GetViewPunchAngles4()[3]
 		hook_Run("ZC_PostCalculateView", ply, view)
-		return view
+		return (hg.ApplyFakeCameraBlendOut and hg.ApplyFakeCameraBlendOut(ply, view)) or view
 	end
 
 	view.origin = eyePos
@@ -535,10 +538,10 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	if IsValid(wep) and whitelist[wep:GetClass()] then return end
 	result = hook_Run("ZC_PostPostCalculateView", ply, view)
 	if result then
-		return result
+		return (hg.ApplyFakeCameraBlendOut and hg.ApplyFakeCameraBlendOut(ply, result)) or result
 	end
 
-	return view
+	return (hg.ApplyFakeCameraBlendOut and hg.ApplyFakeCameraBlendOut(ply, view)) or view
 end
 
 local angleZero = Angle(0,0,0)

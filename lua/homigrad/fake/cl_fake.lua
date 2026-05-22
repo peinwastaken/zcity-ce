@@ -200,6 +200,159 @@ local zc_fov = CreateClientConVar("zc_fov", "70", true, false, "Change first-per
 local zc_gopro = CreateClientConVar("zc_gopro", "0", true, false, "Toggle GoPro-like camera view", 0, 1)
 local zc_thirdperson = CreateConVar("zc_thirdperson", "0", FCVAR_REPLICATED, "Toggle third-person camera view", 0, 1)
 
+hg.FAKE_STATE = hg.FAKE_STATE or {
+	NONE = 0,
+	ACTIVE = 1,
+	RESTORING = 2,
+	DEATH = 3,
+}
+
+local FAKE_STATE_NONE = hg.FAKE_STATE.NONE
+local FAKE_STATE_ACTIVE = hg.FAKE_STATE.ACTIVE
+local FAKE_STATE_RESTORING = hg.FAKE_STATE.RESTORING
+local FAKE_STATE_DEATH = hg.FAKE_STATE.DEATH
+local FAKE_ENTITY_INDEX_BITS = 13
+local FAKE_CAMERA_BLEND_TIME = 0.16
+local fakeCamera = {}
+
+function hg.GetFakeState(ply)
+	return IsValid(ply) and (ply.ZCFakeState or ply:GetNWInt("FakeRagdollState", FAKE_STATE_NONE)) or FAKE_STATE_NONE
+end
+
+function hg.GetFakeSequence(ply)
+	return IsValid(ply) and (ply.ZCFakeSequence or ply:GetNWInt("FakeRagdollSeq", 0)) or 0
+end
+
+local function CopyCameraView(src)
+	if not src or not isvector(src.origin) or not isangle(src.angles) then return end
+
+	return {
+		origin = Vector(src.origin.x, src.origin.y, src.origin.z),
+		angles = Angle(src.angles.p, src.angles.y, src.angles.r),
+		fov = src.fov,
+		znear = src.znear,
+		zfar = src.zfar,
+		drawviewer = src.drawviewer,
+	}
+end
+
+local function CurrentEyeView(ply)
+	if not IsValid(ply) then return end
+
+	return {
+		origin = ply:EyePos(),
+		angles = ply:EyeAngles(),
+		fov = zc_fov:GetFloat(),
+	}
+end
+
+local function BeginFakeCameraBlend(target, fromView)
+	if lply ~= LocalPlayer() then lply = LocalPlayer() end
+	local previousTarget = fakeCamera.target
+	fakeCamera.target = target
+	fakeCamera.blendFrom = CopyCameraView(fromView) or (IsValid(previousTarget) and CopyCameraView(fakeCamera.last)) or CurrentEyeView(lply)
+	fakeCamera.blendStart = RealTime()
+end
+
+local function BeginFakeCameraBlendOut()
+	if not IsValid(fakeCamera.target) and not fakeCamera.blendFrom and not fakeCamera.outFrom then
+		fakeCamera.last = nil
+		fakeCamera.lastValidTime = nil
+		return
+	end
+
+	local canUseLast = fakeCamera.last and fakeCamera.lastValidTime and RealTime() - fakeCamera.lastValidTime <= 0.25
+	fakeCamera.outFrom = (canUseLast and CopyCameraView(fakeCamera.last)) or CurrentEyeView(lply)
+	fakeCamera.outStart = RealTime()
+	fakeCamera.target = nil
+	fakeCamera.blendFrom = nil
+end
+
+local function BlendCameraView(view, fromView, startedAt)
+	if not fromView or not startedAt then return view end
+	if not isvector(view.origin) or not isangle(view.angles) then return true end
+
+	local k = math.Clamp((RealTime() - startedAt) / FAKE_CAMERA_BLEND_TIME, 0, 1)
+	view.origin = LerpVector(k, fromView.origin, view.origin)
+	view.angles = LerpAngle(k, fromView.angles, view.angles)
+	if fromView.fov and view.fov then view.fov = Lerp(k, fromView.fov, view.fov) end
+
+	return k >= 1
+end
+
+local function IsUsableFakeCameraTarget(ent)
+	if not IsValid(ent) or ent:IsDormant() then return false end
+	if not ent.LookupBone or not ent.GetBoneMatrix then return false end
+
+	local head = ent:LookupBone("ValveBiped.Bip01_Head1")
+	if not head then return false end
+
+	local mat = ent:GetBoneMatrix(head)
+	if not mat or mat:GetTranslation():IsEqualTol(ent:GetPos(), 0.01) then return false end
+
+	local eyes = ent:LookupAttachment("eyes")
+	if not eyes or eyes <= 0 then return false end
+
+	local att = ent:GetAttachment(eyes)
+	return istable(att) and isvector(att.Pos) and isangle(att.Ang)
+end
+
+local function GetRecentFakeCameraView()
+	if fakeCamera.last and fakeCamera.lastValidTime and RealTime() - fakeCamera.lastValidTime <= 0.25 then
+		return CopyCameraView(fakeCamera.last)
+	end
+end
+
+function hg.ApplyFakeCameraBlend(ply, view, target)
+	if ply ~= lply or not istable(view) then return view end
+
+	if fakeCamera.target ~= target then
+		BeginFakeCameraBlend(target)
+	end
+
+	if fakeCamera.blendFrom then
+		local done = BlendCameraView(view, fakeCamera.blendFrom, fakeCamera.blendStart)
+		if done then fakeCamera.blendFrom = nil end
+	end
+
+	fakeCamera.last = CopyCameraView(view)
+	fakeCamera.lastValidTime = RealTime()
+
+	return view
+end
+
+function hg.ApplyFakeCameraBlendOut(ply, view)
+	if ply ~= lply or not istable(view) or not fakeCamera.outFrom then return view end
+
+	local done = BlendCameraView(view, fakeCamera.outFrom, fakeCamera.outStart)
+	if done then
+		fakeCamera.outFrom = nil
+		fakeCamera.outStart = nil
+		fakeCamera.last = nil
+		fakeCamera.lastValidTime = nil
+	end
+
+	return view
+end
+
+local function ApplyFakeHeadScale(ent, scale)
+	if not IsValid(ent) or not ent.LookupBone or not ent.GetManipulateBoneScale then return end
+
+	local head = ent:LookupBone("ValveBiped.Bip01_Head1")
+	if not head then return end
+	if ent:GetManipulateBoneScale(head):IsEqualTol(scale, 0.001) then return end
+
+	ent:ManipulateBoneScale(head, scale)
+end
+
+function hg.SetFakeHeadHidden(ent, hidden)
+	ApplyFakeHeadScale(ent, hidden and vecPochtiZero or vecFull)
+end
+
+function hg.RestoreFakeHead(ent)
+	ApplyFakeHeadScale(ent, vecFull)
+end
+
 local k = 0
 local CalcView
 local angleZero = Angle(0,0,0)
@@ -218,6 +371,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	end
 
 	if not lply:Alive() and follow and ((fakeTimer < CurTime()) or lply:KeyPressed(IN_RELOAD) or lply:KeyPressed(IN_ATTACK) or lply:KeyPressed(IN_ATTACK2)) then
+		BeginFakeCameraBlendOut()
 		follow = nil
 
 		return
@@ -250,7 +404,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 
 	if not IsValid(ply) then return end
 	if not IsValid(follow) then return end
-	if not follow:LookupBone("ValveBiped.Bip01_Head1") then return end
+	if not IsUsableFakeCameraTarget(follow) then return GetRecentFakeCameraView() end
 
 	local vpang = GetViewPunchAngles2() + GetViewPunchAngles3()
 	vpang[3] = 0
@@ -326,16 +480,12 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 			deathlerp = LerpFT(0.05,deathlerp,1)
 			LerpAngle(deathlerp,deathLocalAng,att_Ang)
 
-			if not follow:GetManipulateBoneScale(follow:LookupBone("ValveBiped.Bip01_Head1")):IsEqualTol(vecZero,0.001) then
-				follow:ManipulateBoneScale(follow:LookupBone("ValveBiped.Bip01_Head1"), firstPerson and vecPochtiZero or vecFull )
-			end
+			hg.SetFakeHeadHidden(follow, firstPerson)
 
 			view.origin = pos
 			view.angles = att_Ang
 		else
-			if not follow:GetManipulateBoneScale(follow:LookupBone("ValveBiped.Bip01_Head1")):IsEqualTol(vecZero,0.001) then
-				follow:ManipulateBoneScale(follow:LookupBone("ValveBiped.Bip01_Head1"),lerpasad > 0.9 and vecFull or vecPochtiZero)
-			end
+			hg.SetFakeHeadHidden(follow, lerpasad <= 0.9)
 
 			lerpasad = Lerp(0.1, lerpasad, (IsAimingNoScope(ply) and 0 or 1))
 
@@ -409,6 +559,8 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		return result
 	end
 
+	view = hg.ApplyFakeCameraBlend(ply, view, follow) or view
+
 	return view
 end
 
@@ -420,54 +572,125 @@ hg.CalcViewFake = CalcView
 
 local hook_Run = hook.Run
 local queuedRagdolls = {}
-local MAX_BITS = 13
 
-local function AddRagdollIndexToQueue(ply, index)
-	queuedRagdolls[ply] = index
+local function IsStaleFakeMessage(ply, seq)
+	return seq and seq > 0 and (ply.ZCFakeSequence or 0) > seq
+end
+
+local function AddRagdollIndexToQueue(ply, seq, state, index)
+	if not IsValid(ply) or not index or index <= 0 then return end
+	if IsStaleFakeMessage(ply, seq) then return end
+
+	queuedRagdolls[ply] = {
+		seq = seq or 0,
+		state = state or FAKE_STATE_ACTIVE,
+		index = index,
+		expires = CurTime() + 5,
+	}
 end
 
 local function ClearRagdollIndexForPlayer(ply)
-	print("clearing ragdoll from queue for " .. tostring(ply))
 	queuedRagdolls[ply] = nil
 end
 
+local function MarkFakeSequence(ply, seq, state)
+	if seq and seq > 0 then ply.ZCFakeSequence = seq end
+	ply.ZCFakeState = state
+end
+
+local function BeginClientFakeRestore(ply, ragdoll, seq, state)
+	if IsStaleFakeMessage(ply, seq) then return end
+
+	MarkFakeSequence(ply, seq, state)
+	ClearRagdollIndexForPlayer(ply)
+
+	local oldrag = IsValid(ragdoll) and ragdoll or ply.FakeRagdoll
+	if IsValid(oldrag) then
+		hg.RestoreFakeHead(oldrag)
+
+		if state == FAKE_STATE_RESTORING then
+			ply.gettingup = CurTime()
+			ply.OldRagdoll = oldrag
+			ply.FakeRagdollOld = oldrag
+		end
+	end
+
+	if ply == lply then
+		BeginFakeCameraBlendOut()
+		follow = nil
+	end
+
+	if IsValid(ply.FakeRagdoll) then
+		ply.FakeRagdoll.ply = nil
+		ply.FakeRagdoll.HGClientFakeBound = nil
+	end
+
+	ply.FakeRagdoll = nil
+	ply.ragdoll_index = 0
+
+	if IsValid(ply) then
+		ply:SetNoDraw(false)
+		ply:SetRenderMode(RENDERMODE_NORMAL)
+	end
+
+	hook_Run("ZC_OnPlayerRestoredFromFake", ply, oldrag)
+end
+
+local function ApplyFakeLifecycleMessage(ply, seq, state, ragdoll, ragdollIndex)
+	if !IsValid(ply) or IsStaleFakeMessage(ply, seq) then return end
+
+	ragdollIndex = IsValid(ragdoll) and ragdoll:EntIndex() or ragdollIndex or 0
+
+	if state == FAKE_STATE_RESTORING and not IsValid(ragdoll) and not IsValid(ply.FakeRagdoll) and (ragdollIndex or 0) > 0 then
+		MarkFakeSequence(ply, seq, state)
+		AddRagdollIndexToQueue(ply, seq, state, ragdollIndex)
+		return
+	end
+
+	if state == FAKE_STATE_NONE or state == FAKE_STATE_RESTORING then
+		BeginClientFakeRestore(ply, ragdoll, seq, state)
+		return
+	end
+
+	if not IsValid(ragdoll) then
+		MarkFakeSequence(ply, seq, state)
+		AddRagdollIndexToQueue(ply, seq, state, ragdollIndex)
+		return
+	end
+
+	MarkFakeSequence(ply, seq, state)
+	ClearRagdollIndexForPlayer(ply)
+
+	ply.ragdoll_index = ragdollIndex
+	hook_Run("ZC_OnRagdollEntityCreated", ply, ragdoll, state == FAKE_STATE_DEATH and "RagdollDeath" or "FakeRagdoll")
+end
+
 hook.Add("Think", "ZC_TryResolvePlayerRagdollIndex", function()
-	for ply, index in pairs(queuedRagdolls) do
-		if index and ply.ragdoll_index == 0 then
+	for ply, pending in pairs(queuedRagdolls) do
+		if not IsValid(ply) or pending.expires < CurTime() or IsStaleFakeMessage(ply, pending.seq) then
 			ClearRagdollIndexForPlayer(ply)
-			continue 
+			continue
 		end
 
-		local ragdoll = Entity(index)
+		local ragdoll = Entity(pending.index)
 
 		if IsValid(ragdoll) then
 			ClearRagdollIndexForPlayer(ply)
-			hook_Run("ZC_OnRagdollEntityCreated", ply, ragdoll, "FakeRagdoll")
+			ApplyFakeLifecycleMessage(ply, pending.seq, pending.state, ragdoll, pending.index)
 		end
 	end
 end)
 
 net.Receive("ZC_PlayerRagdoll", function()
 	local ply = net.ReadEntity()
-	local ragdoll_index = net.ReadUInt( MAX_BITS )
-	local ragdoll = Entity(ragdoll_index)
-	local isEnteringRagdoll = net.ReadBool()
 	if !IsValid(ply) then print(tostring(ply) .. " is not valid") return end
 
-	ply.ragdoll_index = ragdoll_index
-	
-	// in the common event our ragdoll isnt networked yet..
-	// ..add it to a "queue" and let ZC_TryResolvePlayerRagdollIndex figure it out..
-	// ..because its no longer our responsibility
-	// but this is stupid
-	if isEnteringRagdoll and !IsValid(ragdoll) then
-		AddRagdollIndexToQueue(ply, ragdoll_index)
-		return
-	end
+	local seq = net.ReadUInt(32)
+	local state = net.ReadUInt(3)
+	local ragdollIndex = net.ReadUInt(FAKE_ENTITY_INDEX_BITS)
+	local ragdoll = net.ReadEntity()
 
-	if isEnteringRagdoll then
-		hook_Run("ZC_OnRagdollEntityCreated", ply, ragdoll, "FakeRagdoll")
-	end
+	ApplyFakeLifecycleMessage(ply, seq, state, ragdoll, ragdollIndex)
 end)
 
 hook.Add("NetworkEntityCreated", "ZC_GiveRenderOverride", function(ragdoll)
@@ -653,20 +876,19 @@ end
 -- end)
 
 local function funcrag(ply, name, oldval, ragdoll)
-	--ragdoll = IsValid(ragdoll) and ragdoll or IsValid(ply:GetNWEntity("FakeRagdoll")) and ply:GetNWEntity("FakeRagdoll") or ply:GetNWEntity("RagdollDeath")
-	--if ply.onetime then return end
-	--ply.onetime = true
-	if name == "FakeRagdoll" then
-		local ragdoll_index = ragdoll and ragdoll.EntIndex and ragdoll:EntIndex()
+	local seq = ply:GetNWInt("FakeRagdollSeq", ply.ZCFakeSequence or 0)
+	local state = ply:GetNWInt("FakeRagdollState", name == "RagdollDeath" and FAKE_STATE_DEATH or FAKE_STATE_ACTIVE)
+	local ragdollIndex = IsValid(ragdoll) and ragdoll:EntIndex() or 0
 
-		if not IsValid(ragdoll) and ragdoll_index and ragdoll_index > 0 then
-			QueuePendingFakeRagdoll(ply, ragdoll_index)
-			return
-		end
+	if name == "RagdollDeath" and state ~= FAKE_STATE_DEATH then
+		state = FAKE_STATE_DEATH
 	end
 
-	pcall(hook.Run, "RagdollEntityCreated", ply, ragdoll, name)
-	--ply.onetime = false
+	if IsValid(ragdoll) then
+		ApplyFakeLifecycleMessage(ply, seq, state, ragdoll, ragdollIndex)
+	elseif ragdollIndex > 0 then
+		AddRagdollIndexToQueue(ply, seq, state, ragdollIndex)
+	end
 end
 
 hook.Add("PlayerInitialSpawn","ZC_SetupFakeRagdollNetVarProxy",function(ply)
@@ -724,7 +946,7 @@ hook.Add("ZC_PlayerSpawn", "ZC_RemoveRagdoll", function(ply)
 
 	if IsValid(ragdoll) then
 		ragdoll:SetNWEntity("ply", NULL)
-		ragdoll:ManipulateBoneScale(ragdoll:LookupBone("ValveBiped.Bip01_Head1"), Vector(1, 1, 1))
+		hg.RestoreFakeHead(ragdoll)
 	end
 	--FUCKING SHIT
 	if IsValid(ply.FakeRagdoll) then
@@ -734,6 +956,7 @@ hook.Add("ZC_PlayerSpawn", "ZC_RemoveRagdoll", function(ply)
 
 	if ply == lply then
 		fakeTimer = nil
+		BeginFakeCameraBlendOut()
 		follow = nil
 	end
 

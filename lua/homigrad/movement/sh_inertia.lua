@@ -492,6 +492,16 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 				local torso = ply:TranslateBoneToPhysBone(ply:LookupBone("ValveBiped.Bip01_Spine2"))
 				local phystorso = hg.IdealMassPlayer["ValveBiped.Bip01_Spine2"]
 				hg.AddForceRag(ply, torso, force * phystorso, 0.5)
+				if hg.QueueFakeVelocity then
+					local fakeVelocity = mv:GetVelocity()
+					fakeVelocity = Vector(fakeVelocity.x, fakeVelocity.y, fakeVelocity.z)
+					if ply:OnGround() then
+						local jumpPower = ply.GetJumpPower and ply:GetJumpPower() or 200
+						fakeVelocity.z = math.max(fakeVelocity.z, jumpPower)
+					end
+
+					hg.QueueFakeVelocity(ply, fakeVelocity, 0.2)
+				end
 				hg.Fake(ply)
 			end
 		end
