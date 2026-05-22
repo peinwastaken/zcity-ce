@@ -164,10 +164,6 @@ end
 hook.Add("PlayerBindPress", "ZC_HandleBindsPress", function(ply, bind, pressed, number)
   local zcBind = binds.FindFirstBind(number)
   if zcBind and pressed then
-    if zb.dev.IsDeveloper() then
-      print(string.format("found bind %s", zcBind.label))
-    end
-
     RunConsoleCommand(zcBind.command)
 
     return true
