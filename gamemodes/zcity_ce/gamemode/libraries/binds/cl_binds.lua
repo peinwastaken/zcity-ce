@@ -129,12 +129,30 @@ function binds.FindFirstBind(keycode)
   return nil
 end
 
-hook.Add("PlayerBindPress", "ZC_HandleBindsPress", function(ply, bind, pressed, number)
-  local zcBind = binds.FindFirstBind(number)
-  if zcBind and pressed then
-    RunConsoleCommand(zcBind.command, unpack(zcBind.args or {}))
+hook.Add("PlayerBindPress", "ZC_PlayerBindPressed", function(ply, bind, pressed, key)
+  local zcBind = binds.FindFirstBind(key)
+  if !zcBind then return false end
+  if zcBind.key == KEY_NONE then return false end
 
+  local command = zcBind.command or ""
+
+  if pressed then
+    RunConsoleCommand(command, unpack(zcBind.args or {}))
+  end
+
+  if zcBind.should_override == true then
     return true
+  end
+end)
+
+hook.Add("PlayerButtonUp", "ZC_PlayerBindUnpressed", function(ply, key)
+  local zcBind = binds.FindFirstBind(key)
+  if !zcBind then return end
+
+  local command = zcBind.command or ""
+
+  if string.StartsWith(command, "+") then
+    RunConsoleCommand("-" .. string.TrimLeft(command, "+"), unpack(zcBind.args or {}))
   end
 end)
 
@@ -144,19 +162,118 @@ end)
 
 binds.categories = {
   { ["id"] = "movement", ["label"] = "Movement" },
+  { ["id"] = "weapon", ["label"] = "Weapons" },
+  { ["id"] = "ragdoll", ["label"] = "Ragdoll" },
   { ["id"] = "posture", ["label"] = "Stances" },
+  { ["id"] = "misc", ["label"] = "Miscellaneous"},
   { ["id"] = "admin", ["label"] = "Admin" }
 }
 
 binds.allbinds = {
   // movement
+  ["kick"] = {
+    ["key"] = KEY_V,
+    ["default"] = KEY_V,
+    ["label"] = "Kick",
+    ["description"] = "Perform a melee kick",
+    ["category"] = "movement",
+    ["command"] = "hg_kick"
+  },
+  ["zoom"] = {
+    ["key"] = KEY_C,
+    ["default"] = KEY_C,
+    ["label"] = "Zoom",
+    ["description"] = "DayZ-like focus zoom",
+    ["category"] = "movement",
+    ["command"] = "+hg_zoom"
+  },
+  ["lean_left"] = {
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
+    ["label"] = "Lean left",
+    ["description"] = "Lean to the left",
+    ["category"] = "movement",
+    ["command"] = "+alt1",
+    ["should_override"] = true
+  },
+  ["lean_right"] = {
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
+    ["label"] = "Lean right",
+    ["description"] = "Lean to the right",
+    ["category"] = "movement",
+    ["command"] = "+alt2",
+    ["should_override"] = true
+  },
+  ["altlook"] = {
+    ["key"] = KEY_LALT,
+    ["default"] = KEY_LALT,
+    ["label"] = "Free look",
+    ["description"] = "Look around without moving your body",
+    ["category"] = "movement",
+    ["command"] = "+altlook",
+    ["should_override"] = true
+  },
+  ["suicide"] = {
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
+    ["label"] = "Suicide",
+    ["description"] = "killbind",
+    ["category"] = "movement",
+    ["command"] = "suicide"
+  },
+
+  // weapons
+  ["drop_weapon"] = {
+    ["key"] = KEY_G,
+    ["default"] = KEY_G,
+    ["label"] = "Drop weapon",
+    ["description"] = "Drop your currently held weapon",
+    ["category"] = "weapon",
+    ["command"] = "say *drop",
+    ["should_override"] = true
+  },
+  ["hold_breath"] = {
+    ["key"] = KEY_LSHIFT,
+    ["default"] = KEY_LSHIFT,
+    ["label"] = "Hold breath",
+    ["description"] = "Helps with aiming and avoiding gas inhalation",
+    ["category"] = "weapon",
+    ["command"] = "+hmcd_holdbreath"
+  },
+  ["toggle_laser"] = {
+    ["key"] = KEY_H,
+    ["default"] = KEY_H,
+    ["label"] = "Toggle laser",
+    ["description"] = "Toggle weapon lasers and taser sights",
+    ["category"] = "weapon",
+    ["command"] = "hmcd_togglelaser"
+  },
+
+  // ragdoll
   ["fake"] = {
     ["key"] = KEY_T,
-    ["default"] = nil,
+    ["default"] = KEY_T,
     ["label"] = "Toggle ragdoll",
     ["description"] = "Pretty self-explanatory. Press once to enter and press again to leave ragdoll.",
     ["category"] = "movement",
     ["command"] = "fake"
+  },
+  ["fake_grab_left"] = {
+    ["key"] = KEY_LSHIFT,
+    ["default"] = KEY_LSHIFT,
+    ["label"] = "Grab with left hand",
+    ["description"] = "Grab objects with your left hand while ragdolled",
+    ["category"] = "ragdoll",
+    ["command"] = "+speed"
+  },
+  ["fake_grab_right"] = {
+    ["key"] = KEY_LALT,
+    ["default"] = KEY_LALT,
+    ["label"] = "Grab with right hand",
+    ["description"] = "Grab objects with your right hand while ragdolled",
+    ["category"] = "ragdoll",
+    ["command"] = "+walk"
   },
 
   // stances
@@ -249,6 +366,17 @@ binds.allbinds = {
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
     ["args"] = {9}
+  },
+
+  // misc
+  ["open_radial"] = {
+    ["key"] = KEY_Q,
+    ["default"] = KEY_Q,
+    ["label"] = "Open radial menu",
+    ["description"] = "for context actions",
+    ["category"] = "misc",
+    ["command"] = "+radialmenu",
+    ["should_override"] = true
   },
 
   // admin

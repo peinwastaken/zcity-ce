@@ -1,3 +1,10 @@
+concommand.Add("+radialmenu", function() 
+	hook.Run("ZC_HandleRadialMenuBind", true)
+end, function() end, "Opens the radial menu")
+concommand.Add("-radialmenu", function() 
+	hook.Run("ZC_HandleRadialMenuBind", false)
+end, function() end, "Closes the radial menu")
+
 local hide = {
 	["CHudHealth"] = true,
 	["CHudBattery"] = true,
@@ -431,24 +438,13 @@ hook.Add("ZC_OnPlayerUnconscious", "ZC_ResetHudState", function(ply)
 	end
 end)
 
-hook.Add( "PlayerBindPress", "ZC_HandleRadialMenuBind", function( ply, bind, pressed )
-	if string.find(bind, "+menu") then
+hook.Add( "ZC_HandleRadialMenuBind", "ZC_HandleRadialMenuBind", function( open )
+	if (lply.organism and lply.organism.unconscious) then return end
 
-		if (lply.organism and lply.organism.unconscious) then
-			return (bind == "+menu") or nil
-		end
-
-		if (bind == "+menu") then
-			if pressed and !IsValid(MENUPANELHUYHUY) then
-				CreateRadialMenu()
-			else
-				PressRadialMenu(1)
-			end
-		else
-			if lply:IsAdmin() then return end
-		end
-
-		return true
+	if open and !IsValid(MENUPANELHUYHUY) then
+		CreateRadialMenu()
+	else
+		PressRadialMenu(1)
 	end
 end)
 

@@ -104,6 +104,7 @@ end)
 concommand.Add("+hmcd_holdbreath",function(ply)
 	if not ply.organism then return end
 	if not ply:Alive() then return end
+	if ply:GetVelocity():Length() > 5 then return end
 	if ply.organism.stamina[1] < 90 then return end
 	if ply.organism.o2.curregen == 0 then return end
 
