@@ -1,7 +1,7 @@
 "zcity_ce"
 {
 	"base"			"base"
-	"title"			"ZCity CE"
+	"title"			"Z-City Community Edition"
 	"maps"			"^hmcd_|^md_|^mu_|^murder_|^zc|^zb"
 	"menusystem"	"1"
 	"category"		"pvp"
