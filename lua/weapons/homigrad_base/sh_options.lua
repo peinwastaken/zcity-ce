@@ -75,8 +75,8 @@ hg.postures = {
 	[4] = "Low ready",
 	[5] = "Point shooting",
 	[6] = "Shooting from cover",
-	[7] = {"Gangsta",isPistolOnly = true},
-	[8] = {"One-handed",isPistolOnly = true},
+	[7] = {"Gangsta", isPistolOnly = true},
+	[8] = {"One-handed", isPistolOnly = true},
 	[9] = "Somalian",
 }
 
