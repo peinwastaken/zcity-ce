@@ -1,0 +1,1 @@
+CreateClientConVar("zc_always_ragdoll_aim", 0, false, false, "", 0, 1)
