@@ -1,1 +1,1 @@
-CreateClientConVar("zc_always_ragdoll_aim", 0, false, false, "", 0, 1)
+CreateConVar("zc_always_ragdoll_aim", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Enables permanent +use in fake ragdoll mode", 0, 1)

@@ -1,3 +1,8 @@
+local walkspeedConvar = CreateConVar("zc_walkspeed", 100, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Changes the player base walk speed", 0, 999)
+local runspeedConvar = CreateConVar("zc_runspeed", 200, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Changes the player base run speed", 0, 999)
+local walkspeedConvar_slow = CreateConVar("zc_walkspeed_slow", 70, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Changes the player slow walk speed", 0, 999)
+local walkspeedConvar_duck = CreateConVar("zc_walkspeed_duck", 40, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Changes the player crouch walk speed", 0, 999)
+
 local Angle, Vector, _, VectorRand, math, hook, util, game = Angle, Vector, AngleRand, VectorRand, math, hook, util, game
 
 local ENTITY = FindMetaTable("Entity")
@@ -419,8 +424,13 @@ hg.ConVars = hg.ConVars or {}
 		timer.Simple(0, function()
 			if not IsValid(ply) then return end
 
-			ply:SetWalkSpeed(100)
-			ply:SetRunSpeed(350) -- 230
+			local walkspeedConvar = GetConVar("zc_walkspeed")
+			local runspeedConvar = GetConVar("zc_runspeed")
+			local walkspeedConvar_slow = GetConVar("zc_walkspeed_slow")
+			local walkspeedConvar_duck = GetConVar("zc_walkspeed_duck")
+
+			ply:SetWalkSpeed(walkspeedConvar:GetFloat())
+			ply:SetRunSpeed(runspeedConvar:GetFloat()) -- 230
 
 			ply:SetJumpPower(DEFAULT_JUMP_POWER)
 
@@ -429,9 +439,9 @@ hg.ConVars = hg.ConVars or {}
 			ply:SetViewOffset(ViewOffset)
 			ply:SetViewOffsetDucked(ViewOffsetDucked)
 
-			ply:SetSlowWalkSpeed(60)
+			ply:SetSlowWalkSpeed(walkspeedConvar_slow:GetFloat())
 			ply:SetLadderClimbSpeed(150)
-			ply:SetCrouchedWalkSpeed(60)
+			ply:SetCrouchedWalkSpeed(walkspeedConvar_duck:GetFloat())
 			ply:SetDuckSpeed(0.4)
 			ply:SetUnDuckSpeed(0.4)
 			ply:AddEFlags(EFL_NO_DAMAGE_FORCES)
