@@ -144,7 +144,7 @@ function PANEL:Init()
     local logoPanel = vgui.Create("DPanel", lDock)
     logoPanel:SetWide(512)
     logoPanel:SetTall(128)
-    logoPanel:DockMargin(-5, 0, 0, 0)
+    logoPanel:DockMargin(0, 0, 0, 0)
     logoPanel:Dock(TOP)
     logoPanel.Paint = function(self, w, h)
         local mat = pauseLogoMat
