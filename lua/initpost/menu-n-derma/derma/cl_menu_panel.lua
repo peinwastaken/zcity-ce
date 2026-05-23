@@ -2,6 +2,7 @@ local PANEL = {}
 local curent_panel
 local uiColors = zc.colors.ui
 local red_select = uiColors.mainMenuSelect
+local pauseLogoMat = Material("gui/logo_pause.png")
 
 DISCORD_URL = "https://discord.gg/475EmEdTgH"
 
@@ -102,24 +103,12 @@ surface.CreateFont("ZC_MM_Title", {
 
 local Pluv = Material("pluv/pluvkid.jpg")
 
-function PANEL:InitializeMarkup()
-	local mapname = game.GetMap()
-	local prefix = string.find(mapname, "_")
-	if prefix then
-		mapname = string.sub(mapname, prefix + 1)
-	end
-	local gm = splasheh[math.random(#splasheh)] .. " | Playing on: " .. mapname
+function PANEL:GetRandomText()
+    return splasheh[math.random(#splasheh)]
+end
 
-    if hg.PluvTown.Active then
-        local text = "<font=ZC_MM_Title><colour=0,228,245></colour>City</font>\n<font=ZCity_Tiny><colour=105,105,105>" .. gm .. "</colour></font>"
-
-        self.SelectedPluv = table.Random(hg.PluvTown.PluvMats)
-
-        return markup.Parse(text)
-    end
-
-    local text = "<font=ZC_MM_Title><colour=0,228,245>Z</colour>-City</font>\n<font=ZCity_Tiny><colour=105,105,105>" .. gm .. "</colour></font>"
-    return markup.Parse(text)
+function PANEL:GetMapName()
+    return game.GetMap()
 end
 
 local clr_gray = uiColors.mainMenuFooterText
@@ -136,7 +125,8 @@ function PANEL:Init()
     self:SetDraggable(false)
     self:ShowCloseButton(false)
     curent_panel = nil
-    self.Title, self.TitleShadow = self:InitializeMarkup()
+    local mapName = self:GetMapName()
+    local randomText = self:GetRandomText()
 
     timer.Simple(0, function()
         if self.First then
@@ -148,23 +138,35 @@ function PANEL:Init()
     local lDock = self.lDock
     lDock:Dock(LEFT)
     lDock:SetSize(ScrW() / 2, ScrH())
-    lDock:DockMargin(ScreenScale(0), ScreenScaleH(90), ScreenScale(10), ScreenScaleH(90))
-    lDock.Paint = function(this, w, h)
-        if hg.PluvTown.Active then
-            surface.SetDrawColor(uiColors.white)
-            surface.SetMaterial(self.SelectedPluv or Pluv)
-            surface.DrawTexturedRect(0, ScreenScale(27), ScreenScale(35), ScreenScale(27))
-        end
+    lDock:DockMargin(ScreenScale(10), ScreenScaleH(90), ScreenScale(10), ScreenScaleH(90))
+    lDock.Paint = function() end
 
-        self.Title:Draw(ScreenScale(15), ScreenScale(50), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, 255, TEXT_ALIGN_LEFT)
+    local logoPanel = vgui.Create("DPanel", lDock)
+    logoPanel:SetWide(512)
+    logoPanel:SetTall(128)
+    logoPanel:DockMargin(-5, 0, 0, 0)
+    logoPanel:Dock(TOP)
+    logoPanel.Paint = function(self, w, h)
+        local mat = pauseLogoMat
+        local matW, matH = mat:Width(), mat:Height()
+        surface.SetMaterial(mat)
+        surface.SetDrawColor(255, 255, 255, 255)
+        surface.DrawTexturedRect(0, 0, matW, matH)
     end
+
+    local textLabel = vgui.Create("DLabel", lDock)
+    textLabel:SetFont("ZCity_Tiny")
+    textLabel:SetTextColor(clr_gray)
+    textLabel:SetText(string.format("%s | Playing on: %s", randomText, mapName))
+    textLabel:SizeToContentsY(5)
+    textLabel:DockMargin(0, ScreenScale(3), 0, ScreenScale(5))
+    textLabel:Dock(TOP)
 
     self.Buttons = {}
     for _, v in ipairs(Selects) do
         if v.GamemodeOnly and engine.ActiveGamemode() != "zcity" then continue end
         self:AddSelect(lDock, v.Title, v)
     end
-
 
     local bottomDock = vgui.Create("DPanel", self)
     bottomDock:SetPos(ScreenScale(1), ScrH() - ScrH()/6.7)
@@ -246,8 +248,8 @@ function PANEL:AddSelect( pParent, strTitle, tbl )
     btn:SizeToContents()
     btn:SetFont( "ZCity_Small" )
     btn:SetTall( ScreenScale( 15 ) )
-    btn:Dock(BOTTOM)
-    btn:DockMargin(ScreenScale(15),ScreenScale(1.5),0,0)
+    btn:Dock(TOP)
+    btn:DockMargin(0, ScreenScale(1.5), 0, 0)
     btn.Func = tbl.Func
     btn.HoveredFunc = tbl.HoveredFunc
     local luaMenu = self

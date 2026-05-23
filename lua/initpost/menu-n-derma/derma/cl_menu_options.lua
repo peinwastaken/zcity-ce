@@ -55,7 +55,7 @@ hg.settings:AddOpt("Gameplay","zc_gary", "HG GARY")
 hg.settings:AddOpt("Gameplay","zc_deathfadeout", "Death fade out")
 --zc_gary
 --zc_deathfadeout
-if not game.IsDedicated() then
+if not game.IsDedicated() and LocalPlayer():IsAdmin() then
     hg.settings:AddOpt("Serverside gameplay","zc_always_ragdoll_aim", "Always aim in ragdoll")
 	hg.settings:AddOpt("Serverside gameplay","zc_toughnpcs", "Tough npcs")
 	hg.settings:AddOpt("Serverside gameplay","zc_thirdperson", "Thirdperson (WIP)")
@@ -179,7 +179,7 @@ function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
     local convar = GetConVar(convarName)
 
     if not convar then
-        zb.dev.DevPrint(string.format("convar %s not found, skipping creating settings option", convarName))
+        print(string.format("convar %s not found, skipping creating settings option", convarName))
         return
     end
 
@@ -333,7 +333,8 @@ function hg.DrawSettings(ParentPanel)
         // load settings
         for convarName, settingData in pairs(categoryTable) do
             local option = hg.CreateButton(settingData, convarName, sidePanel, yOffset)
-                
+            if !option then continue end
+
             option:Dock(TOP)
             option:DockMargin(15, 0, 15, 5)
         end
