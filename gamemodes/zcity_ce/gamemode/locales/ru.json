@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "id": "en",
+    "name": "Russian",
+    "nativeName": "Русский"
+  },
+  "localeKeys": {
+    "menu/mainmenu": "Main menu",
+    "menu/settings": "Settings",
+    "menu/discord": "Discord",
+    "menu/settings/admin": "Admin settings",
+    "menu/authors": "Authors: %s",
+    "menu/authors_ce": "CE Authors: %s",
+    "menu/version": "Version: %s",
+    "menu/settings/serversettings": "Serverside settings IN RUSSIAN",
+    "menu/settings/aim_in_ragdoll": "Always aim in ragdoll but in RUSSIAN",
+    "menu/settings/aim_in_ragdoll/desc": "Enables permanent +use in fake ragdoll mode but in RUSSIAN"
+  }
+}

@@ -1,11 +1,14 @@
 hg.settings = hg.settings or {}
 hg.settings.tbl = hg.settings.tbl or {}
 local uiColors = zc.colors.ui
+local dropButton = Material("icon16/bullet_arrow_down.png")
+local dropButton_open = Material("icon16/bullet_arrow_up.png")
 
 function hg.settings:AddOpt( strCategory, strConVar, strTitle, bDecimals, bString, category )
     self.tbl[strCategory] = self.tbl[strCategory] or {}
     self.tbl[strCategory][strConVar] = { strCategory, strConVar, strTitle, bDecimals or false, bString or false, category }
 end
+
 CreateClientConVar("zc_firstperson_death", "0", true, false, "Toggle first-person death camera view", 0, 1)
 local zc_font = CreateClientConVar("zc_font", "Bahnschrift", true, false, "change every text font to selected because ui customization is cool")
 CreateClientConVar("zc_attachment_draw_distance", 0, true, nil, "distance to draw attachments", 0, 4096)
@@ -56,17 +59,17 @@ hg.settings:AddOpt("Gameplay","zc_deathfadeout", "Death fade out")
 --zc_gary
 --zc_deathfadeout
 if not game.IsDedicated() and LocalPlayer():IsAdmin() then
-    hg.settings:AddOpt("Serverside gameplay","zc_always_ragdoll_aim", "Always aim in ragdoll")
-	hg.settings:AddOpt("Serverside gameplay","zc_toughnpcs", "Tough npcs")
-	hg.settings:AddOpt("Serverside gameplay","zc_thirdperson", "Thirdperson (WIP)")
-    hg.settings:AddOpt("Serverside gameplay","zc_legacycam", "Legacy camera")
-    hg.settings:AddOpt("Serverside gameplay","zc_ragdollcombat", "Ragdoll combat mode")
-    hg.settings:AddOpt("Serverside gameplay","zc_movement_stamina_debuff", "Movement stamina debuff")
-    hg.settings:AddOpt("Serverside gameplay","zc_appearance_access_for_all", "Appearance full access for all", nil, nil, "bool")
-	hg.settings:AddOpt("Serverside gameplay","zc_healanims", "Heal & food animations")
-	hg.settings:AddOpt("Serverside gameplay","zc_aimtoshoot", "DarkRP-like shoot system (aim to shoot)")
-	hg.settings:AddOpt("Serverside gameplay","zc_slings", "Sling system")
-    hg.settings:AddOpt("Serverside gameplay","zc_homicide_traitoramount", "Homicide: Traitor Amount", nil, nil, "int")
+    hg.settings:AddOpt("menu/settings/serversettings", "zc_always_ragdoll_aim", "menu/settings/aim_in_ragdoll", nil, nil, "bool", "menu/settings/aim_in_ragdoll_desc")
+	hg.settings:AddOpt("menu/settings/serversettings", "zc_toughnpcs", "Tough npcs")
+	hg.settings:AddOpt("menu/settings/serversettings", "zc_thirdperson", "Thirdperson (WIP)")
+    hg.settings:AddOpt("menu/settings/serversettings", "zc_legacycam", "Legacy camera")
+    hg.settings:AddOpt("menu/settings/serversettings", "zc_ragdollcombat", "Ragdoll combat mode")
+    hg.settings:AddOpt("menu/settings/serversettings", "zc_movement_stamina_debuff", "Movement stamina debuff")
+    hg.settings:AddOpt("menu/settings/serversettings", "zc_appearance_access_for_all", "Appearance full access for all", nil, nil, "bool")
+	hg.settings:AddOpt("menu/settings/serversettings", "zc_healanims", "Heal & food animations")
+	hg.settings:AddOpt("menu/settings/serversettings", "zc_aimtoshoot", "DarkRP-like shoot system (aim to shoot)")
+	hg.settings:AddOpt("menu/settings/serversettings", "zc_slings", "Sling system")
+    hg.settings:AddOpt("menu/settings/serversettings", "zc_homicide_traitoramount", "Homicide: Traitor Amount", nil, nil, "int")
 end
 --zc_appearance_access_for_all
 --zc_legacycam
@@ -88,7 +91,8 @@ hg.settings:AddOpt("Blood","zc_blood_fps", "Blood FPS")
 hg.settings:AddOpt("Blood","zc_blood_sprites", "Blood Sprites (DISABLED FOR EVERYONE)")
 hg.settings:AddOpt("Blood","zc_old_blood", "Old blood")
 
-hg.settings:AddOpt("UI","zc_font", "Change Custom Font", false, true)
+hg.settings:AddOpt("UI", "zc_font", "Change Custom Font", false, true)
+hg.settings:AddOpt("UI", "zc_language", "Change language", false, true)
 
 hg.settings:AddOpt("Weapons","zc_weaponshotblur_enable", "Shooting Blur")
 hg.settings:AddOpt("Weapons","zc_dynamic_mags", "Dynamic Ammo Inspect")
@@ -115,6 +119,7 @@ hg.settings:AddOpt("Sound","zc_quietshots", "Enable/Disable Quietshoot Sounds")
 
 function hg.CreateCategory(ctgName, ParentPanel, yPos)
     local pppanel = vgui.Create('DPanel', ParentPanel)
+    local label = zb.locale.GetLocale(ctgName)
     pppanel:SetSize(ParentPanel:GetWide(), 64)
     pppanel:SetPos(ParentPanel:GetWide() / 2 -pppanel:GetWide() / 2, yPos)
     --pppanel:SetText(ctgName)
@@ -124,7 +129,7 @@ function hg.CreateCategory(ctgName, ParentPanel, yPos)
 		surface.SetDrawColor(uiColors.settingsCategoryAccent)
 		surface.DrawRect(0, h-5, w, 5)
 
-        draw.SimpleText(ctgName, 'ZCity_setiings_category', w / 2, h / 2, color3, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(label, 'ZCity_setiings_category', w / 2, h / 2, color3, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     return pppanel
@@ -183,6 +188,12 @@ function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
         return
     end
 
+    // seriously this is stupid
+    local label = buttonData[3]
+    local desc = buttonData[7] or convar:GetHelpText()
+    local localizedLabel = zb.locale.GetLocale(label)
+    local localizedDesc = zb.locale.GetLocale(desc)
+
     local pppanel = vgui.Create('DPanel', ParentPanel)
     pppanel:SetSize(ParentPanel:GetWide()/1.05, 64)
 
@@ -196,11 +207,43 @@ function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
 		surface.SetDrawColor(uiColors.settingsRowDivider)
 		surface.DrawRect(0, h-3, w, 3)
 
-        draw.SimpleText(buttonData[3], 'ZCity_setiings_fine', 30, h / 2 -height2/2.5, clr_1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-        draw.SimpleText(convar:GetHelpText(), 'ZCity_setiings_tiny', 30, h / 2+height2/2, clr_2, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(localizedLabel, 'ZCity_setiings_fine', 30, h / 2 -height2/2.5, clr_1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(localizedDesc, 'ZCity_setiings_tiny', 30, h / 2+height2/2, clr_2, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
 
-    if convarType == 'bool' then
+    // TODO: TEMPORARY!!! replace with a REAL key value dropdown system!!!
+    if convarName == "zc_language" then
+        local comboBox = vgui.Create("DComboBox", pppanel)
+        comboBox:SetSize(pppanel:GetWide()/8, pppanel:GetTall()/2)
+        comboBox:SetPos(pppanel:GetWide()-pppanel:GetWide()/8-20, pppanel:GetTall()/2-comboBox:GetTall()/2)
+        comboBox:SetFont('ZCity_Tiny')
+        comboBox.Paint = function(self, w, h)
+            surface.SetDrawColor(uiColors.settingsInputBackground)
+            surface.DrawRect(0, 0, w, h)
+            surface.SetDrawColor(uiColors.settingsInputOutline)
+            surface.DrawOutlinedRect(0, 0, w, h)
+
+            self:DrawTextEntryText(uiColors.white, clr_8, uiColors.white)
+        end
+        comboBox.DropButton.Paint = function(self, w, h)
+            surface.SetMaterial(comboBox:IsMenuOpen() and dropButton_open or dropButton)
+            surface.SetDrawColor(255, 255, 255, 255)
+            surface.DrawTexturedRect(0, 0, w, h)
+        end
+
+        local options = zb.locale.GetLocaleNativeNames()
+        
+        for id, nativeLabel in pairs(options) do
+            comboBox:AddChoice(nativeLabel, id)
+        end
+
+        local value = convar:GetString()
+        comboBox:SetValue(options[value])
+
+        comboBox.OnSelect = function(self, index, value, data)
+            RunConsoleCommand(convarName, data)
+        end
+    elseif convarType == 'bool' then
         local toggle = vgui.Create('DButton', pppanel)
         toggle:SetSize(pppanel:GetWide() / 18, pppanel:GetTall() / 2)
 
@@ -252,7 +295,6 @@ function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
                 targetProgress = newValue and 1 or 0
             end
         end
-
     elseif convarType == 'int' then
         local slider = vgui.Create('DNumSlider', pppanel)
         slider:SetSize(280, 30)
@@ -286,7 +328,6 @@ function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
                 valueLabel:SetText(convar:GetInt())
             end
         end
-
     elseif convarType == 'string' then
         local textEntry = vgui.Create('DTextEntry', pppanel)
         textEntry:SetSize(pppanel:GetWide()/8, pppanel:GetTall()/2)
@@ -294,7 +335,6 @@ function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
         textEntry:SetText(convar:GetString())
         textEntry:SetUpdateOnType(true)
         textEntry:SetFont('ZCity_Tiny')
-
 
         textEntry.Paint = function(self, w, h)
             surface.SetDrawColor(uiColors.settingsInputBackground)
