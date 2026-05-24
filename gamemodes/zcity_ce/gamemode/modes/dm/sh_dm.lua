@@ -77,22 +77,6 @@ function MODE:IsSpawnProtectionActive()
     return (zb.ROUND_START or 0) + MODE.SpawnProtectionTime > CurTime()
 end
 
-function MODE:ZC_CalculateMovementModifiers( mul, ply, cmd, mv )
-    if self:IsSpawnProtectionActive() and cmd then 
-        cmd:RemoveKey(IN_ATTACK)
-        cmd:RemoveKey(IN_ATTACK2)
-        if mv then
-            mv:RemoveKey(IN_ATTACK)
-            mv:RemoveKey(IN_ATTACK2)
-        end
-
-        if IsValid(ply) and IsValid(ply:GetWeapon("weapon_hands_sh")) then
-            cmd:SelectWeapon(ply:GetWeapon("weapon_hands_sh"))
-            if SERVER then ply:SelectWeapon("weapon_hands_sh") end
-        end
-    end
-end
-
 function MODE:ZC_CanPlayerLegAttack( ply )
 	if (zb.ROUND_START or 0) + 20 > CurTime() then
 		return false

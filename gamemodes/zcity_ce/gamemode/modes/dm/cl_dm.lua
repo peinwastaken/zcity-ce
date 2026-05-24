@@ -288,3 +288,10 @@ function MODE:RoundStart()
         hmcdEndMenu = nil
     end
 end
+
+function MODE:CreateMove(cmd)
+    if self:IsSpawnProtectionActive() and cmd then
+        cmd:RemoveKey(IN_ATTACK)
+        cmd:RemoveKey(IN_ATTACK2)
+    end
+end
