@@ -76,11 +76,11 @@ local IsValid, math_Clamp = IsValid, math.Clamp
 
 		ent:SetupBones()
 
-		hg.MainTPIKFunction(ent, ply, wep)
-
 		if IsValid(ply.OldRagdoll) then
 			hg.SmoothUnfake(ent, ply)
 		end
+
+		hg.MainTPIKFunction(ent, ply, wep)
 
 		if ply:GetNetVar("handcuffed", false) then hg.CuffedAnim(ent, ply) end
 		
