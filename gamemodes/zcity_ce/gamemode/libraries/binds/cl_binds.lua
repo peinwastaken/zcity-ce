@@ -1,3 +1,8 @@
+concommand.Add("zc_binds_default", function()
+  zb.binds.SaveDefaultBinds()
+  print("resetting binds...")
+end)
+
 /*
 BindInfo
 {
@@ -29,14 +34,23 @@ zb.binds = binds or {}
 
 local BIND_SAVE_PATH = "zcity-ce/settings/binds.json"
 
-local function CreateBindSave()
+local function CreateBindSave(default)
+  default = default or false
   local bindSave = {}
 
   for k,v in pairs(zb.binds.allbinds) do
+    local key = default and v.default or v.key
+    local override = default and v.default_override or v.should_override
+
     bindSave[k] = {
-      ["key"] = v.key,
-      ["should_override"] = v.should_override
+      ["key"] = key,
+      ["should_override"] = override
     }
+
+    if default then
+      v.key = v.default
+      v.should_override = v.default_override
+    end
   end
 
   return bindSave
@@ -49,7 +63,7 @@ end
 
 function binds.SaveDefaultBinds()
   EnsureBindSaveDir()
-  file.Write(BIND_SAVE_PATH, util.TableToJSON(CreateBindSave(), true))
+  file.Write(BIND_SAVE_PATH, util.TableToJSON(CreateBindSave(true), true))
 end
 
 function binds.SaveBinds()
