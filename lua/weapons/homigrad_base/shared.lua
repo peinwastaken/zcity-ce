@@ -1985,7 +1985,8 @@ function SWEP:InUse()
 		return false
 	end
 
-	local isUseHeld = GetConVar("zc_always_ragdoll_aim"):GetBool() or ply:KeyDown(IN_USE)
+	local alwaysRagdollAim = GetConVar("zc_always_ragdoll_aim")
+	local isUseHeld = (alwaysRagdollAim and alwaysRagdollAim:GetBool()) or ply:KeyDown(IN_USE)
 	local inVehicle = ply.InVehicle and ply:InVehicle()
 	local ragdollCombatInUse = hg.RagdollCombatInUse(ply)
 	local canAimRagdoll = not inVehicle and not ragdollCombatInUse

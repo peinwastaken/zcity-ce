@@ -205,6 +205,8 @@ if SERVER then
 
 	function SWEP:OnDrop()
 		timer.Simple(0.2,function()
+			if not IsValid(self) then return end
+
 			if self.ReadyToThrow then
 				if self.Spoon then
 					self:CreateSpoon(self:GetOwner())
@@ -249,21 +251,31 @@ function SWEP:Throw(mul, time, nosound, throwPosAdjust, throwAngAdjust)
 
 	local owner = self.Thrower or self:GetOwner()
 	local ent = ents.Create(self.ENT)
-	local entOwner = IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or IsValid(owner) and owner
+	if not IsValid(ent) then return end
+
+	local hasOwner = IsValid(owner)
+	local entOwner = hasOwner and (IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or owner) or nil
 	throwPosAdjust = throwPosAdjust or Vector(0,0,5)
 	throwAngAdjust = throwAngAdjust or Angle(0,0,0)
 	--throwPosAdjust[2] = throwPosAdjust[2] + 2
-	local _, _, headm = self:GetEyeTrace()
-	local eyepos = headm:GetTranslation() or false
-	local ang = IsValid(entOwner) and owner:EyeAngles() or self:GetAngles()
-	local hand = eyepos and eyepos + ang:Forward() * throwPosAdjust[1] + ang:Right() * (throwPosAdjust[2] + 2) + ang:Up() * throwPosAdjust[3] or self:GetPos()
+	local headm
+	if hasOwner then
+		local _, _, eyeHeadm = self:GetEyeTrace()
+		headm = eyeHeadm
+	end
+
+	local eyepos = headm and headm:GetTranslation() or (hasOwner and owner:EyePos()) or self:GetPos()
+	local ang = hasOwner and owner:EyeAngles() or self:GetAngles()
+	local hand = eyepos + ang:Forward() * throwPosAdjust[1] + ang:Right() * (throwPosAdjust[2] + 2) + ang:Up() * throwPosAdjust[3]
 
 	if IsValid(entOwner) then
 		ent:SetOwner(entOwner or game.GetWorld())
 	end
 
-	ent.team = owner:Team()
-	ent.steamid = owner:SteamID()
+	if hasOwner then
+		ent.team = owner:Team()
+		ent.steamid = owner:SteamID()
+	end
 
 	if not nosound and IsValid(entOwner) then
 		entOwner:EmitSound(self.throwsound or "weapons/m67/m67_throw_01.wav", 90, math.random(95, 105))
@@ -313,10 +325,10 @@ function SWEP:Throw(mul, time, nosound, throwPosAdjust, throwAngAdjust)
 	ent:SetAngles(angThrow)
 	local phys = ent:GetPhysicsObject()
 	if phys then
-		real_ent = hg.GetCurrentCharacter(owner)
+		local real_ent = hasOwner and hg.GetCurrentCharacter(owner)
 		phys:SetVelocity(IsValid(real_ent) and (owner:GetAimVector() * mul/1.5) + real_ent:GetVelocity() or Vector(0,0,0))
 	end
-	if owner:IsOnGround() then
+	if hasOwner and owner:IsOnGround() then
 		owner:SetVelocity(owner:GetVelocity() - owner:GetVelocity()/2)
 	end
 	ent.timer = time
@@ -484,12 +496,15 @@ function SWEP:CreateSpoon(entownr)
 	local entasd
 	if not self.spoon then return end
 	if IsValid(entownr) then
-		local hand = entownr:GetBoneMatrix(entownr:LookupBone("ValveBiped.Bip01_R_Hand"))
+		local handBone = entownr:LookupBone("ValveBiped.Bip01_R_Hand")
+		local hand = handBone and entownr:GetBoneMatrix(handBone)
+		local spoonPos = hand and hand:GetTranslation() or entownr:GetPos()
+		local spoonAng = hand and hand:GetAngles() or entownr:GetAngles()
 
 		entasd = ents.Create("ent_hg_spoon")
 		entasd:SetModel(self.spoon)
-		entasd:SetPos(hand:GetTranslation())
-		entasd:SetAngles(hand:GetAngles())
+		entasd:SetPos(spoonPos)
+		entasd:SetAngles(spoonAng)
 		entasd:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 		entasd:Spawn()
 
@@ -497,7 +512,7 @@ function SWEP:CreateSpoon(entownr)
 
 		if self.SpoonSounds then
 			for _,v in ipairs(self.SpoonSounds) do
-				self:GetOwner():EmitSound(v[1], v[2], v[3])
+				entownr:EmitSound(v[1], v[2], v[3])
 
 				if v[4] then
 					local effectData = EffectData()
@@ -509,7 +524,7 @@ function SWEP:CreateSpoon(entownr)
 			end
 		end
 
-		hg.EmitAISound(hand:GetTranslation(), 96, 5, 8)
+		hg.EmitAISound(spoonPos, 96, 5, 8)
 	else
 		entasd = ents.Create("ent_hg_spoon")
 		entasd:SetModel(self.spoon)
@@ -521,8 +536,10 @@ function SWEP:CreateSpoon(entownr)
 		entasd:EmitSound("weapons/m67/m67_spooneject.wav",65)
 
 		if self.SpoonSounds then
+			local soundOwner = IsValid(self:GetOwner()) and self:GetOwner() or entasd
+
 			for _,v in ipairs(self.SpoonSounds) do
-				self:GetOwner():EmitSound(v[1], v[2], v[3], v[5])
+				soundOwner:EmitSound(v[1], v[2], v[3], v[5])
 
 				if v[4] then
 					local effectData = EffectData()

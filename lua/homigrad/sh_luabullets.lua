@@ -505,14 +505,17 @@ function ENTITY:FireLuaBullets(tInfo)
 		return
 	end
 
-    local owner = tInfo.Attacker and tInfo.Attacker:IsValid() and tInfo.Attacker or IsValid(self) and self:GetOwner() and self:GetOwner():IsValid() and self:GetOwner() or self
+	local selfOwner = IsValid(self) and self.GetOwner and self:GetOwner()
+    local owner = IsValid(tInfo.Attacker) and tInfo.Attacker or IsValid(selfOwner) and selfOwner or IsValid(self) and self
+	if not IsValid(owner) then return end
+
 	local bIsPlayer = owner:IsPlayer()
 
 	if (bIsPlayer and !tInfo.DisableLagComp) then
 		owner:LagCompensation(true)
 	end
 
-	local pWeapon = tInfo.Inflictor and tInfo.Inflictor:IsValid() and tInfo.Inflictor or IsValid(owner) and owner.GetActiveWeapon and owner:GetActiveWeapon()
+	local pWeapon = IsValid(tInfo.Inflictor) and tInfo.Inflictor or owner.GetActiveWeapon and owner:GetActiveWeapon()
 	local bWeaponValid = IsValid(pWeapon)
 
 	-- FireBullets info
@@ -526,7 +529,7 @@ function ENTITY:FireLuaBullets(tInfo)
 		iAmmoType = tInfo.AmmoType
 	end
 
-	local pAttacker = tInfo.Attacker or self
+	local pAttacker = IsValid(tInfo.Attacker) and tInfo.Attacker or owner
 	local fCallback = tInfo.Callback
 	local iDamage = tInfo.Damage or 0
 	local vDir = tInfo.Dir and tInfo.Dir:GetNormal() or owner:GetAimVector()
@@ -543,7 +546,12 @@ function ENTITY:FireLuaBullets(tInfo)
 		bHullTrace = true
 	end
 
-	local pInflictor = tInfo.Inflictor and tInfo.Inflictor:IsValid() and tInfo.Inflictor or bWeaponValid and pWeapon or owner
+	local pInflictor = IsValid(tInfo.Inflictor) and tInfo.Inflictor or bWeaponValid and pWeapon or owner
+	local pInflictorOwner = IsValid(pInflictor) and pInflictor.GetOwner and pInflictor:GetOwner()
+	if not IsValid(pInflictorOwner) then
+		pInflictorOwner = IsValid(owner) and owner or pAttacker
+	end
+
 	local iMask = tInfo.Mask or MASK_SHOT
 	local iNPCDamage = tInfo.NPCDamage or 0
 	local iNum = tInfo.Num or 1
@@ -723,7 +731,7 @@ function ENTITY:FireLuaBullets(tInfo)
 
 				local bonename = ent:GetBoneName(ent:TranslatePhysBoneToBone(tr.PhysicsBone))
 
-				if !(armsbones[bonename] and hg.RagdollOwner(tr.Entity) == pInflictor:GetOwner()) and !IsValid(tr.Entity.OldRagdoll) and (tr.PhysicsBone != 0 or !tr.StartSolid) and (!hg.amputeetable[bonename] or !ent.organism[hg.amputeetable[bonename].."amputated"]) then break end
+				if !(armsbones[bonename] and hg.RagdollOwner(tr.Entity) == pInflictorOwner) and !IsValid(tr.Entity.OldRagdoll) and (tr.PhysicsBone != 0 or !tr.StartSolid) and (!hg.amputeetable[bonename] or !ent.organism[hg.amputeetable[bonename].."amputated"]) then break end
 
 				tr = bHullTrace and iShot % 2 == 0 and
 					// Half of the shotgun pellets are hulls that make it easier to hit targets with the shotgun.

@@ -443,7 +443,8 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		angEye = att_Ang
 	end
 
-	local inUse = GetConVar("zc_always_ragdoll_aim"):GetBool() or hg.KeyDown(ply, IN_USE)
+	local alwaysRagdollAim = GetConVar("zc_always_ragdoll_aim")
+	local inUse = (alwaysRagdollAim and alwaysRagdollAim:GetBool()) or hg.KeyDown(ply, IN_USE)
 	local inVehicle = ply:InVehicle()
 	local unconscious = ply.organism and ply.organism.unconscious
 	local freeRagdollView = not inUse and not inVehicle
@@ -616,8 +617,26 @@ local function BeginClientFakeRestore(ply, ragdoll, seq, state)
 	end
 
 	if ply == lply then
-		BeginFakeCameraBlendOut()
-		follow = nil
+		if state == FAKE_STATE_RESTORING and IsValid(oldrag) then
+			fakeCamera.outFrom = nil
+			fakeCamera.outStart = nil
+			follow = oldrag
+		else
+			BeginFakeCameraBlendOut()
+			follow = nil
+		end
+	end
+
+	if state == FAKE_STATE_RESTORING then
+		ply.ragdoll_index = 0
+
+		if IsValid(ply) then
+			ply:SetNoDraw(false)
+			ply:SetRenderMode(RENDERMODE_NORMAL)
+		end
+
+		hook_Run("ZC_OnPlayerRestoredFromFake", ply, oldrag)
+		return
 	end
 
 	if IsValid(ply.FakeRagdoll) then
@@ -876,6 +895,8 @@ end
 -- end)
 
 local function funcrag(ply, name, oldval, ragdoll)
+	if not IsValid(ply) then return end
+
 	local seq = ply:GetNWInt("FakeRagdollSeq", ply.ZCFakeSequence or 0)
 	local state = ply:GetNWInt("FakeRagdollState", name == "RagdollDeath" and FAKE_STATE_DEATH or FAKE_STATE_ACTIVE)
 	local ragdollIndex = IsValid(ragdoll) and ragdoll:EntIndex() or 0

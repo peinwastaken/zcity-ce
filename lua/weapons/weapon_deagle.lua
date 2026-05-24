@@ -92,31 +92,44 @@ SWEP.lmagang2 = Angle(0,0,-105)
 if CLIENT then
 	local vector_full = Vector(1, 1, 1)
 
+	local function SetFakeMagazineBones(self, scale)
+		if not IsValid(self) then return false end
+
+		local wm = self:GetWM()
+		if not IsValid(wm) then return false end
+
+		wm:ManipulateBoneScale(48, scale)
+		for i = 49, 55 do
+			wm:ManipulateBoneScale(i, scale)
+		end
+
+		return true
+	end
+
 	SWEP.FakeReloadEvents = {
 		[0.25] = function(self,timeMul)
 			if self:Clip1() < 1 then
-				self:GetOwner():PullLHTowards("ValveBiped.Bip01_L_Thigh", 1 * timeMul,nil,nil,function()
-					self:GetWM():ManipulateBoneScale(48, vector_full)
-					for i = 49, 55 do
-						self:GetWM():ManipulateBoneScale(i, vector_full)
-					end
+				local owner = self:GetOwner()
+				if not IsValid(owner) then return end
+
+				owner:PullLHTowards("ValveBiped.Bip01_L_Thigh", 1 * timeMul,nil,nil,function(activeWeapon)
+					if activeWeapon != self then return end
+					SetFakeMagazineBones(self, vector_full)
 				end)
 			end
 		end,
 		[0.33] = function( self, timeMul )
-			self:GetWM():ManipulateBoneScale(48, vector_origin)
-			for i = 49, 55 do
-				self:GetWM():ManipulateBoneScale(i, vector_origin)
-			end
+			SetFakeMagazineBones(self, vector_origin)
 			if self:Clip1() < 1 then
 				hg.CreateMag( self, Vector(0,55,0) )
 			end
 			if self:Clip1() > 0 then
-				self:GetOwner():PullLHTowards("ValveBiped.Bip01_L_Thigh", 0.4 * timeMul,nil,nil,function()
-					self:GetWM():ManipulateBoneScale(48, vector_full)
-					for i = 49, 55 do
-						self:GetWM():ManipulateBoneScale(i, vector_full)
-					end
+				local owner = self:GetOwner()
+				if not IsValid(owner) then return end
+
+				owner:PullLHTowards("ValveBiped.Bip01_L_Thigh", 0.4 * timeMul,nil,nil,function(activeWeapon)
+					if activeWeapon != self then return end
+					SetFakeMagazineBones(self, vector_full)
 				end)
 			end
 		end

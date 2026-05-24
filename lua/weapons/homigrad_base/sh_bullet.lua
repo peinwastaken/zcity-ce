@@ -60,6 +60,15 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 	if bullet.limit_ricochet > 6 then return end
 	if tr.Entity.organism then return end
 
+	local bulletOwner = IsValid(bullet.Attacker) and bullet.Attacker
+	if not IsValid(bulletOwner) and IsValid(self) and self.GetOwner then
+		bulletOwner = self:GetOwner()
+	end
+
+	local bulletSource = IsValid(self) and self or IsValid(bullet.Inflictor) and bullet.Inflictor or bulletOwner
+	if not IsValid(bulletOwner) then bulletOwner = bulletSource end
+	if not IsValid(bulletSource) then return end
+
 	local dir, hitNormal, hitPos = tr.Normal, tr.HitNormal, tr.HitPos
 	local hardness = surface_hardness[tr.MatType] or 0.5
 	local ApproachAngle = -math.deg(math.asin(hitNormal:DotProduct(dir)))
@@ -119,7 +128,8 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 			end
 
 			local tBullet = {
-				Attacker = IsValid(self) and IsValid(self:GetOwner()) and self:GetOwner() or self,
+				Attacker = bulletOwner,
+				Inflictor = bulletSource,
 				Damage = dmg * 0.65,
 				Force = force / 3,
 				Num = 1,
@@ -141,9 +151,9 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 				AmmoType = bullet.AmmoType
 			}
 
-			self.bullet = tBullet
+			bulletSource.bullet = tBullet
 
-			self:FireLuaBullets( tBullet )
+			bulletSource:FireLuaBullets( tBullet )
 
 			if zc_bulletholes:GetBool() then
 				local ent = IsValid(tr.Entity) and tr.Entity or Entity(0)
@@ -151,7 +161,7 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 				local hitPos2, dir2 = WorldToLocal(hitPos, dir:Angle(), ent:GetPos(), ent:GetAngles())
 				local _, hitNormal2 = WorldToLocal(hitPos, hitNormal:Angle(), ent:GetPos(), ent:GetAngles())
 
-				local size = bullet.Diameter / 25.4 * math.Rand(2, 4) * math.Rand(1, (self.NumBullet or 1))
+				local size = bullet.Diameter / 25.4 * math.Rand(2, 4) * math.Rand(1, (bulletSource.NumBullet or 1))
 				local dontadd = false
 				for i = 1, #hg.bulletholes do
 					if hitPos2:IsEqualTol(hg.bulletholes[i][1], size * 1.414) then --sqrt of 2, cuz it's a square
@@ -206,7 +216,7 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 				local effectdata1 = EffectData()
 				effectdata1:SetOrigin(tr.HitPos)
 				effectdata1:SetStart(hitPos + hitNormal)
-				effectdata1:SetEntity(self)
+				effectdata1:SetEntity(bulletSource)
 				effectdata1:SetMagnitude(2)
 				util.Effect("eff_tracer", effectdata1)
 			end)
@@ -224,7 +234,8 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 		NewVec:RotateAroundAxis(hitNormal, 180)
 		NewVec = NewVec:Forward()
 		local tBullet = {
-			Attacker = IsValid(self) and IsValid(self:GetOwner()) and self:GetOwner() or self,
+			Attacker = bulletOwner,
+			Inflictor = bulletSource,
 			Damage = (dmg or 1) * .85,
 			Force = force / 3,
 			Num = 1,
@@ -245,9 +256,9 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 			AmmoType = bullet.AmmoType
 		}
 
-		self.bullet = tBullet
+		bulletSource.bullet = tBullet
 
-		self:FireLuaBullets( tBullet )
+		bulletSource:FireLuaBullets( tBullet )
 
 		local tr = util.TraceLine( {
 			start = hitPos + hitNormal,
@@ -258,7 +269,7 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 			local effectdata1 = EffectData()
 			effectdata1:SetOrigin(tr.HitPos)
 			effectdata1:SetStart(hitPos + hitNormal)
-			effectdata1:SetEntity(self)
+			effectdata1:SetEntity(bulletSource)
 			effectdata1:SetMagnitude(2)
 			util.Effect("eff_tracer", effectdata1)
 		end)
@@ -268,7 +279,7 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 		effectdata1:SetOrigin(hitPos)
 		effectdata1:SetNormal(tr.Normal)
 		effectdata1:SetStart(tr.HitNormal)
-		effectdata1:SetEntity(self)
+		effectdata1:SetEntity(bulletSource)
 		effectdata1:SetFlags(2)
 		effectdata1:SetMagnitude(4)
 		util.Effect("eff_bulletdrop", effectdata1)

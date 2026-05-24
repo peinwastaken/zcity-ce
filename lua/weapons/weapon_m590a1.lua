@@ -110,6 +110,17 @@ SWEP.holsteredAng = Angle(210, 0, 180)
 
 
 
+local shellVisibleScale = Vector(1, 1, 1)
+
+local function SetShellBoneScale(mdl, scale)
+	if not IsValid(mdl) then return end
+
+	local shellBone = mdl:LookupBone("Shell")
+	if not shellBone then return end
+
+	mdl:ManipulateBoneScale(shellBone, scale)
+end
+
 SWEP.AnimList = {
 	["idle"] = "base_idle",
 	["reload"] = "base_reload_start",
@@ -124,7 +135,7 @@ SWEP.AnimsEvents = {
 	["base_reload_insert"] = {
 		[0.0] = function(self, mdl)
 			self:EmitSound("weapons/arccw_ud/870/shell-insert-0"..math.random(1,3)..".ogg")
-			mdl:ManipulateBoneScale(mdl:LookupBone("Shell"), Vector(1, 1, 1))
+			SetShellBoneScale(mdl, shellVisibleScale)
 			--
 			--self:GetWM():ManipulateBoneScale(47, vector_full)
 		end,
@@ -134,7 +145,7 @@ SWEP.AnimsEvents = {
 	},
 	["base_reload_end"] = {
 		[0.0] = function(self, mdl)
-			mdl:ManipulateBoneScale(mdl:LookupBone("Shell"), vector_origin)
+			SetShellBoneScale(mdl, vector_origin)
 		end,
 	},
 	["base_fire_cock_2"] = {
@@ -196,7 +207,7 @@ function SWEP:DrawPost() --!! it is not visible on the chest and aiming is impos
 end]]
 
 function SWEP:ModelCreated(mdl)
-	mdl:ManipulateBoneScale(mdl:LookupBone("Shell"), vector_origin)
+	SetShellBoneScale(mdl, vector_origin)
 end
 
 function SWEP:AnimationPost()
