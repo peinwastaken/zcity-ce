@@ -3,6 +3,7 @@ hg.settings.tbl = hg.settings.tbl or {}
 local uiColors = zc.colors.ui
 local dropButton = Material("icon16/bullet_arrow_down.png")
 local dropButton_open = Material("icon16/bullet_arrow_up.png")
+local checkmark = Material("icon16/check_on_gray.png")
 
 function hg.settings:AddOpt( strCategory, strConVar, strTitle, bDecimals, bString, category )
     self.tbl[strCategory] = self.tbl[strCategory] or {}
@@ -119,7 +120,7 @@ hg.settings:AddOpt("Sound","zc_quietshots", "Enable/Disable Quietshoot Sounds")
 
 function hg.CreateCategory(ctgName, ParentPanel, yPos)
     local pppanel = vgui.Create('DPanel', ParentPanel)
-    local label = zb.locale.GetLocale(ctgName)
+    local label = zb.locale.GetLocalized(ctgName)
     pppanel:SetSize(ParentPanel:GetWide(), 64)
     pppanel:SetPos(ParentPanel:GetWide() / 2 -pppanel:GetWide() / 2, yPos)
     --pppanel:SetText(ctgName)
@@ -191,8 +192,8 @@ function hg.CreateButton(buttonData, convarName, ParentPanel, yPos)
     // seriously this is stupid
     local label = buttonData[3]
     local desc = buttonData[7] or convar:GetHelpText()
-    local localizedLabel = zb.locale.GetLocale(label)
-    local localizedDesc = zb.locale.GetLocale(desc)
+    local localizedLabel = zb.locale.GetLocalized(label)
+    local localizedDesc = zb.locale.GetLocalized(desc)
 
     local pppanel = vgui.Create('DPanel', ParentPanel)
     pppanel:SetSize(ParentPanel:GetWide()/1.05, 64)
@@ -409,13 +410,13 @@ function hg.CreateBindRow(bindId, bindData, ParentPanel, yPos)
         draw.SimpleText(desc, 'ZCity_setiings_tiny', 30, h / 2+height2/2, clr_2, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
 
-    local textEntry = vgui.Create('DBinder', pppanel)
-    textEntry:SetSize(pppanel:GetWide()/8, pppanel:GetTall()/2)
-    textEntry:SetPos(pppanel:GetWide()-pppanel:GetWide()/8-20, pppanel:GetTall()/2-textEntry:GetTall()/2)
-    textEntry:SetValue(bindData.key)
-    textEntry:SetFont('ZCity_Tiny')
+    local binder = vgui.Create('DBinder', pppanel)
+    binder:SetSize(pppanel:GetWide()/8, pppanel:GetTall()/2)
+    binder:SetPos(pppanel:GetWide()-pppanel:GetWide()/8-20, pppanel:GetTall()/2-binder:GetTall()/2)
+    binder:SetValue(bindData.key)
+    binder:SetFont('ZCity_Tiny')
 
-    textEntry.Paint = function(self, w, h)
+    binder.Paint = function(self, w, h)
         surface.SetDrawColor(uiColors.settingsInputBackground)
         surface.DrawRect(0, 0, w, h)
         surface.SetDrawColor(uiColors.settingsInputOutline)
@@ -424,10 +425,56 @@ function hg.CreateBindRow(bindId, bindData, ParentPanel, yPos)
         self:DrawTextEntryText(uiColors.white, clr_8, uiColors.white)
     end
 
-    textEntry.OnChange = function(self, num)
+    binder.OnChange = function(self, num)
         zb.dev.DevPrint(string.format("New bind for %s -> %s (key: %s)", bindId, num, input.GetKeyName(num or KEY_NONE) or "NONE"))
         zb.binds.UpdateBind(bindId, num)
     end
+
+    local override = vgui.Create("DCheckBox", pppanel)
+    override:SetSize(pppanel:GetTall()/2, pppanel:GetTall()/2)
+    override:SetPos(pppanel:GetWide()-pppanel:GetWide()/8-64, pppanel:GetTall()/2-override:GetTall()/2)
+    override:SetChecked(bindData.should_override)
+    override:SetTooltip("Overrides the default binding (bound in console) if ticked\nMiddle click for default (if available)")
+    override.Paint = function(self, w, h)
+        local checked = self:GetChecked()
+
+        surface.SetDrawColor(uiColors.settingsInputBackground)
+        surface.DrawRect(0, 0, w, h)
+        surface.SetDrawColor(uiColors.settingsInputOutline)
+        surface.DrawOutlinedRect(0, 0, w, h)
+
+        if checked then
+            local scale = 2
+            local size = h / scale
+            surface.SetMaterial(checkmark)
+            surface.SetDrawColor(255, 255, 255, 255)
+            surface.DrawTexturedRect(size/scale, size/scale, size, size)
+        end
+    end
+    override.OnChange = function(self, new)
+        zb.binds.UpdateBindOverride(bindId, new)
+        surface.PlaySound('glide/headlights_on.wav')
+    end
+    override.OnMousePressed = function(self, mouseCode)
+        local default = bindData.default_override
+        if mouseCode == MOUSE_MIDDLE and bindData.should_override != default then
+            local default = bindData.default_override
+            
+            self:SetChecked(default)
+            surface.PlaySound('glide/headlights_on.wav')
+
+            zb.binds.UpdateBindOverride(bindId, default)
+            return
+        end
+
+        self.BaseClass.OnMousePressed(self, mouseCode)
+    end
+
+    local overrideLabel = vgui.Create("DLabel", pppanel)
+    overrideLabel:SetPos(pppanel:GetWide()-pppanel:GetWide()/8-130, pppanel:GetTall()/2-overrideLabel:GetTall()/2)
+    overrideLabel:SetText("Override")
+    overrideLabel:SetFont("ZCity_setiings_tiny")
+    overrideLabel:SetTextColor(clr_2)
 
     return pppanel
 end

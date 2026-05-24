@@ -2,18 +2,24 @@
 BindInfo
 {
   ["bind_id"] = {
-    ["key"] = KEY_T,
-    ["default"] = nil,
-    ["label"] = "Toggle ragdoll",
-    ["description"] = "Pretty self-explanatory. Press once to enter and press again to leave ragdoll.",
-    ["category"] = "movement",
-    ["command"] = "fake"
+    ["key"] = KEY_T, // current bind
+    ["default"] = KEY_NONE, // what the bind defaults to when the player first joins
+    ["label"] = "Toggle ragdoll", // bind label in binds menu
+    ["description"] = "Bind description", // bind description in binds menu
+    ["category"] = "movement", // category, id from binds.categories
+    ["command"] = "fake", // command that is executed
+    ["args"] = {0}, // args passed to the command being executed (optional)
+    ["should_override"] = true // should bind override the console bind? (bind k "kill" would be overriden by our bind) 
+    ["default_override"] = true // what the override value defaults to when the player first joins
   }
 }
 
 BindConfig
 {
-  ["bind_id"] = int (keycode)
+  ["bind_id"] = {
+    ["key"] = int, // (KEY_CODE)
+    ["should_override"] = bool
+  }
 }
 */
 
@@ -27,7 +33,10 @@ local function CreateBindSave()
   local bindSave = {}
 
   for k,v in pairs(zb.binds.allbinds) do
-    bindSave[k] = v.key
+    bindSave[k] = {
+      ["key"] = v.key,
+      ["should_override"] = v.should_override
+    }
   end
 
   return bindSave
@@ -80,7 +89,8 @@ function binds.LoadBinds()
     if !configBind then
       needsUpdate = true
     else
-      bind.key = configBind
+      bind.key = configBind.key
+      bind.should_override = configBind.should_override
     end
   end
   
@@ -92,30 +102,32 @@ function binds.LoadBinds()
 end
 
 function binds.GetBind(id)
-  local bind = binds[id]
-  
-  if IsValid(bind) then
+  local bind = binds.allbinds[id]
+
+  if bind then
     return bind
+  end
+
+  if zb.dev.IsDeveloper() then
+    print(string.format("failed to find bind with id %s", id))  
   end
 
   return nil
 end
 
 function binds.UpdateBind(id, keycode)
-  if !binds.allbinds[id] then 
-    if zb.dev.IsDeveloper() then
-      print(string.format("failed to find bind with id %s", id))  
-    end
+  local bind = binds.GetBind(id)
+  if !bind then return end
 
-    return
-  end
-
-  binds.allbinds[id].key = keycode
-
+  bind.key = keycode
   binds.SaveBinds()
 end
 
-function binds.RemoveBind(id)
+function binds.UpdateBindOverride(id, override)
+  local bind = binds.GetBind(id)
+  if !bind then return end
+
+  bind.should_override = override
   binds.SaveBinds()
 end
 
@@ -131,8 +143,8 @@ end
 
 hook.Add("PlayerBindPress", "ZC_PlayerBindPressed", function(ply, bind, pressed, key)
   local zcBind = binds.FindFirstBind(key)
-  if !zcBind then return false end
-  if zcBind.key == KEY_NONE then return false end
+  if !zcBind then return end
+  if zcBind.key == KEY_NONE then return end
 
   local command = zcBind.command or ""
 
@@ -177,7 +189,9 @@ binds.allbinds = {
     ["label"] = "Kick",
     ["description"] = "Perform a melee kick",
     ["category"] = "movement",
-    ["command"] = "hg_kick"
+    ["command"] = "hg_kick",
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["zoom"] = {
     ["key"] = KEY_C,
@@ -185,7 +199,9 @@ binds.allbinds = {
     ["label"] = "Zoom",
     ["description"] = "DayZ-like focus zoom",
     ["category"] = "movement",
-    ["command"] = "+hg_zoom"
+    ["command"] = "+hg_zoom",
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["lean_left"] = {
     ["key"] = KEY_NONE,
@@ -194,7 +210,8 @@ binds.allbinds = {
     ["description"] = "Lean to the left",
     ["category"] = "movement",
     ["command"] = "+alt1",
-    ["should_override"] = true
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["lean_right"] = {
     ["key"] = KEY_NONE,
@@ -203,7 +220,8 @@ binds.allbinds = {
     ["description"] = "Lean to the right",
     ["category"] = "movement",
     ["command"] = "+alt2",
-    ["should_override"] = true
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["altlook"] = {
     ["key"] = KEY_LALT,
@@ -212,7 +230,8 @@ binds.allbinds = {
     ["description"] = "Look around without moving your body",
     ["category"] = "movement",
     ["command"] = "+altlook",
-    ["should_override"] = true
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["suicide"] = {
     ["key"] = KEY_NONE,
@@ -220,7 +239,9 @@ binds.allbinds = {
     ["label"] = "Suicide",
     ["description"] = "killbind",
     ["category"] = "movement",
-    ["command"] = "suicide"
+    ["command"] = "suicide",
+    ["should_override"] = true,
+    ["default_override"] = true
   },
 
   // weapons
@@ -230,8 +251,9 @@ binds.allbinds = {
     ["label"] = "Drop weapon",
     ["description"] = "Drop your currently held weapon",
     ["category"] = "weapon",
-    ["command"] = "say *drop",
-    ["should_override"] = true
+    ["command"] = "drop",
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["hold_breath"] = {
     ["key"] = KEY_LSHIFT,
@@ -239,7 +261,9 @@ binds.allbinds = {
     ["label"] = "Hold breath",
     ["description"] = "Helps with aiming and avoiding gas inhalation",
     ["category"] = "weapon",
-    ["command"] = "+hmcd_holdbreath"
+    ["command"] = "+hmcd_holdbreath",
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["toggle_laser"] = {
     ["key"] = KEY_H,
@@ -247,7 +271,9 @@ binds.allbinds = {
     ["label"] = "Toggle laser",
     ["description"] = "Toggle weapon lasers and taser sights",
     ["category"] = "weapon",
-    ["command"] = "hmcd_togglelaser"
+    ["command"] = "hmcd_togglelaser",
+    ["should_override"] = true,
+    ["default_override"] = true
   },
 
   // ragdoll
@@ -257,7 +283,9 @@ binds.allbinds = {
     ["label"] = "Toggle ragdoll",
     ["description"] = "Pretty self-explanatory. Press once to enter and press again to leave ragdoll.",
     ["category"] = "movement",
-    ["command"] = "fake"
+    ["command"] = "fake",
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["fake_grab_left"] = {
     ["key"] = KEY_LSHIFT,
@@ -265,7 +293,9 @@ binds.allbinds = {
     ["label"] = "Grab with left hand",
     ["description"] = "Grab objects with your left hand while ragdolled",
     ["category"] = "ragdoll",
-    ["command"] = "+speed"
+    ["command"] = "+speed",
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["fake_grab_right"] = {
     ["key"] = KEY_LALT,
@@ -273,7 +303,9 @@ binds.allbinds = {
     ["label"] = "Grab with right hand",
     ["description"] = "Grab objects with your right hand while ragdolled",
     ["category"] = "ragdoll",
-    ["command"] = "+walk"
+    ["command"] = "+walk",
+    ["should_override"] = true,
+    ["default_override"] = true
   },
 
   // stances
@@ -284,7 +316,9 @@ binds.allbinds = {
     ["description"] = "Standard weapon handling posture",
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
-    ["args"] = {0}
+    ["args"] = {0},
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["posture_hipfire"] = {
     ["key"] = KEY_NONE,
@@ -293,7 +327,9 @@ binds.allbinds = {
     ["description"] = "Wildly ineffective",
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
-    ["args"] = {1}
+    ["args"] = {1},
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["posture_leftshoulder"] = {
     ["key"] = KEY_NONE,
@@ -302,7 +338,9 @@ binds.allbinds = {
     ["description"] = "cl_righthand 0",
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
-    ["args"] = {2}
+    ["args"] = {2},
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["posture_highready"] = {
     ["key"] = KEY_NONE,
@@ -311,7 +349,9 @@ binds.allbinds = {
     ["description"] = "Weapon raised in a ready position",
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
-    ["args"] = {3}
+    ["args"] = {3},
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["posture_lowready"] = {
     ["key"] = KEY_NONE,
@@ -320,7 +360,9 @@ binds.allbinds = {
     ["description"] = "Lowered ready stance",
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
-    ["args"] = {4}
+    ["args"] = {4},
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["posture_pointshooting"] = {
     ["key"] = KEY_NONE,
@@ -329,7 +371,9 @@ binds.allbinds = {
     ["description"] = "realism!",
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
-    ["args"] = {5}
+    ["args"] = {5},
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["posture_cover"] = {
     ["key"] = KEY_NONE,
@@ -338,7 +382,9 @@ binds.allbinds = {
     ["description"] = "Lean and shoot from cover",
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
-    ["args"] = {6}
+    ["args"] = {6},
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["posture_gangsta"] = {
     ["key"] = KEY_NONE,
@@ -347,7 +393,9 @@ binds.allbinds = {
     ["description"] = "how to shoot gangsta style",
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
-    ["args"] = {7}
+    ["args"] = {7},
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["posture_onehanded"] = {
     ["key"] = KEY_NONE,
@@ -356,7 +404,9 @@ binds.allbinds = {
     ["description"] = "Shoot with one hand",
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
-    ["args"] = {8}
+    ["args"] = {8},
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["posture_somalian"] = {
     ["key"] = KEY_NONE,
@@ -365,7 +415,9 @@ binds.allbinds = {
     ["description"] = "Overhead shooting",
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
-    ["args"] = {9}
+    ["args"] = {9},
+    ["should_override"] = true,
+    ["default_override"] = true
   },
 
   // misc
@@ -376,7 +428,8 @@ binds.allbinds = {
     ["description"] = "for context actions",
     ["category"] = "misc",
     ["command"] = "+radialmenu",
-    ["should_override"] = true
+    ["should_override"] = true,
+    ["default_override"] = true
   },
 
   // admin
@@ -386,7 +439,9 @@ binds.allbinds = {
     ["label"] = "Open admin menu",
     ["description"] = "for admin abusers",
     ["category"] = "admin",
-    ["command"] = "adminmenu"
+    ["command"] = "adminmenu",
+    ["should_override"] = true,
+    ["default_override"] = true
   },
   ["open_admin_config"] = {
     ["key"] = KEY_F7,
@@ -394,6 +449,8 @@ binds.allbinds = {
     ["label"] = "Open gamemode config menu",
     ["description"] = "Opens gamemode config menu for the current gamemode (if the gamemode has configs set up)",
     ["category"] = "admin",
-    ["command"] = "adminmenu_modeconfig"
+    ["command"] = "adminmenu_modeconfig",
+    ["should_override"] = true,
+    ["default_override"] = true
   }
 }

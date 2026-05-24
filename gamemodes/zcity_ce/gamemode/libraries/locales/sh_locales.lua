@@ -6,18 +6,23 @@ zb.locale = locale or {}
 local LOCALE_PATH = "gamemodes/zcity_ce/gamemode/locales"
 
 /*
-{
+"en": {
   "metadata": {
     "id": "en",
     "name": "English",
     "nativeName": "English"
   },
   "localeKeys": {
-    "locale_key1": "locale entry",
+    "locale_key1": "hi, im a locale entry",
     "locale_key2": "locale entry",
     "locale_key3": "locale entry",
   }
 }
+*/
+
+/*
+  zb.locale.GetLocalized("locale_key1") -> "hi, im a locale entry"
+  zb.locale.GetLocalized("locale_key_missing") -> "locale_key_missing"
 */
 
 locale.locales = {}
@@ -44,7 +49,7 @@ function locale.Get(id)
   return locale.locales[id]
 end
 
-function locale.GetLocale(id)
+function locale.GetLocalized(id)
   local lang = locale.GetCurrentLanguage()
   return lang.localeKeys[id] or id
 end
