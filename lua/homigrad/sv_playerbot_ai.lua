@@ -19,6 +19,7 @@ local BOT_ATTACK_RANGE = 1800
 local BOT_MELEE_RANGE = 95
 local BOT_CLOSE_RANGE = 170
 local BOT_STRAFE_RANGE = 700
+local BOT_RAGDOLL_DEPRIORITIZE_RANGE = 1400
 local BOT_AIM_JITTER = 0.018
 local BOT_AIM_SPREAD_MIN = 1.2
 local BOT_AIM_SPREAD_MAX = 7.5
@@ -40,6 +41,8 @@ local BOT_SPRINT_DISTANCE = 1200
 local BOT_SPRINT_STAMINA_FRACTION = 0.5
 local BOT_STUCK_INTERVAL = 1.4
 local BOT_STUCK_MIN_DISTANCE = 35
+local BOT_UNSTUCK_TIME = 1.1
+local BOT_UNSTUCK_RETRY_TIME = 0.5
 local BOT_STEP_HEIGHT = 20
 local BOT_ZONE_AVOID_MARGIN = 200
 local BOT_ZONE_ROAM_MARGIN = 600
@@ -131,6 +134,25 @@ local function IsUsableTarget(bot, ply)
 	return IsValid(GetBotTargetBody(ply))
 end
 
+local function IsRagdolledTarget(ply)
+	if not IsValid(ply) then return false end
+	if IsValid(ply.FakeRagdoll) or IsValid(ply:GetNWEntity("FakeRagdoll")) then return true end
+
+	return hg.GetFakeState and hg.FAKE_STATE and hg.GetFakeState(ply) ~= hg.FAKE_STATE.NONE
+end
+
+local function HasNearbyUprightEnemy(bot, ignoreTarget)
+	local botPos = bot:GetPos()
+	local rangeSqr = BOT_RAGDOLL_DEPRIORITIZE_RANGE * BOT_RAGDOLL_DEPRIORITIZE_RANGE
+
+	for _, ply in ipairs(player.GetAll()) do
+		if ply == ignoreTarget or not IsUsableTarget(bot, ply) or IsRagdolledTarget(ply) then continue end
+		if botPos:DistToSqr(ply:GetPos()) <= rangeSqr then return true end
+	end
+
+	return false
+end
+
 local function PickBotTarget(bot)
 	local bestPly
 	local bestScore = math.huge
@@ -143,6 +165,9 @@ local function PickBotTarget(bot)
 		local distSqr = bot:GetPos():DistToSqr(aimPos)
 		local visible = BotCanSee(bot, body, aimPos)
 		local score = visible and distSqr or distSqr * 4
+		if IsRagdolledTarget(ply) and HasNearbyUprightEnemy(bot, ply) then
+			score = score * 10
+		end
 
 		if score < bestScore then
 			bestScore = score
@@ -339,6 +364,24 @@ local function HasClearMoveLine(bot, pos)
 	return not util.TraceHull(hullTraceData).Hit
 end
 
+local function ApplyBotUnstuckMove(bot, cmd)
+	if (bot.ZCBotUnstuckUntil or 0) <= CurTime() then return false end
+
+	cmd:SetForwardMove(bot.ZCBotUnstuckForward or -180)
+	cmd:SetSideMove((bot.ZCBotUnstuckSide or 1) * 260)
+
+	if (bot.ZCBotNextJump or 0) < CurTime() then
+		bot.ZCBotNextJump = CurTime() + 0.65
+		cmd:SetButtons(bit_bor(cmd:GetButtons(), IN_JUMP))
+	end
+
+	if bot.ZCBotUnstuckDuck then
+		cmd:SetButtons(bit_bor(cmd:GetButtons(), IN_DUCK))
+	end
+
+	return true
+end
+
 local function UpdateBotStuckState(bot, cmd, movePos)
 	if (bot.ZCBotNextStuckCheck or 0) > CurTime() then return end
 
@@ -357,6 +400,13 @@ local function UpdateBotStuckState(bot, cmd, movePos)
 	bot.ZCBotNextPathTime = 0
 	bot.ZCBotRoamArea = nil
 	bot.ZCBotNextRoamPick = 0
+	bot.ZCBotUnstuckUntil = CurTime() + BOT_UNSTUCK_TIME
+	bot.ZCBotNextStuckCheck = CurTime() + BOT_UNSTUCK_RETRY_TIME
+	bot.ZCBotUnstuckSide = math_random(0, 1) == 1 and 1 or -1
+	bot.ZCBotUnstuckForward = math_random(0, 1) == 1 and -220 or 120
+	bot.ZCBotUnstuckDuck = math_random(0, 2) == 0
+
+	ApplyBotUnstuckMove(bot, cmd)
 
 	if movePos.z - pos.z > BOT_STEP_HEIGHT and (bot.ZCBotNextJump or 0) < CurTime() then
 		bot.ZCBotNextJump = CurTime() + 1
@@ -411,6 +461,7 @@ local function FollowBotPath(bot, cmd, destPos, aimAng, runSpeed, faceWaypoint, 
 		TryBotTravelSprint(bot, cmd, destPos)
 	end
 
+	ApplyBotUnstuckMove(bot, cmd)
 	UpdateBotStuckState(bot, cmd, waypoint)
 	return true
 end
@@ -677,6 +728,7 @@ local function AvoidDeathmatchZone(bot, cmd, round)
 	if not followedPath then
 		SetBotMovementToward(bot, cmd, escapePos, aimAng, 360)
 		TryBotTravelSprint(bot, cmd, escapePos)
+		ApplyBotUnstuckMove(bot, cmd)
 		UpdateBotStuckState(bot, cmd, escapePos)
 	end
 
@@ -704,6 +756,7 @@ local function MoveToDeathmatchZoneCenter(bot, cmd, round)
 	if not followedPath then
 		SetBotMovementToward(bot, cmd, center, aimAng, 360)
 		TryBotTravelSprint(bot, cmd, center)
+		ApplyBotUnstuckMove(bot, cmd)
 		UpdateBotStuckState(bot, cmd, center)
 	end
 
@@ -859,6 +912,7 @@ local function RoamBot(bot, cmd)
 	elseif not followedPath then
 		SetBotMovementToward(bot, cmd, destPos, aimAng, 320)
 		TryBotTravelSprint(bot, cmd, destPos)
+		ApplyBotUnstuckMove(bot, cmd)
 		UpdateBotStuckState(bot, cmd, destPos)
 	end
 end
@@ -893,6 +947,23 @@ local function TryBotAttackCurrentTarget(bot, cmd, safeTime)
 	return true
 end
 
+local function HandleBotFakeState(bot, cmd, safeTime)
+	if not hg.GetFakeState or not hg.FAKE_STATE then return false end
+
+	local fakeState = hg.GetFakeState(bot)
+	if fakeState == hg.FAKE_STATE.NONE then return false end
+
+	if fakeState == hg.FAKE_STATE.ACTIVE then
+		UpdateBotTarget(bot)
+		TryBotAttackCurrentTarget(bot, cmd, safeTime)
+		TryBotFakeUp(bot)
+		if safeTime then ClearCombatButtons(cmd) end
+		return true
+	end
+
+	return true
+end
+
 hook.Add("StartCommand", "ZC_PlayerBotEnemyAI", function(bot, cmd)
 	if not zc_playerbot_ai:GetBool() or not bot:IsBot() then return end
 
@@ -901,12 +972,12 @@ hook.Add("StartCommand", "ZC_PlayerBotEnemyAI", function(bot, cmd)
 		return
 	end
 
-	if TryBotFakeUp(bot) then return end
-	if not HasVisibleEnemy(bot) and TryBotSelfCare(bot, cmd) then return end
-
 	local round = GetCurrentRound()
 	local safeTime = IsDeathmatchSafeTime(round)
 	if safeTime then ClearCombatButtons(cmd) end
+
+	if HandleBotFakeState(bot, cmd, safeTime) then return end
+	if not HasVisibleEnemy(bot) and TryBotSelfCare(bot, cmd) then return end
 
 	UpdateBotTarget(bot)
 
@@ -965,6 +1036,7 @@ hook.Add("StartCommand", "ZC_PlayerBotEnemyAI", function(bot, cmd)
 				TryBotTravelSprint(bot, cmd, aimPos)
 			end
 
+			ApplyBotUnstuckMove(bot, cmd)
 			UpdateBotStuckState(bot, cmd, aimPos)
 		end
 	else
