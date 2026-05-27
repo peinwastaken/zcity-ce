@@ -520,8 +520,9 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	view.fov = math.Clamp(zc_fov:GetFloat(),75,100) + lerpfovadd + lerpfovadd2
 	view.znear = 1
 
-	if ply.gettingup and (ply.gettingup + 1 - CurTime()) > 0 then
-		local k = 1 - (ply.gettingup + 1 - CurTime())
+	local getUpLerpTime = ply.gettingup_lerp or 0.3
+	if ply.gettingup_into_getup and ply.gettingup and (ply.gettingup + getUpLerpTime - CurTime()) > 0 then
+		local k = (CurTime() - ply.gettingup) / getUpLerpTime
 		local k2 = math.max(k - 0.5, 0) * 2
 		//view.origin = LerpVector(k2, view.origin, oldorigin)
 		view.angles = LerpAngle(k2, view.angles, oldangles)
@@ -611,6 +612,8 @@ local function BeginClientFakeRestore(ply, ragdoll, seq, state)
 
 		if state == FAKE_STATE_RESTORING then
 			ply.gettingup = CurTime()
+			ply.gettingup_lerp = 0.3
+			ply.gettingup_into_getup = true
 			ply.OldRagdoll = oldrag
 			ply.FakeRagdollOld = oldrag
 		end
@@ -638,6 +641,9 @@ local function BeginClientFakeRestore(ply, ragdoll, seq, state)
 		hook_Run("ZC_OnPlayerRestoredFromFake", ply, oldrag)
 		return
 	end
+
+	ply.gettingup_into_getup = nil
+	ply.HGLastCustomAnim = nil
 
 	if IsValid(ply.FakeRagdoll) then
 		ply.FakeRagdoll.ply = nil

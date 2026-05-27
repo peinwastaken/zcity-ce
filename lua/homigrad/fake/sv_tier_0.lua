@@ -505,7 +505,7 @@ local function SetFakeLifecycle(ply, state, ragdoll, send)
 	SyncFakeLifecycle(ply, state, ragdoll, send)
 
 	if zc_fake_debug:GetBool() then
-		print(string.format("[ZC fake] %s -> %s seq=%d rag=%s", tostring(ply), FAKE_STATE_NAMES[state] or tostring(state), seq, tostring(ragdoll)))
+		print(string.format("%s -> %s seq=%d rag=%s", tostring(ply), FAKE_STATE_NAMES[state] or tostring(state), seq, tostring(ragdoll)))
 	end
 
 	hook_Run("ZC_FakeStateChanged", ply, state, ragdoll, seq, FAKE_STATE_NAMES[state])
@@ -779,6 +779,138 @@ local vecZero = Vector(0, 0, 0)
 local tr = {
 	filter = {}
 }
+local GET_UP_SEQUENCE = "get_up_back"
+local GET_UP_LERP_TIME = 0.3
+local GET_UP_END_TRIM = 0.05
+local DEFAULT_GET_UP_TIME = 1
+local GET_UP_SIDE_DOMINANCE = 1.25
+
+local GET_UP_SEQUENCES = {
+	right_side = GET_UP_SEQUENCE,
+	left_side = GET_UP_SEQUENCE,
+	back = GET_UP_SEQUENCE,
+	front = GET_UP_SEQUENCE,
+	stomach = GET_UP_SEQUENCE,
+}
+
+local function DevPrintFakeGetUp(value)
+	if zb and zb.dev and zb.dev.DevPrint then
+		zb.dev.DevPrint(value)
+	end
+end
+
+local function GetRagdollBonePosition(ragdoll, boneName)
+	local bone = ragdoll:LookupBone(boneName)
+	if not bone then return end
+
+	local matrix = ragdoll:GetBoneMatrix(bone)
+	if matrix then return matrix:GetTranslation() end
+
+	local pos = ragdoll:GetBonePosition(bone)
+	return pos
+end
+
+local function GetAverageLegPosition(ragdoll)
+	local positions = {}
+	local legBones = {
+		"ValveBiped.Bip01_L_Foot",
+		"ValveBiped.Bip01_R_Foot",
+		"ValveBiped.Bip01_L_Calf",
+		"ValveBiped.Bip01_R_Calf",
+		"ValveBiped.Bip01_L_Thigh",
+		"ValveBiped.Bip01_R_Thigh",
+	}
+
+	for _, boneName in ipairs(legBones) do
+		local pos = GetRagdollBonePosition(ragdoll, boneName)
+		if pos then
+			positions[#positions + 1] = pos
+		end
+	end
+
+	if #positions <= 0 then return end
+
+	local average = Vector(0, 0, 0)
+	for _, pos in ipairs(positions) do
+		average:Add(pos)
+	end
+
+	average:Div(#positions)
+	return average
+end
+
+local function GetFakeGetUpPosture(ragdoll)
+	if not IsValid(ragdoll) then return "back" end
+
+	local headPos = GetRagdollBonePosition(ragdoll, "ValveBiped.Bip01_Head1")
+	local legPos = GetAverageLegPosition(ragdoll)
+	if not headPos or not legPos then return "back" end
+
+	local offset = legPos - headPos
+	offset.z = 0
+	if offset:LengthSqr() <= 1 then return "back" end
+	offset:Normalize()
+
+	local ang = ragdoll:GetAngles()
+	ang[1] = 0
+	ang[3] = 0
+
+	local forward = ang:Forward()
+	local right = ang:Right()
+	forward.z = 0
+	right.z = 0
+	forward:Normalize()
+	right:Normalize()
+
+	local forwardDot = offset:Dot(forward)
+	local rightDot = offset:Dot(right)
+	local absForward, absRight = math.abs(forwardDot), math.abs(rightDot)
+
+	if absRight > absForward * GET_UP_SIDE_DOMINANCE then
+		return rightDot > 0 and "left_side" or "right_side", forwardDot, rightDot
+	end
+
+	return forwardDot > 0 and "back" or "front", forwardDot, rightDot
+end
+
+local function StartFakeGetUpSequence(ply, ragdoll)
+	local posture, forwardDot, rightDot = GetFakeGetUpPosture(ragdoll)
+	local sequence = GET_UP_SEQUENCES[posture] or GET_UP_SEQUENCE
+	DevPrintFakeGetUp(string.format("[ZC fake] get up posture=%s sequence=%s forward=%.2f right=%.2f", posture, sequence, forwardDot or 0, rightDot or 0))
+
+	local seq, duration = ply:LookupSequence(sequence)
+
+	if not seq or seq < 0 then
+		DevPrintFakeGetUp(string.format("[ZC fake] get up sequence missing: %s", sequence))
+		return DEFAULT_GET_UP_TIME, false
+	end
+
+	duration = math.max(duration or 0, 0.1)
+	local playTime = math.max(duration - GET_UP_END_TRIM, 0.1)
+
+	if ply.PlayCustomAnims then
+		ply:PlayCustomAnims(sequence, false, playTime, false, 0, nil, GET_UP_LERP_TIME)
+	end
+
+	return playTime, true
+end
+
+hook.Add("StartCommand", "ZC_BlockFakeRestoringInput", function(ply, cmd)
+	if hg.GetFakeState and hg.GetFakeState(ply) == FAKE_STATE_RESTORING then
+		cmd:ClearMovement()
+		cmd:ClearButtons()
+	end
+end)
+
+hook.Add("ZC_FakeStateChanged", "ZC_ClearInterruptedFakeGetUp", function(ply, state)
+	if state == FAKE_STATE_RESTORING or not ply.ZCFakeGetUpLocked then return end
+
+	ply.ZCFakeGetUpLocked = nil
+	if ply.PlayCustomAnims then ply:PlayCustomAnims("") end
+	if state == FAKE_STATE_NONE and ply:GetMoveType() == MOVETYPE_NONE then
+		ply:SetMoveType(MOVETYPE_WALK)
+	end
+end)
 
 hook.Add("ZC_ShouldRestorePlayerFromFake","ZC_UpdateSpeed",function(ply)
 	if IsValid(ply.FakeRagdoll) then
@@ -914,12 +1046,17 @@ function hg.FakeUp(ply, forced, instant)
 		ragdoll.override = true
 
 		if not instant then
+			local sequenceTime = StartFakeGetUpSequence(ply, ragdoll)
+			local restoreTime = GET_UP_LERP_TIME + sequenceTime
+
 			ply:SetRenderMode(RENDERMODE_NORMAL)
 			--ply:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
 			--ply:SetSolidFlags(bit.bor(ply:GetSolidFlags(), FSOLID_NOT_SOLID, FSOLID_TRIGGER, FSOLID_USE_TRIGGER_BOUNDS))
 			ply:DrawShadow(false)
+			ply.ZCFakeGetUpLocked = true
+			ply:SetMoveType(MOVETYPE_NONE)
 
-			timer.Create("faking_up"..ply:EntIndex(), 1, 1, function()
+			timer.Create("faking_up"..ply:EntIndex(), restoreTime, 1, function()
 				if not hg.IsFakeLifecycle(ply, FAKE_STATE_RESTORING, restoreSeq) then return end
 
 				if IsValid(ragdoll) then
@@ -931,14 +1068,17 @@ function hg.FakeUp(ply, forced, instant)
 					ragdoll:Remove()
 				end
 
-				SetFakeLifecycle(ply, FAKE_STATE_NONE, NULL)
+				if ply.PlayCustomAnims then ply:PlayCustomAnims("") end
+				ply.ZCFakeGetUpLocked = nil
 
 				ply:DrawShadow(true)
 				ply:SetRenderMode(RENDERMODE_NORMAL)
 				ply:SetCollisionGroup(COLLISION_GROUP_PLAYER)
 
 				--ply:SetSolidFlags(bit.band(ply:GetSolidFlags(), bit.bnot(FSOLID_NOT_SOLID), bit.bnot(FSOLID_TRIGGER), bit.bnot(FSOLID_USE_TRIGGER_BOUNDS)))
+				ply:SetVelocity(-ply:GetVelocity())
 				ply:SetMoveType(MOVETYPE_WALK)
+				SetFakeLifecycle(ply, FAKE_STATE_NONE, NULL)
 
 				if pos then
 					--ply:SetPos(pos)
@@ -951,6 +1091,8 @@ function hg.FakeUp(ply, forced, instant)
 			ply:SetMoveType(ply.switchingseat and MOVETYPE_NONE or MOVETYPE_WALK)
 
 			--ply:SetSolidFlags(bit.band(ply:GetSolidFlags(), bit.bnot(FSOLID_NOT_SOLID), bit.bnot(FSOLID_TRIGGER), bit.bnot(FSOLID_USE_TRIGGER_BOUNDS)))
+			if ply.PlayCustomAnims then ply:PlayCustomAnims("") end
+			ply.ZCFakeGetUpLocked = nil
 			SetFakeLifecycle(ply, FAKE_STATE_NONE, NULL)
 
 			if IsValid(ragdoll) then

@@ -2,39 +2,64 @@ local Vector, math = Vector, math
 local IsValid, math_Clamp = IsValid, math.Clamp
 
 --\\ Smooth UnRagdoll
+	local DEFAULT_GET_UP_LERP_TIME = 0.3
 	local vecSmall = Vector(0.01, 0.01, 0.01)
-	function hg.SmoothUnfake(ent, ply)
-		if ply.gettingup and (ply.gettingup + 1 - CurTime()) > 0 and IsValid(ply) then
-			for i = 0, ent:GetBoneCount() - 1 do
-				local m1 = ent:GetBoneMatrix(i)
-				local m2 = ply:GetBoneMatrix(i)
-
-				if not m1 or not m2 then continue end
-
-				local k = math_Clamp(1 - (ply.gettingup + 0.8 - CurTime()) / 0.8, 0, 1)
-
-				local q1 = Quaternion()
-				q1:SetMatrix(m1)
-
-				local q2 = Quaternion()
-				q2:SetMatrix(m2)
-
-				local q3 = q1:SLerp(q2, k)
-
-				local newmat = Matrix()
-				newmat:SetTranslation(LerpVector(k, m1:GetTranslation(), m2:GetTranslation()))
-				newmat:SetAngles(q3:Angle())
-				newmat:SetScale(m1:GetScale())
-
-				if i == ent:LookupBone("ValveBiped.Bip01_Head1") and lply == GetViewEntity() and lply == ply then
-					newmat:SetScale(vecSmall)
-					//ply.headm = newmat
-				end
-
-				ent:SetBoneMatrix(i, newmat)
-				ply:SetBoneMatrix(i, newmat)
-			end
+	local function ApplyGetUpHeadScale(ent, ply, bone, mat)
+		if bone == ent:LookupBone("ValveBiped.Bip01_Head1") and lply == GetViewEntity() and lply == ply then
+			mat:SetScale(vecSmall)
+			//ply.headm = mat
 		end
+	end
+
+	function hg.MatchUnfakeToGetUpSequence(ent, ply)
+		for i = 0, ent:GetBoneCount() - 1 do
+			local m2 = ply:GetBoneMatrix(i)
+
+			if not m2 then continue end
+
+			local newmat = Matrix()
+			newmat:SetTranslation(m2:GetTranslation())
+			newmat:SetAngles(m2:GetAngles())
+			newmat:SetScale(m2:GetScale())
+			ApplyGetUpHeadScale(ent, ply, i, newmat)
+
+			ent:SetBoneMatrix(i, newmat)
+		end
+	end
+
+	function hg.SmoothUnfake(ent, ply)
+		if not ply.gettingup_into_getup then return false end
+
+		local lerpTime = ply.gettingup_lerp or DEFAULT_GET_UP_LERP_TIME
+		if not ply.gettingup or (ply.gettingup + lerpTime - CurTime()) <= 0 then return false end
+
+		for i = 0, ent:GetBoneCount() - 1 do
+			local m1 = ent:GetBoneMatrix(i)
+			local m2 = ply:GetBoneMatrix(i)
+
+			if not m1 or not m2 then continue end
+
+			local k = math_Clamp((CurTime() - ply.gettingup) / lerpTime, 0, 1)
+
+			local q1 = Quaternion()
+			q1:SetMatrix(m1)
+
+			local q2 = Quaternion()
+			q2:SetMatrix(m2)
+
+			local q3 = q1:SLerp(q2, k)
+
+			local newmat = Matrix()
+			newmat:SetTranslation(LerpVector(k, m1:GetTranslation(), m2:GetTranslation()))
+			newmat:SetAngles(q3:Angle())
+			newmat:SetScale(m1:GetScale())
+			ApplyGetUpHeadScale(ent, ply, i, newmat)
+
+			ent:SetBoneMatrix(i, newmat)
+			ply:SetBoneMatrix(i, newmat)
+		end
+
+		return true
 	end
 --//
 --\\ DrawPlayerRagdoll
@@ -54,10 +79,12 @@ local IsValid, math_Clamp = IsValid, math.Clamp
 	local vector_small = Vector(0.01, 0.01, 0.01)
 	local zc_no_camera_in_cars = CreateConVar("zc_no_camera_in_cars","0",FCVAR_ARCHIVE + FCVAR_REPLICATED, "disables camera in cars", 0, 1)
 	function DrawPlayerRagdoll(ent, ply) --// actually not only ragdoll render but player too
-		if ply.prevragdoll_index != nil and ply.prevragdoll_index != ply.ragdoll_index and ply.ragdoll_index == 0 then
+		if ply.prevragdoll_index != nil and ply.prevragdoll_index != ply.ragdoll_index and ply.ragdoll_index == 0 and hg.GetFakeState and hg.GetFakeState(ply) == ((hg.FAKE_STATE and hg.FAKE_STATE.RESTORING) or 2) then
 			//print(ply.ragdoll_index, ply.prevragdoll_index, Entity(ply.ragdoll_index))
 
 			ply.gettingup = CurTime()
+			ply.gettingup_lerp = DEFAULT_GET_UP_LERP_TIME
+			ply.gettingup_into_getup = true
 			ply.OldRagdoll = Entity(ply.prevragdoll_index)
 			ply.FakeRagdollOld = ply.OldRagdoll
 		end
@@ -76,8 +103,10 @@ local IsValid, math_Clamp = IsValid, math.Clamp
 
 		ent:SetupBones()
 
-		if IsValid(ply.OldRagdoll) then
-			hg.SmoothUnfake(ent, ply)
+		if IsValid(ply.OldRagdoll) and ply.gettingup_into_getup then
+			if not hg.SmoothUnfake(ent, ply) then
+				hg.MatchUnfakeToGetUpSequence(ent, ply)
+			end
 		end
 
 		hg.MainTPIKFunction(ent, ply, wep)

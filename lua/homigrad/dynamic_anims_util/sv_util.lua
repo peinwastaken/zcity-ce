@@ -3,11 +3,12 @@
 util.AddNetworkString("ZC_DynamicAnimGesture")
 
 local PLAYER = FindMetaTable("Player")
-function PLAYER:PlayCustomAnims(anim, autoStop, speed, needForceLook, autostopAdjust, tSvCallbacks)
+function PLAYER:PlayCustomAnims(anim, autoStop, speed, needForceLook, autostopAdjust, tSvCallbacks, holdTime)
 	local _, animDelay = self:LookupSequence(anim)
 	self:SetNWString("hg_CustomAnim", anim)
 	self:SetNWFloat("hg_CustomAnimDelay", speed or animDelay)
 	self:SetNWFloat("hg_CustomAnimStartTime", CurTime())
+	self:SetNWFloat("hg_CustomAnimHoldUntil", holdTime and (CurTime() + holdTime) or 0)
 	self:SetNWBool("hg_NeedAutoStop", autoStop)
 	self:SetNWFloat("hg_AutoStopAdjust", autostopAdjust or 0)
 	self:SetCycle(0)
@@ -32,19 +33,23 @@ hook.Add("CalcMainActivity", "ZC_CustomAnimActivity", function(ply, vel)
 	local str = ply:GetNWString("hg_CustomAnim", "")
 	local num = ply:GetNWFloat("hg_CustomAnimDelay")
 	local st = ply:GetNWFloat("hg_CustomAnimStartTime")
+	local holdUntil = ply:GetNWFloat("hg_CustomAnimHoldUntil", 0)
 	local needAutoStop = ply:GetNWBool("hg_NeedAutoStop", false)
 	local autostopAdjust = ply:GetNWFloat("hg_AutoStopAdjust", 0)
 
 	if str ~= nil and str ~= "" then
-		ply:SetCycle((CurTime() - st) / num)
-		local timing = math.Truncate(math.Round( (CurTime() - st) / num, 3),2)
+		local animStart = holdUntil > 0 and holdUntil or st
+		local cycle = holdUntil > CurTime() and 0 or (CurTime() - animStart) / num
+
+		ply:SetCycle(cycle)
+		local timing = math.Truncate(math.Round(cycle, 3),2)
 		ply.OldCustomAnimCallbackTime = ply.OldCustomAnimCallbackTime or timing
 		if ply.CustomAnimCallbacks and ply.CustomAnimCallbacks[ timing ] and ply.OldCustomAnimCallbackTime != timing then
 			ply.CustomAnimCallbacks[ timing ]( ply )
 			ply.OldCustomAnimCallbackTime = timing
 		end
 
-		if needAutoStop and st + (num - autostopAdjust) < CurTime() then
+		if needAutoStop and animStart + (num - autostopAdjust) <= CurTime() then
 			ply:PlayCustomAnims("")
 		end
 

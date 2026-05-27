@@ -168,10 +168,7 @@ doorTraceData = {
 BotCanSee = nil
 
 function BotDevPrint(msg)
-	if not zc_playerbot_debug:GetBool() then return end
-	if zb and zb.dev and zb.dev.DevPrint then
-		zb.dev.DevPrint("[ZC bot] " .. msg)
-	end
+	zb.dev.DevPrint(msg)
 end
 
 function GetBotAimOrigin(bot)
