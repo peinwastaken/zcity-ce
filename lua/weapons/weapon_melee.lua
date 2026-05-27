@@ -144,7 +144,7 @@ function SWEP:InUse()
 	local inVehicle = ply.InVehicle and ply:InVehicle()
 	local ragdollCombatInUse = hg.RagdollCombatInUse(ply)
 	local canAimRagdoll = not inVehicle and not ragdollCombatInUse
-	local wantsAimControl = isUseHeld or self:IsResting()
+	local wantsAimControl = isUseHeld or (self.IsResting and self:IsResting())
 	local forcedAimControl = (inVehicle or ragdollCombatInUse or ent == ply) and not isUseHeld
 	local reloading = self.reload and self.reload > 0
 	local hasOldRagdoll = IsValid(ply.OldRagdoll)
