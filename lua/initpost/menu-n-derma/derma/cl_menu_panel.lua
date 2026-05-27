@@ -205,7 +205,7 @@ function PANEL:Init()
     ceTeam:DockMargin(ScreenScale(10), 0, 0, 0)
     ceTeam:SetFont("ZCity_Tiny")
     ceTeam:SetTextColor(clr_gray)
-    ceTeam:SetText("CE Authors: pein, NERO2k, r4tb0y, ChatGPT")
+    ceTeam:SetText("CE Authors: pein, NERO2k, r4tb0y, senvixe, ChatGPT")
     ceTeam:SetContentAlignment(4)
     ceTeam:SizeToContents()
 
