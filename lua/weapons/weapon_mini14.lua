@@ -80,36 +80,53 @@ if CLIENT then
 	local vector_full = Vector(1,1,1)
 	SWEP.FakeReloadEvents = {
 		[0.15] = function( self, timeMul )
-			self:GetWM():ManipulateBoneScale(49, vector_full)
+			local wm = self:GetWM()
+			if IsValid(wm) then
+				wm:ManipulateBoneScale(49, vector_full)
+			end
 		end,
 		[0.16] = function( self, timeMul )
 			if self:Clip1() < 1 then
-				self:GetWM():ManipulateBoneScale(50, vector_origin)
-				self:GetWM():ManipulateBoneScale(51, vector_origin)
+				local wm = self:GetWM()
+				if IsValid(wm) then
+					wm:ManipulateBoneScale(50, vector_origin)
+					wm:ManipulateBoneScale(51, vector_origin)
+				end
 			end
 		end,
 		[0.27] = function( self, timeMul )
-			self:GetWM():ManipulateBoneScale(49, vector_full)
+			local wm = self:GetWM()
+			if IsValid(wm) then
+				wm:ManipulateBoneScale(49, vector_full)
+			end
 		end,
 
 		[0.30] = function(self,timeMul)
 			if self:Clip1() < 1 then
 				local ent = hg.CreateMag( self, Vector(15,0,0),nil, true )
-				for i = 0, ent:GetBoneCount() - 1 do
-					ent:ManipulateBoneScale(i, vector_origin)
+				if IsValid(ent) then
+					for i = 0, ent:GetBoneCount() - 1 do
+						ent:ManipulateBoneScale(i, vector_origin)
+					end
+					ent:ManipulateBoneScale(49, vector_full)
 				end
-				ent:ManipulateBoneScale(49, vector_full)
 
-				self:GetWM():ManipulateBoneScale(49, vector_origin)
-				self:GetWM():ManipulateBoneScale(50, vector_origin)
-				self:GetWM():ManipulateBoneScale(51, vector_origin)
+				local wm = self:GetWM()
+				if IsValid(wm) then
+					wm:ManipulateBoneScale(49, vector_origin)
+					wm:ManipulateBoneScale(50, vector_origin)
+					wm:ManipulateBoneScale(51, vector_origin)
+				end
 				--self:GetOwner():PullLHTowards("ValveBiped.Bip01_L_Thigh", 0.5 * timeMul)
 			end
 		end,
 		[0.45] = function(self,timeMul)
-			self:GetWM():ManipulateBoneScale(49, vector_full)
-			self:GetWM():ManipulateBoneScale(50, vector_full)
-			self:GetWM():ManipulateBoneScale(51, vector_full)
+			local wm = self:GetWM()
+			if IsValid(wm) then
+				wm:ManipulateBoneScale(49, vector_full)
+				wm:ManipulateBoneScale(50, vector_full)
+				wm:ManipulateBoneScale(51, vector_full)
+			end
 		end
 	}
 end
