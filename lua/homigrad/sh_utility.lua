@@ -111,7 +111,15 @@ hg.ConVars = hg.ConVars or {}
 				localKey = owner.keydown[key]
 			end
 		end
-		return SERVER and owner:IsPlayer() and owner:KeyDown(key) or CLIENT and localKey
+		if SERVER and owner:IsPlayer() then
+			if owner:IsBot() and isnumber(owner.ZCBotFakeButtons) and (owner.ZCBotFakeControlUntil or 0) >= CurTime() then
+				return bit.band(owner.ZCBotFakeButtons, key) ~= 0
+			end
+
+			return owner:KeyDown(key)
+		end
+
+		return CLIENT and localKey
 	end
 --//
 
