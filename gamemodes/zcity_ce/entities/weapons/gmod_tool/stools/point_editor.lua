@@ -6,7 +6,7 @@ TOOL.ClientConVar["point"] = ""
 function TOOL:LeftClick(trace, attach)
 	local ply = self:GetOwner()
 	if not ply:IsAdmin() then
-		ply:ChatPrint("You must be an admin to edit points.")
+		ply:ChatPrint(zb.locale.GetLocalized("points/admin_required"))
 		return false
 	end
 
@@ -34,7 +34,7 @@ end
 function TOOL:RightClick(trace)
 	local ply = self:GetOwner()
 	if not ply:IsAdmin() then
-		ply:ChatPrint("You must be an admin to edit points.")
+		ply:ChatPrint(zb.locale.GetLocalized("points/admin_required"))
 		return false
 	end
 

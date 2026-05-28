@@ -1,4 +1,8 @@
-local languageCvar = CreateClientConVar("zc_language", "en", true, false, "Changes the language (after changing type \"retry\" in console)")
+local languageCvar = CLIENT and CreateClientConVar("zc_language", "en", true, false, "Changes the language (after changing type \"retry\" in console)") or {
+  GetString = function()
+    return "en"
+  end
+}
 
 local locale = {}
 zb.locale = locale or {}
@@ -49,23 +53,30 @@ function locale.Get(id)
   return locale.locales[id]
 end
 
-function locale.GetLocalized(id)
+function locale.GetLocalized(id, ...)
   local lang = locale.GetCurrentLanguage()
-  return lang.localeKeys[id] or id
+  if !lang or !lang.localeKeys then return id end
+
+  local entry = lang.localeKeys[id]
+  if !entry then return id end
+
+  local args = {...}
+
+  return string.format(entry, unpack(args))
 end
 
 function locale.GetLocaleNativeNames()
   local names = {}
 
-  for id, locale in pairs(locale.locales) do
-    names[id] = locale.metadata.nativeName
+  for id, localeTbl in pairs(locale.locales) do
+    names[id] = (localeTbl.metadata and (localeTbl.metadata.nativeName or localeTbl.metadata.name)) or id
   end
   
   return names
 end
 
-function string.Localize(str)
-  return 
+function string.Localize(str, ...)
+  return locale.GetLocalized(str, ...)
 end
 
 locale.LoadAll()

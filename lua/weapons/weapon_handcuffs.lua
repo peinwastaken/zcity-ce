@@ -140,7 +140,7 @@ function SWEP:Tie(tr)
 		if IsValid(ent) and IsValid(self) and IsValid(self:GetOwner()) and self:GetOwner():Alive() and self:GetOwner():GetPos():Distance(ent:GetPos()) < 500 then
 			if IsValid(ent) and (ent:IsRagdoll() or (ent:IsPlayer() and ent:GetVelocity():Length() < 1)) and hg.RagdollOwner(ent) ~= self:GetOwner() then
 				--if ent.handcuffed then return end
-				self:GetOwner():ChatPrint("Threat handcuffed.")
+				self:GetOwner():ChatPrint(zb.locale.GetLocalized("handcuffs/threat_handcuffed"))
 
 				if ent:IsRagdoll() then handcuff(ent) end
 

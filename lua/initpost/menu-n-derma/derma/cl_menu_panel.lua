@@ -7,14 +7,14 @@ local pauseLogoMat = Material("gui/logo_pause.png")
 DISCORD_URL = "https://discord.gg/475EmEdTgH"
 
 local Selects = {
-    {Title = "Disconnect", Func = function(luaMenu) RunConsoleCommand("disconnect") end},
-    {Title = "Main Menu", Func = function(luaMenu) gui.ActivateGameUI() luaMenu:Close() end},
-    {Title = "Discord", Func = function(luaMenu) luaMenu:Close() gui.OpenURL(DISCORD_URL)  end},
-    {Title = "Traitor Role",
+    {Title = "menu/disconnect", Func = function(luaMenu) RunConsoleCommand("disconnect") end},
+    {Title = "menu/mainmenu", Func = function(luaMenu) gui.ActivateGameUI() luaMenu:Close() end},
+    {Title = "menu/discord", Func = function(luaMenu) luaMenu:Close() gui.OpenURL(DISCORD_URL)  end},
+    {Title = "menu/traitor_role",
     GamemodeOnly = true,
     CreatedFunc = function(self, parent, luaMenu)
         local btn = vgui.Create( "DLabel", self )
-        btn:SetText( "SOE" )
+        btn:SetText( zb.locale.GetLocalized("menu/traitor_role/soe") )
         btn:SetMouseInputEnabled( true )
         btn:SizeToContents()
         btn:SetFont( "ZCity_Small" )
@@ -42,7 +42,7 @@ local Selects = {
         end
 
         local btn = vgui.Create( "DLabel", btn )
-        btn:SetText( "STD" )
+        btn:SetText( zb.locale.GetLocalized("menu/traitor_role/std") )
         btn:SetMouseInputEnabled( true )
         btn:SizeToContents()
         btn:SetFont( "ZCity_Small" )
@@ -72,24 +72,24 @@ local Selects = {
 
     end,
     },
-    {Title = "Achievements", Func = function(luaMenu,pp)
+    {Title = "menu/achievements", Func = function(luaMenu,pp)
         hg.DrawAchievmentsMenu(pp)
     end},
-    {Title = "Settings", Func = function(luaMenu,pp)
+    {Title = "menu/settings", Func = function(luaMenu,pp)
         hg.DrawSettings(pp)
     end},
-    {Title = "Binds", Func = function(luamenu, pp)
+    {Title = "menu/binds", Func = function(luamenu, pp)
         hg.DrawBinds(pp)
     end},
-    {Title = "Appearance", Func = function(luaMenu,pp) hg.CreateApperanceMenu(pp) end},
-    {Title = "Return", Func = function(luaMenu) luaMenu:Close() end},
+    {Title = "menu/appearance", Func = function(luaMenu,pp) hg.CreateApperanceMenu(pp) end},
+    {Title = "menu/return", Func = function(luaMenu) luaMenu:Close() end},
 }
 
 local splasheh = {
-    "we love homigrad!",
-    "NOW WITHOUT FURRIES!",
-    "Welcome!",
-    "steam happy"
+    "menu/splash/we_love_homigrad",
+    "menu/splash/now_without_furries",
+    "menu/splash/welcome",
+    "menu/splash/steam_happy"
 }
 
 --print(string.upper('I wish you good health, Jason Statham'))
@@ -104,7 +104,7 @@ surface.CreateFont("ZC_MM_Title", {
 local Pluv = Material("pluv/pluvkid.jpg")
 
 function PANEL:GetRandomText()
-    return splasheh[math.random(#splasheh)]
+    return zb.locale.GetLocalized(splasheh[math.random(#splasheh)])
 end
 
 function PANEL:GetMapName()
@@ -113,6 +113,9 @@ end
 
 local clr_gray = uiColors.mainMenuFooterText
 local clr_verygray = uiColors.mainMenuBackground
+local function FormatAuthors(authors)
+    return istable(authors) and table.concat(authors, ", ") or tostring(authors or "")
+end
 
 function PANEL:Init()
     self:SetAlpha(0)
@@ -157,7 +160,7 @@ function PANEL:Init()
     local textLabel = vgui.Create("DLabel", lDock)
     textLabel:SetFont("ZCity_Tiny")
     textLabel:SetTextColor(clr_gray)
-    textLabel:SetText(string.format("%s | Playing on: %s", randomText, mapName))
+    textLabel:SetText(zb.locale.GetLocalized("menu/playing_on", randomText, mapName))
     textLabel:SizeToContentsY(5)
     textLabel:DockMargin(0, ScreenScale(3), 0, ScreenScale(5))
     textLabel:Dock(TOP)
@@ -196,7 +199,7 @@ function PANEL:Init()
     version:DockMargin(ScreenScale(10), 0, 0, 0)
     version:SetFont("ZCity_Tiny")
     version:SetTextColor(clr_gray)
-    version:SetText(hg.Version)
+    version:SetText(zb.locale.GetLocalized("menu/version", hg.Version))
     version:SetContentAlignment(4)
     version:SizeToContents()
 
@@ -205,7 +208,7 @@ function PANEL:Init()
     ceTeam:DockMargin(ScreenScale(10), 0, 0, 0)
     ceTeam:SetFont("ZCity_Tiny")
     ceTeam:SetTextColor(clr_gray)
-    ceTeam:SetText("CE Authors: pein, NERO2k, r4tb0y, senvixe, ChatGPT")
+    ceTeam:SetText(zb.locale.GetLocalized("menu/authors_ce", FormatAuthors(hg.Authors_CE)))
     ceTeam:SetContentAlignment(4)
     ceTeam:SizeToContents()
 
@@ -214,7 +217,7 @@ function PANEL:Init()
     zteam:DockMargin(ScreenScale(10), 0, 0, 0)
     zteam:SetFont("ZCity_Tiny")
     zteam:SetTextColor(clr_gray)
-    zteam:SetText("Authors: uzelezz, Sadsalat, Mr.Point, Zac90, Deka, Mannytko")
+    zteam:SetText(zb.locale.GetLocalized("menu/authors", FormatAuthors(hg.Authors)))
     zteam:SetContentAlignment(4)
     zteam:SizeToContents()
 end
@@ -240,10 +243,11 @@ function PANEL:Paint(w,h)
 end
 
 function PANEL:AddSelect( pParent, strTitle, tbl )
+    local localizedTitle = zb.locale.GetLocalized(strTitle)
     local id = #self.Buttons + 1
     self.Buttons[id] = vgui.Create( "DLabel", pParent )
     local btn = self.Buttons[id]
-    btn:SetText( strTitle )
+    btn:SetText( localizedTitle )
     btn:SetMouseInputEnabled( true )
     btn:SizeToContents()
     btn:SetFont( "ZCity_Small" )
@@ -299,12 +303,12 @@ function PANEL:AddSelect( pParent, strTitle, tbl )
         local v = self.HoverLerp
         self:SetTextColor(self.RColor:Lerp(red_select, v))
 
-        local targetText = (self:IsHovered()) and string.upper(strTitle) or strTitle
+        local targetText = (self:IsHovered()) and string.upper(localizedTitle) or localizedTitle
         local crw = self:GetText()
 
         if (crw ~= targetText) or (curent_panel == string.lower(strTitle)) then
             local ntxt = ""
-            local will_text = (curent_panel == string.lower(strTitle) and not strTitle == 'Traitor Role') and '[ '..string.upper(strTitle)..' ]' or strTitle
+            local will_text = (curent_panel == string.lower(strTitle) and strTitle ~= "menu/traitor_role") and "[ "..string.upper(localizedTitle).." ]" or localizedTitle
             for i = 1, #will_text do
                 local char = will_text:sub(i, i)
                 if i <= math.ceil(#will_text * v) then

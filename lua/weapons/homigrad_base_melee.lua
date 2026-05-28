@@ -1597,7 +1597,7 @@ function SWEP:Initialize()
             if SERVER then
                 if self:GetOwner():KeyPressed(IN_ATTACK) then
                     self:SetNetVar("mode", not self:GetNetVar("mode"))
-                    self:GetOwner():ChatPrint("Changed mode to "..(self:GetNetVar("mode") and "slash." or "stab."))
+                    self:GetOwner():ChatPrint(zb.locale.GetLocalized("weapon/changed_mode", zb.locale.GetLocalized(self:GetNetVar("mode") and "weapon/mode/slash" or "weapon/mode/stab")))
                     --self.Swing = self:GetNetVar("mode")
                     --self.UpSwing = not self:GetNetVar("mode")
                 end

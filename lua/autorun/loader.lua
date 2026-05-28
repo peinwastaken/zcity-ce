@@ -1,7 +1,9 @@
 hg = hg or {}
-hg.Version = "Release 1.0.0"
+hg.Version = "1.0.0"
 hg.GitHub_ReposOwner = "peinwastaken"
 hg.GitHub_ReposName = "zcity-ce" -- please add your real git fork!
+hg.Authors = {"uzelezz", "Sadsalat", "Mr.Point", "Zac90", "Deka", "Mannytko"}
+hg.Authors_CE = {"pein", "NERO2k", "r4tb0y", "senvixe", "ChatGPT"}
 
 -- TODO: Add new content pack
 -- if SERVER then

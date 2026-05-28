@@ -921,21 +921,21 @@ function SWEP:ApplyForce()
 						end
 
 						if (org.last_heartbeat + 60) > CurTime() then
-							ply:ChatPrint("The body is still warm.")
+							ply:ChatPrint(zb.locale.GetLocalized("body/still_warm"))
 						else
-							ply:ChatPrint((org.last_heartbeat + 180) < CurTime() and "The body has been here for awhile." or "The body is slightly warm")
+							ply:ChatPrint(zb.locale.GetLocalized((org.last_heartbeat + 180) < CurTime() and "body/here_awhile" or "body/slightly_warm"))
 						end
 
 						if org.blood < 3500 then
 							//if org.blood < 1000 then
 								//ply:ChatPrint("The skin looks almost white.")
 							//else
-								ply:ChatPrint("The skin is pale.")
+								ply:ChatPrint(zb.locale.GetLocalized("body/skin_pale"))
 							//end
 						end
 
 						if org.bleed > 0 then
-							ply:ChatPrint("The body is bleeding "..((org.bleed > 10 and "profusely.") or (org.bleed > 5 and "moderately.") or "slightly."))
+							ply:ChatPrint(zb.locale.GetLocalized("body/bleeding", zb.locale.GetLocalized((org.bleed > 10 and "body/bleeding/profusely") or (org.bleed > 5 and "body/bleeding/moderately") or "body/bleeding/slightly")))
 						end
 
 						//org.bulletwounds = 0
@@ -946,27 +946,27 @@ function SWEP:ApplyForce()
 						//org.explosionwounds = 0
 
 						if org.bulletwounds > 0 then
-							ply:ChatPrint("You notice "..org.bulletwounds.." bullet wounds on this body.")
+							ply:ChatPrint(zb.locale.GetLocalized("body/bullet_wounds", org.bulletwounds))
 						end
 
 						if org.stabwounds > 0 then
-							ply:ChatPrint("You notice "..org.stabwounds.." stab wounds on this body.")//28 STAB WOUNDS. YOU WOULDNT LEAVE HIM A CHANCE, HUH?
+							ply:ChatPrint(zb.locale.GetLocalized("body/stab_wounds", org.stabwounds))//28 STAB WOUNDS. YOU WOULDNT LEAVE HIM A CHANCE, HUH?
 						end
 
 						if org.slashwounds > 0 then
-							ply:ChatPrint("You notice "..org.slashwounds.." slashes on this body.")
+							ply:ChatPrint(zb.locale.GetLocalized("body/slash_wounds", org.slashwounds))
 						end
 
 						if org.bruises > 0 then
-							ply:ChatPrint("You notice "..org.bruises.." bruises on this body.")
+							ply:ChatPrint(zb.locale.GetLocalized("body/bruises", org.bruises))
 						end
 
 						if org.burns > 0 then
-							ply:ChatPrint("The body was burned.")
+							ply:ChatPrint(zb.locale.GetLocalized("body/burned"))
 						end
 
 						if org.explosionwounds > 0 then
-							ply:ChatPrint("The body appears to have blast trauma.")
+							ply:ChatPrint(zb.locale.GetLocalized("body/blast_trauma"))
 						end
 
 						if (bone == "ValveBiped.Bip01_Head1") then
@@ -979,7 +979,7 @@ function SWEP:ApplyForce()
 							--ply:ChatPrint(org.unconscious and "No reaction." or "Reaction present.")
 
 							if org.isPly and not org.unconscious then
-								org.owner:ChatPrint("You were checked for reaction.")
+								org.owner:ChatPrint(zb.locale.GetLocalized("body/checked_for_reaction"))
 							end
 						end
 					end
@@ -1012,7 +1012,7 @@ function SWEP:ApplyForce()
 				if org and bone == "ValveBiped.Bip01_Spine2" and trace.Hit then
 					if self.firstTimePrint then
 						if not ply2.noHead then
-							ply:ChatPrint("You are beginning to perform CPR.")
+							ply:ChatPrint(zb.locale.GetLocalized("body/begin_cpr"))
 						else
 							ply:Notify("I dont think CPR would help here...", 10)
 						end

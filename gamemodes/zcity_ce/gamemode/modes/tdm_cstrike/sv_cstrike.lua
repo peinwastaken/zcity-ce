@@ -126,7 +126,7 @@ function MODE:Intermission()
         end)
     end
 
-    PrintMessage(HUD_PRINTTALK, "Round "..(self.Rounds - zb.RoundsLeft).." out of "..self.Rounds..".")
+    PrintMessage(HUD_PRINTTALK, zb.locale.GetLocalized("cstrike/round_out_of", self.Rounds - zb.RoundsLeft, self.Rounds))
 
 	net.Start("ZC_TeamDeathmatchStart")
         net.WriteString(zb.rtype or "bomb")
@@ -143,20 +143,20 @@ concommand.Add("tdm_setrounds", function(ply, cmd, args)
     local played = oldRounds - oldLeft
     MODE.Rounds = math.max(tonumber(args[1]) or oldRounds, 1)
     zb.RoundsLeft = math.max(MODE.Rounds - played, 0)
-    PrintMessage(HUD_PRINTTALK, "TDM rounds set to "..MODE.Rounds..". Rounds left: "..zb.RoundsLeft)
+    PrintMessage(HUD_PRINTTALK, zb.locale.GetLocalized("cstrike/tdm_rounds_set", MODE.Rounds, zb.RoundsLeft))
 end)
 
 COMMANDS.nextcsround = {
 	function(ply, args)
-		if not ply:IsAdmin() then ply:ChatPrint("You don't have access") return end
+		if not ply:IsAdmin() then ply:ChatPrint(zb.locale.GetLocalized("common/no_access")) return end
 		if string.lower(args[1]) == "bomb" then
             zb.nextcsround = "bomb"
-            PrintMessage(HUD_PRINTTALK, "Chosen CS round - Bomb")
+            PrintMessage(HUD_PRINTTALK, zb.locale.GetLocalized("cstrike/chosen_bomb"))
         end
 
         if string.lower(args[1]) == "hostage" then
             zb.nextcsround = "hostage"
-            PrintMessage(HUD_PRINTTALK, "Chosen CS round - Hostage")
+            PrintMessage(HUD_PRINTTALK, zb.locale.GetLocalized("cstrike/chosen_hostage"))
         end
 	end,
 	0
@@ -223,7 +223,7 @@ function MODE:EndRound()
                 end
 
                 winner = maxTeam == 0 and 1 or 0
-                PrintMessage(HUD_PRINTTALK, (maxTeam == 0 and "Terrorists" or "Counter-Terrorists") .. " have killed the hostage")
+                PrintMessage(HUD_PRINTTALK, zb.locale.GetLocalized("cstrike/hostage_killed", zb.locale.GetLocalized(maxTeam == 0 and "tdm/team/terrorists" or "tdm/team/counter_terrorists")))
             else
                 winner = 3
             end
@@ -243,9 +243,9 @@ function MODE:EndRound()
         end
     end
 
-    local winnerprt = (winner == 1 and "Counter-Terrorists") or (winner == 0 and "Terrorists") or "Nobody"
+    local winnerprt = zb.locale.GetLocalized((winner == 1 and "tdm/team/counter_terrorists") or (winner == 0 and "tdm/team/terrorists") or "common/nobody")
 
-    PrintMessage(HUD_PRINTTALK, winnerprt.." have won the round.")
+    PrintMessage(HUD_PRINTTALK, zb.locale.GetLocalized("cstrike/won_round", winnerprt))
 
 	for _, ply in player.Iterator() do
 		if ply:Team() == winner then
@@ -265,12 +265,12 @@ function MODE:EndRound()
 	if winsTeam0 > winsTeam1 then
 		for _, ply in ipairs(team.GetPlayers(1)) do
 			ply:SetNWInt("TDM_Money", math.max(ply:GetNWInt("TDM_Money") + 1000, 0))
-			ply:ChatPrint("You have received a compensation of 1000 money because your team is losing.")
+			ply:ChatPrint(zb.locale.GetLocalized("cstrike/losing_compensation"))
 		end
 	elseif winsTeam1 > winsTeam0 then
 		for _, ply in ipairs(team.GetPlayers(0)) do
 			ply:SetNWInt("TDM_Money", math.max(ply:GetNWInt("TDM_Money") + 1000, 0))
-			ply:ChatPrint("You have received a compensation of 1000 money because your team is losing.")
+			ply:ChatPrint(zb.locale.GetLocalized("cstrike/losing_compensation"))
 		end
 	end
 
@@ -301,9 +301,9 @@ function MODE:EndRound()
         end
 
         if winner then
-            local winnerprt = (winner == 1 and "Counter-Terrorists") or (winner == 0 and "Terrorists") or "Nobody"
+            local winnerprt = zb.locale.GetLocalized((winner == 1 and "tdm/team/counter_terrorists") or (winner == 0 and "tdm/team/terrorists") or "common/nobody")
 
-            PrintMessage(HUD_PRINTTALK, winnerprt.." have won the game.")
+            PrintMessage(HUD_PRINTTALK, zb.locale.GetLocalized("cstrike/won_game", winnerprt))
         end
 
         zb.RoundsLeft = nil

@@ -321,13 +321,13 @@ function SWEP:SecondaryAttack()
 							Owner:SetAmmo(Owner:GetAmmoCount(self.Ammo) - (Owner.Profession and Owner.Profession == "builder" and 2 or 3), self.Ammo)
 							sound.Play("snd_jack_hmcd_hammerhit.wav", Tr.HitPos, 65, math.random(90, 110))
 							self:SprayDecals()
-							Owner:PrintMessage(HUD_PRINTCENTER, "Door Sealed")
+							Owner:PrintMessage(HUD_PRINTCENTER, zb.locale.GetLocalized("door/sealed"))
 							Owner:ViewPunch(vpang)
 							Owner:SetAnimation(PLAYER_ATTACK1)
 							self:SetNextSecondaryFire(CurTime() + 2.5)
 							self:SetNextPrimaryFire(CurTime() + 2.5)
 						else
-							Owner:PrintMessage(HUD_PRINTCENTER, "Need at least "..tostring((Owner.Profession and Owner.Profession == "builder") and 2 or 3).." nails to seal door.")
+							Owner:PrintMessage(HUD_PRINTCENTER, zb.locale.GetLocalized("door/need_nails", tostring((Owner.Profession and Owner.Profession == "builder") and 2 or 3)))
 						end
 					else
 						if Tr.Entity:IsRagdoll() then
@@ -361,7 +361,7 @@ function SWEP:SecondaryAttack()
 						if Weld or Weld == nil then Owner:SetAmmo(Owner:GetAmmoCount(self.Ammo) - 1, self.Ammo) end
 						sound.Play("snd_jack_hmcd_hammerhit.wav", Tr.HitPos, 65, math.random(90, 110))
 						util.Decal("hmcd_jackanail", Tr.HitPos + Tr.HitNormal, Tr.HitPos - Tr.HitNormal)
-						Owner:ChatPrint("Bond strength: " .. tostring(Strength))
+						Owner:ChatPrint(zb.locale.GetLocalized("door/bond_strength", tostring(Strength)))
 						Owner:ViewPunch(vpang)
 						self:PlayAnim("attack", 0.6, false, nil, false, true)
 

@@ -12,13 +12,13 @@ end)
 local teams = {
 	[0] = {
 		objective = "",
-		name = "a Terrorist",
+		name = "tdm/team/terrorist",
 		color1 = Color(190,0,0),
 		color2 = Color(190,0,0)
 	},
 	[1] = {
 		objective = "",
-		name = "a Counter Terrorist",
+		name = "tdm/team/counter_terrorist",
 		color1 = Color(0,120,190),
 		color2 = Color(0,120,190)
 	},
@@ -50,7 +50,7 @@ function MODE:HUDPaint()
 	self:AddHudPaint()
 	if StartTime + 20 > CurTime() then
 		draw.SimpleText( string.FormattedTime(StartTime + 20 - CurTime(), "%02i:%02i:%02i"	), "ZB_HomicideMedium", sw * 0.5, sh * 0.95, Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.SimpleText( "Press F3 to open buymenu", "ZB_HomicideMedium", sw * 0.5, sh * 0.9, Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText( zb.locale.GetLocalized("tdm/press_f3_buy_menu"), "ZB_HomicideMedium", sw * 0.5, sh * 0.9, Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	else
 		local time = string.FormattedTime( math.max(StartTime + (zb.ROUND_TIME or 400) - CurTime(), 0), "%02i:%02i:%02i" )
 		draw.SimpleText( time, "ZB_HomicideMedium", sw * 0.5, sh * 0.95, ColorObj, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -62,11 +62,11 @@ function MODE:HUDPaint()
 	zb.RemoveFade()
     local fade = math.Clamp(StartTime + 8 - CurTime(),0,1)
 	local team_ = lply:Team()
-    draw.SimpleText("ZBattle | "..(self.PrintName or "Team Deathmatch"), "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    local Rolename = teams[team_].name
+    draw.SimpleText(zb.locale.GetLocalized("tdm/title", self.PrintName or zb.locale.GetLocalized("tdm/name")), "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    local Rolename = zb.locale.GetLocalized(teams[team_].name)
     local ColorRole = teams[team_].color1
     ColorRole.a = 255 * fade
-    draw.SimpleText("You are "..Rolename , "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.5, ColorRole, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    draw.SimpleText(zb.locale.GetLocalized("tdm/you_are", Rolename), "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.5, ColorRole, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
     local Objective = teams[team_].objective
     local ColorObj = teams[team_].color2
@@ -78,7 +78,7 @@ function MODE:HUDPaint()
 		surface.SetDrawColor(255, 255, 255, math.random(175, 255) * fade / 2)
 		surface.DrawTexturedRect(sw * 0.25, sh * 0.44 - ScreenScale(15), sw / 2, ScreenScale(30))
 
-		draw.SimpleText("SOMEWHERE IN PLUVTOWN", "ZB_ScrappersLarge", sw / 2, sh * 0.44 - ScreenScale(2), Color(0, 0, 0, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText(zb.locale.GetLocalized("tdm/somewhere_in_pluvtown"), "ZB_ScrappersLarge", sw / 2, sh * 0.44 - ScreenScale(2), Color(0, 0, 0, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 end
 
@@ -148,9 +148,10 @@ CreateEndMenu = function()
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 		surface.SetFont( "ZB_InterfaceMedium" )
 		surface.SetTextColor(col.r,col.g,col.b,col.a)
-		local lengthX, _ = surface.GetTextSize("Close")
+		local closeText = zb.locale.GetLocalized("common/close")
+		local lengthX, _ = surface.GetTextSize(closeText)
 		surface.SetTextPos( lengthX - lengthX/1.1, 4)
-		surface.DrawText("Close")
+		surface.DrawText(closeText)
 	end
 
     hmcdEndMenu.Paint = function(self,w,h)
@@ -158,9 +159,10 @@ CreateEndMenu = function()
 
 		surface.SetFont( "ZB_InterfaceMediumLarge" )
 		surface.SetTextColor(col.r,col.g,col.b,col.a)
-		local lengthX, _ = surface.GetTextSize("Players:")
+		local playersText = zb.locale.GetLocalized("tdm/players")
+		local lengthX, _ = surface.GetTextSize(playersText)
 		surface.SetTextPos(w / 2 - lengthX/2,20)
-		surface.DrawText("Players:")
+		surface.DrawText(playersText)
 
 		surface.SetDrawColor( 255, 0, 0, 128)
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
@@ -209,7 +211,7 @@ CreateEndMenu = function()
 			surface.SetTextColor(col.r,col.g,col.b,col.a)
 			local _, lengthY = surface.GetTextSize( ply:GetPlayerName() or "He quited..." )
 			surface.SetTextPos(15,h/2 - lengthY/2)
-			surface.DrawText((ply:Name() .. (not ply:Alive() and " - died" or "")) or "He quited...")
+			surface.DrawText((ply:Name() .. (not ply:Alive() and zb.locale.GetLocalized("tdm/player_died_suffix") or "")) or zb.locale.GetLocalized("tdm/player_quit"))
 
 			surface.SetFont( "ZB_InterfaceMediumLarge" )
 			surface.SetTextColor(col.r,col.g,col.b,col.a)
@@ -219,7 +221,7 @@ CreateEndMenu = function()
 		end
 
 		function but:DoClick()
-			if ply:IsBot() then chat.AddText(Color(255,0,0), "no, you can't") return end
+			if ply:IsBot() then chat.AddText(Color(255,0,0), zb.locale.GetLocalized("common/no_you_cant")) return end
 			gui.OpenURL("https://steamcommunity.com/profiles/"..ply:SteamID64())
 		end
 
@@ -333,7 +335,7 @@ local function OpenBuyMenu()
 	Frame:SetSize(ScrW() * 0.35,ScrH() * 0.85)
 	Frame:Center()
 	Frame:MakePopup()
-	Frame:SetTitle("Buy menu")
+	Frame:SetTitle(zb.locale.GetLocalized("tdm/buy_menu"))
 	Frame.Paint = PaintFrame
 
 	local Sheet = vgui.Create( "DPropertySheet", Frame )
@@ -382,7 +384,7 @@ local function OpenBuyMenu()
 			lbl:SetSize(ScrW()*0.5,ScrH()*0.04)
 
 			local lbl = vgui.Create("DLabel", ItemButton)
-			lbl:SetText("Price: $"..Item.Price)
+			lbl:SetText(zb.locale.GetLocalized("tdm/price", Item.Price))
 			lbl:DockMargin(10,0,5,0)
 			lbl:Dock(TOP)
 			lbl:SetTextColor(Color(155,200,155))
@@ -392,7 +394,7 @@ local function OpenBuyMenu()
 			local BuyBtn = vgui.Create("DButton", ItemButton)
 			BuyBtn:DockMargin(10,5,10,10)
 			BuyBtn:Dock(LEFT)
-			BuyBtn:SetText("Buy")
+			BuyBtn:SetText(zb.locale.GetLocalized("common/buy"))
 			BuyBtn:SetTextColor(Color(200,200,200))
 			BuyBtn:SetFont("ZB_TDM_DESC")
 			BuyBtn:SetHeight(ScrH()*0.025)
@@ -480,7 +482,7 @@ local function OpenBuyMenu()
 
 	local StartTime = zb.ROUND_START or CurTime()
 	local lbl = vgui.Create("DLabel", Frame)
-	lbl:SetText("Time Left: "..string.FormattedTime(StartTime + 40 - CurTime(), "%02i:%02i:%02i"))
+	lbl:SetText(zb.locale.GetLocalized("tdm/time_left", string.FormattedTime(StartTime + 40 - CurTime(), "%02i:%02i:%02i")))
 	lbl:DockMargin(10,0,10,10)
 	lbl:Dock(BOTTOM)
 	lbl:SetTextColor(Color(255,255,255))
@@ -489,11 +491,11 @@ local function OpenBuyMenu()
 
 	function lbl:Think()
 		if not LocalPlayer():Alive() or StartTime + 40 < CurTime() then TDM_OpenedBuyMenu:Remove() end
-		self:SetText("Time Left: "..string.FormattedTime(StartTime + 40 - CurTime(), "%02i:%02i:%02i"))
+		self:SetText(zb.locale.GetLocalized("tdm/time_left", string.FormattedTime(StartTime + 40 - CurTime(), "%02i:%02i:%02i")))
 	end
 
 	local lbl = vgui.Create("DLabel", Frame)
-	lbl:SetText("Cash: $"..LocalPlayer():GetNWInt("TDM_Money",0))
+	lbl:SetText(zb.locale.GetLocalized("tdm/cash", LocalPlayer():GetNWInt("TDM_Money",0)))
 	lbl:DockMargin(10,5,10,5)
 	lbl:Dock(BOTTOM)
 	lbl:SetTextColor(Color(61,173,61))
@@ -501,7 +503,7 @@ local function OpenBuyMenu()
 	lbl:SetSize(0,ScrH()*0.02)
 
 	function lbl:Think()
-		self:SetText("Cash: $"..LocalPlayer():GetNWInt("TDM_Money",0))
+		self:SetText(zb.locale.GetLocalized("tdm/cash", LocalPlayer():GetNWInt("TDM_Money",0)))
 	end
 
 end

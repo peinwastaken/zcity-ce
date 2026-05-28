@@ -409,7 +409,7 @@ function MODE:Disappear(ply)
 				self:CreateTimer("Afterlife " .. ply:EntIndex(), 119, 1, function()
 					if IsValid(ply) and ply:Alive() then
 						ply:KillSilent()
-						ply:ChatPrint("You were taken into the afterlife.")
+						ply:ChatPrint(zb.locale.GetLocalized("fear/taken_afterlife"))
 					end
 				end)
 

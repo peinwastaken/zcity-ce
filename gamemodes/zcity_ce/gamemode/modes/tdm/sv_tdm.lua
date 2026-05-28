@@ -160,7 +160,7 @@ util.AddNetworkString( "ZC_TeamDeathmatchBuyItem" )
 local AttachmentPrice = 50
 net.Receive("ZC_TeamDeathmatchBuyItem",function(len,ply)
 	if !CurrentRound().buymenu then return end
-	if ((zb.ROUND_START or 0) + 40 < CurTime()) then ply:ChatPrint("Time's up!") return end
+	if ((zb.ROUND_START or 0) + 40 < CurTime()) then ply:ChatPrint(zb.locale.GetLocalized("tdm/time_up")) return end
 	local tItem = net.ReadTable()
 	if not istable(tItem) then return end
 	local category = tItem[1]
@@ -173,8 +173,8 @@ net.Receive("ZC_TeamDeathmatchBuyItem",function(len,ply)
 	if not item then return end
 
 	if tItem[3] then
-		if not ply:HasWeapon(item.ItemClass) then ply:ChatPrint("You can't buy this attachment without a weapon.") return end
-		if ((ply:GetNWInt("TDM_Money",0) - AttachmentPrice) < 0) then ply:ChatPrint("Not enough money.") return end
+		if not ply:HasWeapon(item.ItemClass) then ply:ChatPrint(zb.locale.GetLocalized("tdm/cant_buy_attachment_without_weapon")) return end
+		if ((ply:GetNWInt("TDM_Money",0) - AttachmentPrice) < 0) then ply:ChatPrint(zb.locale.GetLocalized("tdm/not_enough_money")) return end
 
 		local wep = ply:GetWeapon(item.ItemClass)
 		hg.AddAttachmentForce( ply,wep,tItem[3] )
@@ -184,7 +184,7 @@ net.Receive("ZC_TeamDeathmatchBuyItem",function(len,ply)
 		return
 	end
 
-	if ((ply:GetNWInt("TDM_Money",0) - item.Price) < 0) then ply:ChatPrint("Not enough money.") return end
+	if ((ply:GetNWInt("TDM_Money",0) - item.Price) < 0) then ply:ChatPrint(zb.locale.GetLocalized("tdm/not_enough_money")) return end
 	local ent = ply:Give(item.ItemClass)
 
 	if ent.Use and IsValid(ent) then

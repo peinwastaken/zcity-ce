@@ -303,7 +303,7 @@ CreateMenu = function(bomb)
 			bombMenu = nil
 		end
 		if #txt < 6 then
-			chat.AddText("The code must be of 6 numbers.")
+			chat.AddText(zb.locale.GetLocalized("bomb/code_must_be_6_numbers"))
 			return
 		end
 		surface.PlaySound("weapons/tfa_ins2_sr25_eft/m14_empty.wav")
