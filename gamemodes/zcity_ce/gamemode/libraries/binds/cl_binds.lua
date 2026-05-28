@@ -198,24 +198,24 @@ binds.categories = {
 binds.allbinds = {
   // movement
   ["kick"] = {
-    ["key"] = KEY_V,
-    ["default"] = KEY_V,
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
     ["label"] = "Kick",
     ["description"] = "Perform a melee kick",
     ["category"] = "movement",
     ["command"] = "hg_kick",
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["zoom"] = {
-    ["key"] = KEY_C,
-    ["default"] = KEY_C,
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
     ["label"] = "Zoom",
     ["description"] = "DayZ-like focus zoom",
     ["category"] = "movement",
     ["command"] = "+hg_zoom",
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["lean_left"] = {
     ["key"] = KEY_NONE,
@@ -224,8 +224,8 @@ binds.allbinds = {
     ["description"] = "Lean to the left",
     ["category"] = "movement",
     ["command"] = "+alt1",
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["lean_right"] = {
     ["key"] = KEY_NONE,
@@ -234,18 +234,18 @@ binds.allbinds = {
     ["description"] = "Lean to the right",
     ["category"] = "movement",
     ["command"] = "+alt2",
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["altlook"] = {
-    ["key"] = KEY_LALT,
-    ["default"] = KEY_LALT,
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
     ["label"] = "Free look",
     ["description"] = "Look around without moving your body",
     ["category"] = "movement",
     ["command"] = "+altlook",
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["suicide"] = {
     ["key"] = KEY_NONE,
@@ -254,24 +254,24 @@ binds.allbinds = {
     ["description"] = "killbind",
     ["category"] = "movement",
     ["command"] = "suicide",
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
 
   // weapons
   ["drop_weapon"] = {
-    ["key"] = KEY_G,
-    ["default"] = KEY_G,
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
     ["label"] = "Drop weapon",
     ["description"] = "Drop your currently held weapon",
     ["category"] = "weapon",
     ["command"] = "drop",
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["hold_breath"] = {
-    ["key"] = KEY_LSHIFT,
-    ["default"] = KEY_LSHIFT,
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
     ["label"] = "Hold breath",
     ["description"] = "Helps with aiming and avoiding gas inhalation",
     ["category"] = "weapon",
@@ -280,46 +280,46 @@ binds.allbinds = {
     ["default_override"] = false
   },
   ["toggle_laser"] = {
-    ["key"] = KEY_H,
-    ["default"] = KEY_H,
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
     ["label"] = "Toggle laser",
     ["description"] = "Toggle weapon lasers and taser sights",
     ["category"] = "weapon",
     ["command"] = "hmcd_togglelaser",
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
 
   // ragdoll
   ["fake"] = {
-    ["key"] = KEY_T,
-    ["default"] = KEY_T,
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
     ["label"] = "Toggle ragdoll",
     ["description"] = "Pretty self-explanatory. Press once to enter and press again to leave ragdoll.",
     ["category"] = "movement",
     ["command"] = "fake",
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["fake_grab_left"] = {
-    ["key"] = KEY_LSHIFT,
-    ["default"] = KEY_LSHIFT,
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
     ["label"] = "Grab with left hand",
-    ["description"] = "Grab objects with your left hand while ragdolled",
+    ["description"] = "Hold on to a surface with your left hand while ragdolled",
     ["category"] = "ragdoll",
     ["command"] = "+speed",
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["fake_grab_right"] = {
-    ["key"] = KEY_LALT,
-    ["default"] = KEY_LALT,
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
     ["label"] = "Grab with right hand",
-    ["description"] = "Grab objects with your right hand while ragdolled",
+    ["description"] = "Hold on to a surface your right hand while ragdolled",
     ["category"] = "ragdoll",
     ["command"] = "+walk",
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
 
   // stances
@@ -331,8 +331,8 @@ binds.allbinds = {
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
     ["args"] = {0},
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["posture_hipfire"] = {
     ["key"] = KEY_NONE,
@@ -342,8 +342,8 @@ binds.allbinds = {
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
     ["args"] = {1},
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["posture_leftshoulder"] = {
     ["key"] = KEY_NONE,
@@ -353,8 +353,8 @@ binds.allbinds = {
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
     ["args"] = {2},
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["posture_highready"] = {
     ["key"] = KEY_NONE,
@@ -364,8 +364,8 @@ binds.allbinds = {
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
     ["args"] = {3},
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["posture_lowready"] = {
     ["key"] = KEY_NONE,
@@ -375,8 +375,8 @@ binds.allbinds = {
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
     ["args"] = {4},
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["posture_pointshooting"] = {
     ["key"] = KEY_NONE,
@@ -386,8 +386,8 @@ binds.allbinds = {
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
     ["args"] = {5},
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["posture_cover"] = {
     ["key"] = KEY_NONE,
@@ -397,8 +397,8 @@ binds.allbinds = {
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
     ["args"] = {6},
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["posture_gangsta"] = {
     ["key"] = KEY_NONE,
@@ -408,8 +408,8 @@ binds.allbinds = {
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
     ["args"] = {7},
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["posture_onehanded"] = {
     ["key"] = KEY_NONE,
@@ -419,8 +419,8 @@ binds.allbinds = {
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
     ["args"] = {8},
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["posture_somalian"] = {
     ["key"] = KEY_NONE,
@@ -430,41 +430,41 @@ binds.allbinds = {
     ["category"] = "posture",
     ["command"] = "hg_change_posture",
     ["args"] = {9},
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
 
   // misc
   ["open_radial"] = {
-    ["key"] = KEY_Q,
-    ["default"] = KEY_Q,
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
     ["label"] = "Open radial menu",
     ["description"] = "for context actions",
     ["category"] = "misc",
     ["command"] = "+radialmenu",
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
 
   // admin
   ["open_admin"] = {
-    ["key"] = KEY_F6,
-    ["default"] = KEY_F6,
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
     ["label"] = "Open admin menu",
     ["description"] = "for admin abusers",
     ["category"] = "admin",
     ["command"] = "adminmenu",
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   },
   ["open_admin_config"] = {
-    ["key"] = KEY_F7,
-    ["default"] = KEY_F7,
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
     ["label"] = "Open gamemode config menu",
     ["description"] = "Opens gamemode config menu for the current gamemode (if the gamemode has configs set up)",
     ["category"] = "admin",
     ["command"] = "adminmenu_modeconfig",
-    ["should_override"] = true,
-    ["default_override"] = true
+    ["should_override"] = false,
+    ["default_override"] = false
   }
 }
