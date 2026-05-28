@@ -410,7 +410,7 @@ local math_random = math.random
 		local based = weapons.IsBasedOn -- RESPECT
 		for _, wep in ipairs(weaponlist) do
 			local classname = wep.ClassName
-			if (based(classname, "homigrad_base") or based(classname, "weapon_melee") or classname == "weapon_melee" or based(classname, "weapon_medkit_sh") or classname == "weapon_medkit_sh") and wep.Spawnable then
+			if (based(classname, "homigrad_base") or based(classname, "homigrad_base_melee") or classname == "weapon_melee" or based(classname, "weapon_medkit_sh") or classname == "weapon_medkit_sh") and wep.Spawnable then
 				list.Add("NPCUsableWeapons", {
 					class = classname,
 					title = wep.PrintName,

@@ -1,5 +1,5 @@
 if SERVER then AddCSLuaFile() end
-SWEP.Base = "weapon_melee"
+SWEP.Base = "homigrad_base_melee"
 SWEP.PrintName = "Battering Ram"
 SWEP.Instructions = "A powerful and heavy weapon that can crush doors. Use it to break down barricades and get through tight spaces.\n\nLMB to attack.\nRMB to block."
 SWEP.Category = "Weapons - Melee"

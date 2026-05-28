@@ -55,7 +55,7 @@ hook.Add("ZC_RadialOptions", "ZC_ReloadOnFloor", function()
 	if not IsValid(ent) then return end
 	if not ishgweapon(ent) then return end
 	local clip, maxclip = ent:Clip1(), ent:GetMaxClip1()
-	local isshotgun = (ent.Base == "weapon_m4super" or ent:GetClass() == "weapon_m4super")
+	local isshotgun = ent.IsHomigradShotgunBase or ent.Base == "homigrad_base_shotgun" or ent:GetClass() == "weapon_m4super"
 	if ((clip < maxclip or lply:GetAmmoCount(ent.Primary.Ammo) > 0) or (isshotgun and not ent.drawBullet)) then
 		if clip >= maxclip then return end
 		if isshotgun and ent.drawBullet and lply:GetAmmoCount(ent.Primary.Ammo) <= 0 then return end

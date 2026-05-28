@@ -12,7 +12,7 @@ end
 function WeaponInheritsBase(wep, baseName)
 	if not IsValid(wep) then return false end
 	if wep.Base == baseName then return true end
-	if wep.ishgwep or wep.ishgweapon then return baseName == "homigrad_base" end
+	if (wep.ishgwep or wep.ishgweapon) and baseName == "homigrad_base" then return true end
 
 	local seen = {}
 	local base = GetStoredWeaponBase(wep:GetClass()) or wep.Base
@@ -128,7 +128,7 @@ function IsWeaponReadyToFire(wep)
 end
 
 function IsSingleRoundReloadWeapon(wep)
-	return WeaponInheritsBase(wep, "weapon_m4super")
+	return WeaponInheritsBase(wep, "homigrad_base_shotgun")
 end
 
 function IsWeaponDry(wep)
@@ -239,7 +239,7 @@ function IsMeleeWeapon(wep)
 	if IsRangedWeapon(wep) then return false end
 
 	local class = wep:GetClass()
-	return class == "weapon_hands_sh" or class == "weapon_melee" or class:find("hands", 1, true) or class:find("melee", 1, true) or WeaponInheritsBase(wep, "weapon_melee")
+	return class == "weapon_hands_sh" or class == "weapon_melee" or class:find("hands", 1, true) or class:find("melee", 1, true) or WeaponInheritsBase(wep, "homigrad_base_melee")
 end
 
 function GetMeleeWeaponAttackRange(wep)

@@ -1,5 +1,5 @@
-﻿if SERVER then AddCSLuaFile() end
-SWEP.Base = "weapon_melee"
+if SERVER then AddCSLuaFile() end
+SWEP.Base = "homigrad_base_melee"
 SWEP.PrintName = "Bat"
 SWEP.Instructions = "A bat. The design features of the bat allow it to deliver powerful and heavy blows.\n\nLMB to attack.\nRMB to block."
 SWEP.Category = "Weapons - Melee"

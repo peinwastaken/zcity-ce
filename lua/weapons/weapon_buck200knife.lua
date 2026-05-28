@@ -1,5 +1,5 @@
 if SERVER then AddCSLuaFile() end
-SWEP.Base = "weapon_melee"
+SWEP.Base = "homigrad_base_melee"
 SWEP.PrintName = "Buck 120 General"
 SWEP.Instructions = "Large hunting knife, has a blood drain, which allows you to make stabs with strong bleeding. Used in the movie Scream as the killer's primary weapon.\n\nLMB to attack.\nR + LMB to change attack mode.\nRMB to block."
 SWEP.Category = "Weapons - Melee"

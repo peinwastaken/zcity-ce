@@ -1,4 +1,4 @@
-SWEP.Base = "homigrad_base"
+SWEP.Base = "homigrad_base_ranged"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
 SWEP.PrintName = "M16A2"

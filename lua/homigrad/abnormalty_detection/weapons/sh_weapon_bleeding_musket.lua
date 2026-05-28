@@ -21,7 +21,7 @@ if SERVER then AddCSLuaFile() end
 --//
 
 SWEP.Abnormalties_ShootableWeapon = true
-SWEP.Base = "weapon_m4super"
+SWEP.Base = "homigrad_base_shotgun"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
 SWEP.PrintName = "Bleeding Musket"

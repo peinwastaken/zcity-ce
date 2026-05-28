@@ -72,7 +72,7 @@ concommand.Add("hg_reloadfloorweapon", function(ply, cmd, args)
 	local ent = (IsValid(hg.eyeTrace(ply).Entity) and hg.eyeTrace(ply).Entity) or (IsValid(ply:GetNetVar("carryent")) and ply:GetNetVar("carryent"))
 	if not IsValid(ent) or not ishgweapon(ent) or ent:GetPos():DistToSqr(ply:GetPos()) > 6000 then return end
 
-	local isshotgun = (ent.Base == "weapon_m4super" or ent:GetClass() == "weapon_m4super")
+	local isshotgun = ent.IsHomigradShotgunBase or ent.Base == "homigrad_base_shotgun" or ent:GetClass() == "weapon_m4super"
 	local limbs = org.rarmamputated or org.larmamputated
 	local clip, maxclip, ammocount = ent:Clip1(), ent:GetMaxClip1(), ply:GetAmmoCount(ent.Primary.Ammo)
 

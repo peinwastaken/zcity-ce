@@ -1,5 +1,5 @@
 if SERVER then AddCSLuaFile() end
-SWEP.Base = "weapon_melee"
+SWEP.Base = "homigrad_base_melee"
 SWEP.PrintName = "Glass Shard"
 SWEP.Instructions = "A piece of a broken glass.\n\nLMB to attack.\nRMB to block."
 SWEP.Category = "Weapons - Melee"

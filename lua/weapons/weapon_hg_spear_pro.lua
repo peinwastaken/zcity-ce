@@ -1,5 +1,5 @@
-﻿if SERVER then AddCSLuaFile() end
-SWEP.Base = "weapon_melee"
+if SERVER then AddCSLuaFile() end
+SWEP.Base = "homigrad_base_melee"
 SWEP.PrintName = "Pro Spear"
 SWEP.Instructions = "Spear of some slug creature...\n\nLMB to attack.\nRMB to block.\nRMB + LMB to throw."
 SWEP.Category = "Weapons - Melee"

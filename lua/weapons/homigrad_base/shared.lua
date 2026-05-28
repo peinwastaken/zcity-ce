@@ -2376,7 +2376,7 @@ end)
 ]]
 
 hook.Add("PreRegisterSWEP", "ZC_PrecacheWeaponModels", function(self, class)
-	if self.ishgwep or self.Base == "homigrad_base" then
+	if self.ishgwep or self.Base == "homigrad_base" or self.Base == "homigrad_base_ranged" or self.Base == "homigrad_base_shotgun" then
 		if self.WorldModel then util.PrecacheModel( self.WorldModel ) end
 		if self.WorldModelFake then util.PrecacheModel( self.WorldModelFake ) end
 

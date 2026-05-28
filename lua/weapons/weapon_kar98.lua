@@ -1,5 +1,5 @@
 -- Kar98 was made by Bara.. pull request before he became known
-SWEP.Base = "weapon_m4super"
+SWEP.Base = "homigrad_base_shotgun"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
 SWEP.PrintName = "Karabiner 98k"

@@ -1,5 +1,5 @@
 if SERVER then AddCSLuaFile() end
-SWEP.Base = "weapon_melee"
+SWEP.Base = "homigrad_base_melee"
 SWEP.PrintName = "Pocket Knife"
 SWEP.Instructions = "A small knife which can be easily hidden in your pockets.\n\nLMB to attack.\nR + LMB to change attack mode.\nRMB to block."
 SWEP.Category = "Weapons - Melee"

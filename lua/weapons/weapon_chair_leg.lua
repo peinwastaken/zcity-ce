@@ -1,7 +1,7 @@
 if SERVER then
     AddCSLuaFile()
 end
-SWEP.Base = "weapon_melee"
+SWEP.Base = "homigrad_base_melee"
 SWEP.PrintName = "Chair leg"
 SWEP.Instructions = "Someone's savagely ripped out chair leg, quite suitable as a cold weapon. Better than nothing i guess.\n\nLMB to attack.\nRMB to block."
 SWEP.Category = "Weapons - Melee"

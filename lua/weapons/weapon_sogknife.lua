@@ -1,5 +1,5 @@
 if SERVER then AddCSLuaFile() end
-SWEP.Base = "weapon_melee"
+SWEP.Base = "homigrad_base_melee"
 SWEP.PrintName = "SOG SEAL 2000"
 SWEP.Instructions = "A serious big knife used by seals (special forces of the US Navy). A good choice for a melee weapon.\n\nLMB to attack.\nR + LMB to change attack mode.\nRMB to block."
 SWEP.Category = "Weapons - Melee"

@@ -1,4 +1,4 @@
-SWEP.Base = "weapon_m4super"
+SWEP.Base = "homigrad_base_shotgun"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
 SWEP.PrintName = "Mosin-Nagant M38"

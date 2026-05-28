@@ -1,5 +1,5 @@
-﻿if SERVER then AddCSLuaFile() end
-SWEP.Base = "weapon_melee"
+if SERVER then AddCSLuaFile() end
+SWEP.Base = "homigrad_base_melee"
 SWEP.PrintName = "Sledgehammer"
 SWEP.Instructions = "The Sledgehammer is a two-handed tool which can be used as a melee weapon.\n\nLMB to attack.\nRMB to block."
 SWEP.Category = "Weapons - Melee"

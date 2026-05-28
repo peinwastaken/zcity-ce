@@ -1,4 +1,4 @@
-SWEP.Base = "homigrad_base"
+SWEP.Base = "homigrad_base_ranged"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
 SWEP.PrintName = "AKM"
@@ -11,7 +11,7 @@ SWEP.ViewModel = ""
 SWEP.WorldModel = "models/weapons/w_rif_ak47.mdl"
 SWEP.WorldModelFake = "models/weapons/arccw/c_ur_ak.mdl"
 
-DEFINE_BASECLASS( "homigrad_base" )
+DEFINE_BASECLASS( "homigrad_base_ranged" )
 
 SWEP.FakePos = Vector(-12, 2.52, 5.5)
 SWEP.FakeAng = Angle(-1, 0.25, 5.5)

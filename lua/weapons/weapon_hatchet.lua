@@ -1,5 +1,5 @@
-﻿if SERVER then AddCSLuaFile() end
-SWEP.Base = "weapon_melee"
+if SERVER then AddCSLuaFile() end
+SWEP.Base = "homigrad_base_melee"
 SWEP.PrintName = "Hatchet"
 SWEP.Instructions = "A single-handed striking tool with a sharp blade on one side used to cut and split wood, and a hammerhead on the other side.\n\nLMB to attack.\nRMB to block.\nRMB + LMB to throw."
 SWEP.Category = "Weapons - Melee"
