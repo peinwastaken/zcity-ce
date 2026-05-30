@@ -628,7 +628,7 @@ hg.armor.face = {
 					"griggs/models/ballistic_mask_cute","griggs/models/ballistic_mask_golden_guard",
 					"griggs/models/ballistic_mask_grunt","griggs/models/ballistic_mask_peace",
 					"griggs/models/ballistic_mask_phonky","griggs/models/ballistic_mask_steamhappy",
-					"griggs/models/ballistic_mask_z", "griggs/models/ballistic_mask_pluvmaska",
+					"griggs/models/ballistic_mask_z",
 					"griggs/models/ballistic_mask_coolkid_01","griggs/models/ballistic_mask_coolkid_02",
 					"sosoda/models/ballistic_mask_manhunt"},
 		norender = true,

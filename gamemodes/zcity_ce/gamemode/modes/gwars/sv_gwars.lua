@@ -112,11 +112,9 @@ function MODE:GiveEquipment()
 			if ply:Team() == 0 then
 				ply:SetPlayerClass("bloodz")
 				zb.GiveRole(ply, "Bloodz", Color(190,0,0))
-				ply:SetNetVar("CurPluv", "pluvred")
 			else
 				ply:SetPlayerClass("groove")
 				zb.GiveRole(ply, "Groove", Color(0,190,0))
-				ply:SetNetVar("CurPluv", "pluvgreen")
 			end
 
 			local tbl = tblweps[ply:Team()]

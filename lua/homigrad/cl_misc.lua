@@ -116,7 +116,7 @@
 	local categories = {
 		["Weapons - Assault Rifles"] = "pwb/sprites/akm", -- vgui/inventory/weapon_nam_akm
 		["Weapons - Carbines"] = "vgui/wep_jack_hmcd_assaultrifle",
-		["Weapons - Explosive"] = "pluv/toosilly.png",
+		["Weapons - Explosive"] = "vgui/hud/hmcd_round_4630",
 		["Weapons - Grenade Launchers"] = "vgui/inventory/weapon_rpg7",
 		["Weapons - Machine-Pistols"] = "vgui/hud/tfa_ins2_mp7", -- vgui/inventory/weapon_uzi
 		["Weapons - Machineguns"] = "vgui/hud/tfa_kopter_pkm",
@@ -126,7 +126,7 @@
 		["Weapons - Shotguns"] = "pwb/sprites/m590a1",
 		["Weapons - Sniper Rifles"] = "vgui/hud/tfa_ins2_sr25_eft",
 		["ZCity Medicine"] = "vgui/wep_jack_hmcd_medkit",
-		["ZCity Other"] = "pluv/pluv.png",
+		["ZCity Other"] = "vgui/wep_jack_hmcd_crossbow",
 
 		["ZCity Ammo"] = "vgui/hud/hmcd_round_4630",
 		["ZCity Armor"] = "vgui/icons/armor01",

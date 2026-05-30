@@ -241,10 +241,6 @@ function hg.GenerateLoot(ply,ent,func)
 
 	local _, entName = hg.WeightedRandomSelect(tab)
 
-	if hg.PluvTown.Active and (entName == "weapon_bigconsumable" or entName == "weapon_smallconsumable") then
-		entName = "weapon_pluviska"
-	end
-
 	-- if curRound and curRound.name == "scrappers" and math.random(100) < 80 then
 	-- 	local random = math.random(1, 3)
 	-- 	if random > 1 then

@@ -267,7 +267,7 @@ properties.Add( "ragdollize", {
 properties.Add( "vomit", {
 	MenuLabel = "Make vomit", -- Name to display on the context menu
 	Order = 9, -- The order to display this property relative to other properties
-	MenuIcon = "pluv/pluv51.png", -- The icon to display next to the property
+	MenuIcon = "icon16/user.png", -- The icon to display next to the property
 
 	Filter = check,
 	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
@@ -289,7 +289,7 @@ properties.Add( "vomit", {
 properties.Add( "lobotomize", {
 	MenuLabel = "Lobotomize", -- Name to display on the context menu
 	Order = 10, -- The order to display this property relative to other properties
-	MenuIcon = "pluv/pluv51.png", -- The icon to display next to the property
+	MenuIcon = "icon16/user.png", -- The icon to display next to the property
 
 	Filter = check,
 	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
@@ -401,7 +401,7 @@ properties.Add( "setplayerclass", {
 properties.Add( "break_limb", {
 	MenuLabel = "Break Limb",
 	Order = 13,
-	MenuIcon = "pluv/pluv51.png",
+	MenuIcon = "icon16/user.png",
 
 	Filter = check,
 	MenuOpen = function( self, option, ent, tr )

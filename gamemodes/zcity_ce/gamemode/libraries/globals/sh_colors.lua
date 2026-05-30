@@ -94,7 +94,7 @@ ui.mainMenuSelect = Color(0, 154, 192, 255)
 ui.mainMenuText = Color(225, 225, 225, 255)
 ui.mainMenuTextTransparent = Color(225, 225, 225, 0)
 ui.mainMenuFooterText = Color(255, 255, 255, 25)
-ui.mainMenuBackground = Color(10, 10, 19, 235)
+ui.mainMenuBackground = Color(10, 10, 19, 154)
 ui.mainMenuGradient = Color(0, 36, 102, 35)
 
 ui.settingsCategoryBackground = Color(60, 60, 60, 145)

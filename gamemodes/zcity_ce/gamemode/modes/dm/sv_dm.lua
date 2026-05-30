@@ -204,7 +204,6 @@ function MODE:RoundStart()
 		timer.Simple(0.1, function() ply.noSound = false end)
 		ply:SetSuppressPickupNotices(false)
 		zb.GiveRole(ply, "Fighter", Color(190,15,15))
-		ply:SetNetVar("CurPluv", "pluvboss")
 	end
 end
 

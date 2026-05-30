@@ -276,8 +276,6 @@ if SERVER then
 
                 wep:EmitSound("snds_jack_gmod/equip"..math.random(1,5)..".wav")
 
-                wep.StoredPluv = ply:GetNetVar("CurPluv", "pluv")
-                ply:SetNetVar("CurPluv", "pluv51")
             end
         end
     end)
@@ -295,7 +293,6 @@ function SWEP:SecondaryAttack()
             net.WriteBool(false)
             net.Send(self:GetOwner())
 
-            self:GetOwner():SetNetVar("CurPluv", self.StoredPluv or "pluv")
         else
             net.Start("ZC_SuitCostumeStatus")
             net.WriteBool(false)

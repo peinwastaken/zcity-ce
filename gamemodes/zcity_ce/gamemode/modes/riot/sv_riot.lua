@@ -121,7 +121,6 @@ function MODE:GiveEquipment()
             hasMp80 = true
         end
 
-		ply:SetNetVar("CurPluv", "pluvmajima")
 
         ply:Give(riotConsumables[math.random(#riotConsumables)])
 
@@ -160,7 +159,6 @@ function MODE:GiveEquipment()
             ply:Give(wepName)
         end
 
-        ply:SetNetVar("CurPluv", "pluvberet")
 
         hg.AddArmor(ply, "ent_armor_helmet3")
         hg.AddArmor(ply, "ent_armor_vest2")

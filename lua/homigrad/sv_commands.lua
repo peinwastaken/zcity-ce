@@ -112,7 +112,6 @@ end,0}
 if SERVER then
     util.AddNetworkString("ZC_PunishLightningEffect")
     util.AddNetworkString("ZC_LightningStrikeEffect")
-    util.AddNetworkString("ZC_PluvCommand")
 
     COMMANDS.zc_god = {function(ply)
         if not ply.organism then return end
@@ -174,11 +173,6 @@ if SERVER then
 
         ply:ChatPrint("Fatass " .. target:Nick() .. " has been punished.")
     end, 2, "ник игрока"}
-
-    COMMANDS.pluv = {function(ply, args)
-        net.Start("ZC_PluvCommand")
-        net.Send(ply)
-    end, 0}
 
     COMMANDS.notify = {function(ply, args)
         if #args < 2 then

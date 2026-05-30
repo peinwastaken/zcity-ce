@@ -207,7 +207,7 @@ function TOOL:DrawToolScreen(width, height)
 	surface.SetDrawColor(clr)
 	surface.DrawRect(0, 0, width, height)
 
-	draw.SimpleText("#PLUVERS", "ZB_ScrappersMedium", width / 2, height / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	draw.SimpleText("POINTS", "ZB_ScrappersMedium", width / 2, height / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
 	local ply = self:GetOwner()
 	if ply:GetInfo("point_editor_point") == "" or !point_editor then return end

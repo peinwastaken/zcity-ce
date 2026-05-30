@@ -2,7 +2,6 @@ local PANEL = {}
 local curent_panel
 local uiColors = zc.colors.ui
 local red_select = uiColors.mainMenuSelect
-local pauseLogoMat = Material("gui/logo_pause.png")
 
 DISCORD_URL = "https://discord.gg/475EmEdTgH"
 
@@ -101,7 +100,6 @@ surface.CreateFont("ZC_MM_Title", {
 })
 -- local Title = markup.Parse("error")
 
-local Pluv = Material("pluv/pluvkid.jpg")
 
 function PANEL:GetRandomText()
     return zb.locale.GetLocalized(splasheh[math.random(#splasheh)])
@@ -150,11 +148,25 @@ function PANEL:Init()
     logoPanel:DockMargin(0, 0, 0, 0)
     logoPanel:Dock(TOP)
     logoPanel.Paint = function(self, w, h)
-        local mat = pauseLogoMat
-        local matW, matH = mat:Width(), mat:Height()
-        surface.SetMaterial(mat)
+        local layerData = hg.menuDrawLayers
+        if !layerData then return end
+
+        local baseMat = hg.menuBaseLogos[layerData.base]
+        local logoW, logoH = baseMat:Width(), baseMat:Height()
+
+        surface.SetMaterial(baseMat)
         surface.SetDrawColor(255, 255, 255, 255)
-        surface.DrawTexturedRect(0, 0, matW, matH)
+        surface.DrawTexturedRect(0, 0, logoW, logoH)
+
+        local layers = layerData.layers
+        for _, id in ipairs(hg.menuLayerOrder) do
+            local layer = table.HasValue(layers, id)
+            if !layer then continue end
+
+            surface.SetMaterial(hg.menuLogoLayers[id])
+            surface.SetDrawColor(255, 255, 255, 255)
+            surface.DrawTexturedRect(0, 0, logoW, logoH)
+        end
     end
 
     local textLabel = vgui.Create("DLabel", lDock)

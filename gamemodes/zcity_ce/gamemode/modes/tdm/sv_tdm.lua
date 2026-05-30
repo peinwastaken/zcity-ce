@@ -75,11 +75,9 @@ function MODE:GiveEquipment()
 			if ply:Team() == 1 then
 				ply:SetPlayerClass("swat")
 				zb.GiveRole(ply, "Counter Terrorist", Color(0,0,190))
-				ply:SetNetVar("CurPluv", "pluvberet")
 			else
 				ply:SetPlayerClass("terrorist")
 				zb.GiveRole(ply, "Terrorist", Color(190,0,0))
-				ply:SetNetVar("CurPluv", "pluvboss")
 			end
 
 			--[[if giveweapons:GetBool() then

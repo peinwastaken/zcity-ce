@@ -13,7 +13,6 @@ ENT.FleshHit = "weapons/crossbow/bolt_skewer1.wav"
 ENT.Damage = 200
 ENT.Force = 0.2
 
--- pluv
 
 function hg.BestArrowToTake(ent)
 	local org = ent.organism
