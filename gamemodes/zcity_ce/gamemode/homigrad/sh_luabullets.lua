@@ -1,5 +1,5 @@
 gs = {
-	random = include("minstd.lua") -- from https://github.com/Kefta/Lua-MINSTD
+random = include("zcity_ce/gamemode/homigrad/minstd.lua") -- from https://github.com/Kefta/Lua-MINSTD
 }
 
 

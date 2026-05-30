@@ -1,41 +1,101 @@
+hg = hg or {}
+hg.Version = "1.0.0"
+hg.GitHub_ReposOwner = "peinwastaken"
+hg.GitHub_ReposName = "zcity-ce"
+hg.Authors = {"uzelezz", "Sadsalat", "Mr.Point", "Zac90", "Deka", "Mannytko"}
+hg.Authors_CE = {"pein", "NERO2k", "r4tb0y", "senvixe", "ChatGPT"}
+
 local loadedFiles = {}
+
+local sides = {
+	["sv_"] = "sv_",
+	["sh_"] = "sh_",
+	["cl_"] = "cl_",
+	["_sv"] = "sv_",
+	["_sh"] = "sh_",
+	["_cl"] = "cl_",
+}
 
 local function IncluderFunc(fileName)
 	if loadedFiles[fileName] then return end
 	loadedFiles[fileName] = true
 
-	if (fileName:find("sv_")) then
-		include(fileName)
-	elseif (fileName:find("shared.lua") or fileName:find("sh_")) then
-		if (SERVER) then
-			AddCSLuaFile(fileName)
-		end
+	local shortName = string.GetFileFromFilename(fileName)
+	local fileSide = string.lower(string.Left(shortName, 3))
+	local fileSide2 = string.lower(string.Right(string.sub(shortName, 1, -5), 3))
+	local side = sides[fileSide] or sides[fileSide2]
 
+	if SERVER and side == "sv_" then
 		include(fileName)
-	elseif (fileName:find("cl_")) then
-		if (SERVER) then
+	elseif side == "sh_" then
+		if SERVER then AddCSLuaFile(fileName) end
+		include(fileName)
+	elseif side == "cl_" then
+		if SERVER then
 			AddCSLuaFile(fileName)
 		else
 			include(fileName)
 		end
+	else
+		if SERVER then AddCSLuaFile(fileName) end
+		include(fileName)
 	end
 end
 
---please note that files inside folders are loaded first
-local function LoadFromDir(directory)
+local function LoadFromDir(directory, foldersFirst)
 	local files, folders = file.Find(directory .. "/*", "LUA")
 
-	for _, v in ipairs(folders) do
-		LoadFromDir(directory .. "/" .. v)
+	if foldersFirst then
+		for _, v in ipairs(folders or {}) do
+			LoadFromDir(directory .. "/" .. v, foldersFirst)
+		end
 	end
 
-	for _, v in ipairs(files) do
-		IncluderFunc(directory .. "/" .. v)
+	for _, v in ipairs(files or {}) do
+		if string.EndsWith(v, ".lua") then
+			IncluderFunc(directory .. "/" .. v)
+		end
+	end
+
+	if !foldersFirst then
+		for _, v in ipairs(folders or {}) do
+			LoadFromDir(directory .. "/" .. v, foldersFirst)
+		end
 	end
 end
 
-LoadFromDir("zcity_ce/gamemode/libraries/globals")
-LoadFromDir("zcity_ce/gamemode/libraries")
+local function LoadIfExists(directory, foldersFirst)
+	if !file.IsDir(directory, "LUA") then return end
+
+	LoadFromDir(directory, foldersFirst)
+end
+
+hg.loaded = false
+
+LoadIfExists("zcity_ce/gamemode/libraries/globals", true)
+LoadIfExists("zcity_ce/gamemode/homigrad", false)
+LoadIfExists("zcity_ce/gamemode/libraries", true)
+
+hg.loaded = true
+hook.Run("ZC_OnLoaded")
+
+hook.Add("InitPostEntity", "ZC_LoadInitPostFiles", function()
+	LoadIfExists("zcity_ce/gamemode/initpost", false)
+end)
+
+timer.Simple(5, function()
+	if !istable(ulx) then
+		for _ = 1, 6 do
+			MsgC(Color(255, 0, 0), "WARNING: Server doesn't have ULX & ULib installed! Z-City will not work properly without it!\n")
+		end
+	end
+
+	if game.SinglePlayer() then
+		for _ = 1, 3 do
+			MsgC(Color(255, 0, 0), "WARNING: Game started in singleplayer! Z-City may not work properly until you start multiplayer game!\n")
+		end
+	end
+end)
 
 zb.modesHooks = {}
 zb.modes = zb.modes or {}
@@ -143,7 +203,7 @@ local function LoadModes()
 
 	for _, v in ipairs(folders) do
 		MODE = {}
-		LoadFromDir(directory .. "/" .. v)
+		LoadFromDir(directory .. "/" .. v, true)
 		InitMode()
 		MODE = nil
 	end
