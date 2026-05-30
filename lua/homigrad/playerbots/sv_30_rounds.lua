@@ -11,6 +11,13 @@ function IsDeathmatchSafeTime(round)
 	return (zb.ROUND_START or 0) + (round.SpawnProtectionTime or 7.5) > CurTime()
 end
 
+function IsRoundFadeInTime(round)
+	if not zb then return false end
+
+	local duration = BOT_ROUND_FADEIN_TIME
+	return (zb.ROUND_START or 0) + duration > CurTime()
+end
+
 function IsDeathmatchZoneDisabled()
 	local convar = GetConVar("zc_deathmatch_nozone")
 	return convar and convar:GetBool()

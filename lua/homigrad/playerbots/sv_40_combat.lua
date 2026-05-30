@@ -712,6 +712,8 @@ hook.Add("StartCommand", "ZC_PlayerBotEnemyAI", function(bot, cmd)
 	end
 
 	local round = GetCurrentRound()
+	if IsRoundFadeInTime(round) then return end
+
 	local safeTime = IsDeathmatchSafeTime(round)
 	if safeTime then ClearCombatButtons(cmd) end
 
