@@ -21,7 +21,6 @@ math_Lerp = Lerp
 
 zc_playerbot_ai = CreateConVar("zc_playerbot_ai", "1", FCVAR_ARCHIVE + FCVAR_SERVER_CAN_EXECUTE, "Enable basic enemy AI for player bots created with the bot command.", 0, 1)
 zc_playerbot_debug = CreateConVar("zc_playerbot_debug", "0", FCVAR_ARCHIVE + FCVAR_SERVER_CAN_EXECUTE, "Print player bot AI target/debug messages through DevPrint.", 0, 1)
-zc_playerbot_disable = CreateConVar("zc_playerbot_disable", "0", FCVAR_ARCHIVE + FCVAR_SERVER_CAN_EXECUTE, "Disables all bot movement", 0, 1)
 
 BOT_THINK_INTERVAL = 0.2
 BOT_ATTACK_RANGE = 1800

@@ -699,10 +699,12 @@ function IsVisibleEnemyArmed(enemy)
 end
 
 hook.Add("StartCommand", "ZC_PlayerBotEnemyAI", function(bot, cmd)
-	if zc_playerbot_disable:GetBool() or not zc_playerbot_ai:GetBool() or not bot:IsBot() then return end
+	if !bot:IsBot() then return end
 
 	cmd:ClearMovement()
 	cmd:ClearButtons()
+	
+	if not zc_playerbot_ai:GetBool() then return end
 
 	if not bot:Alive() then
 		cmd:SetButtons(bit_bor(cmd:GetButtons(), IN_ATTACK))
