@@ -1,4 +1,4 @@
--- Files under `lua/glide/autoload/` runs after
+-- Files under `gamemode/vendor/glide/runtime/autoload/` runs after
 -- all Glide files have been included.
 
 -- You can safely access the `Glide` global table in here.

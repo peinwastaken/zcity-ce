@@ -6,7 +6,7 @@
 if SERVER then
     -- Sent all client lua files right away.
     -- (Don't include, but do AddCSLuaFile)
-    Glide.IncludeDir( "glide/vsweps/", false, true )
+    Glide.IncludeDir( Glide.GetLuaPath( "vsweps/" ), false, true )
 end
 
 Glide.WeaponRegistry = Glide.WeaponRegistry or {}
@@ -96,7 +96,7 @@ local function RefreshInheritance( className )
 end
 
 function Glide.ReloadWeaponScript( className )
-    local path = "glide/vsweps/" .. className .. ".lua"
+    local path = Glide.GetLuaPath( "vsweps/" .. className .. ".lua" )
 
     if not file.Exists( path, "LUA" ) then
         Glide.Print( "Vehicle weapon script '%s' does not exist!", className )
@@ -129,8 +129,8 @@ end
 
 -- Only include weapons after everything else has loaded.
 function Glide.InitializeVSWEPS()
-    -- Include all lua files inside lua/glide/vsweps/
-    local files = file.Find( "glide/vsweps/*.lua", "LUA" )
+    -- Include all lua files inside the gamemode-local Glide VSWEP folder.
+    local files = file.Find( Glide.GetLuaPath( "vsweps/*.lua" ), "LUA" )
 
     for _, fileName in ipairs( files ) do
         Glide.ReloadWeaponScript( string.StripExtension( fileName ) )
@@ -187,7 +187,7 @@ local function AutoCompleteCmdReloadWeaponScript( cmd, _, args )
         partialClass = nil
     end
 
-    local files = file.Find( "glide/vsweps/*.lua", "LUA" )
+    local files = file.Find( Glide.GetLuaPath( "vsweps/*.lua" ), "LUA" )
     local filtered = {}
 
     for _, fileName in ipairs( files ) do

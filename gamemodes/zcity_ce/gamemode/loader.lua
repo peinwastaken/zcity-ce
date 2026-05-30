@@ -70,8 +70,29 @@ local function LoadIfExists(directory, foldersFirst, defaultSide)
 	LoadFromDir(directory, foldersFirst, defaultSide)
 end
 
+local function LoadVendorFile(fileName)
+	if !file.Exists(fileName, "LUA") then
+		ErrorNoHalt("[Z-City] Missing gamemode vendor file: " .. fileName .. "\n")
+		return
+	end
+
+	IncluderFunc(fileName, "sh_")
+end
+
+local function LoadVendorRuntime()
+	LoadVendorFile("zcity_ce/gamemode/vendor/glide/sh_glide.lua")
+	LoadVendorFile("zcity_ce/gamemode/vendor/glide/sh_gtav_helicopters.lua")
+
+	LoadVendorFile("zcity_ce/gamemode/vendor/vfire/sh_misc.lua")
+	LoadVendorFile("zcity_ce/gamemode/vendor/vfire/sh_creation.lua")
+	LoadVendorFile("zcity_ce/gamemode/vendor/vfire/sh_game_modifications.lua")
+
+	LoadVendorFile("zcity_ce/gamemode/vendor/wos/sh_dynabase_loader.lua")
+end
+
 hg.loaded = false
 
+LoadVendorRuntime()
 LoadIfExists("zcity_ce/gamemode/libraries/globals", true)
 LoadIfExists("zcity_ce/gamemode/homigrad", false)
 LoadIfExists("zcity_ce/gamemode/libraries", true)
