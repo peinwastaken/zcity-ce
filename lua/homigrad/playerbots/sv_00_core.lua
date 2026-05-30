@@ -407,9 +407,37 @@ function IsTargetInCover(bot, body)
 	return headPos and BotCanSee(bot, body, headPos)
 end
 
+function GetBotTeamId(ply, round)
+	if not IsValid(ply) or not ply:IsPlayer() then return end
+
+	round = round or GetCurrentRound()
+	if round and round.GetBotTeamId then return round:GetBotTeamId(ply) end
+	if round and round.GetBotTeam then return round:GetBotTeam(ply) end
+
+	if round and round.name == "dm" then return end
+	if round and round.name == "hmcd" then return ply.isTraitor and "traitor" or "innocent" end
+
+	local teamID = ply:Team()
+	if teamID == TEAM_SPECTATOR or teamID == TEAM_UNASSIGNED then return end
+	return teamID
+end
+
+function IsBotTeammate(bot, ply)
+	if not IsValid(bot) or not IsValid(ply) or not bot:IsPlayer() or not ply:IsPlayer() then return false end
+	if bot == ply then return true end
+
+	local round = GetCurrentRound()
+	if round and round.IsBotTeammate then return round:IsBotTeammate(bot, ply) end
+
+	local botTeam = GetBotTeamId(bot, round)
+	local targetTeam = GetBotTeamId(ply, round)
+	return botTeam ~= nil and botTeam == targetTeam
+end
+
 function IsUsableTarget(bot, ply)
 	if ply == bot or not IsValid(ply) or not ply:Alive() then return false end
 	if ply:Team() == TEAM_SPECTATOR and (not ply.IsBot or not ply:IsBot()) then return false end
+	if IsBotTeammate(bot, ply) then return false end
 
 	return IsValid(GetBotTargetBody(ply))
 end
@@ -426,8 +454,8 @@ function IsRagdolledTarget(ply)
 	return IsValid(ply:GetNWEntity("FakeRagdoll"))
 end
 
-function IsUprightThreat(ply)
-	return IsUsableTarget(nil, ply) and not IsUnconsciousTarget(ply) and not IsRagdolledTarget(ply)
+function IsUprightThreat(bot, ply)
+	return IsUsableTarget(bot, ply) and not IsUnconsciousTarget(ply) and not IsRagdolledTarget(ply)
 end
 
 function HasNearbyUprightEnemy(bot, ignoreTarget)
@@ -435,7 +463,7 @@ function HasNearbyUprightEnemy(bot, ignoreTarget)
 	local rangeSqr = BOT_RAGDOLL_DEPRIORITIZE_RANGE * BOT_RAGDOLL_DEPRIORITIZE_RANGE
 
 	for _, ply in ipairs(player.GetAll()) do
-		if ply == ignoreTarget or not IsUprightThreat(ply) then continue end
+		if ply == ignoreTarget or not IsUprightThreat(bot, ply) then continue end
 		if botPos:DistToSqr(ply:GetPos()) <= rangeSqr then return true end
 	end
 

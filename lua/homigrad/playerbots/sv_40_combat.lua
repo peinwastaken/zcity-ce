@@ -162,7 +162,7 @@ function RememberBotThreat(bot, attacker, threatPos)
 	end
 
 	if attacker == bot then return end
-	if IsValid(attacker) and attacker:IsPlayer() and attacker:Alive() then
+	if IsUsableTarget(bot, attacker) then
 		bot.ZCBotThreatAttacker = attacker
 		bot.ZCBotTarget = attacker
 		bot.ZCBotNextTargetScan = 0
@@ -739,7 +739,7 @@ hook.Add("StartCommand", "ZC_PlayerBotEnemyAI", function(bot, cmd)
 		if safeTime then ClearCombatButtons(cmd) end
 		return
 	end
-	if not hasCombatTarget and ShouldSeekDeathmatchZoneCenter(round) and not IsUprightThreat(bot.ZCBotTarget) and MoveToDeathmatchZoneCenter(bot, cmd, round, true) then
+	if not hasCombatTarget and ShouldSeekDeathmatchZoneCenter(round) and not IsUprightThreat(bot, bot.ZCBotTarget) and MoveToDeathmatchZoneCenter(bot, cmd, round, true) then
 		if safeTime then ClearCombatButtons(cmd) end
 		return
 	end
