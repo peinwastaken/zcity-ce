@@ -1,4 +1,15 @@
 zb = zb or {}
+hg = hg or {}
+lply = lply or NULL
+
+hook.Add("InitPostEntity", "ZC_SetLocalPlayerGlobal", function()
+	lply = LocalPlayer()
+end)
+
+hook.Add("Think", "ZC_RefreshLocalPlayerGlobal", function()
+	lply = IsValid(lply) and lply or LocalPlayer()
+end)
+
 include("shared.lua")
 include("loader.lua")
 
@@ -47,7 +58,6 @@ end)
 local blur = Material("pp/blurscreen")
 local blursettings = {}
 local zc_potatopc
-hg = hg or {}
 function hg.DrawBlur(panel, amount, passes, alpha)
 	if is3d2d then return end
 	amount = amount or 5

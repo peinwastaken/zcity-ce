@@ -16,14 +16,14 @@ local sides = {
 	["_cl"] = "cl_",
 }
 
-local function IncluderFunc(fileName)
+local function IncluderFunc(fileName, defaultSide)
 	if loadedFiles[fileName] then return end
 	loadedFiles[fileName] = true
 
 	local shortName = string.GetFileFromFilename(fileName)
 	local fileSide = string.lower(string.Left(shortName, 3))
 	local fileSide2 = string.lower(string.Right(string.sub(shortName, 1, -5), 3))
-	local side = sides[fileSide] or sides[fileSide2]
+	local side = sides[fileSide] or sides[fileSide2] or defaultSide
 
 	if SERVER and side == "sv_" then
 		include(fileName)
@@ -42,32 +42,32 @@ local function IncluderFunc(fileName)
 	end
 end
 
-local function LoadFromDir(directory, foldersFirst)
+local function LoadFromDir(directory, foldersFirst, defaultSide)
 	local files, folders = file.Find(directory .. "/*", "LUA")
 
 	if foldersFirst then
 		for _, v in ipairs(folders or {}) do
-			LoadFromDir(directory .. "/" .. v, foldersFirst)
+			LoadFromDir(directory .. "/" .. v, foldersFirst, defaultSide)
 		end
 	end
 
 	for _, v in ipairs(files or {}) do
 		if string.EndsWith(v, ".lua") then
-			IncluderFunc(directory .. "/" .. v)
+			IncluderFunc(directory .. "/" .. v, defaultSide)
 		end
 	end
 
 	if !foldersFirst then
 		for _, v in ipairs(folders or {}) do
-			LoadFromDir(directory .. "/" .. v, foldersFirst)
+			LoadFromDir(directory .. "/" .. v, foldersFirst, defaultSide)
 		end
 	end
 end
 
-local function LoadIfExists(directory, foldersFirst)
+local function LoadIfExists(directory, foldersFirst, defaultSide)
 	if !file.IsDir(directory, "LUA") then return end
 
-	LoadFromDir(directory, foldersFirst)
+	LoadFromDir(directory, foldersFirst, defaultSide)
 end
 
 hg.loaded = false
@@ -203,7 +203,7 @@ local function LoadModes()
 
 	for _, v in ipairs(folders) do
 		MODE = {}
-		LoadFromDir(directory .. "/" .. v, true)
+		LoadFromDir(directory .. "/" .. v, true, "sv_")
 		InitMode()
 		MODE = nil
 	end

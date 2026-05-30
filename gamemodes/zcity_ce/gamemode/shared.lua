@@ -1,3 +1,6 @@
+hg = hg or {}
+hg.ConVars = hg.ConVars or {}
+
 GM.Name = "ZCity"
 GM.Author = "uzelezz, sadsalat, Mr. Point, Zac90, Deka, Mannytko"
 GM.Email = "N/A"
