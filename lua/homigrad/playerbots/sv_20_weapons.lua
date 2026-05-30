@@ -184,6 +184,7 @@ end
 function BotPressMeleeAttack(bot, cmd, wep)
 	if (bot.ZCBotAttackReleaseUntil or 0) > CurTime() then return false end
 	if IsValid(wep) and (wep.reload or wep.deploy) then return false end
+	if GetBotStaminaFraction(bot) <= BOT_MELEE_ATTACK_STAMINA_FRACTION then return false end
 
 	cmd:SetButtons(bit_bor(cmd:GetButtons(), IN_ATTACK))
 	bot.ZCBotAttackReleaseUntil = CurTime() + BOT_ATTACK_PULSE_RELEASE
@@ -193,6 +194,7 @@ end
 function BotTapAttack(bot, cmd, wep)
 	if (bot.ZCBotTapAttackUntil or 0) > CurTime() then return false end
 	if not IsWeaponReadyToFire(wep) then return false end
+	if IsMeleeWeapon(wep) and GetBotStaminaFraction(bot) <= BOT_MELEE_ATTACK_STAMINA_FRACTION then return false end
 
 	cmd:SetButtons(bit_bor(cmd:GetButtons(), IN_ATTACK))
 	bot.ZCBotTapAttackUntil = CurTime() + BOT_UNCONSCIOUS_TAP_INTERVAL
@@ -240,6 +242,22 @@ function IsMeleeWeapon(wep)
 
 	local class = wep:GetClass()
 	return class == "weapon_hands_sh" or class == "weapon_melee" or class:find("hands", 1, true) or class:find("melee", 1, true) or WeaponInheritsBase(wep, "homigrad_base_melee")
+end
+
+function IsUnarmedWeapon(wep)
+	if not IsValid(wep) then return true end
+
+	local class = wep:GetClass()
+	return class == "weapon_hands_sh" or class:find("hands", 1, true)
+end
+
+function IsBotMeaningfullyArmed(bot)
+	local wep = SelectBotWeapon(bot)
+	return IsValid(wep) and not IsUnarmedWeapon(wep)
+end
+
+function IsMeaningfullyArmedWeapon(wep)
+	return IsValid(wep) and not IsMedicineWeapon(wep) and not IsUnarmedWeapon(wep)
 end
 
 function GetMeleeWeaponAttackRange(wep)

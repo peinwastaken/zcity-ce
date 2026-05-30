@@ -113,7 +113,12 @@ function AimBotAt(bot, cmd, aimPos, spread, smooth)
 	local toAim = aimPos - aimOrigin
 	if toAim:LengthSqr() <= 1 then return bot:EyeAngles(), 0 end
 
+	local currentAng = bot:EyeAngles()
 	local aimAng = toAim:Angle()
+	if Vector(toAim.x, toAim.y, 0):LengthSqr() <= BOT_VERTICAL_AIM_YAW_DEADZONE * BOT_VERTICAL_AIM_YAW_DEADZONE then
+		aimAng.y = currentAng.y
+	end
+
 	aimAng.p = aimAng.p + math_Rand(-BOT_AIM_JITTER, BOT_AIM_JITTER)
 	aimAng.y = aimAng.y + math_Rand(-BOT_AIM_JITTER, BOT_AIM_JITTER)
 	aimAng = ApplyBotAimSpread(bot, aimAng, spread or 0)
@@ -121,8 +126,14 @@ function AimBotAt(bot, cmd, aimPos, spread, smooth)
 
 	local muzzleOrigin = GetBotAimOrigin(bot)
 	local muzzleToAim = aimPos - muzzleOrigin
-	if muzzleToAim:LengthSqr() > 1 then
-		aimAng = SetBotViewAngles(bot, cmd, muzzleToAim:Angle(), 1)
+	local muzzleDistSqr = muzzleToAim:LengthSqr()
+	if muzzleDistSqr > 1 and muzzleDistSqr > BOT_CLOSE_AIM_MUZZLE_SNAP_RANGE * BOT_CLOSE_AIM_MUZZLE_SNAP_RANGE then
+		local muzzleAng = muzzleToAim:Angle()
+		if Vector(muzzleToAim.x, muzzleToAim.y, 0):LengthSqr() <= BOT_VERTICAL_AIM_YAW_DEADZONE * BOT_VERTICAL_AIM_YAW_DEADZONE then
+			muzzleAng.y = aimAng.y
+		end
+
+		aimAng = SetBotViewAngles(bot, cmd, muzzleAng, smooth or BOT_AIM_SMOOTH_COMBAT)
 		aimOrigin = muzzleOrigin
 		toAim = muzzleToAim
 	end
@@ -138,6 +149,63 @@ function FaceRecentThreat(bot, cmd)
 	if toThreat:LengthSqr() <= 1 then return false end
 
 	SetBotViewAngles(bot, cmd, toThreat:Angle(), BOT_AIM_SMOOTH_COMBAT)
+	return true
+end
+
+function RememberBotThreat(bot, attacker, threatPos)
+	if not zc_playerbot_ai:GetBool() or not IsValid(bot) or not bot:IsPlayer() or not bot:IsBot() then return end
+	if not bot:Alive() then return end
+
+	if IsValid(attacker) and attacker.GetOwner then
+		local owner = attacker:GetOwner()
+		if IsValid(owner) then attacker = owner end
+	end
+
+	if attacker == bot then return end
+	if IsValid(attacker) and attacker:IsPlayer() and attacker:Alive() then
+		bot.ZCBotThreatAttacker = attacker
+		bot.ZCBotTarget = attacker
+		bot.ZCBotNextTargetScan = 0
+	end
+
+	if not isvector(threatPos) or threatPos:IsZero() then
+		if IsValid(attacker) then threatPos = attacker:WorldSpaceCenter() end
+	end
+	if not isvector(threatPos) or threatPos:IsZero() then return end
+
+	bot.ZCBotThreatPos = threatPos
+	bot.ZCBotThreatUntil = CurTime() + BOT_THREAT_MEMORY_TIME
+end
+
+function FleeFromBotEnemy(bot, cmd, enemy, aimAng, desiredDistance)
+	if not IsValid(enemy) then return false end
+
+	local body = GetBotTargetBody(enemy)
+	local enemyPos = GetBotTargetBodyPos(enemy, body)
+	local away = bot:GetPos() - enemyPos
+	away.z = 0
+	if away:LengthSqr() <= 1 then
+		away = bot:EyeAngles():Forward()
+	else
+		away:Normalize()
+	end
+
+	local fleePos = bot:GetPos() + away * (desiredDistance or BOT_SAFE_ENEMY_AVOID_DEST)
+	fleePos = BiasPosTowardDeathmatchCenter(bot, fleePos, GetCurrentRound())
+
+	local lookPos = IsValid(enemy) and enemy:EyePos() or enemyPos
+	aimAng = aimAng or (lookPos - bot:EyePos()):Angle()
+	aimAng = SetBotViewAngles(bot, cmd, aimAng, BOT_AIM_SMOOTH_COMBAT)
+
+	local followedPath = FollowBotPath(bot, cmd, fleePos, aimAng, 430, false, true)
+	if not followedPath then
+		SetBotMovementToward(bot, cmd, fleePos, aimAng, 380)
+		TryBotTravelSprint(bot, cmd, fleePos)
+		ApplyBotUnstuckMove(bot, cmd)
+		ApplyBotObstacleAvoidance(bot, cmd, aimAng)
+		UpdateBotStuckState(bot, cmd, fleePos)
+	end
+
 	return true
 end
 
@@ -227,6 +295,31 @@ function TryBotReloadAndEvade(bot, cmd, wep, target, aimAng, rawDist, safeTime)
 	return true
 end
 
+function GetRagdollHeadAimPos(body)
+	if not IsValid(body) then return end
+	if body:IsPlayer() then return body:EyePos() end
+
+	return GetEntityBonePos(body, "ValveBiped.Bip01_Head1") or body:WorldSpaceCenter()
+end
+
+function TryBotMeleeRagdollFinisher(bot, cmd, target, body, wep, attackDist, attackRange, safeTime)
+	if not IsRagdolledTarget(target) or attackDist > attackRange then return false end
+
+	local headPos = GetRagdollHeadAimPos(body)
+	if not isvector(headPos) then return false end
+
+	local aimAng = AimBotAt(bot, cmd, headPos, 0, BOT_AIM_SMOOTH_COMBAT)
+	cmd:SetForwardMove(0)
+	cmd:SetSideMove(0)
+	cmd:SetButtons(bit_bor(cmd:GetButtons(), IN_DUCK))
+
+	if not safeTime then
+		BotPressMeleeAttack(bot, cmd, wep)
+	end
+
+	return true
+end
+
 function HoldAndScan(bot, cmd)
 	cmd:SetForwardMove(0)
 	cmd:SetSideMove(0)
@@ -272,13 +365,24 @@ function AimBotFakeAt(bot, cmd, aimPos, smooth)
 	local toAim = aimPos - origin
 	if toAim:LengthSqr() <= 1 then return bot:EyeAngles(), 0 end
 
+	local currentAng = bot:EyeAngles()
 	local aimAng = toAim:Angle()
+	if Vector(toAim.x, toAim.y, 0):LengthSqr() <= BOT_VERTICAL_AIM_YAW_DEADZONE * BOT_VERTICAL_AIM_YAW_DEADZONE then
+		aimAng.y = currentAng.y
+	end
+
 	aimAng = SetBotViewAngles(bot, cmd, aimAng, smooth or 1)
 
 	local muzzleOrigin = GetBotAimOrigin(bot)
 	local muzzleToAim = aimPos - muzzleOrigin
-	if muzzleToAim:LengthSqr() > 1 then
-		aimAng = SetBotViewAngles(bot, cmd, muzzleToAim:Angle(), 1)
+	local muzzleDistSqr = muzzleToAim:LengthSqr()
+	if muzzleDistSqr > 1 and muzzleDistSqr > BOT_CLOSE_AIM_MUZZLE_SNAP_RANGE * BOT_CLOSE_AIM_MUZZLE_SNAP_RANGE then
+		local muzzleAng = muzzleToAim:Angle()
+		if Vector(muzzleToAim.x, muzzleToAim.y, 0):LengthSqr() <= BOT_VERTICAL_AIM_YAW_DEADZONE * BOT_VERTICAL_AIM_YAW_DEADZONE then
+			muzzleAng.y = aimAng.y
+		end
+
+		aimAng = SetBotViewAngles(bot, cmd, muzzleAng, smooth or 1)
 		origin = muzzleOrigin
 		toAim = muzzleToAim
 	end
@@ -470,6 +574,9 @@ function TryBotAttackCurrentTarget(bot, cmd, safeTime, ignoreFOV)
 		return true
 	end
 
+	if meleeWeapon and TryBotMeleeRagdollFinisher(bot, cmd, target, body, wep, attackDist, attackRange, safeTime) then
+		return true
+	end
 
 	if shouldFire then
 		if tapTarget then
@@ -552,8 +659,47 @@ function HandleBotFakeState(bot, cmd, safeTime)
 	return true
 end
 
+function HandleBotThreatResponse(bot, cmd, safeTime)
+	local attacker = bot.ZCBotThreatAttacker
+	if (bot.ZCBotThreatUntil or 0) <= CurTime() or not IsUsableTarget(bot, attacker) then return false end
+
+	local body = GetBotTargetBody(attacker)
+	local aimPos, canSee = GetVisibleTargetAimPosNoFOV(bot, body)
+	if not canSee then
+		return FaceRecentThreat(bot, cmd)
+	end
+
+	local wep = SelectBotWeapon(bot)
+	local botHasGun = IsRangedWeapon(wep) and HasAmmoForWeapon(bot, wep)
+	local meleeOrUnarmed = IsMeleeWeapon(wep)
+	local enemyPos = GetBotTargetBodyPos(attacker, body)
+	local flatOffset = enemyPos - bot:GetPos()
+	flatOffset.z = 0
+	local flatDist = flatOffset:Length()
+
+	bot.ZCBotTarget = attacker
+	bot.ZCBotNextTargetScan = CurTime() + BOT_THINK_INTERVAL
+
+	if botHasGun then
+		return TryBotAttackCurrentTarget(bot, cmd, safeTime, true)
+	end
+
+	if meleeOrUnarmed and flatDist > BOT_THREAT_ESCAPE_RANGE then
+		return FleeFromBotEnemy(bot, cmd, attacker, nil, BOT_UNARMED_FLEE_RANGE)
+	end
+
+	return false
+end
+
+function IsVisibleEnemyArmed(enemy)
+	if not IsValid(enemy) then return false end
+
+	local wep = enemy.GetActiveWeapon and enemy:GetActiveWeapon()
+	return IsMeaningfullyArmedWeapon(wep)
+end
+
 hook.Add("StartCommand", "ZC_PlayerBotEnemyAI", function(bot, cmd)
-	if not zc_playerbot_ai:GetBool() or not bot:IsBot() then return end
+	if zc_playerbot_disable:GetBool() or not zc_playerbot_ai:GetBool() or not bot:IsBot() then return end
 
 	cmd:ClearMovement()
 	cmd:ClearButtons()
@@ -574,6 +720,10 @@ hook.Add("StartCommand", "ZC_PlayerBotEnemyAI", function(bot, cmd)
 	end
 
 	if not HasVisibleEnemy(bot) and TryBotSelfCare(bot, cmd) then return end
+	if HandleBotThreatResponse(bot, cmd, safeTime) then
+		if safeTime then ClearCombatButtons(cmd) end
+		return
+	end
 
 	UpdateBotTarget(bot)
 
@@ -610,6 +760,12 @@ hook.Add("StartCommand", "ZC_PlayerBotEnemyAI", function(bot, cmd)
 
 	local wep = SelectBotWeapon(bot)
 	local meleeWeapon = IsMeleeWeapon(wep)
+	if IsUnarmedWeapon(wep) and IsVisibleEnemyArmed(target) then
+		FleeFromBotEnemy(bot, cmd, target, nil, BOT_UNARMED_FLEE_RANGE)
+		if safeTime then ClearCombatButtons(cmd) end
+		return
+	end
+
 	local chasePos = GetBotTargetBodyPos(target, body)
 	local flat = (meleeWeapon and chasePos or aimPos) - bot:GetPos()
 	flat.z = 0
@@ -631,13 +787,20 @@ hook.Add("StartCommand", "ZC_PlayerBotEnemyAI", function(bot, cmd)
 
 	if meleeWeapon then
 		if TryBotPickupNearbyWeapon(bot, cmd, aimAng) then return end
+		if TryBotMeleeRagdollFinisher(bot, cmd, target, body, wep, attackDist, attackRange, safeTime) then return end
 
 		if flatDist > attackRange * 0.85 then
-			local followedPath = FollowBotPath(bot, cmd, chasePos, aimAng, 460, false, false)
-			if not followedPath then
+			local followedPath, reached = false, false
+			if flatDist > BOT_NAV_DEST_REACH then
+				followedPath, reached = FollowBotPath(bot, cmd, chasePos, aimAng, 460, false, false)
+			end
+
+			if not followedPath or reached then
 				SetBotMovementToward(bot, cmd, chasePos, aimAng, 430)
 				ApplyBotUnstuckMove(bot, cmd)
-				ApplyBotObstacleAvoidance(bot, cmd, aimAng)
+				if flatDist > BOT_CLOSE_RANGE then
+					ApplyBotObstacleAvoidance(bot, cmd, aimAng)
+				end
 				UpdateBotStuckState(bot, cmd, chasePos)
 			end
 
@@ -647,7 +810,6 @@ hook.Add("StartCommand", "ZC_PlayerBotEnemyAI", function(bot, cmd)
 		else
 			cmd:SetForwardMove(120)
 			cmd:SetSideMove(0)
-			ApplyBotObstacleAvoidance(bot, cmd, aimAng)
 			UpdateBotStuckState(bot, cmd, chasePos)
 		end
 
@@ -735,9 +897,35 @@ hook.Add("EntityTakeDamage", "ZC_PlayerBotRememberShotDirection", function(ent, 
 		end
 	end
 
-	if not isvector(threatPos) or threatPos:IsZero() then return end
+	RememberBotThreat(ent, attacker, threatPos)
+end)
 
-	ent.ZCBotThreatPos = threatPos
-	ent.ZCBotThreatUntil = CurTime() + BOT_THREAT_MEMORY_TIME
-	ent.ZCBotNextTargetScan = 0
+hook.Add("ZC_PostEntityFireBullets", "ZC_PlayerBotNoticeSuppression", function(ent, bullet)
+	if not zc_playerbot_ai:GetBool() or not bullet or not bullet.Trace then return end
+
+	local tr = bullet.Trace
+	if not isvector(tr.StartPos) or not isvector(tr.HitPos) then return end
+
+	local attacker = bullet.Attacker
+	if not IsValid(attacker) and IsValid(ent) then
+		attacker = ent.GetOwner and ent:GetOwner() or ent
+	end
+	if not IsValid(attacker) then return end
+
+	for _, bot in player.Iterator() do
+		if not bot:IsBot() or not bot:Alive() or bot == attacker then continue end
+
+		local dist, nearestPos = util.DistanceToLine(tr.StartPos, tr.HitPos, bot:EyePos())
+		if dist > BOT_SUPPRESSION_AWARENESS_DISTANCE then continue end
+
+		local visible = not util.TraceLine({
+			start = nearestPos,
+			endpos = bot:EyePos(),
+			filter = {bot, GetBotFakeRagdollEntity(bot), attacker},
+			mask = MASK_SHOT
+		}).Hit
+		if not visible then continue end
+
+		RememberBotThreat(bot, attacker, tr.StartPos)
+	end
 end)
