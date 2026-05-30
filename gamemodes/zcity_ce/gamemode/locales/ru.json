@@ -146,6 +146,8 @@
     "binds/posture_regular/desc": "Стандартная стойка обращения с оружием",
     "binds/posture_somalian": "Сомалийская",
     "binds/posture_somalian/desc": "Стрельба над головой",
+    "binds/ragdoll_aim": "Ragdoll aiming",
+    "binds/ragdoll_aim/desc": "Aim while fake-ragdolled",
     "binds/suicide": "Самоубийство",
     "binds/suicide/desc": "killbind",
     "binds/toggle_laser": "Переключить лазер",

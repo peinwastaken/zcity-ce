@@ -12,7 +12,8 @@ BindInfo
     ["label"] = "Toggle ragdoll", // bind label in binds menu
     ["description"] = "Bind description", // bind description in binds menu
     ["category"] = "movement", // category, id from binds.categories
-    ["command"] = "fake", // command that is executed
+    ["command"] = "fake", // console command registered for this bind
+    ["run_command"] = "fake", // optional command run when the bind is pressed
     ["args"] = {0}, // args passed to the command being executed (optional)
     ["should_override"] = true // should bind override the console bind? (bind k "kill" would be overriden by our bind) 
     ["default_override"] = true // what the override value defaults to when the player first joins
@@ -33,6 +34,52 @@ local binds = {}
 zb.binds = binds or {}
 
 local BIND_SAVE_PATH = "zcity-ce/settings/binds.json"
+local bindPressedWindow = 0.15
+
+local function GetBindState(id)
+  binds.states = binds.states or {}
+  binds.states[id] = binds.states[id] or {}
+
+  return binds.states[id]
+end
+
+local function SetBindState(id, down)
+  local bindState = GetBindState(id)
+
+  bindState.down = down
+  bindState.changed = CurTime()
+
+  if down then
+    bindState.pressed = CurTime()
+  else
+    bindState.released = CurTime()
+  end
+end
+
+local function SendBindState(id, down)
+  if !isstring(id) then return end
+
+  net.Start("ZC_BindState")
+    net.WriteString(id)
+    net.WriteBool(down)
+  net.SendToServer()
+end
+
+local function PressBind(id, bind)
+  SetBindState(id, true)
+  SendBindState(id, true)
+  hook.Run("ZC_BindStateChanged", id, true)
+
+  if bind.run_command and bind.run_command != "" then
+    RunConsoleCommand(bind.run_command, unpack(bind.args or {}))
+  end
+end
+
+local function ReleaseBind(id, bind)
+  SetBindState(id, false)
+  SendBindState(id, false)
+  hook.Run("ZC_BindStateChanged", id, false)
+end
 
 local function CreateBindSave(default)
   default = default or false
@@ -80,7 +127,7 @@ function binds.LoadBinds()
     zb.dev.DevPrint("binds file not found, creating default")
     binds.SaveDefaultBinds()
   end
- 
+
   local data = file.Read(BIND_SAVE_PATH, "DATA")
   local bindConfig = nil
 
@@ -107,7 +154,7 @@ function binds.LoadBinds()
       bind.should_override = configBind.should_override
     end
   end
-  
+
   if needsUpdate then
     binds.SaveBinds()
   end
@@ -123,7 +170,7 @@ function binds.GetBind(id)
   end
 
   if zb.dev.IsDeveloper() then
-    print(string.format("failed to find bind with id %s", id))  
+    print(string.format("failed to find bind with id %s", id))
   end
 
   return nil
@@ -155,15 +202,33 @@ function binds.FindFirstBind(keycode)
   return nil
 end
 
+function binds.IsDown(id)
+  local bindState = binds.states and binds.states[id]
+
+  return bindState and bindState.down == true or false
+end
+
+function binds.WasPressed(id, window)
+  local bindState = binds.states and binds.states[id]
+  if !bindState or !bindState.pressed then return false end
+
+  return bindState.pressed >= CurTime() - (window or bindPressedWindow)
+end
+
+function binds.WasReleased(id, window)
+  local bindState = binds.states and binds.states[id]
+  if !bindState or !bindState.released then return false end
+
+  return bindState.released >= CurTime() - (window or bindPressedWindow)
+end
+
 hook.Add("PlayerBindPress", "ZC_PlayerBindPressed", function(ply, bind, pressed, key)
   local zcBind = binds.FindFirstBind(key)
   if !zcBind then return end
   if zcBind.key == KEY_NONE then return end
 
-  local command = zcBind.command or ""
-
   if pressed then
-    RunConsoleCommand(command, unpack(zcBind.args or {}))
+    PressBind(zcBind.id, zcBind)
   end
 
   if zcBind.should_override == true then
@@ -175,11 +240,7 @@ hook.Add("PlayerButtonUp", "ZC_PlayerBindUnpressed", function(ply, key)
   local zcBind = binds.FindFirstBind(key)
   if !zcBind then return end
 
-  local command = zcBind.command or ""
-
-  if string.StartsWith(command, "+") then
-    RunConsoleCommand("-" .. string.TrimLeft(command, "+"), unpack(zcBind.args or {}))
-  end
+  ReleaseBind(zcBind.id, zcBind)
 end)
 
 hook.Add("InitPostEntity", "ZC_LoadBindsAfterInit", function()
@@ -203,7 +264,8 @@ binds.allbinds = {
     ["label"] = "binds/kick",
     ["description"] = "binds/kick/desc",
     ["category"] = "movement",
-    ["command"] = "hg_kick",
+    ["command"] = "kick",
+    ["run_command"] = "hg_kick",
     ["should_override"] = false,
     ["default_override"] = false
   },
@@ -213,7 +275,7 @@ binds.allbinds = {
     ["label"] = "binds/zoom",
     ["description"] = "binds/zoom/desc",
     ["category"] = "movement",
-    ["command"] = "+hg_zoom",
+    ["command"] = "+zoom",
     ["should_override"] = false,
     ["default_override"] = false
   },
@@ -223,7 +285,7 @@ binds.allbinds = {
     ["label"] = "binds/lean_left",
     ["description"] = "binds/lean_left/desc",
     ["category"] = "movement",
-    ["command"] = "+alt1",
+    ["command"] = "+leanleft",
     ["should_override"] = false,
     ["default_override"] = false
   },
@@ -233,7 +295,7 @@ binds.allbinds = {
     ["label"] = "binds/lean_right",
     ["description"] = "binds/lean_right/desc",
     ["category"] = "movement",
-    ["command"] = "+alt2",
+    ["command"] = "+leanright",
     ["should_override"] = false,
     ["default_override"] = false
   },
@@ -253,7 +315,8 @@ binds.allbinds = {
     ["label"] = "binds/suicide",
     ["description"] = "binds/suicide/desc",
     ["category"] = "movement",
-    ["command"] = "suicide",
+    ["command"] = "suicidebind",
+    ["run_command"] = "suicide",
     ["should_override"] = false,
     ["default_override"] = false
   },
@@ -265,7 +328,8 @@ binds.allbinds = {
     ["label"] = "binds/drop_weapon",
     ["description"] = "binds/drop_weapon/desc",
     ["category"] = "weapon",
-    ["command"] = "drop",
+    ["command"] = "dropweapon",
+    ["run_command"] = "drop",
     ["should_override"] = false,
     ["default_override"] = false
   },
@@ -275,7 +339,7 @@ binds.allbinds = {
     ["label"] = "binds/hold_breath",
     ["description"] = "binds/hold_breath/desc",
     ["category"] = "weapon",
-    ["command"] = "+hmcd_holdbreath",
+    ["command"] = "+holdbreath",
     ["should_override"] = false,
     ["default_override"] = false
   },
@@ -285,7 +349,8 @@ binds.allbinds = {
     ["label"] = "binds/toggle_laser",
     ["description"] = "binds/toggle_laser/desc",
     ["category"] = "weapon",
-    ["command"] = "hmcd_togglelaser",
+    ["command"] = "togglelaser",
+    ["run_command"] = "hmcd_togglelaser",
     ["should_override"] = false,
     ["default_override"] = false
   },
@@ -297,7 +362,8 @@ binds.allbinds = {
     ["label"] = "binds/fake",
     ["description"] = "binds/fake/desc",
     ["category"] = "movement",
-    ["command"] = "fake",
+    ["command"] = "fakeragdoll",
+    ["run_command"] = "fake",
     ["should_override"] = false,
     ["default_override"] = false
   },
@@ -307,7 +373,7 @@ binds.allbinds = {
     ["label"] = "binds/fake_grab_left",
     ["description"] = "binds/fake_grab_left/desc",
     ["category"] = "ragdoll",
-    ["command"] = "+speed",
+    ["command"] = "+fakegrableft",
     ["should_override"] = false,
     ["default_override"] = false
   },
@@ -317,7 +383,17 @@ binds.allbinds = {
     ["label"] = "binds/fake_grab_right",
     ["description"] = "binds/fake_grab_right/desc",
     ["category"] = "ragdoll",
-    ["command"] = "+walk",
+    ["command"] = "+fakegrabright",
+    ["should_override"] = false,
+    ["default_override"] = false
+  },
+  ["ragdoll_aim"] = {
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
+    ["label"] = "binds/ragdoll_aim",
+    ["description"] = "binds/ragdoll_aim/desc",
+    ["category"] = "ragdoll",
+    ["command"] = "+ragdollaim",
     ["should_override"] = false,
     ["default_override"] = false
   },
@@ -329,7 +405,8 @@ binds.allbinds = {
     ["label"] = "binds/posture_regular",
     ["description"] = "binds/posture_regular/desc",
     ["category"] = "posture",
-    ["command"] = "hg_change_posture",
+    ["command"] = "postureregular",
+    ["run_command"] = "hg_change_posture",
     ["args"] = {0},
     ["should_override"] = false,
     ["default_override"] = false
@@ -340,7 +417,8 @@ binds.allbinds = {
     ["label"] = "binds/posture_hipfire",
     ["description"] = "binds/posture_hipfire/desc",
     ["category"] = "posture",
-    ["command"] = "hg_change_posture",
+    ["command"] = "posturehipfire",
+    ["run_command"] = "hg_change_posture",
     ["args"] = {1},
     ["should_override"] = false,
     ["default_override"] = false
@@ -351,7 +429,8 @@ binds.allbinds = {
     ["label"] = "binds/posture_leftshoulder",
     ["description"] = "binds/posture_leftshoulder/desc",
     ["category"] = "posture",
-    ["command"] = "hg_change_posture",
+    ["command"] = "postureleftshoulder",
+    ["run_command"] = "hg_change_posture",
     ["args"] = {2},
     ["should_override"] = false,
     ["default_override"] = false
@@ -362,7 +441,8 @@ binds.allbinds = {
     ["label"] = "binds/posture_highready",
     ["description"] = "binds/posture_highready/desc",
     ["category"] = "posture",
-    ["command"] = "hg_change_posture",
+    ["command"] = "posturehighready",
+    ["run_command"] = "hg_change_posture",
     ["args"] = {3},
     ["should_override"] = false,
     ["default_override"] = false
@@ -373,7 +453,8 @@ binds.allbinds = {
     ["label"] = "binds/posture_lowready",
     ["description"] = "binds/posture_lowready/desc",
     ["category"] = "posture",
-    ["command"] = "hg_change_posture",
+    ["command"] = "posturelowready",
+    ["run_command"] = "hg_change_posture",
     ["args"] = {4},
     ["should_override"] = false,
     ["default_override"] = false
@@ -384,7 +465,8 @@ binds.allbinds = {
     ["label"] = "binds/posture_pointshooting",
     ["description"] = "binds/posture_pointshooting/desc",
     ["category"] = "posture",
-    ["command"] = "hg_change_posture",
+    ["command"] = "posturepointshooting",
+    ["run_command"] = "hg_change_posture",
     ["args"] = {5},
     ["should_override"] = false,
     ["default_override"] = false
@@ -395,7 +477,8 @@ binds.allbinds = {
     ["label"] = "binds/posture_cover",
     ["description"] = "binds/posture_cover/desc",
     ["category"] = "posture",
-    ["command"] = "hg_change_posture",
+    ["command"] = "posturecover",
+    ["run_command"] = "hg_change_posture",
     ["args"] = {6},
     ["should_override"] = false,
     ["default_override"] = false
@@ -406,7 +489,8 @@ binds.allbinds = {
     ["label"] = "binds/posture_gangsta",
     ["description"] = "binds/posture_gangsta/desc",
     ["category"] = "posture",
-    ["command"] = "hg_change_posture",
+    ["command"] = "posturegangsta",
+    ["run_command"] = "hg_change_posture",
     ["args"] = {7},
     ["should_override"] = false,
     ["default_override"] = false
@@ -417,7 +501,8 @@ binds.allbinds = {
     ["label"] = "binds/posture_onehanded",
     ["description"] = "binds/posture_onehanded/desc",
     ["category"] = "posture",
-    ["command"] = "hg_change_posture",
+    ["command"] = "postureonehanded",
+    ["run_command"] = "hg_change_posture",
     ["args"] = {8},
     ["should_override"] = false,
     ["default_override"] = false
@@ -428,7 +513,8 @@ binds.allbinds = {
     ["label"] = "binds/posture_somalian",
     ["description"] = "binds/posture_somalian/desc",
     ["category"] = "posture",
-    ["command"] = "hg_change_posture",
+    ["command"] = "posturesomalian",
+    ["run_command"] = "hg_change_posture",
     ["args"] = {9},
     ["should_override"] = false,
     ["default_override"] = false
@@ -441,7 +527,7 @@ binds.allbinds = {
     ["label"] = "binds/open_radial",
     ["description"] = "binds/open_radial/desc",
     ["category"] = "misc",
-    ["command"] = "+radialmenu",
+    ["command"] = "+openradial",
     ["should_override"] = false,
     ["default_override"] = false
   },
@@ -453,7 +539,8 @@ binds.allbinds = {
     ["label"] = "binds/open_admin",
     ["description"] = "binds/open_admin/desc",
     ["category"] = "admin",
-    ["command"] = "adminmenu",
+    ["command"] = "openadmin",
+    ["run_command"] = "adminmenu",
     ["should_override"] = false,
     ["default_override"] = false
   },
@@ -463,8 +550,43 @@ binds.allbinds = {
     ["label"] = "binds/open_admin_config",
     ["description"] = "binds/open_admin_config/desc",
     ["category"] = "admin",
-    ["command"] = "adminmenu_modeconfig",
+    ["command"] = "openadminconfig",
+    ["run_command"] = "adminmenu_modeconfig",
     ["should_override"] = false,
     ["default_override"] = false
   }
 }
+
+function binds.RegisterConCommands()
+  for id, bind in pairs(binds.allbinds) do
+    bind.id = id
+
+    local command = bind.command or ""
+    if command == "" then continue end
+
+    local firstChar = string.sub(command, 1, 1)
+
+    if firstChar == "+" or firstChar == "-" then
+      local commandBase = string.sub(command, 2)
+      if commandBase == "" then continue end
+
+      concommand.Add("+" .. commandBase, function()
+        PressBind(id, bind)
+      end)
+
+      concommand.Add("-" .. commandBase, function()
+        ReleaseBind(id, bind)
+      end)
+    else
+      concommand.Add(command, function()
+        PressBind(id, bind)
+
+        timer.Simple(0, function()
+          ReleaseBind(id, bind)
+        end)
+      end)
+    end
+  end
+end
+
+binds.RegisterConCommands()

@@ -256,13 +256,23 @@ local ang9 = Angle(30, 0, 0)
 local ang10 = Angle(35, 0, 0)
 local ang11 = Angle(20, 0, 0)
 
+local function IsZCBindDown(ply, id)
+	if CLIENT then
+		return hg.IsLocal(ply) and zb and zb.binds and zb.binds.IsDown and zb.binds.IsDown(id) or false
+	end
+
+	return zb and zb.binds and zb.binds.IsDown and zb.binds.IsDown(ply, id) or false
+end
+
 hook.Add("ZC_UpdatePlayerBones", "ZC_UpdateWeaponLeanBones", function(ply, dtime)
 	ply.weightmul = weightmul or hg.CalculateWeight(ply, 140)
 
 	local ragdollcombat = hg.RagdollCombatInUse(ply)
 	local isragdoll = IsValid(ply.FakeRagdoll) and !IsValid(ply:GetNWEntity("FakeRagdollOld"))
-	local left = ((isragdoll and !ragdollcombat and hg.KeyDown(ply, IN_MOVERIGHT)) or hg.KeyDown(ply, IN_ALT2)) and not hg.KeyDown(ply, IN_ALT1)
-	local right = ((isragdoll and !ragdollcombat and hg.KeyDown(ply, IN_MOVELEFT)) or hg.KeyDown(ply, IN_ALT1)) and not hg.KeyDown(ply, IN_ALT2)
+	local leftBind = IsZCBindDown(ply, "lean_left")
+	local rightBind = IsZCBindDown(ply, "lean_right")
+	local left = ((isragdoll and !ragdollcombat and hg.KeyDown(ply, IN_MOVERIGHT)) or leftBind) and not rightBind
+	local right = ((isragdoll and !ragdollcombat and hg.KeyDown(ply, IN_MOVELEFT)) or rightBind) and not leftBind
 
 	ply.lean = Lerp(
 		hg.lerpFrameTime( ( left or right ) and 0.045 * ply:GetNetVar("leanSpeedMul",1) or 0.075, dtime * game.GetTimeScale()),

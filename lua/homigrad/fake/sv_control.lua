@@ -121,7 +121,17 @@ local function FakeControlKeyDown(ply, key)
 	local buttons = GetFakeControlButtons(ply)
 	if buttons then return bit.band(buttons, key) ~= 0 end
 
+	if key == IN_SPEED and ply.ZCBindDown and ply:ZCBindDown("fake_grab_left") then return true end
+	if key == IN_WALK and ply.ZCBindDown and ply:ZCBindDown("fake_grab_right") then return true end
+
 	return ply:KeyDown(key)
+end
+
+local function FakeRagdollAimKeyDown(ply)
+	if controlUseCvar:GetBool() then return true end
+	if ply.ZCBindDown and ply:ZCBindDown("ragdoll_aim") then return true end
+
+	return FakeControlKeyDown(ply, IN_USE)
 end
 
 local function GetFakeControlEyeAngles(ply)
@@ -137,7 +147,7 @@ hook.Add("Think", "ZC_UpdateFakeRagdollControl", function()
 
 	//for ply, ragdoll in pairs(hg.ragdollFake) do
 	for _, ply in player.Iterator() do
-		local inUse = controlUseCvar:GetBool() or FakeControlKeyDown(ply, IN_USE)
+		local inUse = FakeRagdollAimKeyDown(ply)
 		if hg.GetFakeState and hg.GetFakeState(ply) ~= ((hg.FAKE_STATE and hg.FAKE_STATE.ACTIVE) or 1) then continue end
 
 		local ragdoll = hg.ragdollFake[ply]//ply.FakeRagdoll

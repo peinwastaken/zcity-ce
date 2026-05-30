@@ -364,7 +364,8 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	if GetViewEntity() ~= (ply or LocalPlayer()) then return end
 	local oldangles = -(-angles)
 	fov = zc_fov:GetInt()
-	lerpfovadd2 = LerpFT(0.1, lerpfovadd2, zooming and -25 or 0)
+	local zoomHeld = zb and zb.binds and zb.binds.IsDown and zb.binds.IsDown("zoom") or false
+	lerpfovadd2 = LerpFT(0.1, lerpfovadd2, (zooming or zoomHeld) and -25 or 0)
 
 	if not lply:Alive() then
 		fakeTimer = fakeTimer or CurTime() + 30
@@ -444,7 +445,8 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	end
 
 	local alwaysRagdollAim = GetConVar("zc_always_ragdoll_aim")
-	local inUse = (alwaysRagdollAim and alwaysRagdollAim:GetBool()) or hg.KeyDown(ply, IN_USE)
+	local ragdollAimHeld = zb and zb.binds and zb.binds.IsDown and zb.binds.IsDown("ragdoll_aim") or false
+	local inUse = (alwaysRagdollAim and alwaysRagdollAim:GetBool()) or ragdollAimHeld or hg.KeyDown(ply, IN_USE)
 	local inVehicle = ply:InVehicle()
 	local unconscious = ply.organism and ply.organism.unconscious
 	local freeRagdollView = not inUse and not inVehicle

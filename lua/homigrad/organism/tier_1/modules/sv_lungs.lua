@@ -101,7 +101,7 @@ concommand.Add("hmcd_holdbreath",function(ply)
 	togglebreath(ply)
 end)
 
-concommand.Add("+hmcd_holdbreath",function(ply)
+local function startHoldingBreath(ply)
 	if not ply.organism then return end
 	if not ply:Alive() then return end
 	if ply:GetVelocity():Length() > 5 then return end
@@ -112,9 +112,9 @@ concommand.Add("+hmcd_holdbreath",function(ply)
 	ply.cooldownbreathe = CurTime() + 0.5
 
 	togglebreath(ply,true)
-end)
+end
 
-concommand.Add("-hmcd_holdbreath",function(ply)
+local function stopHoldingBreath(ply)
 	if not ply.organism then return end
 	if ply.organism.stamina[1] < 90 then return end
 	if ply.organism.o2.curregen == 0 then return end
@@ -122,6 +122,16 @@ concommand.Add("-hmcd_holdbreath",function(ply)
 	if (ply.cooldownbreathe or 0) > CurTime() then ply.releasebreathe = ply.cooldownbreathe return end
 
 	togglebreath(ply,false)
+end
+
+hook.Add("ZC_BindStateChanged", "ZC_HoldBreathBind", function(ply, id, down)
+	if id != "hold_breath" then return end
+
+	if down then
+		startHoldingBreath(ply)
+	else
+		stopHoldingBreath(ply)
+	end
 end)
 
 local lowoxy = {

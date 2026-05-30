@@ -146,6 +146,8 @@
     "binds/posture_regular/desc": "Standard weapon handling posture",
     "binds/posture_somalian": "Somalian",
     "binds/posture_somalian/desc": "Overhead shooting",
+    "binds/ragdoll_aim": "Ragdoll aiming",
+    "binds/ragdoll_aim/desc": "Aim while fake-ragdolled",
     "binds/suicide": "Suicide",
     "binds/suicide/desc": "killbind",
     "binds/toggle_laser": "Toggle laser",

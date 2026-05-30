@@ -1,10 +1,3 @@
-concommand.Add("+radialmenu", function() 
-	hook.Run("ZC_HandleRadialMenuBind", true)
-end, function() end, "Opens the radial menu")
-concommand.Add("-radialmenu", function() 
-	hook.Run("ZC_HandleRadialMenuBind", false)
-end, function() end, "Closes the radial menu")
-
 local hide = {
 	["CHudHealth"] = true,
 	["CHudBattery"] = true,
@@ -202,6 +195,7 @@ local isMouseOnRadial = false
 local current_option = 1
 local current_option_select = 1
 local hook_Run = hook.Run
+local radialMenuBindDown = false
 
 local incoentCol = Color(128,0,0)
 
@@ -449,6 +443,12 @@ hook.Add( "ZC_HandleRadialMenuBind", "ZC_HandleRadialMenuBind", function( open )
 end)
 
 hook.Add("Think", "ZC_RadialMenu", function()
+	local bindDown = zb and zb.binds and zb.binds.IsDown and zb.binds.IsDown("open_radial") or false
+	if bindDown != radialMenuBindDown then
+		radialMenuBindDown = bindDown
+		hook_Run("ZC_HandleRadialMenuBind", bindDown)
+	end
+
 	if (lply.organism and lply.organism.unconscious) then
 
 		if IsValid(menuPanel) then
