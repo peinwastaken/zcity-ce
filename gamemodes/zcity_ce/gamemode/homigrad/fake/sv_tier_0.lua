@@ -878,21 +878,23 @@ local function StartFakeGetUpSequence(ply, ragdoll)
 	local sequence = GET_UP_SEQUENCES[posture] or GET_UP_SEQUENCE
 	DevPrintFakeGetUp(string.format("[ZC fake] get up posture=%s sequence=%s forward=%.2f right=%.2f", posture, sequence, forwardDot or 0, rightDot or 0))
 
-	local seq, duration = ply:LookupSequence(sequence)
-
-	if not seq or seq < 0 then
-		DevPrintFakeGetUp(string.format("[ZC fake] get up sequence missing: %s", sequence))
-		return DEFAULT_GET_UP_TIME, false
-	end
-
-	duration = math.max(duration or 0, 0.1)
-	local playTime = math.max(duration - GET_UP_END_TRIM, 0.1)
-
-	if ply.PlayCustomAnims then
-		ply:PlayCustomAnims(sequence, false, playTime, false, 0, nil, GET_UP_LERP_TIME)
-	end
-
-	return playTime, true
+	-- TODO: add get up anims to all player models and reimplement this!
+	-- local seq, duration = ply:LookupSequence(sequence)
+	--
+	-- if not seq or seq < 0 then
+	-- 	DevPrintFakeGetUp(string.format("[ZC fake] get up sequence missing: %s", sequence))
+	-- 	return DEFAULT_GET_UP_TIME, false
+	-- end
+	--
+	-- duration = math.max(duration or 0, 0.1)
+	-- local playTime = math.max(duration - GET_UP_END_TRIM, 0.1)
+	--
+	-- if ply.PlayCustomAnims then
+	-- 	ply:PlayCustomAnims(sequence, false, playTime, false, 0, nil, GET_UP_LERP_TIME)
+	-- end
+	--
+	-- return playTime, true
+	return 0, false
 end
 
 hook.Add("StartCommand", "ZC_BlockFakeRestoringInput", function(ply, cmd)
