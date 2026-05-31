@@ -1,5 +1,5 @@
 if SERVER then AddCSLuaFile() end
-SWEP.Base = "weapon_base"
+SWEP.Base = "zcity_weapon_base"
 SWEP.PrintName = "Suit"
 SWEP.Instructions = "A simple costume, along with a mask, can help hide your identity, your clothes will stay in the suitcase in the future you can put them back on."
 SWEP.Category = "ZCity Other"

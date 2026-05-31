@@ -1,5 +1,5 @@
 if SERVER then AddCSLuaFile() end
-SWEP.Base = "weapon_base"
+SWEP.Base = "zcity_weapon_base"
 SWEP.PrintName = "Handcuffs Key"
 SWEP.Instructions = "Keys for handcuffs."
 SWEP.Category = "ZCity Other"

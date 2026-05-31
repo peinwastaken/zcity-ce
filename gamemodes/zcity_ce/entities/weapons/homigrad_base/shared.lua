@@ -1,4 +1,4 @@
-SWEP.Base = "weapon_base"
+SWEP.Base = "zcity_weapon_base"
 SWEP.PrintName = "base_hg"
 SWEP.Category = "Other"
 SWEP.Spawnable = false

@@ -1,5 +1,5 @@
 if SERVER then AddCSLuaFile() end
-SWEP.Base = "weapon_base"
+SWEP.Base = "zcity_weapon_base"
 SWEP.PrintName = "base_hg_melee"
 SWEP.Instructions = "Shared base for melee weapons"
 SWEP.Category = "Other"

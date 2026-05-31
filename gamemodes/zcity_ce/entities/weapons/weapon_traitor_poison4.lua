@@ -1,5 +1,5 @@
 if SERVER then AddCSLuaFile() end
-SWEP.Base = "weapon_base"
+SWEP.Base = "zcity_weapon_base"
 SWEP.PrintName = "Curare vial"
 SWEP.Instructions = "Curare only becomes active when it contaminates a wound or is introduced directly to the bloodstream; it is not active when ingested orally. This poison causes weakness of the skeletal muscles and, when administered in a sufficient dose, eventual death by asphyxiation due to paralysis of the diaphragm."
 SWEP.Category = "ZCity Other"

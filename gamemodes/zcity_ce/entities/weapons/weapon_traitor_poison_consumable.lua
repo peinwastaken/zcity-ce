@@ -7,7 +7,7 @@
 --//
 
 if SERVER then AddCSLuaFile() end
-SWEP.Base = "weapon_base"
+SWEP.Base = "zcity_weapon_base"
 SWEP.PrintName = "Cyanide Capsule"
 SWEP.InstructionsBasic = "Potassium cyanide powder in a capsule\nToxic (time to incapacitation ~90 seconds from 140mg)\nSugary drinks will decompose KCN upon consumption\nNOT to be mixed with food or applied to bandages, you don't want to kill anyone with it do you?"	--; TODO Mansion tea cup
 SWEP.Instructions = SWEP.InstructionsBasic

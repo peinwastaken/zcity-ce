@@ -1,5 +1,5 @@
 if SERVER then AddCSLuaFile() end
-SWEP.Base = "weapon_base"
+SWEP.Base = "zcity_weapon_base"
 SWEP.PrintName = "Cyanide canister"
 SWEP.Instructions = "Produces gas, which prevents transport of electrons from cytochrome c to oxygen. As a result, the electron transport chain is disrupted, meaning that the cell can no longer aerobically produce ATP for energy. Tissues that depend highly on aerobic respiration, such as the central nervous system and the heart, are particularly affected."
 SWEP.Category = "ZCity Other"

@@ -1,5 +1,5 @@
 if SERVER then AddCSLuaFile() end
-SWEP.Base = "weapon_base"
+SWEP.Base = "zcity_weapon_base"
 local function RagdollOwner(ent)
 	return hg.RagdollOwner(ent)
 end
