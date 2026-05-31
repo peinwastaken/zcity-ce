@@ -4,6 +4,31 @@ local IsValid, math_Clamp = IsValid, math.Clamp
 --\\ Smooth UnRagdoll
 	local DEFAULT_GET_UP_LERP_TIME = 0.3
 	local vecSmall = Vector(0.01, 0.01, 0.01)
+	local function ClearSmoothUnfakeCache(ply)
+		ply.ZCSmoothUnfakeStart = nil
+		ply.ZCSmoothUnfakeEnt = nil
+	end
+
+	local function CacheSmoothUnfakeStart(ent, ply)
+		if ply.ZCSmoothUnfakeStart and ply.ZCSmoothUnfakeEnt == ent then return ply.ZCSmoothUnfakeStart end
+
+		local matrices = {}
+		for i = 0, ent:GetBoneCount() - 1 do
+			local mat = ent:GetBoneMatrix(i)
+			if mat then
+				local newmat = Matrix()
+				newmat:SetTranslation(mat:GetTranslation())
+				newmat:SetAngles(mat:GetAngles())
+				newmat:SetScale(mat:GetScale())
+				matrices[i] = newmat
+			end
+		end
+
+		ply.ZCSmoothUnfakeStart = matrices
+		ply.ZCSmoothUnfakeEnt = ent
+		return matrices
+	end
+
 	local function ApplyGetUpHeadScale(ent, ply, bone, mat)
 		if bone == ent:LookupBone("ValveBiped.Bip01_Head1") and lply == GetViewEntity() and lply == ply then
 			mat:SetScale(vecSmall)
@@ -30,16 +55,18 @@ local IsValid, math_Clamp = IsValid, math.Clamp
 	function hg.SmoothUnfake(ent, ply)
 		if not ply.gettingup_into_getup then return false end
 
-		local lerpTime = ply.gettingup_lerp or DEFAULT_GET_UP_LERP_TIME
-		if not ply.gettingup or (ply.gettingup + lerpTime - CurTime()) <= 0 then return false end
+		local lerpTime = math.max(ply.gettingup_lerp or DEFAULT_GET_UP_LERP_TIME, 0.01)
+		if not ply.gettingup then return false end
+
+		local k = math_Clamp((CurTime() - ply.gettingup) / lerpTime, 0, 1)
+		local smoothK = k * k * (3 - 2 * k)
+		local startMatrices = CacheSmoothUnfakeStart(ent, ply)
 
 		for i = 0, ent:GetBoneCount() - 1 do
-			local m1 = ent:GetBoneMatrix(i)
+			local m1 = startMatrices[i]
 			local m2 = ply:GetBoneMatrix(i)
 
 			if not m1 or not m2 then continue end
-
-			local k = math_Clamp((CurTime() - ply.gettingup) / lerpTime, 0, 1)
 
 			local q1 = Quaternion()
 			q1:SetMatrix(m1)
@@ -47,10 +74,10 @@ local IsValid, math_Clamp = IsValid, math.Clamp
 			local q2 = Quaternion()
 			q2:SetMatrix(m2)
 
-			local q3 = q1:SLerp(q2, k)
+			local q3 = q1:SLerp(q2, smoothK)
 
 			local newmat = Matrix()
-			newmat:SetTranslation(LerpVector(k, m1:GetTranslation(), m2:GetTranslation()))
+			newmat:SetTranslation(LerpVector(smoothK, m1:GetTranslation(), m2:GetTranslation()))
 			newmat:SetAngles(q3:Angle())
 			newmat:SetScale(m1:GetScale())
 			ApplyGetUpHeadScale(ent, ply, i, newmat)
@@ -82,6 +109,7 @@ local IsValid, math_Clamp = IsValid, math.Clamp
 		if ply.prevragdoll_index != nil and ply.prevragdoll_index != ply.ragdoll_index and ply.ragdoll_index == 0 and hg.GetFakeState and hg.GetFakeState(ply) == ((hg.FAKE_STATE and hg.FAKE_STATE.RESTORING) or 2) then
 			//print(ply.ragdoll_index, ply.prevragdoll_index, Entity(ply.ragdoll_index))
 
+			ClearSmoothUnfakeCache(ply)
 			ply.gettingup = CurTime()
 			ply.gettingup_lerp = DEFAULT_GET_UP_LERP_TIME
 			ply.gettingup_into_getup = true
@@ -105,8 +133,11 @@ local IsValid, math_Clamp = IsValid, math.Clamp
 
 		if IsValid(ply.OldRagdoll) and ply.gettingup_into_getup then
 			if not hg.SmoothUnfake(ent, ply) then
+				ClearSmoothUnfakeCache(ply)
 				hg.MatchUnfakeToGetUpSequence(ent, ply)
 			end
+		else
+			ClearSmoothUnfakeCache(ply)
 		end
 
 		hg.MainTPIKFunction(ent, ply, wep)

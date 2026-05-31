@@ -613,6 +613,8 @@ local function BeginClientFakeRestore(ply, ragdoll, seq, state)
 		hg.RestoreFakeHead(oldrag)
 
 		if state == FAKE_STATE_RESTORING then
+			ply.ZCSmoothUnfakeStart = nil
+			ply.ZCSmoothUnfakeEnt = nil
 			ply.gettingup = CurTime()
 			ply.gettingup_lerp = 0.3
 			ply.gettingup_into_getup = true
@@ -645,6 +647,8 @@ local function BeginClientFakeRestore(ply, ragdoll, seq, state)
 	end
 
 	ply.gettingup_into_getup = nil
+	ply.ZCSmoothUnfakeStart = nil
+	ply.ZCSmoothUnfakeEnt = nil
 	ply.HGLastCustomAnim = nil
 
 	if IsValid(ply.FakeRagdoll) then
