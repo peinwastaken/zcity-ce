@@ -40,7 +40,8 @@ function hg.DrawBlur(panel, amount, passes, alpha)
 end
 
 local function BlockSpawn(ply, ent)
-	if game.SinglePlayer() or ply:IsAdmin() then return true end
+	local mode = CurrentRound and CurrentRound()
+	if game.SinglePlayer() or ply:IsAdmin() or (mode and mode.AllowSpawnMenu) then return true end
 
 	return false
 end
@@ -70,8 +71,15 @@ if CLIENT then
 
 	hook.Add( "SpawnMenuOpen", "ZC_BlockSpawnMenu", function()
 		local ply = LocalPlayer()
-		if ply:IsSuperAdmin() then return end
-		if ply:IsAdmin() then return end
+		local mode = CurrentRound and CurrentRound()
+		if game.SinglePlayer() or ply:IsAdmin() or (mode and mode.AllowSpawnMenu) then return end
+		return false
+	end )
+
+	hook.Add( "ContextMenuOpen", "ZC_BlockContextMenu", function()
+		local ply = LocalPlayer()
+		local mode = CurrentRound and CurrentRound()
+		if game.SinglePlayer() or ply:IsAdmin() or (mode and mode.AllowContextMenu) then return end
 		return false
 	end )
 end

@@ -116,17 +116,19 @@ function zb:CheckWinner(tbl)
 end
 
 zb.ROUND_TIME = zb.ROUND_TIME or 300
+zb.DEFAULT_RESPAWN_TIMER = zb.DEFAULT_RESPAWN_TIMER or 10
 
 function zb:ShouldRoundEnd()
 	local time = zb.ROUND_TIME
-	local shouldroundend = CurrentRound():ShouldRoundEnd()
+	local mode = CurrentRound()
+	local shouldroundend = mode:ShouldRoundEnd()
 	if shouldroundend ~= false then
-		local boringround = (zb.ROUND_START + time) < CurTime()
+		local boringround = not mode.DisableRoundTimer and (zb.ROUND_START + time) < CurTime()
 
-		if boringround and CurrentRound().BoringRoundFunction then
+		if boringround and mode.BoringRoundFunction then
 			PrintMessage(HUD_PRINTTALK, "Stopping round because it was TOO boring.")
 
-			CurrentRound():BoringRoundFunction()
+			mode:BoringRoundFunction()
 		end
 
 		return (shouldroundend and true) or (boringround)
@@ -211,6 +213,31 @@ function zb:Think(time)
 end
 
 hook.Add("Think", "ZC_RoundSystemThink", function() zb:Think(CurTime()) end)
+
+hook.Add("PlayerDeath", "ZC_ModeRespawnTimer", function(ply)
+	local mode = CurrentRound()
+	if not mode or not mode.AllowRespawn then return end
+	if ply:Team() == TEAM_SPECTATOR then return end
+
+	local modeName = mode.name
+	local delay = tonumber(mode.RespawnTimer) or zb.DEFAULT_RESPAWN_TIMER
+	local timerName = "ZC_ModeRespawnTimer" .. ply:EntIndex()
+
+	timer.Create(timerName, math.max(delay, 0), 1, function()
+		if not IsValid(ply) or ply:Alive() or ply:Team() == TEAM_SPECTATOR then return end
+		if zb.ROUND_STATE ~= 1 then return end
+
+		local currentMode = CurrentRound()
+		if not currentMode or currentMode.name ~= modeName or not currentMode.AllowRespawn then return end
+
+		ply:Spawn()
+		PlayerSelectSpawn(ply)
+
+		if currentMode.GivePlayerEquipment then
+			currentMode:GivePlayerEquipment(ply)
+		end
+	end)
+end)
 
 function zb:KillPlayers()
 	local mode = CurrentRound()

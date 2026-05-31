@@ -175,10 +175,11 @@ end
 function GM:PlayerSelectSpawn(ply, transition)
 end
 
-local function PlayerSelectSpawn(ply, transition)
-	if CurrentRound().randomSpawns then
+function PlayerSelectSpawn(ply, transition)
+	local mode = CurrentRound()
+	if mode.randomSpawns or not mode.GetTeamSpawn then
 		local randSpawn = zb:GetRandomSpawn()
-		ply:SetPos(randSpawn)
+		if randSpawn then ply:SetPos(randSpawn) end
 
 		return
 	end
@@ -346,6 +347,8 @@ hook.Add("PlayerDeathThink", "ZC_NetworkSpectatorTarget", function(ply)
 end)
 
 function GM:PlayerDeathThink(ply)
+	local mode = CurrentRound()
+	if mode and mode.AllowRespawn then return false end
 	if not ply:CanSpawn() then return false end
 end
 
@@ -545,7 +548,8 @@ function GM:EntityKeyValue( ent, key, value )
 end
 
 hook.Add("CanProperty", "ZC_BlockPropertyExploit", function(ply, property, ent)
-	if(!ply:IsAdmin())then
+	local mode = CurrentRound and CurrentRound()
+	if not (game.SinglePlayer() or ply:IsAdmin() or (mode and mode.AllowContextMenu)) then
 		return false
 	end
 end)

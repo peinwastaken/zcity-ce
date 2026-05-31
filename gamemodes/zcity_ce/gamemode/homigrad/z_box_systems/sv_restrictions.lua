@@ -16,6 +16,8 @@ local DisableHookSpawns = {
 }
 for _, v in pairs(DisableHookSpawns) do
     Hook[v] = function(ply)
+        local mode = CurrentRound and CurrentRound()
+        if game.SinglePlayer() or ply:IsAdmin() or (mode and mode.AllowSpawnMenu) then return true end
         --if ply:IsAdmin() then
             --return true
         --else
@@ -64,6 +66,8 @@ end
 
 --Weapon restriction...
 function Hook.PlayerSpawnSWEP(ply, class)
+    local mode = CurrentRound and CurrentRound()
+    if game.SinglePlayer() or ply:IsAdmin() or (mode and mode.AllowSpawnMenu) then return true end
     --if ply:IsAdmin() and (class == "gmod_tool" or class == "weapon_physgun") then
     --    return
     --end
@@ -98,6 +102,8 @@ end
 
 
 function Hook.PlayerGiveSWEP(ply,class)
+    local mode = CurrentRound and CurrentRound()
+    if game.SinglePlayer() or ply:IsAdmin() or (mode and mode.AllowSpawnMenu) then return true end
     --if ply:IsAdmin() and (class == "gmod_tool" or class == "weapon_physgun") then
        -- return
     --end
@@ -132,6 +138,8 @@ end
 
 
 function Hook.PlayerSpawnSENT(ply,class)
+    local mode = CurrentRound and CurrentRound()
+    if game.SinglePlayer() or ply:IsAdmin() or (mode and mode.AllowSpawnMenu) then return true end
     if not ply:IsAdmin() then return false end
     --if entsRestrict[class] and !ply:IsAdmin() then return false end
     --ply.ThingCD = ply.ThingCD or 0
