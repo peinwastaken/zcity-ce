@@ -50,6 +50,45 @@ local scrW, scrH = ScrW(), ScrH()
 
 local gradient_u = Material("vgui/gradient-d")
 
+function WS.DrawWeaponSelectionIcon( wep, x, y, wide, tall, alpha )
+    if not IsValid( wep ) then return end
+
+    local icon = wep.WepSelectIcon2
+    local boxed = wep.WepSelectIcon2box
+
+    if type( icon ) ~= "IMaterial" or icon:GetName() == "null" then
+        icon = wep.WepSelectIcon
+        boxed = false
+    end
+
+    if type( icon ) == "IMaterial" then
+        render.PushFilterMag( TEXFILTER.ANISOTROPIC )
+        render.PushFilterMin( TEXFILTER.ANISOTROPIC )
+
+        surface.SetDrawColor( 255, 255, 255, alpha )
+        surface.SetMaterial( icon )
+
+        if boxed then
+            surface.DrawTexturedRect( x + wide / 2 - ( wide / 1.95 ) / 2, y, wide / 1.95, wide / 1.95 )
+        else
+            surface.DrawTexturedRect( x, y, wide, wide / 2 )
+        end
+
+        render.PopFilterMin()
+        render.PopFilterMag()
+
+        if wep.PrintWeaponInfo then
+            wep:PrintWeaponInfo( x + wide + 20, y + tall * 0.95, alpha )
+        end
+
+        return
+    end
+
+    if wep.DrawWeaponSelection then
+        wep:DrawWeaponSelection( x, y, wide, tall, alpha )
+    end
+end
+
 function WS.WeaponSelectorDraw( ply )
     if not IsValid( ply ) or not ply:Alive() or GetGlobalBool("RadialInventory", false) then return end
     if WS.Show < CurTime() then
@@ -128,8 +167,8 @@ function WS.WeaponSelectorDraw( ply )
             WS.DrawText( WS.GetPrintName(wep), "HomigradFontSmall", position + sizeX/2, sizeHi, ColorAlpha(color_white,WS.Transparent*255) ,TEXT_ALIGN_CENTER )
             Ammout = Ammout + 1
 
-            if SelectedWep == wep and wep.DrawWeaponSelection then
-                wep:DrawWeaponSelection(position + 5, (scrH * 0.025) * (Ammout) + (scrH * 0.055) + lastPos, sizeX - 10, sizeH, WS.Transparent*255)
+            if SelectedWep == wep then
+                WS.DrawWeaponSelectionIcon(wep, position + 5, (scrH * 0.025) * (Ammout) + (scrH * 0.055) + lastPos, sizeX - 10, sizeH, WS.Transparent*255)
             end
         end
         SuperAmmout = SuperAmmout + 1
