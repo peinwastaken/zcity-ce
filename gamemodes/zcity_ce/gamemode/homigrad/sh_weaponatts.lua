@@ -87,23 +87,6 @@ hg.attachments.sight = {
 		PhysAng = Angle(0, 90, 0),
 		valid = true,
 	},
-	["holo5alt"] = {
-		"sight",
-		"models/weapons/arc9/darsu_eft/mods/scope_all_ekb_okp7.mdl",
-		Angle(0, 0, -90),
-		offset = Vector(0, 0, -0.05),
-		offsetView = Vector(-1.2, 0.1, 8),
-		{},
-		mountType = "picatinny",
-		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
-
-		holo = Material("vgui/reticles/okp.png"),
-		holo_size = CLIENT and ScreenScale(0.3) or 1, --size of the holo
-		PhysModel = "models/hunter/plates/plate025.mdl",
-		PhysPos = Vector(1, 0, 0),
-		PhysAng = Angle(0, 90, 0),
-		valid = true,
-	},
 	["holo6"] = {
 		"sight",
 		"models/weapons/arc9_eft_shared/atts/optic/dovetail/okp7.mdl",
@@ -115,23 +98,6 @@ hg.attachments.sight = {
 		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
 
 		holo = Material("vgui/arc9_eft_shared/reticles/new/scope_all_ekb_okp7_true_marks.png"),
-		holo_size = CLIENT and ScreenScale(0.3) or 1, --size of the holo
-		PhysModel = "models/hunter/plates/plate025.mdl",
-		PhysPos = Vector(0, 0, 2),
-		PhysAng = Angle(0, 90, 0),
-		valid = true,
-	},
-	["holo6alt"] = {
-		"sight",
-		"models/weapons/arc9_eft_shared/atts/optic/dovetail/okp7.mdl",
-		Angle(0, 0, -90),
-		offset = Vector(-2, 0.25, 0.2),
-		offsetView = Vector(-0.75, 0.2, 6),
-		{},
-		mountType = "dovetail",
-		holotex = "models/weapons/arc9_eft_shared/atts/optic/transparent_glass",
-
-		holo = Material("vgui/reticles/okp.png"),
 		holo_size = CLIENT and ScreenScale(0.3) or 1, --size of the holo
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(0, 0, 2),
@@ -1348,9 +1314,7 @@ local attNames = {
 	["grip3"] = "Magpul AFG Tactical Grip",
 	["grip_akdong"] = "AK-74 Dong Grip",
 	["holo5"] = "\"ОКП-7\"",
-	["holo5alt"] = "\"ОКП-7\" Alternate",
 	["holo6"] = "\"ОКП-7\" Dovetail",
-	["holo6alt"] = "\"ОКП-7\" Dovetail Alternate",
 	["holo7"] = "BelOMO PK-06",
 	["holo8"] = "Holosun \"HS401G5\"",
 	["holo9"] = "Leapers \"UTG\"",
