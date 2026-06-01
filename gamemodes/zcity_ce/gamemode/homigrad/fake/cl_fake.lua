@@ -445,8 +445,11 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	end
 
 	local alwaysRagdollAim = GetConVar("zc_always_ragdoll_aim")
+	local alwaysRagdollAimEnabled = alwaysRagdollAim and alwaysRagdollAim:GetBool()
+	local forceFakeAim = ply.forcefakeaim
+	if forceFakeAim == nil then forceFakeAim = alwaysRagdollAimEnabled end
 	local ragdollAimHeld = zb and zb.binds and zb.binds.IsDown and zb.binds.IsDown("ragdoll_aim") or false
-	local inUse = (alwaysRagdollAim and alwaysRagdollAim:GetBool()) or ragdollAimHeld or hg.KeyDown(ply, IN_USE)
+	local inUse = (alwaysRagdollAimEnabled and forceFakeAim) or ragdollAimHeld or hg.KeyDown(ply, IN_USE)
 	local inVehicle = ply:InVehicle()
 	local unconscious = ply.organism and ply.organism.unconscious
 	local freeRagdollView = not inUse and not inVehicle

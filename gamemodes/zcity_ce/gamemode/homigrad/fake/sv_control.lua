@@ -128,11 +128,27 @@ local function FakeControlKeyDown(ply, key)
 end
 
 local function FakeRagdollAimKeyDown(ply)
-	if controlUseCvar:GetBool() then return true end
+	if controlUseCvar:GetBool() and ply.forcefakeaim ~= false then return true end
 	if ply.ZCBindDown and ply:ZCBindDown("ragdoll_aim") then return true end
 
 	return FakeControlKeyDown(ply, IN_USE)
 end
+
+local function ToggleForcedFakeAim(ply)
+	if not controlUseCvar:GetBool() or not IsValid(ply) then return end
+
+	if ply.forcefakeaim == false then
+		ply.forcefakeaim = controlUseCvar:GetBool()
+	else
+		ply.forcefakeaim = false
+	end
+end
+
+hook.Add("ZC_BindStateChanged", "ZC_ToggleForcedFakeAim", function(ply, id, down)
+	if id ~= "fake_aim_toggle" or not down then return end
+
+	ToggleForcedFakeAim(ply)
+end)
 
 local function GetFakeControlEyeAngles(ply)
 	if IsValid(ply) and ply:IsBot() and isangle(ply.ZCBotFakeEyeAngles) and (ply.ZCBotFakeControlUntil or 0) >= CurTime() then

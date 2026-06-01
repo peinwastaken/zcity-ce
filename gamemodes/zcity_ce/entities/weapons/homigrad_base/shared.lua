@@ -1987,7 +1987,7 @@ function SWEP:InUse()
 
 	local alwaysRagdollAim = GetConVar("zc_always_ragdoll_aim")
 	local ragdollAimHeld = CLIENT and zb and zb.binds and zb.binds.IsDown and zb.binds.IsDown("ragdoll_aim") or SERVER and ply.ZCBindDown and ply:ZCBindDown("ragdoll_aim")
-	local isUseHeld = (alwaysRagdollAim and alwaysRagdollAim:GetBool()) or ragdollAimHeld or ply:KeyDown(IN_USE)
+	local isUseHeld = (alwaysRagdollAim and alwaysRagdollAim:GetBool() and ply.forcefakeaim ~= false) or ragdollAimHeld or ply:KeyDown(IN_USE)
 	local inVehicle = ply.InVehicle and ply:InVehicle()
 	local ragdollCombatInUse = hg.RagdollCombatInUse(ply)
 	local canAimRagdoll = not inVehicle and not ragdollCombatInUse

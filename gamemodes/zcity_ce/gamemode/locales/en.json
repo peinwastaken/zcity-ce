@@ -110,6 +110,8 @@
     "binds/fake_grab_left/desc": "Hold on to a surface with your left hand while ragdolled",
     "binds/fake_grab_right": "Grab with right hand",
     "binds/fake_grab_right/desc": "Hold on to a surface your right hand while ragdolled",
+    "binds/fake_aim_toggle": "Toggle forced ragdoll aiming",
+    "binds/fake_aim_toggle/desc": "Temporarily toggle always-aim behavior while fake-ragdolled",
     "binds/hold_breath": "Hold breath",
     "binds/hold_breath/desc": "Helps with aiming and avoiding gas inhalation",
     "binds/kick": "Kick",

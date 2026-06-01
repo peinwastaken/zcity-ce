@@ -397,6 +397,16 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
+  ["fake_aim_toggle"] = {
+    ["key"] = KEY_NONE,
+    ["default"] = KEY_NONE,
+    ["label"] = "binds/fake_aim_toggle",
+    ["description"] = "binds/fake_aim_toggle/desc",
+    ["category"] = "ragdoll",
+    ["command"] = "fakeaimtoggle",
+    ["should_override"] = false,
+    ["default_override"] = false
+  },
 
   // stances
   ["posture_regular"] = {
