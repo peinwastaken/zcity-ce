@@ -5,6 +5,10 @@ local dev = {}
 zb.dev = dev or {}
 
 function dev.IsDeveloper()
+  if CLIENT then
+    return convar:GetBool() and LocalPlayer():IsAdmin()
+  end
+
   return convar:GetBool()
 end
 
