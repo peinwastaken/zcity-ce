@@ -49,6 +49,7 @@ SWEP.maxzoom = 3.5
 SWEP.rot = 37
 SWEP.FOVMin = 3.5
 SWEP.FOVMax = 10
+SWEP.snapzoom = false
 SWEP.blackoutsize = 2500
 function surface.DrawTexturedRectRotatedHuy(x, y, w, h, rot, offsetX, offsetY, rotHuy)
 	rotHuy = rotHuy or 0
@@ -141,7 +142,7 @@ function SWEP:DoRT()
 		origin = owner:InVehicle() and pos2 or tr.HitPos - (pos2 - owner:EyePos()):GetNormalized() * 5,
 		drawviewmodel = false,
 		fov = math.max(self.ZoomFOV,0.5) / dist * 12,
-		znear = 1,
+		znear = 0.1,
 		zfar = zfar,
 		bloomtone = false
 	}
@@ -245,6 +246,16 @@ function SWEP:DoRT()
 end
 
 function SWEP:ChangeFOV()
+	if self.snapzoom then
+		if delta > 0 then
+			self.ZoomFOV = self.FOVMin
+		elseif delta < 0 then
+			self.ZoomFOV = self.FOVMax
+		end
+
+		return
+	end
+
 	self.ZoomFOV = math.Clamp(self.ZoomFOV - (delta / 10 or 0), self.FOVMin, self.FOVMax)
 end
 

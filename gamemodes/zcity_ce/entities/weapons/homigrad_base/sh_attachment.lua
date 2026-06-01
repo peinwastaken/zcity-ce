@@ -219,7 +219,7 @@ function SWEP:DrawAttachments()
 			attdata.drawFunction(self,model)
 		end
 
-		hg.attachmentFunc(self, attdata)
+		hg.attachmentFunc(self, attdata, plc, att[1])
 	end
 end
 

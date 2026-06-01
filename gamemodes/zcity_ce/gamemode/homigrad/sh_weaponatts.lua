@@ -337,19 +337,20 @@ hg.attachments.sight = {
 		mountType = "picatinny",
 		scopemat = Material("decals/scope.png"),
 		mat = Material("effects/arc9/rt"),
-		perekrestie = Material("decals/perekrestie11.png"),
+		perekrestie = Material("materials/vgui/arc9_eft_shared/reticles/scope_all_valday_ps320_marks.png"),
 		localScopePos = Vector(2, 0, 1.5),
 		scope_blackout = 1400,
 		rot = 0,
-		FOVMin = 3,
-		FOVMax = 10,
+		FOVMin = 5,
+		FOVMax = 25,
+		snapzoom = true,
 		FOVScoped = 40,
 		blackoutsize = 4000,
 		sizeperekrestie = 3548,
 		PhysModel = "models/hunter/plates/plate025.mdl",
 		PhysPos = Vector(1, 0, 0),
 		PhysAng = Angle(0, 90, 0),
-		perekrestieSize = false,
+		perekrestieSize = true,
 
 		drawFunction = function(self,model) -- in swep:drawattachment
 		end,
@@ -868,7 +869,7 @@ hg.attachments.sight = {
 	},
 }
 
-function hg.attachmentFunc(self, attachmentData)
+function hg.attachmentFunc(self, attachmentData, placement, attachmentName)
 	self.size = attachmentData.size or self.size
 	self.holo_pos = attachmentData.holo_pos or self.holo_pos
 	self.scale = attachmentData.scale or self.scale
@@ -887,6 +888,15 @@ function hg.attachmentFunc(self, attachmentData)
 	self.rot = attachmentData.rot or self.rot
 	self.FOVMin = attachmentData.FOVMin or self.FOVMin
 	self.FOVMax = attachmentData.FOVMax or self.FOVMax
+	self.snapzoom = attachmentData.snapzoom == true
+	if placement == "sight" then
+		local changed = self.ZCLastSightAttachment ~= attachmentName
+		self.ZCLastSightAttachment = attachmentName
+
+		if changed and isstring(attachmentName) and string.find(attachmentName, "optic") then
+			self.ZoomFOV = self.FOVMax
+		end
+	end
 	self.FOVScoped = attachmentData.FOVScoped or self.FOVScoped
 	self.blackoutsize = attachmentData.blackoutsize or self.blackoutsize
 	self.sizeperekrestie = attachmentData.sizeperekrestie or self.sizeperekrestie
