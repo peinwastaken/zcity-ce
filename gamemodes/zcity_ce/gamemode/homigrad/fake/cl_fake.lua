@@ -823,6 +823,7 @@ hook.Add("ZC_OnRagdollEntityCreated", "ZC_RagdollFinder", function(ply, ent, key
 		//ply.FakeRagdollOld = nil
 
 		ply.FakeRagdoll = ragdoll
+		ply.forcefakeaim = true
 		hook_Run("ZC_OnFakeRagdollCreated", ply, ragdoll)
 	else
 		if IsValid(ply.FakeRagdoll) then

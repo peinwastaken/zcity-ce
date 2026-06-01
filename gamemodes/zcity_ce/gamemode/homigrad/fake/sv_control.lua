@@ -83,6 +83,7 @@ end
 local shadowControl = hg.ShadowControl
 
 hook.Add("ZC_OnFakeRagdollCreated", "ZC_ResetFakeControlCooldowns", function(ply, ragdoll)
+	ply.forcefakeaim = true
 	ragdoll.cooldownLH = 0
 	ragdoll.cooldownRH = 0
 end)
