@@ -12,7 +12,7 @@ end
 
 function zc.ParseDataFile(filePath)
   local fullPath = zc.GetDataPath(filePath)
-  local exists = file.Exists(fullPath)
+  local exists = file.Exists(fullPath, "DATA")
 
   if !exists then 
     print("failed to find file " .. filePath)
@@ -64,5 +64,5 @@ function zc.WriteData(path, data, ensureExists)
   // if data is table then convert to json
   data = type(data) == "table" and util.TableToJSON(data) or data or ""
 
-  file.Write(fullPath, data)
+  return file.Write(fullPath, data)
 end

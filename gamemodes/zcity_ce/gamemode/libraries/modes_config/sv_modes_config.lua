@@ -9,7 +9,7 @@ util.AddNetworkString("ZC_SendAllModeConfigs")
     ["variable2"] = 123
   }
 */
-local MODES_CONFIG_PATH = "zcity-ce/config/modes.json"
+local MODES_CONFIG_PATH = "config/modes.json"
 
 local modeconfig = {}
 zc.modeconfig = modeconfig or {}
@@ -89,13 +89,12 @@ function modeconfig.BroadcastAll()
 end
 
 function modeconfig.LoadAll()
-  local configFile = file.Exists(MODES_CONFIG_PATH, "DATA")
-  if !configFile then
-    modeconfig.CreateDefault()
-  end
+  local configs = zc.ParseDataFile(MODES_CONFIG_PATH)
 
-  local json = file.Read(MODES_CONFIG_PATH, "DATA")
-  local configs = util.JSONToTable(json)
+  if type(configs) != "table" then
+    modeconfig.CreateDefault()
+    configs = {}
+  end
 
   for id, settings in pairs(configs) do
     local mode = zc.modes[id]
@@ -132,8 +131,7 @@ function modeconfig.SaveAll()
     end
   end
 
-  local json = util.TableToJSON(result)
-  local success = file.Write(MODES_CONFIG_PATH, json)
+  local success = zc.WriteData(MODES_CONFIG_PATH, result, true)
 
   if (success) then
     print("mode configs saved successfully")
@@ -145,10 +143,5 @@ function modeconfig.SaveAll()
 end
 
 function modeconfig.CreateDefault()
-  local dirExists = file.IsDir("zcity-ce/config", "DATA")
-  if !dirExists then
-    file.CreateDir("zcity-ce/config")
-  end
-
-  file.Write(MODES_CONFIG_PATH, "{}")
+  zc.WriteData(MODES_CONFIG_PATH, "{}", true)
 end

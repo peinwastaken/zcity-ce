@@ -33,7 +33,7 @@ local binds = {}
 
 zc.binds = binds or {}
 
-local BIND_SAVE_PATH = "zcity-ce/settings/binds.json"
+local BIND_SAVE_PATH = "settings/binds.json"
 local bindPressedWindow = 0.15
 
 local function GetBindState(id)
@@ -103,38 +103,19 @@ local function CreateBindSave(default)
   return bindSave
 end
 
-local function EnsureBindSaveDir()
-  file.CreateDir("zcity-ce")
-  file.CreateDir("zcity-ce/settings")
-end
-
 function binds.SaveDefaultBinds()
-  EnsureBindSaveDir()
-  file.Write(BIND_SAVE_PATH, util.TableToJSON(CreateBindSave(true), true))
+  zc.WriteData(BIND_SAVE_PATH, CreateBindSave(true), true)
 end
 
 function binds.SaveBinds()
-  EnsureBindSaveDir()
-  file.Write(BIND_SAVE_PATH, util.TableToJSON(CreateBindSave(), true))
+  zc.WriteData(BIND_SAVE_PATH, CreateBindSave(), true)
 
   zc.dev.DevPrint("Saved binds")
   zc.dev.DevPrint(binds.allbinds)
 end
 
 function binds.LoadBinds()
-  local bindsExists = file.Exists(BIND_SAVE_PATH, "DATA")
-  if !bindsExists then
-    zc.dev.DevPrint("binds file not found, creating default")
-    binds.SaveDefaultBinds()
-  end
-
-  local data = file.Read(BIND_SAVE_PATH, "DATA")
-  local bindConfig = nil
-
-  if data then
-    local parsed, result = pcall(util.JSONToTable, data)
-    bindConfig = parsed and result or nil
-  end
+  local bindConfig = zc.ParseDataFile(BIND_SAVE_PATH)
 
   if type(bindConfig) != "table" then
     zc.dev.DevPrint("binds file could not be loaded, restoring default")
