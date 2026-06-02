@@ -35,7 +35,7 @@ function SWEP:IsSprinting()
     local owner = self:GetOwner()
     if not IsValid(owner) then return false end
     if not owner.IsSprinting then return false end
-    if owner:IsSprinting() and hg.GetCurrentCharacter(owner):IsPlayer() then return true end
+    if owner:IsSprinting() and zc.GetCurrentCharacter(owner):IsPlayer() then return true end
 end
 
 function SWEP:CanSecondaryAttack()
@@ -118,7 +118,7 @@ function SWEP:SetHold(value)
 end
 
 function SWEP:KeyDown(key)
-	return hg.KeyDown(self:GetOwner(),key)
+	return zc.KeyDown(self:GetOwner(),key)
 end
 
 function SWEP:InUse()
@@ -135,10 +135,10 @@ function SWEP:InUse()
 	end
 
 	local alwaysRagdollAim = GetConVar("zc_always_ragdoll_aim")
-	local ragdollAimHeld = CLIENT and zb and zb.binds and zb.binds.IsDown and zb.binds.IsDown("ragdoll_aim") or SERVER and ply.ZCBindDown and ply:ZCBindDown("ragdoll_aim")
+	local ragdollAimHeld = CLIENT and zc and zc.binds and zc.binds.IsDown and zc.binds.IsDown("ragdoll_aim") or SERVER and ply.ZCBindDown and ply:ZCBindDown("ragdoll_aim")
 	local isUseHeld = (alwaysRagdollAim and alwaysRagdollAim:GetBool() and ply.forcefakeaim ~= false) or ragdollAimHeld or ply:KeyDown(IN_USE)
 	local inVehicle = ply.InVehicle and ply:InVehicle()
-	local ragdollCombatInUse = hg.RagdollCombatInUse(ply)
+	local ragdollCombatInUse = zc.RagdollCombatInUse(ply)
 	local canAimRagdoll = not inVehicle and not ragdollCombatInUse
 	local wantsAimControl = isUseHeld or (self.IsResting and self:IsResting())
 	local forcedAimControl = (inVehicle or ragdollCombatInUse or ent == ply) and not isUseHeld
@@ -239,7 +239,7 @@ if CLIENT then
 		local WorldModel = self.worldModel
 
         self.worldModel:SetModelScale(self.modelscale2)
-        local ent = hg.GetCurrentCharacter(owner)
+        local ent = zc.GetCurrentCharacter(owner)
 
         local inuse = self:InUse()
 
@@ -396,8 +396,8 @@ function SWEP:ModelAnim(model, pos, ang)
 
     if !IsValid(owner) or !owner:IsPlayer() then return end
 
-    local ent = hg.GetCurrentCharacter(owner)
-    local tr = hg.eyeTrace(owner, 40, ent)
+    local ent = zc.GetCurrentCharacter(owner)
+    local tr = zc.eyeTrace(owner, 40, ent)
     local eyeAng = owner:EyeAngles()
 
     local vel = ent:GetVelocity()
@@ -434,7 +434,7 @@ function SWEP:ModelAnim(model, pos, ang)
     addPosLerp:Zero()
     addAngLerp:Zero()
 
-    addPosLerp.z = addPosLerp.z + ((hg.KeyDown(owner, IN_DUCK)) and -2 or 0)
+    addPosLerp.z = addPosLerp.z + ((zc.KeyDown(owner, IN_DUCK)) and -2 or 0)
 
     if !self:CustomBlockAnim(addPosLerp, addAngLerp) then
         addPosLerp.z = addPosLerp.z + (self:GetBlocking() and -2 or 0)
@@ -526,7 +526,7 @@ SWEP.FakeVPShouldUseHand = false
 SWEP.FakeViewBobBaseBone = "ValveBiped.Bip01_R_Forearm"
 
 --hook.Add("ZC_PostDrawPlayerRagdoll","ZC_RenderMeleeOnRagdoll",function(ent,ply)
-function hg.RenderMelees(ent, ply, wep)
+function zc.RenderMelees(ent, ply, wep)
     if wep.DrawWorldModel2 then
         wep:DrawWorldModel2()
     else
@@ -587,9 +587,9 @@ function SWEP:SetHandPos(noset)
     if not IsValid(ply) or not IsValid(self.worldModel) then return end
     if not ply.shouldTransmit or ply.NotSeen then return end
 
-    local ent = hg.GetCurrentCharacter(ply)
+    local ent = zc.GetCurrentCharacter(ply)
 
-	local bones = hg.TPIKBonesLH
+	local bones = zc.TPIKBonesLH
 
     local ply_spine_index = ent:LookupBone("ValveBiped.Bip01_Spine4")
     if !ply_spine_index then return end
@@ -602,7 +602,7 @@ function SWEP:SetHandPos(noset)
 	-- ent:SetupBones()
 
 	self.rhandik = self.setrh and IsValid(owner)//self.setrh
-	self.lhandik = self.setlh and IsValid(owner) and (ply:GetTable().ChatGestureWeight < 0.1) and hg.CanUseLeftHand(ply) and !(owner.suiciding and self.SuicideNoLH)
+	self.lhandik = self.setlh and IsValid(owner) and (ply:GetTable().ChatGestureWeight < 0.1) and zc.CanUseLeftHand(ply) and !(owner.suiciding and self.SuicideNoLH)
 
     local rhmat, lhmat = ent:GetBoneMatrix(ent:LookupBone("ValveBiped.Bip01_R_Hand")), ent:GetBoneMatrix(ent:LookupBone("ValveBiped.Bip01_L_Hand"))
 
@@ -650,12 +650,12 @@ function SWEP:SetHandPos(noset)
             local trace = util.TraceLine(tr)
 
             if trace.Hit then
-                hg.DragLeftHand(ply, self, trace.HitPos - ply:GetAimVector() * 5, ply:GetAimVector(), (trace.Entity:IsWorld() and Lerp(1, trace.HitNormal:Angle(), ply:EyeAngles() + ang180) or ply:EyeAngles() + ang180) + ang1 - ply:EyeAngles())
+                zc.DragLeftHand(ply, self, trace.HitPos - ply:GetAimVector() * 5, ply:GetAimVector(), (trace.Entity:IsWorld() and Lerp(1, trace.HitNormal:Angle(), ply:EyeAngles() + ang180) or ply:EyeAngles() + ang180) + ang1 - ply:EyeAngles())
             end
         end
     end
 
-	local bones = hg.TPIKBonesRH
+	local bones = zc.TPIKBonesRH
 
 	if self.rhandik and self:InUse() then
 		for _, bone in ipairs(bones) do
@@ -732,7 +732,7 @@ function SWEP:Holster(wep)
 end
 
 function SWEP:IsEntSoft(ent)
-	return ent:IsNPC() or ent:IsPlayer() or hg.RagdollOwner(ent) or ent:IsRagdoll()
+	return ent:IsNPC() or ent:IsPlayer() or zc.RagdollOwner(ent) or ent:IsRagdoll()
 end
 
 function SWEP:ThinkAdd()
@@ -747,7 +747,7 @@ if CLIENT then
 
     function SWEP:AdjustMouseSensitivity()
         local owner = self:GetOwner()
-        local ent = hg.GetCurrentCharacter(owner)
+        local ent = zc.GetCurrentCharacter(owner)
 
         local time = math.max(self:GetLastAttack() - CurTime(),0)
 
@@ -820,7 +820,7 @@ function SWEP:Attack(owner, ent, vellen, attacktype, inattackLength)
     self.HitEnts = self.HitEnts or {owner, ent}
 
     local vellen = math.min(owner:GetVelocity():Length() * 0.05, 40)
-    local eyetr = hg.eyeTrace(owner, (self:GetAttackLength() + vellen), ent, owner:GetAimVector())
+    local eyetr = zc.eyeTrace(owner, (self:GetAttackLength() + vellen), ent, owner:GetAimVector())
     //debugoverlay.Line(eyetr.StartPos, eyetr.StartPos + eyetr.Normal * (self:GetAttackLength() + vellen), 3, color_white)
     //local ent = ents.Create("prop_physics")
     //ent:SetModel("models/props_interiors/pot01a.mdl")
@@ -926,7 +926,7 @@ end
 
 function SWEP:PunchPlayer(ent, attacktype, trnormal, dmg)
     if ent:IsPlayer() or ent:IsRagdoll() then
-        local ply = hg.RagdollOwner(ent) or ent
+        local ply = zc.RagdollOwner(ent) or ent
 
         if ply:IsPlayer() then
             local normal = Angle(0,0,0)
@@ -948,7 +948,7 @@ end
 SWEP.MinSensivity = 0.35
 
 function SWEP:AlreadyHit(ent, trace, dmg)
-    local ply = hg.RagdollOwner(ent)
+    local ply = zc.RagdollOwner(ent)
 
     if IsValid(ply) and self.HitEnts[#self.HitEnts] == ply then
         return true
@@ -958,13 +958,13 @@ function SWEP:AlreadyHit(ent, trace, dmg)
 end
 
 function SWEP:BlockingLogic(ent, mul, attacktype, trace)
-    ent = hg.RagdollOwner(ent) or ent
+    ent = zc.RagdollOwner(ent) or ent
     local owner = self:GetOwner()
 
     if ent:IsPlayer() and ((istable(self.HitEnts) and !table.HasValue(self.HitEnts, ent)) or owner:IsNPC()) then
         local wep = ent:GetActiveWeapon()
-        local pos, aimvec = hg.eye(ent)
-        local _, aimvec2 = hg.eye(owner)
+        local pos, aimvec = zc.eye(ent)
+        local _, aimvec2 = zc.eye(owner)
 
         if owner:IsNPC() then
             pos, aimvec, aimvec2 = owner:EyePos(), owner:GetAimVector(), owner:GetAimVector()
@@ -1035,12 +1035,12 @@ function SWEP:CustomThink()
 	if SERVER and not owner:IsNPC() and ownerCannotSwing and IsValid(actwep) and self == actwep then
 		self:RemoveFake()
 
-		hg.drop(owner)
+		zc.drop(owner)
 
 		return
 	end
 
-    if self.CanSuicide and hg.KeyDown(owner, IN_ATTACK) and owner.suiciding and !self.SuicideStart then
+    if self.CanSuicide and zc.KeyDown(owner, IN_ATTACK) and owner.suiciding and !self.SuicideStart then
         self.SuicideStart = CurTime()
 
         if SERVER then
@@ -1051,24 +1051,24 @@ function SWEP:CustomThink()
                 dmgInfo:SetDamageType(DMG_SLASH)
 
                 local org = owner.organism
-                local ent = hg.GetCurrentCharacter(owner)
+                local ent = zc.GetCurrentCharacter(owner)
 
                 local ang = ent:GetBoneMatrix(ent:LookupBone("ValveBiped.Bip01_Neck1")):GetAngles()
                 local _, ang = LocalToWorld(vector_origin, Angle(0, -60, 0), vector_origin, ang)
 
-                hg.organism.input_list["arteria"](org, 0, 5, dmgInfo, nil, -ang:Forward())
+                zc.organism.input_list["arteria"](org, 0, 5, dmgInfo, nil, -ang:Forward())
 
                 for i = 1, 5 do
-                    hg.organism.AddWoundManual(owner, 50, VectorRand(-2, 2), ang, "ValveBiped.Bip01_Neck1", CurTime() + math.Rand(0, 2))
+                    zc.organism.AddWoundManual(owner, 50, VectorRand(-2, 2), ang, "ValveBiped.Bip01_Neck1", CurTime() + math.Rand(0, 2))
                 end
 
                 owner:AddNaturalAdrenaline(math.max(2 - org.adrenaline, 0))
                 org.fear = math.max(org.fear, 1)
 
                 --timer.Simple(0, function()
-                --    hg.organism.Vomit(owner, "player/flesh/flesh_bullet_impact_03.wav")
+                --    zc.organism.Vomit(owner, "player/flesh/flesh_bullet_impact_03.wav")
                 --end)
-                hook.Run("ZC_OnOrganismDamage", owner, dmgInfo, HITGROUP_HEAD, hg.GetCurrentCharacter(org.owner), 15)
+                hook.Run("ZC_OnOrganismDamage", owner, dmgInfo, HITGROUP_HEAD, zc.GetCurrentCharacter(org.owner), 15)
                 owner:EmitSound(self.SuicideSound or self.Attack2HitFlesh, 50)
 
                 --timer.Simple(0.05, function()
@@ -1089,7 +1089,7 @@ function SWEP:CustomThink()
     if SERVER and owner.organism and owner.organism.rarmamputated then
         self:RemoveFake()
 
-		hg.drop(owner)
+		zc.drop(owner)
 
         return
     end
@@ -1106,7 +1106,7 @@ function SWEP:CustomThink()
 		local hasBlockStamina = ownerOrganism and ownerOrganism.stamina[1] > 90
 		local attackFinished = !self:GetInAttack() and (self:GetAttackTime() - CurTime() - 0) < 0
 		local blockCooldownDone = (self:GetLastBlocked() + 3) < CurTime()
-		local wantsToBlock = hg.KeyDown(owner, IN_ATTACK2)
+		local wantsToBlock = zc.KeyDown(owner, IN_ATTACK2)
         local blocking = blockWarmupDone and hasBlockStamina and attackFinished and blockCooldownDone and self:CanBlock() and wantsToBlock
         --if self:CutDuct() then return end
         self:SetBlocking(blocking)
@@ -1135,7 +1135,7 @@ function SWEP:CustomThink()
         local inattackL1 = math.max(self:GetAttackTime() - CurTime(), 0) / self.AttackTimeLength
         local inattackL2 = math.max(self:GetAttackTime() - CurTime(), 0) / self.Attack2TimeLength
 
-        local ent = hg.GetCurrentCharacter(owner)
+        local ent = zc.GetCurrentCharacter(owner)
         local vellen = ent:GetVelocity():Length()
 
         local mul = self:MultiplyDMG(owner, ent, vellen, 1)
@@ -1260,7 +1260,7 @@ function SWEP:CustomThink()
                 self.attackedOnce = true
                 self.slash = nil
 
-                hg.AddForceRag(ent, trace.PhysicsBone or 0, trace.Normal * math.min(dmg, 25) * 400, 0.5)
+                zc.AddForceRag(ent, trace.PhysicsBone or 0, trace.Normal * math.min(dmg, 25) * 400, 0.5)
 
                 self:PunchPlayer(ent, false, trace.Normal, dmg)
 
@@ -1360,7 +1360,7 @@ function SWEP:CustomThink()
 
                 local phys = ent:GetPhysicsObjectNum(trace.PhysicsBone or 0)
 
-                hg.AddForceRag(ent, trace.PhysicsBone or 0, trace.Normal * math.min(dmg, 25) * 400, 0.5)
+                zc.AddForceRag(ent, trace.PhysicsBone or 0, trace.Normal * math.min(dmg, 25) * 400, 0.5)
 
                 self:PunchPlayer(ent, true, trace.Normal, dmg)
 
@@ -1415,7 +1415,7 @@ function SWEP:PrimaryAttack()
     if self.CanSuicide and ply.suiciding then return end
 
     if ply.organism and ply.organism.larmamputated and self.TwoHanded then return end
-    if !hg.KeyDown(self:GetOwner(), IN_ATTACK2) and not self:CanPrimaryAttack() then return end
+    if !zc.KeyDown(self:GetOwner(), IN_ATTACK2) and not self:CanPrimaryAttack() then return end
 
     if self:GetLastBlocked() + 1 > CurTime() then
         //return
@@ -1428,7 +1428,7 @@ function SWEP:PrimaryAttack()
     end
 
     local ply = self:GetOwner()
-    local ent = hg.GetCurrentCharacter(ply)
+    local ent = zc.GetCurrentCharacter(ply)
 
     if !self:InUse() then return end
     if (self:GetLastAttack() + self:GetAttackWait()) > CurTime() then return end
@@ -1460,7 +1460,7 @@ end
 function SWEP:CutDuct()
     if self.DamageType ~= DMG_SLASH or CLIENT then return end
 
-    local ent = hg.eyeTrace(self:GetOwner()).Entity
+    local ent = zc.eyeTrace(self:GetOwner()).Entity
 
     if IsValid(ent) then
         if hgIsDoor(ent) and ent.LockedDoor then
@@ -1535,10 +1535,10 @@ function SWEP:SecondaryAttack(override)
 
     if not game.SinglePlayer() and not IsFirstTimePredicted() then return end
 
-    local ent = hg.GetCurrentCharacter(ply)
+    local ent = zc.GetCurrentCharacter(ply)
 
     if !self:InUse() then return end
-    if (hg.KeyDown(ply, IN_USE) and not IsValid(ply.FakeRagdoll)) then return end
+    if (zc.KeyDown(ply, IN_USE) and not IsValid(ply.FakeRagdoll)) then return end
     if (self:GetLastAttack() + self:GetAttackWait()) > CurTime() then return end
     if self.lastattack and (self.lastattack + self.attackwait) > CurTime() then return end
 
@@ -1598,7 +1598,7 @@ function SWEP:Initialize()
             if SERVER then
                 if self:GetOwner():KeyPressed(IN_ATTACK) then
                     self:SetNetVar("mode", not self:GetNetVar("mode"))
-                    self:GetOwner():ChatPrint(zb.locale.GetLocalized("weapon/changed_mode", zb.locale.GetLocalized(self:GetNetVar("mode") and "weapon/mode/slash" or "weapon/mode/stab")))
+                    self:GetOwner():ChatPrint(zc.locale.GetLocalized("weapon/changed_mode", zc.locale.GetLocalized(self:GetNetVar("mode") and "weapon/mode/slash" or "weapon/mode/stab")))
                     --self.Swing = self:GetNetVar("mode")
                     --self.UpSwing = not self:GetNetVar("mode")
                 end
@@ -1616,7 +1616,7 @@ function SWEP:Initialize()
         end
 
         function self:CanPrimaryAttack()
-            if hg.KeyDown(self:GetOwner(), IN_RELOAD) then return end
+            if zc.KeyDown(self:GetOwner(), IN_RELOAD) then return end
             if not self:GetNetVar("mode") then
                 return true
             else
@@ -1822,7 +1822,7 @@ function SWEP:NPCThink()
 					npc:EmitSound(self.AttackHitFlesh, 60)
 
 					if trEnt:IsPlayer() then
-						hg.AddForceRag(trEnt, trace.PhysicsBone or 0, trace.Normal * math.min(dmg, 25) * 400, 0.5)
+						zc.AddForceRag(trEnt, trace.PhysicsBone or 0, trace.Normal * math.min(dmg, 25) * 400, 0.5)
 
 						self:PunchPlayer(trEnt, false, trace.Normal, dmg)
 
@@ -2027,7 +2027,7 @@ end
 
     local ply = self:GetOwner()
 
-    ent:SetPos(hg.eye(ply,60,hg.GetCurrentCharacter(ply)) - ply:GetAimVector() * 2)
+    ent:SetPos(zc.eye(ply,60,zc.GetCurrentCharacter(ply)) - ply:GetAimVector() * 2)
     ent:SetAngles(ply:EyeAngles())
     ent:SetOwner(self:GetOwner())
     ent:Spawn()

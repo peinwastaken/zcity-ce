@@ -20,12 +20,12 @@ hook.Add("PlayerButtonDown", "ZC_NewInventoryPlayerButtonDown", function(ply, ke
 				end, wep:GetPrintName(), nil, nil, icon, clr_inv, clr_inv_selected
 			}
 		end
-		hg.CreateRadialMenu(tbl1, false)
+		zc.CreateRadialMenu(tbl1, false)
 	end
 end)
 
 hook.Add("PlayerButtonUp", "ZC_NewInventoryPlayerButtonUp", function(ply, key)
 	if GetGlobalBool("RadialInventory", false) and key == KEY_1 then
-		hg.PressRadialMenu(1)
+		zc.PressRadialMenu(1)
 	end
 end)

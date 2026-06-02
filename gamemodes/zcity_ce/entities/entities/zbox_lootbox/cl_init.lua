@@ -10,8 +10,8 @@ function ENT:Draw()
 	self:DrawModel()
 end
 
-hg = hg or {}
-hg.OpenedContainer = hg.OpenedContainer or nil
+zc = zc or {}
+zc.OpenedContainer = zc.OpenedContainer or nil
 
 local cooldown = 0
 
@@ -192,7 +192,7 @@ end
 
 net.Receive( "ZC_BoxLootSystem", function( )
     local ent = net.ReadEntity()
-    hg.OpenedContainer = ent
+    zc.OpenedContainer = ent
     ent.Loot = util.JSONToTable( net.ReadString() )
     OpenContainer(ent)
 end)
@@ -225,7 +225,7 @@ local modelOffset = {
 local offsetVec1,offsetAng1 = Vector(25,0,15),Angle(0,90,0)
 local lerpang = Angle(0,0,0)
 hook.Add("PostDrawOpaqueRenderables","ZC_Draw3D2DFrameContainer",function()
-    local ent = hg.OpenedContainer
+    local ent = zc.OpenedContainer
 
 	if IsValid(ent) and IsValid(zbContainerMenu) and !zbContainerMenu.Closing then
         --print(ent:GetModel())

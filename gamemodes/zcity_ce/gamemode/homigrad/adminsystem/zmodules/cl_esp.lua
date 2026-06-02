@@ -1,6 +1,6 @@
-if !hg or !hg.AdminSystem then return end
+if !zc or !zc.AdminSystem then return end
 
-local AS = hg.AdminSystem
+local AS = zc.AdminSystem
 local ESP = {}
 
 ESP.Enabled = false
@@ -33,8 +33,8 @@ local function GetPlayerTeamColor(target)
 		return Color(teamCol.r, teamCol.g, teamCol.b, 255)
 	end
 
-	if zb and zb.Points then
-		for _, pointData in pairs(zb.Points) do
+	if zc and zc.Points then
+		for _, pointData in pairs(zc.Points) do
 			if pointData.Color and pointData.Team == tm then
 				return Color(pointData.Color.r, pointData.Color.g, pointData.Color.b, 255)
 			end

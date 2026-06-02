@@ -1,6 +1,6 @@
-hg.Appearance = hg.Appearance or {}
-hg.PointShop = hg.PointShop or {}
-local PLUGIN = hg.PointShop
+zc.Appearance = zc.Appearance or {}
+zc.PointShop = zc.PointShop or {}
+local PLUGIN = zc.PointShop
 PLUGIN.Items = PLUGIN.Items or {}
 -- Validate function for custom name
 local allowed = {
@@ -26,16 +26,16 @@ local function IsInvalidName(name)
 	return false
 end
 
-hg.Appearance.IsInvalidName = IsInvalidName
+zc.Appearance.IsInvalidName = IsInvalidName
 -- Random name generator
 -- in misc/sh_names.lua
 local function GenerateRandomName(iSex)
 	local sex = iSex or math.random(1, 2)
-	local randomName = hg.Appearance.RandomNames[sex][math.random(1, #hg.Appearance.RandomNames[sex])]
+	local randomName = zc.Appearance.RandomNames[sex][math.random(1, #zc.Appearance.RandomNames[sex])]
 	return randomName
 end
 
-hg.Appearance.GenerateRandomName = GenerateRandomName
+zc.Appearance.GenerateRandomName = GenerateRandomName
 -- Check access to all
 local access = {}
 --["STEAM_0:1:163575696"] = true -- distac our custom model creator
@@ -49,7 +49,7 @@ local function GetAccessToAll(ply)
 	return GetGlobalBool("zc_appearance_access_for_all") or ply:IsSuperAdmin() or ply:IsAdmin() or access[ply:SteamID()]
 end
 
-hg.Appearance.GetAccessToAll = GetAccessToAll
+zc.Appearance.GetAccessToAll = GetAccessToAll
 -- Appearance models
 local PlayerModels = {
 	[1] = {},
@@ -169,19 +169,19 @@ AppAddModel("Female 06", "models/zcity/f/female_06.mdl", true, {
 	hands = "distac/gloves/hands"
 })
 
-hg.Appearance.PlayerModels = PlayerModels
-hg.Appearance.FuckYouModels = {{}, {}}
-for _, tbl in pairs(hg.Appearance.PlayerModels[1]) do
-	hg.Appearance.FuckYouModels[1][tbl.mdl] = tbl
+zc.Appearance.PlayerModels = PlayerModels
+zc.Appearance.FuckYouModels = {{}, {}}
+for _, tbl in pairs(zc.Appearance.PlayerModels[1]) do
+	zc.Appearance.FuckYouModels[1][tbl.mdl] = tbl
 end
 
-for _, tbl in pairs(hg.Appearance.PlayerModels[2]) do
-	hg.Appearance.FuckYouModels[2][tbl.mdl] = tbl
+for _, tbl in pairs(zc.Appearance.PlayerModels[2]) do
+	zc.Appearance.FuckYouModels[2][tbl.mdl] = tbl
 end
 
 --fuck you
-hg.Appearance.Clothes = {}
-hg.Appearance.Clothes[1] = {
+zc.Appearance.Clothes = {}
+zc.Appearance.Clothes[1] = {
 	normal = "models/humans/male/group01/normal",
 	formal = "models/humans/male/group01/formal",
 	plaid = "models/humans/male/group01/plaid",
@@ -193,7 +193,7 @@ hg.Appearance.Clothes[1] = {
 	worker = "models/humans/male/group01/worker",
 }
 
-hg.Appearance.Clothes[2] = {
+zc.Appearance.Clothes[2] = {
 	normal = "models/humans/female/group01/normal",
 	formal = "models/humans/female/group01/formal",
 	plaid = "models/humans/female/group01/plaid",
@@ -204,7 +204,7 @@ hg.Appearance.Clothes[2] = {
 	sweater_xmas = "models/humans/female/group01/sweater",
 }
 
-hg.Appearance.ClothesDesc = {
+zc.Appearance.ClothesDesc = {
 	normal = {
 		desc = "Garry's Mod default citizen outfit"
 	},
@@ -237,17 +237,17 @@ hg.Appearance.ClothesDesc = {
 }
 
 -- Facemaps
-hg.Appearance.FacemapsSlots = hg.Appearance.FacemapsSlots or {}
+zc.Appearance.FacemapsSlots = zc.Appearance.FacemapsSlots or {}
 --["matname"] = {
 --     ["facemapname"] = "facemap-material"
 --     ["facemapname2"] = "facemap-material2"
 --}
-hg.Appearance.FacemapsModels = hg.Appearance.FacemapsModels or {}
+zc.Appearance.FacemapsModels = zc.Appearance.FacemapsModels or {}
 local function AddFacemap(matOverride, strName, matMaterial, model)
-	hg.Appearance.FacemapsSlots[matOverride] = hg.Appearance.FacemapsSlots[matOverride] or {}
-	local tbl = hg.Appearance.FacemapsSlots[matOverride]
+	zc.Appearance.FacemapsSlots[matOverride] = zc.Appearance.FacemapsSlots[matOverride] or {}
+	local tbl = zc.Appearance.FacemapsSlots[matOverride]
 	tbl[strName] = matMaterial
-	if model then hg.Appearance.FacemapsModels[model] = matOverride end
+	if model then zc.Appearance.FacemapsModels[model] = matOverride end
 end
 
 -----------------------------------Female------------------------------------------------
@@ -359,7 +359,7 @@ for i = 2, 11 do
 end
 
 -- Bodygroups
-hg.Appearance.Bodygroups = hg.Appearance.Bodygroups or {
+zc.Appearance.Bodygroups = zc.Appearance.Bodygroups or {
 	HANDS = {
 		[1] = {
 			["None"] = {"hands", false},
@@ -373,9 +373,9 @@ hg.Appearance.Bodygroups = hg.Appearance.Bodygroups or {
 --lua_run Player(682):PS_AddItem("Standard_BodyGroups_Wool fingerless")
 local function AppAddBodygroup(strBodyGroup, strName, strStringID, bFemale, bPointShop, bDonateOnly, fCost, psModel, psBodygroups, psSubmats, psStrNameOveride)
 	local pointShopID = "Standard_BodyGroups_" .. (psStrNameOveride or strName)
-	hg.Appearance.Bodygroups[strBodyGroup] = hg.Appearance.Bodygroups[strBodyGroup] or {}
-	hg.Appearance.Bodygroups[strBodyGroup][bFemale and 2 or 1] = hg.Appearance.Bodygroups[strBodyGroup][bFemale and 2 or 1] or {}
-	hg.Appearance.Bodygroups[strBodyGroup][bFemale and 2 or 1][strName] = {
+	zc.Appearance.Bodygroups[strBodyGroup] = zc.Appearance.Bodygroups[strBodyGroup] or {}
+	zc.Appearance.Bodygroups[strBodyGroup][bFemale and 2 or 1] = zc.Appearance.Bodygroups[strBodyGroup][bFemale and 2 or 1] or {}
+	zc.Appearance.Bodygroups[strBodyGroup][bFemale and 2 or 1][strName] = {
 		strStringID,
 		bPointShop,
 		ID = pointShopID
@@ -421,7 +421,7 @@ end
 
 hook.Add("ZC_OnPointshopLoaded", "ZC_RegisterAppearanceBodygroups", AddBodygroupsFunc)
 -- SkeletonTable
-hg.Appearance.SkeletonAppearanceTable = {
+zc.Appearance.SkeletonAppearanceTable = {
 	AModel = "Male 07",
 	AClothes = {
 		main = "normal"
@@ -434,12 +434,12 @@ hg.Appearance.SkeletonAppearanceTable = {
 }
 
 -- GetRandomAppearance
-function hg.Appearance.GetRandomAppearance()
-	local randomAppearance = table.Copy(hg.Appearance.SkeletonAppearanceTable)
+function zc.Appearance.GetRandomAppearance()
+	local randomAppearance = table.Copy(zc.Appearance.SkeletonAppearanceTable)
 	local iSex = math.random(1, 2)
 	local tMdl, str = table.Random(PlayerModels[iSex])
 	randomAppearance.AModel = str
-	_, str = table.Random(hg.Appearance.Clothes[iSex])
+	_, str = table.Random(zc.Appearance.Clothes[iSex])
 	randomAppearance.AClothes = {
 		main = str,
 		pants = str,
@@ -449,22 +449,22 @@ function hg.Appearance.GetRandomAppearance()
 	randomAppearance.AName = GenerateRandomName(iSex)
 	randomAppearance.AColor = ColorRand(false)
 	for i = 1, 1 do
-		local data, k = table.Random(hg.Accessories)
+		local data, k = table.Random(zc.Accessories)
 		for _, name in ipairs(randomAppearance.AAttachments) do
-			if hg.Accessories[name].placement == data.placement then k = "none" end
+			if zc.Accessories[name].placement == data.placement then k = "none" end
 		end
 
 		if data.disallowinappearance then k = "none" end
 		randomAppearance.AAttachments[i] = k
 	end
 
-	local _, facemap = table.Random(hg.Appearance.FacemapsSlots[hg.Appearance.FacemapsModels[tMdl.mdl]])
+	local _, facemap = table.Random(zc.Appearance.FacemapsSlots[zc.Appearance.FacemapsModels[tMdl.mdl]])
 	randomAppearance.AFacemap = facemap
 	return randomAppearance
 end
 
 -- Validator
-hg.Appearance.ValidateFunctions = {
+zc.Appearance.ValidateFunctions = {
 	AModel = function(str)
 		if not isstring(str) then return false end
 		if not PlayerModels[1][str] and not PlayerModels[2][str] then return false end
@@ -474,7 +474,7 @@ hg.Appearance.ValidateFunctions = {
 		if not istable(tbl) then return false end
 		if table.Count(tbl) > 3 then return false end
 		--for k, v in ipairs(tbl) do
-		--    if !hg.Appearance.Clothes[1][v] and !hg.Appearance.Clothes[2][v] then return false end
+		--    if !zc.Appearance.Clothes[1][v] and !zc.Appearance.Clothes[2][v] then return false end
 		--end
 		return true
 	end,
@@ -492,18 +492,18 @@ hg.Appearance.ValidateFunctions = {
 		local occupatedSlots = {}
 		--local removeReasons = ""
 		for k, v in ipairs(tbl) do
-			if not hg.Accessories[v] then
+			if not zc.Accessories[v] then
 				--removeReasons = removeReasons + v + " - invalid accsesory\n" or "\n"  tbl[k] = ""
 				continue
 			end
 
-			if occupatedSlots[hg.Accessories[v].placement] then
+			if occupatedSlots[zc.Accessories[v].placement] then
 				tbl[k] = ""
 				--removeReasons = removeReasons + v + " - removed occupeated slot accsesory\n" or "\n"
 				continue
 			end
 
-			if hg.Accessories[v].placement then occupatedSlots[hg.Accessories[v].placement] = true end
+			if zc.Accessories[v].placement then occupatedSlots[zc.Accessories[v].placement] = true end
 		end
 		return true --, removeReasons
 	end,
@@ -516,7 +516,7 @@ hg.Appearance.ValidateFunctions = {
 }
 
 local function AppearanceValidater(tblAppearance)
-	local VaildFuncs = hg.Appearance.ValidateFunctions
+	local VaildFuncs = zc.Appearance.ValidateFunctions
 	local bValidAModel = VaildFuncs.AModel(tblAppearance.AModel)
 	local bValidAClothes = VaildFuncs.AClothes(tblAppearance.AClothes)
 	local bValidAName = VaildFuncs.AName(tblAppearance.AName)
@@ -527,7 +527,7 @@ local function AppearanceValidater(tblAppearance)
 	return false
 end
 
-hg.Appearance.AppearanceValidater = AppearanceValidater
+zc.Appearance.AppearanceValidater = AppearanceValidater
 function ThatPlyIsFemale(ply)
 	ply.CahceModel = ply.CahceModel or ""
 	if ply.CahceModel == ply:GetModel() then return ply.bSex end
@@ -551,7 +551,7 @@ end
 
 local plymeta = FindMetaTable("Player")
 function plymeta:GetSubMaterialSlots()
-	local tMdl = hg.Appearance.FuckYouModels[1][self:GetModel()] or hg.Appearance.FuckYouModels[2][self:GetModel()]
+	local tMdl = zc.Appearance.FuckYouModels[1][self:GetModel()] or zc.Appearance.FuckYouModels[2][self:GetModel()]
 	local mats = self:GetMaterials()
 	local slots = {}
 	if istable(tMdl) then

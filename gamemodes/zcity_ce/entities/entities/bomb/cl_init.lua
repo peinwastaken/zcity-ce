@@ -1,7 +1,7 @@
 include("shared.lua")
 
 function BombInSite(pos, site)
-    local pts = zb.ClPoints["BOMB_ZONE_"..(site == 1 and "A" or "B")]
+    local pts = zc.ClPoints["BOMB_ZONE_"..(site == 1 and "A" or "B")]
 
 	local vec1
 	local vec2
@@ -303,7 +303,7 @@ CreateMenu = function(bomb)
 			bombMenu = nil
 		end
 		if #txt < 6 then
-			chat.AddText(zb.locale.GetLocalized("bomb/code_must_be_6_numbers"))
+			chat.AddText(zc.locale.GetLocalized("bomb/code_must_be_6_numbers"))
 			return
 		end
 		surface.PlaySound("weapons/tfa_ins2_sr25_eft/m14_empty.wav")

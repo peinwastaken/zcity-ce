@@ -51,7 +51,7 @@ hook.Add("ZC_RadialOptions", "ZC_ReloadOnFloor", function()
 	if !lply:Alive() or !lply.organism or lply.organism.unconscious then return end
 	local org = lply.organism
 	if org.pain > 50 or (org.rarmamputated and org.larmamputated) then return end
-	local ent = (IsValid(hg.eyeTrace(lply).Entity) and hg.eyeTrace(lply).Entity) or (IsValid(lply:GetNetVar("carryent")) and lply:GetNetVar("carryent"))
+	local ent = (IsValid(zc.eyeTrace(lply).Entity) and zc.eyeTrace(lply).Entity) or (IsValid(lply:GetNetVar("carryent")) and lply:GetNetVar("carryent"))
 	if not IsValid(ent) then return end
 	if not ishgweapon(ent) then return end
 	local clip, maxclip = ent:Clip1(), ent:GetMaxClip1()
@@ -65,7 +65,7 @@ hook.Add("ZC_RadialOptions", "ZC_ReloadOnFloor", function()
 			end,
 			((isshotgun and lply:GetAmmoCount(ent.Primary.Ammo) <= 0 and not ent.drawBullet) and "Pump " or "Reload ") .. ent:GetPrintName()
 		}
-		hg.radialOptions[#hg.radialOptions + 1] = tbl
+		zc.radialOptions[#zc.radialOptions + 1] = tbl
 	end
 end)
 
@@ -83,7 +83,7 @@ hook.Add("ZC_RadialOptions", "ZC_PlaceBipod", function()
 			end,
 			ent:IsResting() and "Pickup bipod" or "Place bipod"
 		}
-		hg.radialOptions[#hg.radialOptions + 1] = tbl
+		zc.radialOptions[#zc.radialOptions + 1] = tbl
 	end
 end)
 

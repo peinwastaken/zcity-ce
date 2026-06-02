@@ -37,7 +37,7 @@ MODE.Config = {
     }
 }
 
-zb = zb or {}
+zc = zc or {}
 
 --[[ Ideas
     Weak eye zone on combines
@@ -46,13 +46,13 @@ zb = zb or {}
     //Airstrikes for elites
 ]]
 
-zb = zb or {}
-zb.Points = zb.Points or {}
+zc = zc or {}
+zc.Points = zc.Points or {}
 
-zb.Points.HL2DM_SNIPERSPAWN = zb.Points.HL2DM_SNIPERSPAWN or {}
-zb.Points.HL2DM_SNIPERSPAWN.Color = Color(243,9,9)
-zb.Points.HL2DM_SNIPERSPAWN.Name = "HL2DM_SNIPERSPAWN"
+zc.Points.HL2DM_SNIPERSPAWN = zc.Points.HL2DM_SNIPERSPAWN or {}
+zc.Points.HL2DM_SNIPERSPAWN.Color = Color(243,9,9)
+zc.Points.HL2DM_SNIPERSPAWN.Name = "HL2DM_SNIPERSPAWN"
 
-zb.Points.HL2DM_CROSSBOWSPAWN = zb.Points.HL2DM_CROSSBOWSPAWN or {}
-zb.Points.HL2DM_CROSSBOWSPAWN.Color = Color(243,9,9)
-zb.Points.HL2DM_CROSSBOWSPAWN.Name = "HL2DM_CROSSBOWSPAWN"
+zc.Points.HL2DM_CROSSBOWSPAWN = zc.Points.HL2DM_CROSSBOWSPAWN or {}
+zc.Points.HL2DM_CROSSBOWSPAWN.Color = Color(243,9,9)
+zc.Points.HL2DM_CROSSBOWSPAWN.Name = "HL2DM_CROSSBOWSPAWN"

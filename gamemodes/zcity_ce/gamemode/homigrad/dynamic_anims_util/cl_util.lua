@@ -33,7 +33,7 @@ hook.Add("CalcMainActivity", "ZC_SLCAnimActivity", function(ply, vel)
 		ply:SetCycle(cycle)
 
 		if needAutoStop and animStart + (num - autostopAdjust) <= CurTime() then
-			if hg.GetFakeState and hg.FAKE_STATE and hg.GetFakeState(ply) == hg.FAKE_STATE.RESTORING then
+			if zc.GetFakeState and zc.FAKE_STATE and zc.GetFakeState(ply) == zc.FAKE_STATE.RESTORING then
 				ply:SetCycle(1)
 				return -1, ply:LookupSequence(str)
 			end
@@ -44,7 +44,7 @@ hook.Add("CalcMainActivity", "ZC_SLCAnimActivity", function(ply, vel)
 		return -1, ply:LookupSequence(str)
 	end
 
-	if hg.GetFakeState and hg.FAKE_STATE and hg.GetFakeState(ply) == hg.FAKE_STATE.RESTORING and ply.gettingup_into_getup and ply.HGLastCustomAnim and ply.HGLastCustomAnim ~= "" then
+	if zc.GetFakeState and zc.FAKE_STATE and zc.GetFakeState(ply) == zc.FAKE_STATE.RESTORING and ply.gettingup_into_getup and ply.HGLastCustomAnim and ply.HGLastCustomAnim ~= "" then
 		ply:SetCycle(1)
 		return -1, ply:LookupSequence(ply.HGLastCustomAnim)
 	end

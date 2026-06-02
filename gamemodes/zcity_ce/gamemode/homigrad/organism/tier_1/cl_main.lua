@@ -1,4 +1,4 @@
-hg.bonetohitgroup = {
+zc.bonetohitgroup = {
 	["ValveBiped.Bip01_Head1"] = HITGROUP_HEAD,
 	["ValveBiped.Bip01_L_UpperArm"] = HITGROUP_LEFTARM,
 	["ValveBiped.Bip01_L_Forearm"] = HITGROUP_LEFTARM,
@@ -19,7 +19,7 @@ hg.bonetohitgroup = {
 	["ValveBiped.Bip01_R_Foot"] = HITGROUP_RIGHTLEG
 }
 
-hg.amputeetable = {
+zc.amputeetable = {
 	--["ValveBiped.Bip01_L_UpperArm"] = "larm",
 	["ValveBiped.Bip01_L_Forearm"] = "larm",
 	["ValveBiped.Bip01_L_Hand"] = "larm",
@@ -34,7 +34,7 @@ hg.amputeetable = {
 	["ValveBiped.Bip01_R_Foot"] = "rleg"
 }
 
---[[hg.amputeetable = {
+--[[zc.amputeetable = {
 	[HITGROUP_LEFTLEG] = "lleg",
 	[HITGROUP_RIGHTLEG] = "rleg",
 	[HITGROUP_LEFTARM] = "larm",
@@ -71,12 +71,12 @@ local function plyCommand(ply,cmd)
 	ply.cmdtimer = ply.cmdtimer or time
 
 	if cmd == "soundfade 100 99999" then
-		if IsValid(hg.chat) then
-			hg.chat:SetRealAlpha(0)
+		if IsValid(zc.chat) then
+			zc.chat:SetRealAlpha(0)
 
 			timer.Create("unconscioushuy", 1, 1, function()
 				if lply.organism and not lply.organism.unconscious then lply:ConCommand("soundfade 0 1") end
-				hg.chat:AnimateRealAlpha(255)
+				zc.chat:AnimateRealAlpha(255)
 			end)
 		end
 	end
@@ -116,13 +116,13 @@ hook.Add("ZC_PlayerDeath", "ZC_StartUnconsciousSoundFade", function(ply)
 end)
 
 local alivestart = CurTime()
-hg.screens = hg.screens or {}
-local screens = hg.screens
+zc.screens = zc.screens or {}
+local screens = zc.screens
 local screened = 0
 local curscreen = 1
 local switch = false
 local file_Delete = file.Delete
-hg.alivecntr = hg.alivecntr or 0
+zc.alivecntr = zc.alivecntr or 0
 
 local function remove_imgs()
 	if file.Exists("dreams", "DATA") then
@@ -145,10 +145,10 @@ hook.Add("ZC_PlayerSpawn", "ZC_ScreenshotGame", function(ply)
 		alivestart = CurTime()
 		lply.tried_fixing_limb = nil
 
-		hg.alivecntr = hg.alivecntr + 1
+		zc.alivecntr = zc.alivecntr + 1
 
-		for i in ipairs(hg.screens) do
-			hg.screens[i] = nil
+		for i in ipairs(zc.screens) do
+			zc.screens[i] = nil
 		end
 
 		remove_imgs()
@@ -177,9 +177,9 @@ hook.Add("ZC_RadialOptions", "ZC_DislocatedJoint", function()
             end,
             "Fix dislocation (leg)"
         }
-        hg.radialOptions[#hg.radialOptions + 1] = tbl
+        zc.radialOptions[#zc.radialOptions + 1] = tbl
 	else
-		local ent = hg.eyeTrace(lply).Entity
+		local ent = zc.eyeTrace(lply).Entity
 
 		if ent.organism and (ent.organism.llegdislocation or ent.organism.rlegdislocation) then
 			local tbl = {
@@ -189,7 +189,7 @@ hook.Add("ZC_RadialOptions", "ZC_DislocatedJoint", function()
 				end,
 				"Fix "..ent:GetPlayerName().."'s dislocation (leg)"
 			}
-			hg.radialOptions[#hg.radialOptions + 1] = tbl
+			zc.radialOptions[#zc.radialOptions + 1] = tbl
 		end
     end
 end)
@@ -208,9 +208,9 @@ hook.Add("ZC_RadialOptions", "ZC_DislocatedJoint2", function()
             end,
             "Fix dislocation (arm)"
         }
-        hg.radialOptions[#hg.radialOptions + 1] = tbl
+        zc.radialOptions[#zc.radialOptions + 1] = tbl
 	else
-		local ent = hg.eyeTrace(lply).Entity
+		local ent = zc.eyeTrace(lply).Entity
 
 		if ent.organism and (ent.organism.larmdislocation or ent.organism.rarmdislocation) then
 			local tbl = {
@@ -220,7 +220,7 @@ hook.Add("ZC_RadialOptions", "ZC_DislocatedJoint2", function()
 				end,
 				"Fix "..ent:GetPlayerName().."'s dislocation (arm)"
 			}
-			hg.radialOptions[#hg.radialOptions + 1] = tbl
+			zc.radialOptions[#zc.radialOptions + 1] = tbl
 		end
     end
 end)
@@ -239,9 +239,9 @@ hook.Add("ZC_RadialOptions", "ZC_DislocatedJaw", function()
             end,
             "Fix dislocation (jaw)"
         }
-        hg.radialOptions[#hg.radialOptions + 1] = tbl
+        zc.radialOptions[#zc.radialOptions + 1] = tbl
 	else
-		local ent = hg.eyeTrace(lply).Entity
+		local ent = zc.eyeTrace(lply).Entity
 
 		if ent.organism and ent.organism.jawdislocation then
 			local tbl = {
@@ -251,7 +251,7 @@ hook.Add("ZC_RadialOptions", "ZC_DislocatedJaw", function()
 				end,
 				"Fix "..ent:GetPlayerName().."'s dislocation (jaw)"
 			}
-			hg.radialOptions[#hg.radialOptions + 1] = tbl
+			zc.radialOptions[#zc.radialOptions + 1] = tbl
 		end
     end
 end)
@@ -281,7 +281,7 @@ hook.Add("PostRender", "ZC_ScreenshotThink", function()
 
 		if not data then return end
 
-		local name = "dreams/dream"..hg.alivecntr.."_"..(#screens + 1)..".jpeg"
+		local name = "dreams/dream"..zc.alivecntr.."_"..(#screens + 1)..".jpeg"
 
 		if not file.Exists("dreams", "DATA") then file.CreateDir("dreams") end
 		file.Write(name, data)
@@ -340,7 +340,7 @@ hook.Add("ZC_AfterPostProcessingDraw", "ZC_OrganismEffects", function()
 	local organism = lply:Alive() and lply.organism or (viewmode == 1 and IsValid(spect) and spect.organism) or {}
 	local new_organism = lply:Alive() and lply.new_organism or (viewmode == 1 and IsValid(spect) and spect.new_organism) or {}
 
-	//hg.DrawAffliction(0, 0, 100, 100, 1, "pale")
+	//zc.DrawAffliction(0, 0, 100, 100, 1, "pale")
 
 	if organism.owner == LocalPlayer() then
 		if new_organism.unconscious and !old then
@@ -398,7 +398,7 @@ hook.Add("ZC_AfterPostProcessingDraw", "ZC_OrganismEffects", function()
 		//lply:ScreenFade( SCREENFADE.IN, clr_black2, 2, 0.5 )
 		--lply:ScreenFade( SCREENFADE.IN, Color(0,0,0,255), 2, 0.5 )
 
-		if isnumber(zb.ROUND_STATE) and (zb.ROUND_STATE ~= 1) then
+		if isnumber(zc.ROUND_STATE) and (zc.ROUND_STATE ~= 1) then
 			lply:SetDSP(normaldsp)
 			plyCommand(lply,"soundfade "..tinnitusSoundFactor2.." 25")
 		elseif lply:Alive() then
@@ -472,7 +472,7 @@ hook.Add("ZC_AfterPostProcessingDraw", "ZC_OrganismEffects", function()
 			end
 		end
 	end
-	zc_potatopc = zc_potatopc or hg.ConVars.potatopc
+	zc_potatopc = zc_potatopc or zc.ConVars.potatopc
 	local potato = zc_potatopc:GetBool()
 	if (k1 > 0) or (k2 > 0) or (k3 > 0) or brain > 0 then
 		if !potato then
@@ -575,7 +575,7 @@ end)
 hook.Add("ZC_OnNetVarSet","ZC_WoundsNetVar",function(index, key, var)
 	if key == "wounds" then
 		local ent = Entity(index)
-		--local ent = hg.RagdollOwner(ent) or ent
+		--local ent = zc.RagdollOwner(ent) or ent
 
 		if IsValid(ent) then
 			if ent.wounds then
@@ -598,7 +598,7 @@ end)
 hook.Add("ZC_OnNetVarSet","ZC_WoundsNetVar2",function(index, key, var)
 	if key == "arterialwounds" then
 		local ent = Entity(index)
-		--local ent = hg.RagdollOwner(ent) or ent
+		--local ent = zc.RagdollOwner(ent) or ent
 
 		if IsValid(ent) then
 			if ent.arterialwounds then
@@ -632,16 +632,16 @@ hook.Add("ZC_OnFakeRagdollCreated", "ZC_TransferWoundsToRagdoll", function(ply,r
 	ragdoll.arterialwounds = ply.arterialwounds
 end)
 
-function hg.applyFountain(pos, ang, mul, mul2, forward, ent)
+function zc.applyFountain(pos, ang, mul, mul2, forward, ent)
 	if bit.band(util.PointContents(pos), CONTENTS_WATER) == CONTENTS_WATER then
 		if math.random(2) == 1 then return end
-		hg.addBloodPart2(pos, ang:Forward() * forward * 0.5 + VectorRand(-25,25) * mul2, nil, nil, nil, nil, true, nil, ent)
-		hg.addBloodPart2(pos + VectorRand(-1,1), ang:Forward() * forward * 0.25 + VectorRand(-10,10) * mul2, nil, nil, nil, nil, true, nil, ent)
-		//hg.addBloodPart2(pos + VectorRand(-1,1), ang:Forward() * forward * 0.25 + VectorRand(-10,10) * mul2, nil, nil, nil, nil, true, nil, ent)
+		zc.addBloodPart2(pos, ang:Forward() * forward * 0.5 + VectorRand(-25,25) * mul2, nil, nil, nil, nil, true, nil, ent)
+		zc.addBloodPart2(pos + VectorRand(-1,1), ang:Forward() * forward * 0.25 + VectorRand(-10,10) * mul2, nil, nil, nil, nil, true, nil, ent)
+		//zc.addBloodPart2(pos + VectorRand(-1,1), ang:Forward() * forward * 0.25 + VectorRand(-10,10) * mul2, nil, nil, nil, nil, true, nil, ent)
 	else
-		hg.addBloodPart(pos, ang:Forward() * forward * 2 * math.abs(math.sin(CurTime() * 3) + math.cos(CurTime() * 5) + math.sin(CurTime() * 2) + 4) * 0.1 + ang:Right() * 15 * (math.sin(CurTime()) * 1) + ang:Right() * math.sin(CurTime() * 2) * 15 + VectorRand(-3, 3),nil,nil,nil,true)
-		hg.addBloodPart(pos + VectorRand(-1,1), ang:Forward() * 55 + VectorRand(-25,25) * mul2,nil,nil,nil,nil, nil, ent)
-		//hg.addBloodPart(pos + VectorRand(-1,1), ang:Forward() * 55 + VectorRand(-25,25) * mul2,nil,nil,nil,nil, nil, ent)
+		zc.addBloodPart(pos, ang:Forward() * forward * 2 * math.abs(math.sin(CurTime() * 3) + math.cos(CurTime() * 5) + math.sin(CurTime() * 2) + 4) * 0.1 + ang:Right() * 15 * (math.sin(CurTime()) * 1) + ang:Right() * math.sin(CurTime() * 2) * 15 + VectorRand(-3, 3),nil,nil,nil,true)
+		zc.addBloodPart(pos + VectorRand(-1,1), ang:Forward() * 55 + VectorRand(-25,25) * mul2,nil,nil,nil,nil, nil, ent)
+		//zc.addBloodPart(pos + VectorRand(-1,1), ang:Forward() * 55 + VectorRand(-25,25) * mul2,nil,nil,nil,nil, nil, ent)
 	end
 end
 
@@ -758,7 +758,7 @@ hook.Add("ZC_PlayerRagdollThink", "ZC_OrganismThinkClientBlood", function(ply, e
 	ply.pulse_breathe = ply.pulse_breathe or {}
 	ent.pulse_breathe = ply.pulse_breathe
 
-	hg.LerpVariables(FrameTime() * 10, organism, new_organism)
+	zc.LerpVariables(FrameTime() * 10, organism, new_organism)
 
 	local org = ent.organism or {}
 	local owner = ent
@@ -830,11 +830,11 @@ hook.Add("ZC_PlayerRagdollThink", "ZC_OrganismThinkClientBlood", function(ply, e
 				if mat then
 					local pos, ang = LocalToWorld(tbl.lpos, tbl.lang, mat:GetTranslation(), mat:GetAngles())
 
-					hg.applyFountain(pos, ang, mul, mul2, forward, ent)
+					zc.applyFountain(pos, ang, mul, mul2, forward, ent)
 				end
 			else
 				local pos, ang = ent:GetPos(), angle_zero
-				hg.applyFountain(pos, ang, mul, mul2, forward, ent)
+				zc.applyFountain(pos, ang, mul, mul2, forward, ent)
 			end
 		end
 	end
@@ -847,7 +847,7 @@ hook.Add("ZC_PlayerRagdollThink", "ZC_OrganismThinkClientBlood", function(ply, e
 				if wound[5] + beatsPerSecond < time then
 					if seen and ent:LookupBone(wound[4]) then
 						local bone = wound[4]
-						local should = !(hg.amputatedlimbs2[bone] and org[hg.amputatedlimbs2[bone].."amputated"])
+						local should = !(zc.amputatedlimbs2[bone] and org[zc.amputatedlimbs2[bone].."amputated"])
 
 						if !should then continue end
 
@@ -860,10 +860,10 @@ hook.Add("ZC_PlayerRagdollThink", "ZC_OrganismThinkClientBlood", function(ply, e
 						local water = bit.band(util.PointContents(pos), CONTENTS_WATER) == CONTENTS_WATER
 						if water then
 							if wound[5] + 1 < time then
-								hg.addBloodPart2(pos, VectorRand(-5, 5), nil, nil, nil, nil, true, nil, ent)
+								zc.addBloodPart2(pos, VectorRand(-5, 5), nil, nil, nil, nil, true, nil, ent)
 							end
 						else
-							hg.addBloodPart(pos, VectorRand(-15, 15), nil, size, size, false, nil, ent)
+							zc.addBloodPart(pos, VectorRand(-15, 15), nil, size, size, false, nil, ent)
 						end
 
 						wound[5] = time + (water and 2 or (math.Rand(0, 1) * (!zc_old_blood:GetBool() and 0.5 or 1) / wound[1] * 15))
@@ -872,9 +872,9 @@ hook.Add("ZC_PlayerRagdollThink", "ZC_OrganismThinkClientBlood", function(ply, e
 
 						local water = bit.band(util.PointContents(pos), CONTENTS_WATER) == CONTENTS_WATER
 						if water then
-							hg.addBloodPart2(pos, VectorRand(-5, 5), nil, nil, nil, nil, true, nil, ent)
+							zc.addBloodPart2(pos, VectorRand(-5, 5), nil, nil, nil, nil, true, nil, ent)
 						else
-							hg.addBloodPart(pos, VectorRand(-15, 15), nil, size, size, false, nil, ent)
+							zc.addBloodPart(pos, VectorRand(-15, 15), nil, size, size, false, nil, ent)
 						end
 
 						wound[5] = time + (water and 2 or (math.Rand(0, 1) * (!zc_old_blood:GetBool() and 0.5 or 1) / wound[1] * 15))
@@ -894,7 +894,7 @@ hook.Add("ZC_PlayerRagdollThink", "ZC_OrganismThinkClientBlood", function(ply, e
 					if seen and ent:LookupBone(wound[4]) then
 						local bone = wound[4]
 
-						local should = !(hg.amputatedlimbs2[bone] and org[hg.amputatedlimbs2[bone].."amputated"])
+						local should = !(zc.amputatedlimbs2[bone] and org[zc.amputatedlimbs2[bone].."amputated"])
 
 						if !should then continue end
 
@@ -912,9 +912,9 @@ hook.Add("ZC_PlayerRagdollThink", "ZC_OrganismThinkClientBlood", function(ply, e
 
 						local water = bit.band(util.PointContents(pos), CONTENTS_WATER) == CONTENTS_WATER
 						if water then
-							hg.addBloodPart2(pos, VectorRand(-5, 5), nil, nil, nil, nil, true, nil, ent)
+							zc.addBloodPart2(pos, VectorRand(-5, 5), nil, nil, nil, nil, true, nil, ent)
 						else
-							hg.addBloodPart(pos, VectorRand(-1, 1) * (org.pulse or 70) / 70 + dir * 5 * (math.abs(math.sin(CurTime() * 2) + math.cos(CurTime() * (5 + i * 2)) + math.sin(CurTime() * (1 + i))) * 0.6 + math.sin(CurTime() * 2) + 4) * 0.1 + dir:Angle():Right() * 25 * math.sin(CurTime() * 2) * math.cos(CurTime() * 4) + ang:Up() * 25 * math.sin(CurTime() * 3) * math.cos(CurTime() * 1) + VectorRand(-1, 1) * (org.pulse or 70) / 70, nil, size, size, true, nil, ent)
+							zc.addBloodPart(pos, VectorRand(-1, 1) * (org.pulse or 70) / 70 + dir * 5 * (math.abs(math.sin(CurTime() * 2) + math.cos(CurTime() * (5 + i * 2)) + math.sin(CurTime() * (1 + i))) * 0.6 + math.sin(CurTime() * 2) + 4) * 0.1 + dir:Angle():Right() * 25 * math.sin(CurTime() * 2) * math.cos(CurTime() * 4) + ang:Up() * 25 * math.sin(CurTime() * 3) * math.cos(CurTime() * 1) + VectorRand(-1, 1) * (org.pulse or 70) / 70, nil, size, size, true, nil, ent)
 						end
 
 						wound[5] = time + (water and 2 or (0.5 * 1 / zc_blood_fps:GetInt()))
@@ -923,9 +923,9 @@ hook.Add("ZC_PlayerRagdollThink", "ZC_OrganismThinkClientBlood", function(ply, e
 
 						local water = bit.band(util.PointContents(pos), CONTENTS_WATER) == CONTENTS_WATER
 						if water then
-							hg.addBloodPart2(pos, VectorRand(-5, 5), nil, nil, nil, nil, true, nil, ent)
+							zc.addBloodPart2(pos, VectorRand(-5, 5), nil, nil, nil, nil, true, nil, ent)
 						else
-							hg.addBloodPart(pos, VectorRand(-15, 15), nil, size, size, true, nil, ent)
+							zc.addBloodPart(pos, VectorRand(-15, 15), nil, size, size, true, nil, ent)
 						end
 
 						wound[5] = time + (water and 2 or 0)
@@ -962,24 +962,24 @@ local limbs = {
 	["head"] = "ValveBiped.Bip01_Head1"
 }
 
-function hg.amputatedbone(ent, bone)
-	if ent.organism and hg.amputatedlimbs2[bone] then
-		if ent.organism[hg.amputatedlimbs2[bone].."amputated"] then
+function zc.amputatedbone(ent, bone)
+	if ent.organism and zc.amputatedlimbs2[bone] then
+		if ent.organism[zc.amputatedlimbs2[bone].."amputated"] then
 			return true
 		end
 	end
 end
 
-hg.amputatedlimbs = limbs
+zc.amputatedlimbs = limbs
 
-hg.amputatedlimbs2 = {}
+zc.amputatedlimbs2 = {}
 for k, v in pairs(limbs) do
-	hg.amputatedlimbs2[v] = k
+	zc.amputatedlimbs2[v] = k
 end
 
 local vecFull = Vector(1, 1, 1)
 
-function hg.GoreCalc(ent, ply)
+function zc.GoreCalc(ent, ply)
 	local org = ent.new_organism or ent.organism
 	if !org then return end
 
@@ -999,10 +999,10 @@ function hg.GoreCalc(ent, ply)
 		local mat2 = ent:GetBoneMatrix(bon - 1)
 		mat:SetScale(vecalmostzero)
 
-		hg.bone_apply_matrix(ent, bon, mat)
+		zc.bone_apply_matrix(ent, bon, mat)
 
 		if IsValid(ply.OldFakeRagdoll) then
-			hg.bone_apply_matrix(ply, bon, mat)
+			zc.bone_apply_matrix(ply, bon, mat)
 		end
 
 		local fem = ThatPlyIsFemale(ent) and 1 or 0
@@ -1049,7 +1049,7 @@ hook.Add("ZC_InputMouseApply","ZC_BrainDeathMouseInput",function(tbl)
 	if not actwep or not actwep.GetTrace then return end
 	local hitpos,pos,ang = actwep:GetTrace()
 
-	local ply = hg.GetCurrentCharacter(Entity(2))
+	local ply = zc.GetCurrentCharacter(Entity(2))
 	local dist = ply:EyePos():Distance(LocalPlayer():EyePos())
 	ply:SetupBones()
 	scr = ply:GetBoneMatrix(ply:LookupBone("ValveBiped.Bip01_Head1")):GetTranslation():ToScreen()

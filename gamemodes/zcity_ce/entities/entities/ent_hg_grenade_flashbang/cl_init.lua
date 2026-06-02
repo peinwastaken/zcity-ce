@@ -21,7 +21,7 @@ net.Receive("ZC_Flashbang",function()
 	local viewsetup = render.GetViewSetup(true)
 
 	if IsLookingFlash < -0.5 then
-		hg.AddFlash(viewsetup.origin,IsLookingFlash,pos,time*5,50000)
+		zc.AddFlash(viewsetup.origin,IsLookingFlash,pos,time*5,50000)
 	end
 	hook.Add("RenderScreenspaceEffects", "ZC_Flashed", function()
 		if lply.tinnitus - CurTime() < 0 then lply.tinnitus = nil

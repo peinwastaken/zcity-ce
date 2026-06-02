@@ -1,16 +1,16 @@
-zb = zb or {}
+zc = zc or {}
 
 if (CLIENT) then
     local entityMeta = FindMetaTable("Entity")
     local playerMeta = FindMetaTable("Player")
 
-    zb.net = zb.net or {}
-    zb.net.globals = zb.net.globals or {}
+    zc.net = zc.net or {}
+    zc.net.globals = zc.net.globals or {}
 
     net.Receive("ZC_GlobalVarSet", function()
         local key, var = net.ReadString(), net.ReadType()
 
-    	zb.net.globals[key] = var
+    	zc.net.globals[key] = var
 
         hook.Run("ZC_OnGlobalVarSet", key, var)
     end)
@@ -21,34 +21,34 @@ if (CLIENT) then
 		local key = net.ReadString()
     	local var = net.ReadType()
 		
-        zb.net[index] = zb.net[index] or {}
-        zb.net[index][key] = var
+        zc.net[index] = zc.net[index] or {}
+        zc.net[index][key] = var
 
 		-- print(index, key)
 		
 		if IsValid(Entity(index)) then
 			hook.Run("ZC_OnNetVarSet", index, key, var)
 		else
-			zb.net[index].waiting = true
+			zc.net[index].waiting = true
 		end
     end)
 	
     net.Receive("ZC_NetVarDelete", function()
-    	zb.net[net.ReadUInt(16)] = nil
+    	zc.net[net.ReadUInt(16)] = nil
     end)
 
     net.Receive("ZC_LocalVarSet", function()
     	local key = net.ReadString()
     	local var = net.ReadType()
 
-    	zb.net[LocalPlayer():EntIndex()] = zb.net[LocalPlayer():EntIndex()] or {}
-    	zb.net[LocalPlayer():EntIndex()][key] = var
+    	zc.net[LocalPlayer():EntIndex()] = zc.net[LocalPlayer():EntIndex()] or {}
+    	zc.net[LocalPlayer():EntIndex()][key] = var
 
 		hook.Run("ZC_OnLocalVarSet", key, var)
     end)
 
     function GetNetVar(key, default) -- luacheck: globals GetNetVar
-    	local value = zb.net.globals[key]
+    	local value = zc.net.globals[key]
 
     	return value != nil and value or default
     end
@@ -56,8 +56,8 @@ if (CLIENT) then
     function entityMeta:GetNetVar(key, default)
     	local index = self:EntIndex()
 
-    	if (zb.net[index] and zb.net[index][key] != nil) then
-    		return zb.net[index][key]
+    	if (zc.net[index] and zc.net[index][key] != nil) then
+    		return zc.net[index][key]
     	end
 
     	return default
@@ -97,10 +97,10 @@ else
     local entityMeta = FindMetaTable("Entity")
     local playerMeta = FindMetaTable("Player")
 
-    zb.net = zb.net or {}
-    zb.net.list = zb.net.list or {}
-    zb.net.locals = zb.net.locals or {}
-    zb.net.globals = zb.net.globals or {}
+    zc.net = zc.net or {}
+    zc.net.list = zc.net.list or {}
+    zc.net.locals = zc.net.locals or {}
+    zc.net.globals = zc.net.globals or {}
 
     util.AddNetworkString("ZC_GlobalVarSet")
     util.AddNetworkString("ZC_LocalVarSet")
@@ -123,7 +123,7 @@ else
     end
 
     function GetNetVar(key, default)
-    	local value = zb.net.globals[key]
+    	local value = zc.net.globals[key]
 
     	return value != nil and value or default
     end
@@ -132,7 +132,7 @@ else
     	if (CheckBadType(key, value)) then return end
     	--if (GetNetVar(key) == value) then return end
 		
-    	zb.net.globals[key] = value
+    	zc.net.globals[key] = value
 
     net.Start("ZC_GlobalVarSet", unreliable)
     	net.WriteString(key)
@@ -146,21 +146,21 @@ else
     end
 	
     function playerMeta:SyncVars()
-    	for k, v in pairs(zb.net.globals) do
+    	for k, v in pairs(zc.net.globals) do
         net.Start("ZC_GlobalVarSet")
     			net.WriteString(k)
     			net.WriteType(v)
     		net.Send(self)
     	end
 
-    	for k, v in pairs(zb.net.locals[self] or {}) do
+    	for k, v in pairs(zc.net.locals[self] or {}) do
         net.Start("ZC_LocalVarSet")
     			net.WriteString(k)
     			net.WriteType(v)
     		net.Send(self)
     	end
 
-    	for entity, data in pairs(zb.net.list) do
+    	for entity, data in pairs(zc.net.list) do
     		if (IsValid(entity)) then
     			local index = entity:EntIndex()
 
@@ -172,14 +172,14 @@ else
     				net.Send(self)
     			end
 			else
-				zb.net.list[entity] = nil
+				zc.net.list[entity] = nil
     		end
     	end
     end
 	
     function playerMeta:GetLocalVar(key, default)
-    	if (zb.net.locals[self] and zb.net.locals[self][key] != nil) then
-    		return zb.net.locals[self][key]
+    	if (zc.net.locals[self] and zc.net.locals[self][key] != nil) then
+    		return zc.net.locals[self][key]
     	end
 
     	return default
@@ -188,8 +188,8 @@ else
     function playerMeta:SetLocalVar(key, value)
     	if (CheckBadType(key, value)) then return end
 
-    	zb.net.locals[self] = zb.net.locals[self] or {}
-    	zb.net.locals[self][key] = value
+    	zc.net.locals[self] = zc.net.locals[self] or {}
+    	zc.net.locals[self][key] = value
 
     net.Start("ZC_LocalVarSet")
     		net.WriteString(key)
@@ -198,8 +198,8 @@ else
     end
 
     function entityMeta:GetNetVar(key, default)
-    	if (zb.net.list[self] and zb.net.list[self][key] != nil) then
-    		return zb.net.list[self][key]
+    	if (zc.net.list[self] and zc.net.list[self][key] != nil) then
+    		return zc.net.list[self][key]
     	end
 
     	return default
@@ -208,12 +208,12 @@ else
     function entityMeta:SetNetVar(key, value, receiver)
     	if (CheckBadType(key, value)) then return end
 
-		zb.net.list[self] = zb.net.list[self] or {}
+		zc.net.list[self] = zc.net.list[self] or {}
 
-		--if not hg.IsChanged(value, key, zb.net.list[self]) then return end
+		--if not zc.IsChanged(value, key, zc.net.list[self]) then return end
 
-    	if (zb.net.list[self][key] != value) then
-    		zb.net.list[self][key] = value 
+    	if (zc.net.list[self][key] != value) then
+    		zc.net.list[self][key] = value 
     	end
 		
 		self:SendNetVar(key, receiver)
@@ -223,7 +223,7 @@ else
     net.Start("ZC_NetVarSet")
     	net.WriteUInt(self:EntIndex(), 16)
     	net.WriteString(key)
-    	net.WriteType(zb.net.list[self] and zb.net.list[self][key])
+    	net.WriteType(zc.net.list[self] and zc.net.list[self][key])
 
     	if (receiver == nil) then
     		net.Broadcast()
@@ -233,8 +233,8 @@ else
     end
 
     function entityMeta:ClearNetVars(receiver)
-    	zb.net.list[self] = nil
-    	zb.net.locals[self] = nil
+    	zc.net.list[self] = nil
+    	zc.net.locals[self] = nil
 
     net.Start("ZC_NetVarDelete")
     	net.WriteUInt(self:EntIndex(), 16)

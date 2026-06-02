@@ -70,15 +70,15 @@ function MODE.GetZoneRadius()
 	if !zonedistance or !isnumber(zonedistance) then return 0xFFFFFFFF /*UUUUUUUUUUUUUUUUUCK*/ end
 	local dist = zonedistance + 2048
 	
-	return (dist * math.max(((zb.ROUND_START + MODE.ZoneTimeToShrink) - CurTime()) / MODE.ZoneTimeToShrink, 0.025))
+	return (dist * math.max(((zc.ROUND_START + MODE.ZoneTimeToShrink) - CurTime()) / MODE.ZoneTimeToShrink, 0.025))
 end
 
 function MODE:IsSpawnProtectionActive()
-    return (zb.ROUND_START or 0) + MODE.SpawnProtectionTime > CurTime()
+    return (zc.ROUND_START or 0) + MODE.SpawnProtectionTime > CurTime()
 end
 
 function MODE:ZC_CanPlayerLegAttack( ply )
-	if (zb.ROUND_START or 0) + 20 > CurTime() then
+	if (zc.ROUND_START or 0) + 20 > CurTime() then
 		return false
 	end
 end

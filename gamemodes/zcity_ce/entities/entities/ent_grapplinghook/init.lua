@@ -86,10 +86,10 @@ function ENT:PhysicsCollide(data, physobj)
 			local ent = data.HitEntity
 			timer.Simple(0,function()
 				if IsValid(ent) and ent:IsPlayer() and ent:Alive() then
-					hg.LightStunPlayer(ent)
-					hg.velocityDamage(ent, data)
+					zc.LightStunPlayer(ent)
+					zc.velocityDamage(ent, data)
 					if IsValid(ent.FakeRagdoll) then
-						hg.velocityDamage(ent.FakeRagdoll, data)
+						zc.velocityDamage(ent.FakeRagdoll, data)
 					end
 				end
 			end)

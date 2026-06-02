@@ -11,10 +11,10 @@ end)
 function PANEL:Init()
 	self:SetPos(sw * 0.4, sh * 0.15)
 	self:SetSize(sw * 0.2, sh * 0.07)
-	if IsValid(zb.CSIntermission) then
-		zb.CSIntermission:Remove()
+	if IsValid(zc.CSIntermission) then
+		zc.CSIntermission:Remove()
 	end
-	zb.CSIntermission = self
+	zc.CSIntermission = self
 
 	self.appearAlpha = 255
 	self.appearProgress = 0
@@ -39,7 +39,7 @@ function PANEL:Init()
 	self.text = vgui.Create("DLabel", self)
 	self.text:Dock(FILL)
 	self.text:DockMargin(0, 0, 0, 0)
-	self.text:SetText(rounds == 0 and zb.locale.GetLocalized("cstrike/warm_up") or zb.locale.GetLocalized("cstrike/round", rounds))
+	self.text:SetText(rounds == 0 and zc.locale.GetLocalized("cstrike/warm_up") or zc.locale.GetLocalized("cstrike/round", rounds))
 	self.text:SetFont("ZB_InterfaceLarge")
 	self.text:SetTextColor(color_white)
 	self.text:SetWrap(false)

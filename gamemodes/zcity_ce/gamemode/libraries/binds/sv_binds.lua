@@ -1,6 +1,6 @@
 util.AddNetworkString("ZC_BindState")
 
-zb.binds = zb.binds or {}
+zc.binds = zc.binds or {}
 
 local bindPressedWindow = 0.15
 
@@ -37,7 +37,7 @@ net.Receive("ZC_BindState", function(len, ply)
   hook.Run("ZC_BindStateChanged", ply, id, down)
 end)
 
-function zb.binds.IsDown(ply, id)
+function zc.binds.IsDown(ply, id)
   if !IsValid(ply) or !IsValidBindId(id) then return false end
 
   local bindState = ply.ZCBindStates and ply.ZCBindStates[id]
@@ -45,7 +45,7 @@ function zb.binds.IsDown(ply, id)
   return bindState and bindState.down == true or false
 end
 
-function zb.binds.WasPressed(ply, id, window)
+function zc.binds.WasPressed(ply, id, window)
   if !IsValid(ply) or !IsValidBindId(id) then return false end
 
   local bindState = ply.ZCBindStates and ply.ZCBindStates[id]
@@ -54,7 +54,7 @@ function zb.binds.WasPressed(ply, id, window)
   return bindState.pressed >= CurTime() - (window or bindPressedWindow)
 end
 
-function zb.binds.WasReleased(ply, id, window)
+function zc.binds.WasReleased(ply, id, window)
   if !IsValid(ply) or !IsValidBindId(id) then return false end
 
   local bindState = ply.ZCBindStates and ply.ZCBindStates[id]
@@ -66,15 +66,15 @@ end
 local PLAYER = FindMetaTable("Player")
 
 function PLAYER:ZCBindDown(id)
-  return zb.binds.IsDown(self, id)
+  return zc.binds.IsDown(self, id)
 end
 
 function PLAYER:ZCBindPressed(id, window)
-  return zb.binds.WasPressed(self, id, window)
+  return zc.binds.WasPressed(self, id, window)
 end
 
 function PLAYER:ZCBindReleased(id, window)
-  return zb.binds.WasReleased(self, id, window)
+  return zc.binds.WasReleased(self, id, window)
 end
 
 hook.Add("PlayerDisconnected", "ZC_ClearBindStates", function(ply)

@@ -1,4 +1,4 @@
-hg.bloodparticles2 = hg.bloodparticles2 or {}
+zc.bloodparticles2 = zc.bloodparticles2 or {}
 bloodparticles_hook = bloodparticles_hook or {}
 
 local tr = {
@@ -20,8 +20,8 @@ local color = Color(90,0,0,122)
 bloodparticles_hook[3] = function(anim_pos)
     local time = CurTime()
 
-    for i = 1, #hg.bloodparticles2 do
-        local part = hg.bloodparticles2[i]
+    for i = 1, #zc.bloodparticles2 do
+        local part = zc.bloodparticles2[i]
         if not part then continue end
         local animpos = math.max((part[7] - time) / part[8], 0)
         color.a = part.water and (200 * animpos) or (122 * animpos)
@@ -36,16 +36,16 @@ local radius = 20000
 local radiusSqr = radius * radius
 
 hook.Add("InitPostEntity", "ZC_GetScreenSize2", function()
-	radius = hg.GetWorldSize()
+	radius = zc.GetWorldSize()
     radiusSqr = radius * radius
 end)
 
 bloodparticles_hook[4] = function(mul)
     local time = CurTime()
 
-    for i = #hg.bloodparticles2, 1, -1 do
-        local part = hg.bloodparticles2[i]
-        if not part then table_remove(hg.bloodparticles2, i) continue end
+    for i = #zc.bloodparticles2, 1, -1 do
+        local part = zc.bloodparticles2[i]
+        if not part then table_remove(zc.bloodparticles2, i) continue end
 
         local pos = part[1]
         local posSet = part[2]
@@ -57,10 +57,10 @@ bloodparticles_hook[4] = function(mul)
         local hitPos = result.HitPos
 
 
-		if radiusSqr < hitPos:LengthSqr() then table_remove(hg.bloodparticles2, i) continue end
+		if radiusSqr < hitPos:LengthSqr() then table_remove(zc.bloodparticles2, i) continue end
 
         if result.Hit or part[7] - time <= 0 then
-            table_remove(hg.bloodparticles2, i)
+            table_remove(zc.bloodparticles2, i)
 
             --util.Decal("Water.Blood", pos + result.HitNormal, pos - result.HitNormal, ents.FindInSphere(pos, 1))
 
@@ -83,9 +83,9 @@ bloodparticles_hook[4] = function(mul)
             part[3][3] = -5
             --pos:Add(-vector_up * up)
             --posSet:Add(-vector_up * up)
-            --hg.addBloodPart(part[1], part[3] * 2)
+            --zc.addBloodPart(part[1], part[3] * 2)
 
-			--table_remove(hg.bloodparticles2, i)
+			--table_remove(zc.bloodparticles2, i)
 			--continue
         end
     end

@@ -112,12 +112,12 @@ function MODE:AssignPlayerRoles()
                     ply:GiveAmmo(30, ply:GetWeapon(weaponClass):GetPrimaryAmmoType(), true)
                 end
                 pcall(function()
-                    hg.AddAttachmentForce(ply, gun, DEFENSE_ATTACHMENTS[0][math.random(#DEFENSE_ATTACHMENTS[0])])
+                    zc.AddAttachmentForce(ply, gun, DEFENSE_ATTACHMENTS[0][math.random(#DEFENSE_ATTACHMENTS[0])])
                 end)
             end
         end)
         pcall(function()
-            hg.AddArmor(ply, DEFENSE_ARMOR[0][math.random(#DEFENSE_ARMOR[0])])
+            zc.AddArmor(ply, DEFENSE_ARMOR[0][math.random(#DEFENSE_ARMOR[0])])
         end)
         ply:Give("weapon_melee")
         ply:Give("weapon_hg_rgd_tpik")
@@ -219,7 +219,7 @@ function MODE:GiveEquipment()
 
         pcall(function()
             ply:SetPlayerClass("Refugee")
-            zb.GiveRole(ply, "Refugee", Color(255, 150, 0))
+            zc.GiveRole(ply, "Refugee", Color(255, 150, 0))
         end)
 
         self:GetPlySpawn(ply)

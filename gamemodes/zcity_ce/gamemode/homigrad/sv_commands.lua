@@ -152,7 +152,7 @@ if SERVER then
             return
         end
 
-        target = hg.GetCurrentCharacter(target)
+        target = zc.GetCurrentCharacter(target)
 
         net.Start("ZC_LightningStrikeEffect")
         net.WriteEntity(target)
@@ -214,7 +214,7 @@ if SERVER then
 
 		for _, ply2 in pairs(player.GetListByName(plya)) do
 			if ply2:Alive() then
-				local Appearance = ply2.CurAppearance or hg.Appearance.GetRandomAppearance()
+				local Appearance = ply2.CurAppearance or zc.Appearance.GetRandomAppearance()
 				Appearance.AColthes = ""
 				ply2:SetNetVar("Accessories", "")
 				ply2:SetModel(mdl)

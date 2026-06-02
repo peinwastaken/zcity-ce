@@ -159,7 +159,7 @@ You are equipped with various weapons, poisons and explosives, grenades and your
 			if not IsValid(p22) then return end
 			ply:GiveAmmo(p22:GetMaxClip1() * 1, p22:GetPrimaryAmmoType(), true)
 			
-			hg.AddAttachmentForce(ply, p22, "supressor4")
+			zc.AddAttachmentForce(ply, p22, "supressor4")
 			ply:Give("weapon_sogknife")	
 			ply:Give("weapon_hg_rgd_tpik")
 			-- ply:Give("weapon_walkie_talkie")
@@ -541,7 +541,7 @@ MODE.Roles.supermario = {
 }
 
 function MODE.GetPlayerTraceToOther(ply, aim_vector, dist)
-	local trace = hg.eyeTrace(ply, dist, nil, aim_vector)
+	local trace = zc.eyeTrace(ply, dist, nil, aim_vector)
 	
 	if(trace)then
 		local aim_ent = trace.Entity

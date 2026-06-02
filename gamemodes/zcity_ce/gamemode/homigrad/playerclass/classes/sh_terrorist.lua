@@ -14,7 +14,7 @@ function CLASS.On(self)
     if CLIENT then return end
     ApplyAppearance(self,nil,nil,nil,true)
     timer.Simple(.1,function()
-        local Appearance = self.CurAppearance or hg.Appearance.GetRandomAppearance()
+        local Appearance = self.CurAppearance or zc.Appearance.GetRandomAppearance()
 
         Appearance.AAttachments = {
             masks[math.random(#masks)],
@@ -33,14 +33,14 @@ function CLASS.Guilt(self, victim)
         return 1
     end
 
-    if victim == zb.hostage then
+    if victim == zc.hostage then
         return 1
     end
 end
 
 hook.Add("ZC_PlayerFootstep", "ZC_TerroristFootsteps", function(ply, pos, foot, sound, volume, rf)
 	if ply:Alive() and ply.PlayerClassName == "terrorist" then
-		local ent = hg.GetCurrentCharacter(ply)
+		local ent = zc.GetCurrentCharacter(ply)
 
 		if not (ply:IsWalking() or ply:Crouching()) and ent == ply then
 			local snd = "homigrad/" .. sound

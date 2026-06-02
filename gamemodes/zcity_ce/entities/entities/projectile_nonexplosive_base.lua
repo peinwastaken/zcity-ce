@@ -14,7 +14,7 @@ ENT.Damage = 200
 ENT.Force = 0.2
 
 
-function hg.BestArrowToTake(ent)
+function zc.BestArrowToTake(ent)
 	local org = ent.organism
 
 	if !IsValid(ent) or !org or !org.LodgedEntities or #org.LodgedEntities == 0 then return end
@@ -54,7 +54,7 @@ if SERVER then
 	ENT.Hit = false
 
 	function ENT:Hit(ent, hit_pos, phys_bone_id, normal)
-		local ply = hg.RagdollOwner(ent) or ent
+		local ply = zc.RagdollOwner(ent) or ent
 		local rag = IsValid(ply) and (IsValid(ply:GetNWEntity("RagdollDeath", ply.FakeRagdoll)) and ply:GetNWEntity("RagdollDeath", ply.FakeRagdoll)) or ent:IsRagdoll() and ent or IsValid(ent.FakeRagdoll) and ent.FakeRagdoll
 		local org = rag and rag.organism or ent.organism
 		rag = rag or ent
@@ -206,12 +206,12 @@ if SERVER then
         self:Remove()
 	end
 
-	function hg.TakeArrow(ent, ply)
+	function zc.TakeArrow(ent, ply)
 		local org = ent.organism
 
 		if !IsValid(ent) or !org or !org.LodgedEntities or #org.LodgedEntities == 0 then return end
 
-		local i = hg.BestArrowToTake(ent)
+		local i = zc.BestArrowToTake(ent)
 
 		if !i or i == 0 then return end
 
@@ -222,7 +222,7 @@ if SERVER then
 		if mat then
 
 			for _ = 1, 5 do
-				hg.organism.AddWoundManual(org.owner, 50, vector_origin, AngleRand(-180, 180), ent:GetBoneName(ent:TranslatePhysBoneToBone(org.LodgedEntities.PhysBoneID or 0)), CurTime() + math.Rand(0, 2))
+				zc.organism.AddWoundManual(org.owner, 50, vector_origin, AngleRand(-180, 180), ent:GetBoneName(ent:TranslatePhysBoneToBone(org.LodgedEntities.PhysBoneID or 0)), CurTime() + math.Rand(0, 2))
 			end
 		end
 
@@ -258,17 +258,17 @@ if SERVER then
 
 	concommand.Add("hg_takearrow", function(ply, cmd, args)
 		if ply.organism and ply.organism.LodgedEntities and ply.organism.canmove then
-			hg.TakeArrow(ply, ply)
+			zc.TakeArrow(ply, ply)
 		end
 	end)
 
 	hook.Add("ZC_PlayerThink", "ZC_TakeArrowFunc", function(ply, ent)
 		if ply.organism and ply.organism.canmove and ply:KeyPressed(IN_USE) then
-			local tr = hg.eyeTrace(ply)
+			local tr = zc.eyeTrace(ply)
 
 			local ent = tr.Entity
 
-			hg.TakeArrow(ent, ply)
+			zc.TakeArrow(ent, ply)
 		end
 	end)
 elseif CLIENT then
@@ -276,7 +276,7 @@ elseif CLIENT then
 		local ply = LocalPlayer()
 
 		if ply.organism and ply.organism.canmove and ply.organism.LodgedEntities and #ply.organism.LodgedEntities > 0 then
-			local i = hg.BestArrowToTake(ply)
+			local i = zc.BestArrowToTake(ply)
 
 			if !i or i == 0 then return end
 
@@ -289,14 +289,14 @@ elseif CLIENT then
 					end,
 					"Take "..(ent and ent.PrintName or "arrow").." from yourself"
 				}
-				hg.radialOptions[#hg.radialOptions + 1] = tbl
+				zc.radialOptions[#zc.radialOptions + 1] = tbl
 			end
 		end
 	end)
 
-	hg.lodgedmodels = hg.lodgedmodels or {}
+	zc.lodgedmodels = zc.lodgedmodels or {}
 
-	function hg.ProjectilesDraw(ent, ply)
+	function zc.ProjectilesDraw(ent, ply)
 		if !IsValid(arrowasdasd) then
 			arrowasdasd = ClientsideModel("models/z_city/nmrih/items/arrow/ammo_arrow_single.mdl")
 			arrowasdasd:SetNoDraw(true)
@@ -304,17 +304,17 @@ elseif CLIENT then
 
 		if ent.organism and ent.organism.LodgedEntities then
 			for _, settings in ipairs(ent.organism.LodgedEntities) do
-				local arrow = hg.lodgedmodels[settings.model] or arrowasdasd
+				local arrow = zc.lodgedmodels[settings.model] or arrowasdasd
 
 				if settings.model then
-					if !IsValid(hg.lodgedmodels[settings.model]) then
+					if !IsValid(zc.lodgedmodels[settings.model]) then
 						local model = ClientsideModel(settings.model)
 						model:SetNoDraw(true)
 
-						hg.lodgedmodels[settings.model] = model
+						zc.lodgedmodels[settings.model] = model
 					end
 
-					arrow = hg.lodgedmodels[settings.model]
+					arrow = zc.lodgedmodels[settings.model]
 				end
 
 				local mat = ent:GetBoneMatrix(ent:TranslatePhysBoneToBone(settings.PhysBoneID))

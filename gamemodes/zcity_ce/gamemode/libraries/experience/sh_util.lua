@@ -1,9 +1,9 @@
 --
-zb = zb or {}
+zc = zc or {}
 
-zb.Experience = zb.Experience or {}
+zc.Experience = zc.Experience or {}
 
-zb.Experience.SkillMedals = {
+zc.Experience.SkillMedals = {
     {
         icon = Material("vgui/mats_jack_awards/pt"),
         name = "Pt",
@@ -56,7 +56,7 @@ zb.Experience.SkillMedals = {
     },
 }
 
-zb.Experience.Bands = {
+zc.Experience.Bands = {
     {
         icon = Material("vgui/mats_jack_awards/10"),
         name = "",
@@ -109,9 +109,9 @@ zb.Experience.Bands = {
     },
 }
 
-local SHTable = zb.Experience
+local SHTable = zc.Experience
 
-function zb.Experience.GetAwards( self )
+function zc.Experience.GetAwards( self )
     local skill = self.skill
     local exp = self.exp
     --print(skill,exp)
@@ -147,7 +147,7 @@ function plyMeta:GetAwards()
             net.WriteEntity(self)
         net.SendToServer()
     end
-    return zb.Experience.GetAwards( self )
+    return zc.Experience.GetAwards( self )
 end
 
 function plyMeta:GetStatVal(dataName, fallback)
@@ -181,7 +181,7 @@ if SERVER then
             if not IsValid(ply) then return end
             local most_harm,biggest_attacker = 0,nil
                 --print(ply)
-            for attacker,attacker_harm in pairs(zb.HarmDone[ply] or {}) do
+            for attacker,attacker_harm in pairs(zc.HarmDone[ply] or {}) do
                 --print(attacker)
                 if not IsValid(attacker) then continue end
                 if most_harm < attacker_harm then
@@ -206,8 +206,8 @@ else
         local dataType = net.ReadFloat()
         ent.SvDB = ent.SvDB or {}
         ent.SvDB[dataName] = dataType
-        if zb.Experience.OpenedAccount then
-            zb.Experience.OpenedAccount:Udpate(ent)
+        if zc.Experience.OpenedAccount then
+            zc.Experience.OpenedAccount:Udpate(ent)
         end
     end)
 end

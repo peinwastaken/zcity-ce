@@ -215,7 +215,7 @@ function MODE:Intermission()
 
 			local role = self.Roles[self.Type][(ply.isTraitor and "traitor") or (ply.isGunner and "gunner") or "innocent"]
 
-			zb.GiveRole(ply, role.name, role.color)
+			zc.GiveRole(ply, role.name, role.color)
 		end
 	end
 
@@ -227,7 +227,7 @@ function MODE:Intermission()
 end
 
 function MODE:ShouldRoundEnd()
-	return #zb:CheckAlive() == 0
+	return #zc:CheckAlive() == 0
 end
 
 function MODE:EndRound()
@@ -246,7 +246,7 @@ function MODE:EndRound()
 
 	local traitors, gunners = {}, {}
 	local players_alive = 0
-	zb:CheckWinner(self:CheckAlivePlayers())
+	zc:CheckWinner(self:CheckAlivePlayers())
 
 	for _, ply in player.Iterator() do
 		if ply.isTraitor and ply:Team() ~= TEAM_SPECTATOR then
@@ -295,11 +295,11 @@ function MODE:SkipVictim(ply)
 end
 
 function MODE:CheckInAGroup(ply)
-	local players = zb:CheckAlive()
+	local players = zc:CheckAlive()
 	local flag = false
 
 	for _, ply2 in ipairs(players) do
-		if IsLookingAt(ply2, ply:EyePos(), 0.8) and hg.isVisible(ply:EyePos(), ply2:EyePos(), {ply, ply2}, MASK_VISIBLE) then
+		if IsLookingAt(ply2, ply:EyePos(), 0.8) and zc.isVisible(ply:EyePos(), ply2:EyePos(), {ply, ply2}, MASK_VISIBLE) then
 			flag = true
 		end
 	end
@@ -331,7 +331,7 @@ function MODE:CheckInDarkness(ply)
 end
 
 function MODE:SelectTheBestVictim()
-	local alive = zb:CheckAlive()
+	local alive = zc:CheckAlive()
 	local victims_stats = {}
 
 	for _, ply in ipairs(alive) do
@@ -342,7 +342,7 @@ function MODE:SelectTheBestVictim()
 		victims_stats[index] = {}
 		local tbl = victims_stats[index]
 		tbl.ply = ply
-		tbl.harmed = math.min(zb.HarmAttacked[ply] or 0, 40) / 40
+		tbl.harmed = math.min(zc.HarmAttacked[ply] or 0, 40) / 40
 		tbl.not_in_a_group = !self:CheckInAGroup(ply) and 1 or 0
 		tbl.in_darkness = self:CheckInDarkness(ply) and 25 or 0
 		tbl.has_a_gun = ishgweapon(ply:GetActiveWeapon()) and 1 or 0
@@ -376,14 +376,14 @@ end
 function MODE:ReturnToRealmOfLiving(ply)
 	local entindex = ply:EntIndex()
 
-	local players = zb:CheckAlive()
+	local players = zc:CheckAlive()
 
 	self:CreateTimer("ReturnToLife " .. entindex, 10, 0, function()
 		if !IsValid(ply) or !ply:Alive() then
 			timer.Remove("ReturnToLife " .. entindex)
 		else
 			for _, ply2 in ipairs(players) do
-				if IsLookingAt(ply2, ply:EyePos(), 0.8) and hg.isVisible(ply:EyePos(), ply2:EyePos(), {ply, ply2}, MASK_VISIBLE) then
+				if IsLookingAt(ply2, ply:EyePos(), 0.8) and zc.isVisible(ply:EyePos(), ply2:EyePos(), {ply, ply2}, MASK_VISIBLE) then
 					return
 				else
 					ply:SetNetVar("disappearance", false)
@@ -405,11 +405,11 @@ function MODE:Disappear(ply)
 
 	self:CreateTimer("disappearance " .. ply:EntIndex(), math.Rand(60, 120), 1, function()
 		if IsValid(ply) and ply:Alive() then
-			if #zb:CheckAlive() > 1 and (math.random(1, 3) == 1) then
+			if #zc:CheckAlive() > 1 and (math.random(1, 3) == 1) then
 				self:CreateTimer("Afterlife " .. ply:EntIndex(), 119, 1, function()
 					if IsValid(ply) and ply:Alive() then
 						ply:KillSilent()
-						ply:ChatPrint(zb.locale.GetLocalized("fear/taken_afterlife"))
+						ply:ChatPrint(zc.locale.GetLocalized("fear/taken_afterlife"))
 					end
 				end)
 
@@ -459,7 +459,7 @@ end
 
 function MODE:RoundThink()
 	self.BaseClass.RoundThink(self)
-	local players = zb:CheckAlive()
+	local players = zc:CheckAlive()
 
 	self.saved.TimePlayed = (self.saved.TimePlayed or 0) + 0.5
 
@@ -514,7 +514,7 @@ function MODE:RoundThink()
 		local flag = true
 
 		for _, ply2 in ipairs(players) do
-			if IsLookingAt(ply2, ply:EyePos(), 0.8) and hg.isVisible(ply:EyePos(), ply2:EyePos(), {ply, ply2}, MASK_VISIBLE) then
+			if IsLookingAt(ply2, ply:EyePos(), 0.8) and zc.isVisible(ply:EyePos(), ply2:EyePos(), {ply, ply2}, MASK_VISIBLE) then
 				flag = false
 			end
 		end
@@ -525,7 +525,7 @@ function MODE:RoundThink()
 			elseif math.random(2) == 1 then
 				self:PropKill(ply)
 			elseif math.random(2) == 1 then
-				hg.BreakNeck(ply)
+				zc.BreakNeck(ply)
 			elseif math.random(2) == 1 then
 				self:StartEvent("scary_black_guy", ply)
 			else
@@ -583,7 +583,7 @@ function MODE:PlayerDeath(ply)
 	self:ResetNetworkVars(ply)
 
 	self:CreateTimer("Fear_End", 3, 1, function()
-		local alive = zb:CheckAlive()
+		local alive = zc:CheckAlive()
 
 		if #alive == 1 then
 			MODE.saved.KillTime = CurTime() + 120
@@ -600,8 +600,8 @@ function MODE:PlayerDeath(ply)
 end
 
 function MODE:ZC_OnPlayerRagdollCreated(ply, ent)
-	if hg.QueueCollisionRulesChanged then
-		hg.QueueCollisionRulesChanged(ent, nil, true)
+	if zc.QueueCollisionRulesChanged then
+		zc.QueueCollisionRulesChanged(ent, nil, true)
 	else
 		timer.Simple(0, function()
 			if not IsValid(ent) then return end

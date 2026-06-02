@@ -1,38 +1,38 @@
-hg.Appearance = hg.Appearance or {}
+zc.Appearance = zc.Appearance or {}
 
 -- File manager
 
-hg.Appearance.SelectedAppearance = ConVarExists("zc_appearance_selected") and GetConVar("zc_appearance_selected") or CreateClientConVar("zc_appearance_selected","main",true,false,"name of selected appearance json file")
-hg.Appearance.ForcedRandom = ConVarExists("zc_appearance_force_random") and GetConVar("zc_appearance_force_random") or CreateClientConVar("zc_appearance_force_random","0",true,false,"forced appearance random",0,1)
+zc.Appearance.SelectedAppearance = ConVarExists("zc_appearance_selected") and GetConVar("zc_appearance_selected") or CreateClientConVar("zc_appearance_selected","main",true,false,"name of selected appearance json file")
+zc.Appearance.ForcedRandom = ConVarExists("zc_appearance_force_random") and GetConVar("zc_appearance_force_random") or CreateClientConVar("zc_appearance_force_random","0",true,false,"forced appearance random",0,1)
 
 local dir = "zcity/appearances/"
-function hg.Appearance.CreateAppearanceFile(strFile_name, tblAppearance)
+function zc.Appearance.CreateAppearanceFile(strFile_name, tblAppearance)
 	file.CreateDir(dir)
 	file.Write(dir .. strFile_name .. ".json", util.TableToJSON(tblAppearance, true) )
 end
 
-function hg.Appearance.LoadAppearanceFile(strFile_name)
+function zc.Appearance.LoadAppearanceFile(strFile_name)
 	if not file.Exists(dir .. strFile_name .. ".json", "DATA") then return false end
 	local tblAppearance = util.JSONToTable(file.Read(dir .. strFile_name .. ".json"))
 
-	if not hg.Appearance.AppearanceValidater(tblAppearance) then return false, "file is damaged [data/zcity/appearances/" .. strFile_name .. ".json]"  end
+	if not zc.Appearance.AppearanceValidater(tblAppearance) then return false, "file is damaged [data/zcity/appearances/" .. strFile_name .. ".json]"  end
 
 	return tblAppearance
 end
 
-function hg.Appearance.GetAppearanceList()
+function zc.Appearance.GetAppearanceList()
 	local files = file.Find( dir .. "*.json" )
 	return files
 end
 
 -- Send from client...
 net.Receive("ZC_AppearanceGet", function()
-	local forced_random = hg.Appearance.ForcedRandom:GetBool()
+	local forced_random = zc.Appearance.ForcedRandom:GetBool()
     net.Start("ZC_AppearanceGet")
 		local tbl,reason
 
 		if not forced_random then
-			tbl,reason = hg.Appearance.LoadAppearanceFile(hg.Appearance.SelectedAppearance:GetString())
+			tbl,reason = zc.Appearance.LoadAppearanceFile(zc.Appearance.SelectedAppearance:GetString())
 		end
 
         net.WriteTable(tbl and tbl or {})
@@ -43,12 +43,12 @@ net.Receive("ZC_AppearanceGet", function()
 end)
 
 local function OnlyGetAppearance()
-	local forced_random = hg.Appearance.ForcedRandom:GetBool()
+	local forced_random = zc.Appearance.ForcedRandom:GetBool()
     net.Start("ZC_AppearanceFetchOnly")
 		local tbl,reason
 
 		if not forced_random then
-			tbl,reason = hg.Appearance.LoadAppearanceFile(hg.Appearance.SelectedAppearance:GetString())
+			tbl,reason = zc.Appearance.LoadAppearanceFile(zc.Appearance.SelectedAppearance:GetString())
 		end
 
         net.WriteTable(tbl or {})
@@ -86,7 +86,7 @@ function RenderAccessories(ply, accessories, setup)
 	local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
 	ent = IsValid(ply.OldRagdoll) and ply.OldRagdoll:IsRagdoll() and ply.OldRagdoll or ent
 
-	islply = ((ply:IsRagdoll() and hg.RagdollOwner(ply)) or ply) == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer())) and GetViewEntity() == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer()))
+	islply = ((ply:IsRagdoll() and zc.RagdollOwner(ply)) or ply) == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer())) and GetViewEntity() == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer()))
 
 	local fountains = GetNetVar("fountains") or {}
 	if ent == follow and zc_firstperson_death:GetBool() and !fountains[ent] then islply = true end
@@ -116,14 +116,14 @@ function RenderAccessories(ply, accessories, setup)
 	if istable(accessories) then
 		for k = 1, #accessories do
 			local accessoriess = accessories[k]
-			local accessData = hg.Accessories[accessoriess]
+			local accessData = zc.Accessories[accessoriess]
 			if not accessData then continue end
 			if accessData.needcoolRender then continue end
 
 			DrawAccesories(ply, ent, accessoriess, accessData, islply, nil, setup)
 		end
 	else
-		local accessData = hg.Accessories[accessories]
+		local accessData = zc.Accessories[accessories]
 		if not accessData then return end
 		if accessData.needcoolRender then return end
 
@@ -201,7 +201,7 @@ function DrawAccesories(ply, ent, accessories,accessData, islply, force, setup)
 		return
 	end
 
-	if ply.organism and hg.amputatedlimbs2[accessData["bone"]] and ent.organism and ent.organism[hg.amputatedlimbs2[accessData["bone"]].."amputated"] then return end
+	if ply.organism and zc.amputatedlimbs2[accessData["bone"]] and ent.organism and ent.organism[zc.amputatedlimbs2[accessData["bone"]].."amputated"] then return end
 
 	if setup != false then
 		local bone = ent:LookupBone(accessData["bone"])
@@ -274,7 +274,7 @@ function DrawAppearance(ent, ply, setup)
 		local attachmentData
 		if ( laser and !table.IsEmpty(laser) ) or wep.laser then
 			if laser and !table.IsEmpty(laser) then
-				attachmentData = hg.attachments.underbarrel[laser[1]]
+				attachmentData = zc.attachments.underbarrel[laser[1]]
 			else
 				attachmentData = wep.laserData
 			end
@@ -303,7 +303,7 @@ function DrawAppearance(ent, ply, setup)
 		if ent ~= ply then pos = handmat:GetTranslation() end
 
 		if IsValid(ply.flmodel) and (ply ~= LocalPlayer() or ply ~= GetViewEntity()) then
-			hg.FlashlightTransform(ply)
+			zc.FlashlightTransform(ply)
 		end
 
 		ply.flmodel:DrawModel()
@@ -367,7 +367,7 @@ hook.Add("RenderScreenspaceEffects","ZC_RenderAccessoryScreenEffects",function()
 
 	if istable(acsses) then
 		for _,accessoriess in ipairs(acsses) do
-			local accessData = hg.Accessories[accessoriess]
+			local accessData = zc.Accessories[accessoriess]
 			if not accessData then continue end
 			if ply.armors and accessData["placement"] and ply.armors[accessData["placement"]] then continue end
 			if accessData.ScreenSpaceEffects then
@@ -375,7 +375,7 @@ hook.Add("RenderScreenspaceEffects","ZC_RenderAccessoryScreenEffects",function()
 			end
 		end
 	elseif acsses then
-		local accessData = hg.Accessories[acsses]
+		local accessData = zc.Accessories[acsses]
 		if not accessData then return end
 		if ply.armors and accessData["placement"] and ply.armors[accessData["placement"]] then return end
 		if accessData.ScreenSpaceEffects then
@@ -394,7 +394,7 @@ function CoolRenderAccessories(ply, accessories)
 
 	local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
 
-	islply = ((ply:IsRagdoll() and hg.RagdollOwner(ply)) or ply) == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer())) and GetViewEntity() == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer()))
+	islply = ((ply:IsRagdoll() and zc.RagdollOwner(ply)) or ply) == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer())) and GetViewEntity() == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer()))
 
 	if islply and IsValid(wep) and whitelist[wep:GetClass()] then
 		if not ent.modelAccess then return end
@@ -421,14 +421,14 @@ function CoolRenderAccessories(ply, accessories)
 	if istable(accessories) then
 		for k = 1, #accessories do
 			local accessoriess = accessories[k]
-			local accessData = hg.Accessories[accessoriess]
+			local accessData = zc.Accessories[accessoriess]
 			if not accessData then continue end
 			if not accessData.needcoolRender then continue end
 
 			DrawAccesories(ply,ent,accessoriess,accessData,islply)
 		end
 	else
-		local accessData = hg.Accessories[accessories]
+		local accessData = zc.Accessories[accessories]
 		if not accessData then return end
 		if not accessData.needcoolRender then return end
 

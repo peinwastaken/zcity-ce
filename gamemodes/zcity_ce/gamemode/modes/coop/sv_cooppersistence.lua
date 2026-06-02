@@ -1,56 +1,56 @@
-hg = hg or {}
-hg.CoopPersistence = hg.CoopPersistence or {}
+zc = zc or {}
+zc.CoopPersistence = zc.CoopPersistence or {}
 
 local SAVE_PATH = "coop_persistence/"
 
 
 file.CreateDir(SAVE_PATH)
 
-function hg.CoopPersistence.GetSavePath()
+function zc.CoopPersistence.GetSavePath()
     return SAVE_PATH .. "session_data.json"
 end
 
-function hg.CoopPersistence.SaveAllPlayers()
+function zc.CoopPersistence.SaveAllPlayers()
     local data = {}
 
-    for steamid, playerData in pairs(hg.CoopPersistence.PendingSave or {}) do
+    for steamid, playerData in pairs(zc.CoopPersistence.PendingSave or {}) do
         data[steamid] = playerData
     end
 
     if table.Count(data) > 0 then
-        file.Write(hg.CoopPersistence.GetSavePath(), util.TableToJSON(data, true))
+        file.Write(zc.CoopPersistence.GetSavePath(), util.TableToJSON(data, true))
     end
 end
 
-function hg.CoopPersistence.LoadAllPlayers()
-    local path = hg.CoopPersistence.GetSavePath()
+function zc.CoopPersistence.LoadAllPlayers()
+    local path = zc.CoopPersistence.GetSavePath()
     local content = file.Read(path, "DATA")
 
     if content then
         local data = util.JSONToTable(content)
         if data then
-            hg.CoopPersistence.LoadedData = data
+            zc.CoopPersistence.LoadedData = data
             return data
         end
     end
 
-    hg.CoopPersistence.LoadedData = {}
+    zc.CoopPersistence.LoadedData = {}
     return {}
 end
 
 
-function hg.CoopPersistence.ClearSavedData()
-    hg.CoopPersistence.PendingSave = {}
-    hg.CoopPersistence.LoadedData = {}
-    file.Delete(hg.CoopPersistence.GetSavePath())
+function zc.CoopPersistence.ClearSavedData()
+    zc.CoopPersistence.PendingSave = {}
+    zc.CoopPersistence.LoadedData = {}
+    file.Delete(zc.CoopPersistence.GetSavePath())
 end
 
 
-function hg.CoopPersistence.SavePlayerData(ply)
+function zc.CoopPersistence.SavePlayerData(ply)
     if not IsValid(ply) or not ply:IsPlayer() then return end
 
     local steamid = ply:SteamID()
-    hg.CoopPersistence.PendingSave = hg.CoopPersistence.PendingSave or {}
+    zc.CoopPersistence.PendingSave = zc.CoopPersistence.PendingSave or {}
 
     local weaponsData = {}
     local inv = ply:GetNetVar("Inventory", {})
@@ -130,7 +130,7 @@ function hg.CoopPersistence.SavePlayerData(ply)
         }
     end
 
-    hg.CoopPersistence.PendingSave[steamid] = {
+    zc.CoopPersistence.PendingSave[steamid] = {
         Weapons = weaponsData,
         Ammo = ammoData,
         Armor = armorData,
@@ -148,11 +148,11 @@ function hg.CoopPersistence.SavePlayerData(ply)
 end
 
 
-function hg.CoopPersistence.RestorePlayerData(ply)
+function zc.CoopPersistence.RestorePlayerData(ply)
     if not IsValid(ply) or not ply:IsPlayer() then return false end
 
     local steamid = ply:SteamID()
-    local data = hg.CoopPersistence.LoadedData and hg.CoopPersistence.LoadedData[steamid]
+    local data = zc.CoopPersistence.LoadedData and zc.CoopPersistence.LoadedData[steamid]
 
     if not data then return false end
 
@@ -199,9 +199,9 @@ function hg.CoopPersistence.RestorePlayerData(ply)
         ply:GiveAmmo(count, ammoName, true)
     end
 
-    if data.Armor and hg.AddArmor then
+    if data.Armor and zc.AddArmor then
         for _, armorName in pairs(data.Armor) do
-            hg.AddArmor(ply, armorName)
+            zc.AddArmor(ply, armorName)
         end
     end
 
@@ -233,8 +233,8 @@ function hg.CoopPersistence.RestorePlayerData(ply)
     return true, data
 end
 
-function hg.CoopPersistence.HasSurvivedGordon()
-    local loadedData = hg.CoopPersistence.LoadedData or {}
+function zc.CoopPersistence.HasSurvivedGordon()
+    local loadedData = zc.CoopPersistence.LoadedData or {}
 
     for steamid, data in pairs(loadedData) do
         if data.PlayerClass == "Gordon" or data.Role == "Freeman" then
@@ -245,47 +245,47 @@ function hg.CoopPersistence.HasSurvivedGordon()
     return false, nil
 end
 
-function hg.CoopPersistence.GetPlayerData(steamid)
-    return hg.CoopPersistence.LoadedData and hg.CoopPersistence.LoadedData[steamid]
+function zc.CoopPersistence.GetPlayerData(steamid)
+    return zc.CoopPersistence.LoadedData and zc.CoopPersistence.LoadedData[steamid]
 end
 
-function hg.CoopPersistence.MarkPlayerRestored(steamid)
-    if hg.CoopPersistence.LoadedData then
-        hg.CoopPersistence.LoadedData[steamid] = nil
+function zc.CoopPersistence.MarkPlayerRestored(steamid)
+    if zc.CoopPersistence.LoadedData then
+        zc.CoopPersistence.LoadedData[steamid] = nil
     end
 end
 
 hook.Add("ShutDown", "ZC_CoopPersistenceSaveOnShutdown", function()
-    if CurrentRound and CurrentRound().name == "coop" and hg.MapCompleted then
-        hg.CoopPersistence.SaveAllPlayers()
+    if CurrentRound and CurrentRound().name == "coop" and zc.MapCompleted then
+        zc.CoopPersistence.SaveAllPlayers()
     end
 end)
 
 hook.Add("InitPostEntity", "ZC_CoopPersistenceLoadOnStart", function()
     timer.Simple(1, function()
-        hg.CoopPersistence.LoadAllPlayers()
+        zc.CoopPersistence.LoadAllPlayers()
     end)
 end)
 
 hook.Add("ZC_PreRoundStart", "ZC_CoopPersistenceClearOnModeChange", function()
-    local nextRound = zb.nextround or "hmcd"
-    local nextMode = zb:GetMode(nextRound)
+    local nextRound = zc.nextround or "hmcd"
+    local nextMode = zc:GetMode(nextRound)
 
     if nextMode ~= "coop" then
-        hg.CoopPersistence.ClearSavedData()
+        zc.CoopPersistence.ClearSavedData()
     end
 end)
 
 hook.Add("ZC_StartRound", "ZC_CoopPersistenceClearPending", function()
     if CurrentRound and CurrentRound().name == "coop" then
-        hg.CoopPersistence.PendingSave = {}
+        zc.CoopPersistence.PendingSave = {}
     end
 end)
 
 
 hook.Add("PlayerSpawn", "ZC_CoopPersistenceMidRoundSpawn", function(ply)
     if not CurrentRound or CurrentRound().name ~= "coop" then return end
-    if not zb or zb.ROUND_STATE ~= 1 then return end
+    if not zc or zc.ROUND_STATE ~= 1 then return end
     timer.Simple(0.5, function()
         if not IsValid(ply) or not ply:Alive() then return end
         local hasWeapons = #ply:GetWeapons() > 1
@@ -295,11 +295,11 @@ hook.Add("PlayerSpawn", "ZC_CoopPersistenceMidRoundSpawn", function(ply)
         end
 
         local steamid = ply:SteamID()
-        local savedData = hg.CoopPersistence.GetPlayerData(steamid)
+        local savedData = zc.CoopPersistence.GetPlayerData(steamid)
 
         if savedData then
 
-            local restored, data = hg.CoopPersistence.RestorePlayerData(ply)
+            local restored, data = zc.CoopPersistence.RestorePlayerData(ply)
 
             if restored and data then
                 local savedPlayerClass = data.PlayerClass
@@ -310,17 +310,17 @@ hook.Add("PlayerSpawn", "ZC_CoopPersistenceMidRoundSpawn", function(ply)
 
                 if savedPlayerClass == "Gordon" or savedRole == "Freeman" then
                     ply:SetPlayerClass("Gordon", {bRestored = true})
-                    zb.GiveRole(ply, "Freeman", Color(255, 155, 0))
+                    zc.GiveRole(ply, "Freeman", Color(255, 155, 0))
                 elseif savedSubClass == "medic" then
                     ply.subClass = "medic"
                     ply:SetPlayerClass(savedPlayerClass or "Rebel", {bNoEquipment = true})
-                    zb.GiveRole(ply, "Medic", Color(190, 0, 0))
+                    zc.GiveRole(ply, "Medic", Color(190, 0, 0))
                 else
                     ply:SetPlayerClass(savedPlayerClass or "Rebel", {bNoEquipment = true})
-                    zb.GiveRole(ply, savedRole or "Rebel", savedRoleColor)
+                    zc.GiveRole(ply, savedRole or "Rebel", savedRoleColor)
                 end
 
-                hg.CoopPersistence.MarkPlayerRestored(steamid)
+                zc.CoopPersistence.MarkPlayerRestored(steamid)
 
                 ply:Give("weapon_hands_sh")
                 ply:SelectWeapon("weapon_hands_sh")
@@ -339,10 +339,10 @@ hook.Add("PlayerSpawn", "ZC_CoopPersistenceMidRoundSpawn", function(ply)
 
             if playerClass == "refugee" or playerClass == "citizen" then
                 ply:SetPlayerClass("Refugee", {bNoEquipment = playerClass == "citizen"})
-                zb.GiveRole(ply, "Refugee", Color(255, 155, 0))
+                zc.GiveRole(ply, "Refugee", Color(255, 155, 0))
             elseif playerClass == "rebel" then
                 ply:SetPlayerClass("Rebel")
-                zb.GiveRole(ply, "Rebel", Color(255, 155, 0))
+                zc.GiveRole(ply, "Rebel", Color(255, 155, 0))
             end
 
             ply:Give("weapon_hands_sh")

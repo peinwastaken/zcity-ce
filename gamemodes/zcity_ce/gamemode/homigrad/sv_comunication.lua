@@ -62,7 +62,7 @@ local function funca(ply, txt)
 	if !ply:Alive() or !ply.organism then return end
 
 	if ply.organism.pain > 80 then
-		txt = table.Random(hg.sharp_pain)
+		txt = table.Random(zc.sharp_pain)
 	end
 
 	local bJawBroken = ply.organism.jaw == 1 or ply.organism.jawdislocation
@@ -113,7 +113,7 @@ local function funca(ply, txt)
 
 		txt = table.concat(chars)
 
-		if bHasMassiveBrainDamage and math.random(2) == 1 then txt = hg.utf8_reverse(utf8.codes(txt), utf8.len(txt)) end
+		if bHasMassiveBrainDamage and math.random(2) == 1 then txt = zc.utf8_reverse(utf8.codes(txt), utf8.len(txt)) end
 	end
 
 	if ply.organism.o2[1] < 15 or (ply.organism.brain > 0.15 and math.random(4) == 1) then return "..." end

@@ -54,20 +54,20 @@ function ENT:Initialize()
                 ent:Ignite()
             end
 
-            for _,v in ipairs(hg.gasolinePath) do
+            for _,v in ipairs(zc.gasolinePath) do
                 if v[1]:Distance(pos) > 30 or v[2] ~= false then continue end
                 v[2] = CurTime()
                 v[3] = owner
             end
-            if IsValid(data.HitEntity) and hg.drums[data.HitEntity:EntIndex()] then
-                local drum = hg.drums[data.HitEntity:EntIndex()]
+            if IsValid(data.HitEntity) and zc.drums[data.HitEntity:EntIndex()] then
+                local drum = zc.drums[data.HitEntity:EntIndex()]
                 local drumEnt = data.HitEntity
-                local tbl = hg.expItems[drumEnt:GetModel()]
+                local tbl = zc.expItems[drumEnt:GetModel()]
                 for _, point in ipairs(drum.high_point) do
                     local pos2 = LocalToWorld(point[1], angle_zero, drumEnt:GetPos(), drumEnt:GetAngles())
                     if pos:DistToSqr(pos2) < 5 * 5 then
                         drumEnt.owner = ent1.debil
-                        hg.PropExplosion( drumEnt, tbl.ExpType, (drumEnt.Volume or tbl.Force) * 2, drumEnt:GetPhysicsObject():GetMass() )
+                        zc.PropExplosion( drumEnt, tbl.ExpType, (drumEnt.Volume or tbl.Force) * 2, drumEnt:GetPhysicsObject():GetMass() )
                     end
                 end
             end

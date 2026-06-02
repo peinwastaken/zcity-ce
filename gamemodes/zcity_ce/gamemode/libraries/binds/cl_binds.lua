@@ -1,5 +1,5 @@
 concommand.Add("zc_binds_default", function()
-  zb.binds.SaveDefaultBinds()
+  zc.binds.SaveDefaultBinds()
   print("resetting binds...")
 end)
 
@@ -31,7 +31,7 @@ BindConfig
 
 local binds = {}
 
-zb.binds = binds or {}
+zc.binds = binds or {}
 
 local BIND_SAVE_PATH = "zcity-ce/settings/binds.json"
 local bindPressedWindow = 0.15
@@ -85,7 +85,7 @@ local function CreateBindSave(default)
   default = default or false
   local bindSave = {}
 
-  for k,v in pairs(zb.binds.allbinds) do
+  for k,v in pairs(zc.binds.allbinds) do
     local key = default and v.default or v.key
     local override = default and v.default_override or v.should_override
 
@@ -117,14 +117,14 @@ function binds.SaveBinds()
   EnsureBindSaveDir()
   file.Write(BIND_SAVE_PATH, util.TableToJSON(CreateBindSave(), true))
 
-  zb.dev.DevPrint("Saved binds")
-  zb.dev.DevPrint(binds.allbinds)
+  zc.dev.DevPrint("Saved binds")
+  zc.dev.DevPrint(binds.allbinds)
 end
 
 function binds.LoadBinds()
   local bindsExists = file.Exists(BIND_SAVE_PATH, "DATA")
   if !bindsExists then
-    zb.dev.DevPrint("binds file not found, creating default")
+    zc.dev.DevPrint("binds file not found, creating default")
     binds.SaveDefaultBinds()
   end
 
@@ -137,7 +137,7 @@ function binds.LoadBinds()
   end
 
   if type(bindConfig) != "table" then
-    zb.dev.DevPrint("binds file could not be loaded, restoring default")
+    zc.dev.DevPrint("binds file could not be loaded, restoring default")
     binds.SaveDefaultBinds()
     bindConfig = CreateBindSave()
   end
@@ -159,7 +159,7 @@ function binds.LoadBinds()
     binds.SaveBinds()
   end
 
-  zb.dev.DevPrint(string.format("Loaded %s binds", loaded))
+  zc.dev.DevPrint(string.format("Loaded %s binds", loaded))
 end
 
 function binds.GetBind(id)
@@ -169,7 +169,7 @@ function binds.GetBind(id)
     return bind
   end
 
-  if zb.dev.IsDeveloper() then
+  if zc.dev.IsDeveloper() then
     print(string.format("failed to find bind with id %s", id))
   end
 
@@ -193,7 +193,7 @@ function binds.UpdateBindOverride(id, override)
 end
 
 function binds.FindFirstBind(keycode)
-  for k,v in pairs(zb.binds.allbinds) do
+  for k,v in pairs(zc.binds.allbinds) do
     if keycode == v.key then
       return v
     end
@@ -244,7 +244,7 @@ hook.Add("PlayerButtonUp", "ZC_PlayerBindUnpressed", function(ply, key)
 end)
 
 hook.Add("InitPostEntity", "ZC_LoadBindsAfterInit", function()
-  zb.binds.LoadBinds()
+  zc.binds.LoadBinds()
 end)
 
 binds.categories = {

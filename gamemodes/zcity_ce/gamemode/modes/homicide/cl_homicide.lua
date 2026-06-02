@@ -282,7 +282,7 @@ function MODE:RenderScreenspaceEffects()
 	local time_diff = fade_end_time - CurTime()
 
 	if(time_diff > 0)then
-		zb.RemoveFade()
+		zc.RemoveFade()
 
 		local fade = math.min(time_diff / MODE.FadeScreenTime, 1)
 
@@ -457,7 +457,7 @@ local colSpect2 = Color(255,255,255)
 
 
 
-BlurBackground = BlurBackground or hg.DrawBlur
+BlurBackground = BlurBackground or zc.DrawBlur
 
 if IsValid(hmcdEndMenu) then
 	hmcdEndMenu:Remove()
@@ -609,10 +609,10 @@ end
 net.Receive("ZC_HomicideRoleSelectionStart", function()
 	local role = net.ReadString()
 
-	hg.SelectPlayerRole(role)
+	zc.SelectPlayerRole(role)
 end)
 
-function hg.SelectPlayerRole(role, mode)
+function zc.SelectPlayerRole(role, mode)
 	role = role or "Traitor"
 	mode = mode or "soe"
 

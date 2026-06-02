@@ -1,5 +1,5 @@
-hg.Appearance = hg.Appearance or {}
-local APmodule = hg.Appearance
+zc.Appearance = zc.Appearance or {}
+local APmodule = zc.Appearance
 local PANEL = {}
 
 local colors = {}
@@ -47,10 +47,10 @@ local function DeletePreset(strName)
     return false
 end
 
-hg.Appearance.SavePreset = SavePreset
-hg.Appearance.LoadPreset = LoadPreset
-hg.Appearance.GetPresetList = GetPresetList
-hg.Appearance.DeletePreset = DeletePreset
+zc.Appearance.SavePreset = SavePreset
+zc.Appearance.LoadPreset = LoadPreset
+zc.Appearance.GetPresetList = GetPresetList
+zc.Appearance.DeletePreset = DeletePreset
 
 local modelsPrecached = false
 local function PrecacheAccessoryModels()
@@ -68,8 +68,8 @@ local function PrecacheAccessoryModels()
             end
         end
 
-        if hg.Accessories then
-            for _, accessory in SortedPairs(hg.Accessories) do
+        if zc.Accessories then
+            for _, accessory in SortedPairs(zc.Accessories) do
                 if accessory.model then
                     util.PrecacheModel(accessory.model)
                 end
@@ -83,7 +83,7 @@ hook.Add("InitPostEntity", "ZC_PrecacheAppearanceModels", function()
     timer.Simple(5, PrecacheAccessoryModels)
 end)
 
-hg.Appearance.PrecacheModels = PrecacheAccessoryModels
+zc.Appearance.PrecacheModels = PrecacheAccessoryModels
 
 
 local function CreateStyledScrollPanel(parent)
@@ -309,7 +309,7 @@ function PANEL:PostInit()
     self:SetDraggable(false)
     self.modelPosID = "All"
 
-    self.AppearanceTable = self.AppearanceTable or hg.Appearance.LoadAppearanceFile(hg.Appearance.SelectedAppearance:GetString()) or APmodule.GetRandomAppearance()
+    self.AppearanceTable = self.AppearanceTable or zc.Appearance.LoadAppearanceFile(zc.Appearance.SelectedAppearance:GetString()) or APmodule.GetRandomAppearance()
 
     local tMdl = APmodule.PlayerModels[1][self.AppearanceTable.AModel] or APmodule.PlayerModels[2][self.AppearanceTable.AModel]
     --print(tMdl.mdl)
@@ -379,12 +379,12 @@ function PANEL:PostInit()
             for i = 1, #mats do
                 if mats[i] == v then slot = i-1 break end
             end
-            Entity:SetSubMaterial(slot, hg.Appearance.Clothes[tMdl.sex and 2 or 1][tbl.AClothes[k]] or hg.Appearance.Clothes[tMdl.sex and 2 or 1]["normal"] )
+            Entity:SetSubMaterial(slot, zc.Appearance.Clothes[tMdl.sex and 2 or 1][tbl.AClothes[k]] or zc.Appearance.Clothes[tMdl.sex and 2 or 1]["normal"] )
             Entity:SetNWString("Colthes" .. k,tbl.AClothes[k])
         end
         for i = 1, #mats do
-            if hg.Appearance.FacemapsSlots[mats[i]] and hg.Appearance.FacemapsSlots[mats[i]][tbl.AFacemap] then
-                Entity:SetSubMaterial(i - 1, hg.Appearance.FacemapsSlots[mats[i]][tbl.AFacemap])
+            if zc.Appearance.FacemapsSlots[mats[i]] and zc.Appearance.FacemapsSlots[mats[i]][tbl.AFacemap] then
+                Entity:SetSubMaterial(i - 1, zc.Appearance.FacemapsSlots[mats[i]][tbl.AFacemap])
             end
         end
         local bodygroups = Entity:GetBodyGroups()
@@ -393,8 +393,8 @@ function PANEL:PostInit()
             if !tbl.ABodygroups[v.name] then continue end
             for i = 0, #v.submodels do
                 local b = v.submodels[i]
-                if not hg.Appearance.Bodygroups[v.name][tMdl.sex and 2 or 1][tbl.ABodygroups[v.name]] then continue end
-                if hg.Appearance.Bodygroups[v.name][tMdl.sex and 2 or 1][tbl.ABodygroups[v.name]][1] != b then continue end
+                if not zc.Appearance.Bodygroups[v.name][tMdl.sex and 2 or 1][tbl.ABodygroups[v.name]] then continue end
+                if zc.Appearance.Bodygroups[v.name][tMdl.sex and 2 or 1][tbl.ABodygroups[v.name]][1] != b then continue end
                 Entity:SetBodygroup(k-1,i)
             end
         end
@@ -409,7 +409,7 @@ function PANEL:PostInit()
         local tbl = main.AppearanceTable
 
         for _,attach in ipairs(tbl.AAttachments) do
-            DrawAccesories(Entity, Entity, attach, hg.Accessories[attach],false,true)
+            DrawAccesories(Entity, Entity, attach, zc.Accessories[attach],false,true)
         end
         Entity:SetupBones()
     end
@@ -482,7 +482,7 @@ function PANEL:PostInit()
     ApplyButton:SetText("Apply")
     ApplyButton:Dock(RIGHT)
     function ApplyButton:DoClick()
-        hg.Appearance.CreateAppearanceFile(hg.Appearance.SelectedAppearance:GetString(),main.AppearanceTable)
+        zc.Appearance.CreateAppearanceFile(zc.Appearance.SelectedAppearance:GetString(),main.AppearanceTable)
 
         net.Start("ZC_AppearanceFetchOnly")
             net.WriteTable(main.AppearanceTable)
@@ -714,9 +714,9 @@ function PANEL:PostInit()
         hatSelectMenu = CreateStyledAccessoryMenu(nil, "Select Hat")
         table.insert(accessoryMenus, hatSelectMenu)
 
-        for k, v in SortedPairs(hg.Accessories) do
+        for k, v in SortedPairs(zc.Accessories) do
             if v.placement != "head" and v.placement != "ears" then continue end
-            if not lply:PS_HasItem(k) and v.bPointShop and !hg.Appearance.GetAccessToAll(lply) then continue end
+            if not lply:PS_HasItem(k) and v.bPointShop and !zc.Appearance.GetAccessToAll(lply) then continue end
 
             hatSelectMenu:AddAccessoryIcon(v.model, k, v,
                 function(accessorKey)
@@ -777,9 +777,9 @@ function PANEL:PostInit()
         faceSelectorMenu = CreateStyledAccessoryMenu(nil, "Select Face Accessory")
         table.insert(accessoryMenus, faceSelectorMenu)
 
-        for k, v in SortedPairs(hg.Accessories) do
+        for k, v in SortedPairs(zc.Accessories) do
             if v.placement != "face" then continue end
-            if not lply:PS_HasItem(k) and v.bPointShop and !hg.Appearance.GetAccessToAll(lply) then continue end
+            if not lply:PS_HasItem(k) and v.bPointShop and !zc.Appearance.GetAccessToAll(lply) then continue end
 
             faceSelectorMenu:AddAccessoryIcon(v.model, k, v,
                 function(accessorKey)
@@ -841,9 +841,9 @@ function PANEL:PostInit()
         bodySelectorMenu = CreateStyledAccessoryMenu(nil, "Select Body Accessory")
         table.insert(accessoryMenus, bodySelectorMenu)
 
-        for k, v in SortedPairs(hg.Accessories) do
+        for k, v in SortedPairs(zc.Accessories) do
             if v.placement != "torso" and v.placement != "spine" then continue end
-            if not lply:PS_HasItem(k) and v.bPointShop and !hg.Appearance.GetAccessToAll(lply) then continue end
+            if not lply:PS_HasItem(k) and v.bPointShop and !zc.Appearance.GetAccessToAll(lply) then continue end
 
             bodySelectorMenu:AddAccessoryIcon(v.model, k, v,
                 function(accessorKey)
@@ -899,16 +899,16 @@ function PANEL:PostInit()
     function bodyMatSelector:DoClick()
         main.modelPosID = "Torso"
         bodyMatSelectorMenu = DermaMenu()
-        for k, _ in SortedPairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
+        for k, _ in SortedPairs(zc.Appearance.Clothes[tMdl.sex and 2 or 1]) do
             local mater = bodyMatSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
                 main.AppearanceTable.AClothes.main = k
             end)
-            if hg.Appearance.ClothesDesc[k] then
-                mater:SetTooltip(hg.Appearance.ClothesDesc[k].desc)
-                if hg.Appearance.ClothesDesc[k].link then
+            if zc.Appearance.ClothesDesc[k] then
+                mater:SetTooltip(zc.Appearance.ClothesDesc[k].desc)
+                if zc.Appearance.ClothesDesc[k].link then
                     function mater:DoRightClick()
-                        gui.OpenURL(hg.Appearance.ClothesDesc[k].link)
+                        gui.OpenURL(zc.Appearance.ClothesDesc[k].link)
                     end
                 end
             end
@@ -943,16 +943,16 @@ function PANEL:PostInit()
     function legsMatSelector:DoClick()
         main.modelPosID = "Legs"
         legsMatSelectorMenu = DermaMenu()
-        for k, _ in SortedPairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
+        for k, _ in SortedPairs(zc.Appearance.Clothes[tMdl.sex and 2 or 1]) do
             local mater = legsMatSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
                 main.AppearanceTable.AClothes.pants = k
             end)
-            if hg.Appearance.ClothesDesc[k] then
-                mater:SetTooltip(hg.Appearance.ClothesDesc[k].desc)
-                if hg.Appearance.ClothesDesc[k].link then
+            if zc.Appearance.ClothesDesc[k] then
+                mater:SetTooltip(zc.Appearance.ClothesDesc[k].desc)
+                if zc.Appearance.ClothesDesc[k].link then
                     function mater:DoRightClick()
-                        gui.OpenURL(hg.Appearance.ClothesDesc[k].link)
+                        gui.OpenURL(zc.Appearance.ClothesDesc[k].link)
                     end
                 end
             end
@@ -981,16 +981,16 @@ function PANEL:PostInit()
     function bootsMatSelector:DoClick()
         main.modelPosID = "Boots"
         bootsMatSelectorMenu = DermaMenu()
-        for k, _ in SortedPairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
+        for k, _ in SortedPairs(zc.Appearance.Clothes[tMdl.sex and 2 or 1]) do
             local mater = bootsMatSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
                 main.AppearanceTable.AClothes.boots = k
             end)
-            if hg.Appearance.ClothesDesc[k] then
-                mater:SetTooltip(hg.Appearance.ClothesDesc[k].desc)
-                if hg.Appearance.ClothesDesc[k].link then
+            if zc.Appearance.ClothesDesc[k] then
+                mater:SetTooltip(zc.Appearance.ClothesDesc[k].desc)
+                if zc.Appearance.ClothesDesc[k].link then
                     function mater:DoRightClick()
-                        gui.OpenURL(hg.Appearance.ClothesDesc[k].link)
+                        gui.OpenURL(zc.Appearance.ClothesDesc[k].link)
                     end
                 end
             end
@@ -1019,8 +1019,8 @@ function PANEL:PostInit()
     function glovesSelector:DoClick()
         main.modelPosID = "Hands"
         glovesSelectorMenu = DermaMenu()
-        for k, v in SortedPairs(hg.Appearance.Bodygroups["HANDS"][tMdl.sex and 2 or 1]) do
-            if not lply:PS_HasItem(v["ID"]) and v[2] and !hg.Appearance.GetAccessToAll(lply) then continue end
+        for k, v in SortedPairs(zc.Appearance.Bodygroups["HANDS"][tMdl.sex and 2 or 1]) do
+            if not lply:PS_HasItem(v["ID"]) and v[2] and !zc.Appearance.GetAccessToAll(lply) then continue end
             glovesSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
                 main.AppearanceTable.ABodygroups = main.AppearanceTable.ABodygroups or {}
@@ -1051,7 +1051,7 @@ function PANEL:PostInit()
     function faceMatSelector:DoClick()
         main.modelPosID = "Face"
         faceMatSelectorMenu = DermaMenu()
-        for k, _ in SortedPairs(hg.Appearance.FacemapsSlots[hg.Appearance.FacemapsModels[tMdl.mdl]]) do
+        for k, _ in SortedPairs(zc.Appearance.FacemapsSlots[zc.Appearance.FacemapsModels[tMdl.mdl]]) do
             faceMatSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
                 main.AppearanceTable.AFacemap = k
@@ -1078,12 +1078,12 @@ concommand.Add("hg_appearance_menu",function()
     print('use esc menu')
 end)
 
-function hg.CreateApperanceMenu(ParentPanel)
-    if hg.Appearance.PrecacheModels then
-        hg.Appearance.PrecacheModels()
+function zc.CreateApperanceMenu(ParentPanel)
+    if zc.Appearance.PrecacheModels then
+        zc.Appearance.PrecacheModels()
     end
 
-    hg.PointShop:SendNET( "SendPointShopVars", nil, function( data )
+    zc.PointShop:SendNET( "SendPointShopVars", nil, function( data )
         if IsValid(zpan) then
             zpan:Close()
         end

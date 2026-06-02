@@ -1,13 +1,13 @@
 -- MAKE SQL SYNC ALREADY // FINE, I WILL DO IT MYSELF
-zb = zb or {}
+zc = zc or {}
 
-zb.GuiltTable = zb.GuiltTable or {}
-zb.HarmDone = zb.HarmDone or {}
-zb.HarmDoneKarma = zb.HarmDoneKarma or {}
-zb.HarmDoneDetailed = zb.HarmDoneDetailed or {}
-zb.HarmAttacked = zb.HarmAttacked or {}
-zb.GuiltSQL = zb.GuiltSQL or {}
-zb.GuiltSQL.PlayerInstances = zb.GuiltSQL.PlayerInstances or {}
+zc.GuiltTable = zc.GuiltTable or {}
+zc.HarmDone = zc.HarmDone or {}
+zc.HarmDoneKarma = zc.HarmDoneKarma or {}
+zc.HarmDoneDetailed = zc.HarmDoneDetailed or {}
+zc.HarmAttacked = zc.HarmAttacked or {}
+zc.GuiltSQL = zc.GuiltSQL or {}
+zc.GuiltSQL.PlayerInstances = zc.GuiltSQL.PlayerInstances or {}
 
 hook.Add("ZC_OnDatabaseConnected", "ZC_GuiltCreateData", function()
 	local query
@@ -19,15 +19,15 @@ hook.Add("ZC_OnDatabaseConnected", "ZC_GuiltCreateData", function()
 		query:PrimaryKey("steamid")
 	query:Execute()
 
-    zb.GuiltSQL.Active = true
+    zc.GuiltSQL.Active = true
 end)
 
 hook.Add( "PlayerInitialSpawn","ZC_GuiltSQL", function( ply )
     local name = ply:Name()
 	local steamID64 = ply:SteamID64()
 
-    --if not zb.GuiltSQL.Active then
-    --    zb.GuiltSQL.PlayerInstances[steamID64] = {}
+    --if not zc.GuiltSQL.Active then
+    --    zc.GuiltSQL.PlayerInstances[steamID64] = {}
     --    return
     --end
 
@@ -41,14 +41,14 @@ hook.Add( "PlayerInitialSpawn","ZC_GuiltSQL", function( ply )
 					updateQuery:Where("steamid", steamID64)
 				updateQuery:Execute()
 
-				zb.GuiltSQL.PlayerInstances[steamID64] = {}
+				zc.GuiltSQL.PlayerInstances[steamID64] = {}
 
-                zb.GuiltSQL.PlayerInstances[steamID64].value = tonumber(result[1].value)
+                zc.GuiltSQL.PlayerInstances[steamID64].value = tonumber(result[1].value)
 
                 ply.Karma = ply:guilt_GetValue()
                 ply:SetNetVar("Karma", ply.Karma)
 
-                if zb.GuiltSQL.PlayerInstances[steamID64].value < 0 then
+                if zc.GuiltSQL.PlayerInstances[steamID64].value < 0 then
                     ply:guilt_SetValue( 10 )
                     local karma = ply.Karma
 
@@ -67,9 +67,9 @@ hook.Add( "PlayerInitialSpawn","ZC_GuiltSQL", function( ply )
 					insertQuery:Insert("value", 100)
 				insertQuery:Execute()
 
-				zb.GuiltSQL.PlayerInstances[steamID64] = {}
+				zc.GuiltSQL.PlayerInstances[steamID64] = {}
 
-				zb.GuiltSQL.PlayerInstances[steamID64].value = 100
+				zc.GuiltSQL.PlayerInstances[steamID64].value = 100
 
                 ply.Karma = ply:guilt_GetValue()
                 ply:SetNetVar("Karma",ply.Karma)
@@ -83,7 +83,7 @@ local plyMeta = FindMetaTable("Player")
 
 function plyMeta:guilt_GetValue()
 
-    return zb.GuiltSQL.PlayerInstances[self:SteamID64()] and zb.GuiltSQL.PlayerInstances[self:SteamID64()].value or 100
+    return zc.GuiltSQL.PlayerInstances[self:SteamID64()] and zc.GuiltSQL.PlayerInstances[self:SteamID64()].value or 100
 
 end
 
@@ -91,10 +91,10 @@ function plyMeta:guilt_SetValue( zb_guilt )
 
     local steamID64 = self:SteamID64()
 
-	zb.GuiltSQL.PlayerInstances[self:SteamID64()] = zb.GuiltSQL.PlayerInstances[self:SteamID64()] or {}
-	zb.GuiltSQL.PlayerInstances[self:SteamID64()].value = zb.GuiltSQL.PlayerInstances[self:SteamID64()].value or 100
+	zc.GuiltSQL.PlayerInstances[self:SteamID64()] = zc.GuiltSQL.PlayerInstances[self:SteamID64()] or {}
+	zc.GuiltSQL.PlayerInstances[self:SteamID64()].value = zc.GuiltSQL.PlayerInstances[self:SteamID64()].value or 100
 
-    zb.GuiltSQL.PlayerInstances[self:SteamID64()].value = zb_guilt
+    zc.GuiltSQL.PlayerInstances[self:SteamID64()].value = zb_guilt
 
 	local updateQuery = mysql:Update("zb_guilt")
 		updateQuery:Update("value", zb_guilt)
@@ -123,17 +123,17 @@ hook.Add("ZC_OnOrganismDamage", "ZC_RegisterGuiltDamage", function(ply, dmgInfo,
 
     local id = Victim:IsPlayer() and Victim:SteamID() or Victim:EntIndex()
     local id2 = Attacker:IsPlayer() and Attacker:SteamID() or Attacker:EntIndex()
-    local maxharm = zb.MaximumHarm
-    zb.HarmDone[Victim] = zb.HarmDone[Victim] or {}
-    zb.HarmDoneDetailed[id] = zb.HarmDoneDetailed[id] or {}
-    zb.HarmDoneKarma[Victim] = zb.HarmDoneKarma[Victim] or {}
-    zb.HarmDoneKarma[Victim][Attacker] = zb.HarmDoneKarma[Victim][Attacker] or 0
+    local maxharm = zc.MaximumHarm
+    zc.HarmDone[Victim] = zc.HarmDone[Victim] or {}
+    zc.HarmDoneDetailed[id] = zc.HarmDoneDetailed[id] or {}
+    zc.HarmDoneKarma[Victim] = zc.HarmDoneKarma[Victim] or {}
+    zc.HarmDoneKarma[Victim][Attacker] = zc.HarmDoneKarma[Victim][Attacker] or 0
 
-    local oldharmdone = zb.HarmDone[Victim][Attacker] or 0
-    zb.HarmDone[Victim][Attacker] = math.Clamp((zb.HarmDone[Victim][Attacker] or 0) + harm, 0, maxharm)
+    local oldharmdone = zc.HarmDone[Victim][Attacker] or 0
+    zc.HarmDone[Victim][Attacker] = math.Clamp((zc.HarmDone[Victim][Attacker] or 0) + harm, 0, maxharm)
 
-    zb.HarmAttacked[Attacker] = zb.HarmAttacked[Attacker] or 0
-    zb.HarmAttacked[Attacker] = zb.HarmAttacked[Attacker] + harm
+    zc.HarmAttacked[Attacker] = zc.HarmAttacked[Attacker] or 0
+    zc.HarmAttacked[Attacker] = zc.HarmAttacked[Attacker] + harm
 
     local newharm = math.min(harm + oldharmdone, maxharm)
     local harm = newharm - oldharmdone
@@ -144,12 +144,12 @@ hook.Add("ZC_OnOrganismDamage", "ZC_RegisterGuiltDamage", function(ply, dmgInfo,
         --print("They contributed a total of "..math.Round(newharm / maxharm * 100, 0).."% of "..(Victim:IsPlayer() and Victim:Name() or (tostring(Victim))).."'s death")
     end
 
-    if zb and zb.hostage and Victim == zb.hostage then
-        zb.hostageLastTouched = Attacker
+    if zc and zc.hostage and Victim == zc.hostage then
+        zc.hostageLastTouched = Attacker
     end
 
     local attackerTeam = dmgInfo:GetInflictor().team or (Attacker:IsPlayer() and Attacker:Team()) or Attacker.team
-    zb.HarmDoneDetailed[id][id2] = {
+    zc.HarmDoneDetailed[id][id2] = {
         harm = newharm,
         amt = newharm / maxharm,
         teamVictim = Victim:IsPlayer() and Victim:Team() or Victim.team or -1,
@@ -159,7 +159,7 @@ hook.Add("ZC_OnOrganismDamage", "ZC_RegisterGuiltDamage", function(ply, dmgInfo,
         lastattacked = CurTime(),
     }
 
-    if zb.dev.IsDeveloper() then
+    if zc.dev.IsDeveloper() then
         Attacker:ChatPrint("This harm done is: "..math.Round(harm,3))
         Attacker:ChatPrint("Overall amt done is: "..math.Round(amt,3))
         Attacker:ChatPrint("Overall harm done is: "..math.Round(newharm,3))
@@ -173,8 +173,8 @@ hook.Add("ZC_OnOrganismDamage", "ZC_RegisterGuiltDamage", function(ply, dmgInfo,
         //Attacker:AddFrags(1) -- better make it a system that counts kills and gives frags at the end of the round
     end
 
-    Victim = hg.GetCurrentCharacter(Victim) or Victim
-    Victim = hg.RagdollOwner(Victim) or Victim
+    Victim = zc.GetCurrentCharacter(Victim) or Victim
+    Victim = zc.RagdollOwner(Victim) or Victim
 
     local rnd, _ = CurrentRound()
 
@@ -182,17 +182,17 @@ hook.Add("ZC_OnOrganismDamage", "ZC_RegisterGuiltDamage", function(ply, dmgInfo,
 
     if Attacker == Victim then return end
 
-    zb.GuiltTable[Attacker] = zb.GuiltTable[Attacker] or {}
-    zb.GuiltTable[Victim] = zb.GuiltTable[Victim] or {}
+    zc.GuiltTable[Attacker] = zc.GuiltTable[Attacker] or {}
+    zc.GuiltTable[Victim] = zc.GuiltTable[Victim] or {}
 
     Attacker.LastAttacked = CurTime()
 
-    if Victim.isTraitor and !Attacker.isTraitor and rnd.name == "hmcd" and !zb.IsForce(Attacker) then return end
+    if Victim.isTraitor and !Attacker.isTraitor and rnd.name == "hmcd" and !zc.IsForce(Attacker) then return end
     if Attacker.isTraitor and !Victim.isTraitor and rnd.name == "hmcd" then return end
 
     if rnd.name != "hmcd" and (Attacker.Team and Victim.Team and attackerTeam ~= Victim:Team()) then return end
-    if zb.ROUND_STATE != 1 and (rnd.name != "cstrike" or !zb.RoundsLeft) then return end
-    if Victim.Guilt and Victim.Guilt > 1 and !zb.IsForce(Attacker) then return end
+    if zc.ROUND_STATE != 1 and (rnd.name != "cstrike" or !zc.RoundsLeft) then return end
+    if Victim.Guilt and Victim.Guilt > 1 and !zc.IsForce(Attacker) then return end
     if Attacker:IsBerserk() then return end
 
     local victimWep = Victim:IsPlayer() and IsValid(Victim:GetActiveWeapon()) and Victim:GetActiveWeapon()
@@ -220,9 +220,9 @@ hook.Add("ZC_OnOrganismDamage", "ZC_RegisterGuiltDamage", function(ply, dmgInfo,
 
     local guiltadd = amt * 60
     Attacker.Guilt = (Attacker.Guilt or 0) + guiltadd
-    Attacker.Karma = math.Clamp((Attacker.Karma or 100) - add * math.max(((1 - (zb.GuiltTable[Victim][Attacker] or 0)) / 1),0), -60, zb.MaxKarma)
+    Attacker.Karma = math.Clamp((Attacker.Karma or 100) - add * math.max(((1 - (zc.GuiltTable[Victim][Attacker] or 0)) / 1),0), -60, zc.MaxKarma)
 
-    zb.HarmDoneKarma[Victim][Attacker] = zb.HarmDoneKarma[Victim][Attacker] + add
+    zc.HarmDoneKarma[Victim][Attacker] = zc.HarmDoneKarma[Victim][Attacker] + add
 
     if shouldBanGuilt and Attacker.Guilt >= 100 then
 		-- if ULib then
@@ -236,7 +236,7 @@ hook.Add("ZC_OnOrganismDamage", "ZC_RegisterGuiltDamage", function(ply, dmgInfo,
 
     Attacker:SetNetVar("Karma", Attacker.Karma)
 
-    zb.GuiltTable[Attacker][Victim] = math.Clamp((zb.GuiltTable[Attacker][Victim] or 0) + guiltadd, 0, 200)
+    zc.GuiltTable[Attacker][Victim] = math.Clamp((zc.GuiltTable[Attacker][Victim] or 0) + guiltadd, 0, 200)
 
     if Attacker.Karma <= 0 then
         local steamID = Attacker:SteamID()
@@ -265,7 +265,7 @@ hook.Add("ZC_OnOrganismDamage", "ZC_RegisterGuiltDamage", function(ply, dmgInfo,
     end
 end)
 
-function zb.IsForce(Attacker)
+function zc.IsForce(Attacker)
     return Attacker.PlayerClassName == "police" and Attacker.PlayerClassName == "nationalguard" and Attacker.PlayerClassName == "swat"
 end
 
@@ -274,7 +274,7 @@ local function IsLookingAt(ply, targetVec)
     return true--ply:GetAimVector():Dot(diff) / diff:Length() >= 0.6
 end -- i dont think it should matter if he looks at you or not. just drop your weapon
 
-function zb.ForcesAttackedInnocent(self, Victim)
+function zc.ForcesAttackedInnocent(self, Victim)
     local victimWep = Victim:IsPlayer() and IsValid(Victim:GetActiveWeapon()) and Victim:GetActiveWeapon()
 
     return 1 * ((!Victim.LastAttacked or (Victim.LastAttacked + 10 > CurTime())) and 0 or 1) + 1 * (Victim:IsPlayer() and ((IsLookingAt(Victim, self:EyePos()) and (victimWep and (ishgweapon(victimWep) or ((victimWep:GetClass() == "weapon_hands_sh" and victimWep:GetFists() or victimWep.ismelee2) and Victim:GetPos():DistanceSqr(self:GetPos()) <= (72 * 72))))) and 0 or 1) or 1)
@@ -300,7 +300,7 @@ hook.Add("ZC_PlayerThink", "ZC_RestoreKarmaOverTime", function(ply)
     if (ply.KarmaGainThink or 0) > CurTime() then return end
     ply.KarmaGainThink = CurTime() + 120
 
-    ply.Karma = math.Clamp(ply.Karma + (ply.Karma > 100 and 0.1 or (ply.KarmaGain or 0.75)), 0, zb.MaxKarma)// * (1 + ply:HasPurchase("zpremium")), 0, zb.MaxKarma)
+    ply.Karma = math.Clamp(ply.Karma + (ply.Karma > 100 and 0.1 or (ply.KarmaGain or 0.75)), 0, zc.MaxKarma)// * (1 + ply:HasPurchase("zpremium")), 0, zc.MaxKarma)
 
     ply:SetNetVar("Karma", ply.Karma)
     //ply:guilt_SetValue( ply.Karma or 100 )
@@ -329,8 +329,8 @@ hook.Add("ZC_OrganismThink", "ZC_UpdateKarmaEffects",function(owner, org, timeVa
     local ply = owner
 
     if (ply.Karma or 100) < 50 then
-        if ((math.random(math.Clamp((ply.Karma or 100),20,zb.MaxKarma) * 300) == 1 or org.start_shaking)) then
-            hg.StunPlayer(ply)
+        if ((math.random(math.Clamp((ply.Karma or 100),20,zc.MaxKarma) * 300) == 1 or org.start_shaking)) then
+            zc.StunPlayer(ply)
             local time = 15
 
             ply:Notify(seizuremsgs[math.random(#seizuremsgs)], 16, "seizure", 1, function()
@@ -340,7 +340,7 @@ hook.Add("ZC_OrganismThink", "ZC_UpdateKarmaEffects",function(owner, org, timeVa
             end)
 
             org.start_shaking = org.start_shaking or (CurTime() + time)
-            local ent = hg.GetCurrentCharacter(owner)
+            local ent = zc.GetCurrentCharacter(owner)
             local mul = ((org.start_shaking) - CurTime()) / time
 
             if mul > 0 then
@@ -355,7 +355,7 @@ hook.Add("ZC_OrganismThink", "ZC_UpdateKarmaEffects",function(owner, org, timeVa
 
     if (ply.Karma or 100) < 35 then
         if math.random(2000) == 1 then
-            hg.organism.Vomit(owner)
+            zc.organism.Vomit(owner)
         end
     end
 end)
@@ -377,8 +377,8 @@ hook.Add("ZC_StartRound","ZC_ResetRoundHarm",function()
         //ply:guilt_SetValue( ply.Karma or 100 )
     end
 
-    zb.HarmDone = {}
-    zb.HarmDoneKarma = {}
+    zc.HarmDone = {}
+    zc.HarmDoneKarma = {}
 end)
 
 util.AddNetworkString("ZC_KarmaGet")
@@ -412,7 +412,7 @@ util.AddNetworkString("ZC_GuiltForgivePlayer")
 
 net.Receive("ZC_GuiltMenuOpen",function(len, ply)
     if ply:Alive() then return end
-    local tbl = zb.HarmDoneKarma[ply] or {}
+    local tbl = zc.HarmDoneKarma[ply] or {}
     net.Start("ZC_GuiltMenuOpen")
     net.WriteTable(tbl)
     net.Send(ply)
@@ -421,18 +421,18 @@ end)
 
 net.Receive("ZC_GuiltForgivePlayer", function(len, ply)
     local ent = net.ReadEntity()
-    if not IsValid(ent) or not zb.HarmDoneKarma[ply] then return end
-    local harm = zb.HarmDoneKarma[ply][ent]
+    if not IsValid(ent) or not zc.HarmDoneKarma[ply] then return end
+    local harm = zc.HarmDoneKarma[ply][ent]
     if not harm then return end
 
-    ent.Karma = math.Clamp(ent.Karma + harm, 0, zb.MaxKarma)
+    ent.Karma = math.Clamp(ent.Karma + harm, 0, zc.MaxKarma)
     ent:SetNetVar("Karma",ent.Karma)
     //ent:guilt_SetValue((ent.Karma or 100))
 
-    zb.HarmDone[ply][ent] = 0
-    zb.HarmDoneKarma[ply][ent] = 0
+    zc.HarmDone[ply][ent] = 0
+    zc.HarmDoneKarma[ply][ent] = 0
     net.Start("ZC_GuiltMenuOpen")
-    net.WriteTable(zb.HarmDoneKarma[ply])
+    net.WriteTable(zc.HarmDoneKarma[ply])
     net.Send(ply)
 end)
 
@@ -449,10 +449,10 @@ hook.Add("ZC_OnPlayerKnockedDownBy","ZC_PunishFallAttack",function(Attacker,Vict
 
     if Attacker == Victim then return end
 
-    if Victim.isTraitor and !Attacker.isTraitor and rnd.name == "hmcd" and !zb.IsForce(Attacker) then return end
+    if Victim.isTraitor and !Attacker.isTraitor and rnd.name == "hmcd" and !zc.IsForce(Attacker) then return end
     if Attacker.isTraitor and !Victim.isTraitor and rnd.name == "hmcd" then return end
     if rnd.name != "hmcd" and (Attacker.Team and Victim.Team and Attacker:Team() ~= Victim:Team()) then return end
-    if zb.ROUND_STATE != 1 and (rnd.name != "cstrike" or !zb.RoundsLeft) then return end
+    if zc.ROUND_STATE != 1 and (rnd.name != "cstrike" or !zc.RoundsLeft) then return end
     if Victim.Guilt and Victim.Guilt > 1 then return end
 
     Attacker.Guilt = Attacker.Guilt or 0

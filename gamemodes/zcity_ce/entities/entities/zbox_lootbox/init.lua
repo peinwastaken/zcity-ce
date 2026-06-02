@@ -68,12 +68,12 @@ local loottypes = {
     end,
 }
 
-ZBox = ZBox or {}
-ZBox.LootSystem = ZBox.LootSystem or {}
+zc = zc or {}
+zc.LootSystem = zc.LootSystem or {}
 
 function ENT:TakeItem( ply, itemID ) --| Grab it for free
     local item = self.Loot[itemID]
-    local spawnFunctions = ZBox.LootSystem.spawnFunctions or {}
+    local spawnFunctions = zc.LootSystem.spawnFunctions or {}
     if item then
         loottypes[ "entity" ]( self, ply, item.class, spawnFunctions[ item.class ], item.entData )
         self.Loot[itemID] = nil
@@ -84,7 +84,7 @@ end
 function ENT:Use( activator ) --| Crate data is sent only when opening so it does not SPAM
     if !IsValid( activator ) or !activator:IsPlayer() then return false end --| Check player validity...
     if ( activator:GetPos() - self:GetPos() ):Length() > 400 then
-        print( "[ ZBox | LootSystem ]: ".. activator .. "[SteamID:".. activator:SteamID() .. "]" .." trying USE CONTAINER but, he not in radius CHEATS?" )
+        print( "[ zc | LootSystem ]: ".. activator .. "[SteamID:".. activator:SteamID() .. "]" .." trying USE CONTAINER but, he not in radius CHEATS?" )
         return false
     end
 
@@ -93,7 +93,7 @@ end
 
 util.AddNetworkString( "ZC_BoxLootSystem" )
 
-function ZBox.LootSystem.SendLootTable( ent, ply, tbl ) --| Send cool net messages.
+function zc.LootSystem.SendLootTable( ent, ply, tbl ) --| Send cool net messages.
 
     net.Start( "ZC_BoxLootSystem" )
         net.WriteEntity( ent )
@@ -107,28 +107,28 @@ net.Receive( "ZC_BoxLootSystem", function( len, ply )
     local Container = net.ReadEntity()
     Container.TakeCD = Container.TakeCD or 0
     if Container.TakeCD > CurTime() then
-        print( "[ ZBox | LootSystem ]: ".. ply .. "[SteamID:".. ply:SteamID() .. "]" .." trying TAKE ITEM but, cooldown is on." )
+        print( "[ zc | LootSystem ]: ".. ply .. "[SteamID:".. ply:SteamID() .. "]" .." trying TAKE ITEM but, cooldown is on." )
         return false
     end
 
     Container.TakeCD = CurTime() + 0.1
 
     if ( ply:GetPos() - Container:GetPos() ):Length() > 400 then
-        print( "[ ZBox | LootSystem ]: ".. ply .. "[SteamID:".. ply:SteamID() .. "]" .." trying TAKE ITEM but, he not in radius CHEATS?!" )
+        print( "[ zc | LootSystem ]: ".. ply .. "[SteamID:".. ply:SteamID() .. "]" .." trying TAKE ITEM but, he not in radius CHEATS?!" )
         return false
     end
 
     local ItemID = net.ReadUInt(10)
 
     if not Container.Loot[ItemID] then
-        print( "[ ZBox | LootSystem ]: ".. ply .. "[SteamID:".. ply:SteamID() .. "]" .." trying TAKE ITEM but, item is invalid." )
+        print( "[ zc | LootSystem ]: ".. ply .. "[SteamID:".. ply:SteamID() .. "]" .." trying TAKE ITEM but, item is invalid." )
         return false
     end
 
     Container:TakeItem( ply, ItemID )
 end)
 
-local SendLootTable = ZBox.LootSystem.SendLootTable
+local SendLootTable = zc.LootSystem.SendLootTable
 
 function ENT:OpenContainer( ply ) --| Open the container for the player.
     local OptimizedTable = {} --| Create an empty table to send to the client.
@@ -150,7 +150,7 @@ function ENT:GenerateLoot()
         local item = table.Random(self.LootTable)
 
 		if(istable(item))then
-			_, item = hg.WeightedRandomSelect(tab, mul)
+			_, item = zc.WeightedRandomSelect(tab, mul)
 		end
 
         if count >= ammout then return end

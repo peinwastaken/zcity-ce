@@ -838,7 +838,7 @@ if SERVER then
 				-- If we're burning a character, use the oppurtunity to spread to it
 				if vFireIsCharacter(ent) and vFireEnableSpread then
 					-- If we're burning an NPC, spread to it, if it's a player, lower the chance of spread
-					if (ent:IsPlayer() and hg.GetCurrentCharacter(ent):IsPlayer() and math.random(1, 6) == 1) or !ent:IsPlayer() then
+					if (ent:IsPlayer() and zc.GetCurrentCharacter(ent):IsPlayer() and math.random(1, 6) == 1) or !ent:IsPlayer() then
 						local newFeed = self.feed + vFireTakeFuel(ent, 12)
 						if newFeed > 0 then
 							CreateVFire(ent, ent:GetPos(), Vector(), newFeed, self)
@@ -922,8 +922,8 @@ if SERVER then
 	ENT.gasparticles = 0
 	ENT.NextParticle = 0
 
-	hg = hg or {}
-	hg.particles = hg.particles or {}
+	zc = zc or {}
+	zc.particles = zc.particles or {}
 
 	vfireallowspreadon = {
 		[MAT_GRASS] = true,
@@ -941,7 +941,7 @@ if SERVER then
 			-- We only spread if our random variable is below 1000 - the more throttle there is, the higher the probability of ran being >= 1000
 			-- and as a result, fire spreading is throttled
 
-			for _,v in ipairs(hg.gasolinePath) do
+			for _,v in ipairs(zc.gasolinePath) do
 				if v[1]:Distance(self:GetPos()) > (vFireBaseRadius(self:GetFireState() or 1) or 1) or v[2] ~= false then continue end
 				v[2] = CurTime()
 				v[3] = self:GetOwner()
@@ -950,7 +950,7 @@ if SERVER then
 			if self.NextParticle < CurTime() and vFireLifeToState(self.life) > 4 then
 				self.NextParticle = CurTime() + 2
 				if (self.gasparticles < self.totalparticles) then
-					table.insert(hg.particles, {self:GetPos(), VectorRand(-15, 15), CurTime() + 120})
+					table.insert(zc.particles, {self:GetPos(), VectorRand(-15, 15), CurTime() + 120})
 
 					self.gasparticles = self.gasparticles + 1
 				end
@@ -1194,7 +1194,7 @@ if CLIENT then
 	-- Used for optimization purposes
 	-- local draws = 0
 
-	zc_potatopc = zc_potatopc or hg.ConVars.potatopc
+	zc_potatopc = zc_potatopc or zc.ConVars.potatopc
 
 	function ENT:Draw()
 

@@ -63,7 +63,7 @@ end
 local gradient_d = Material("vgui/gradient-d")
 
 
-BlurBackground = hg.DrawBlur
+BlurBackground = zc.DrawBlur
 local uiColors = zc.colors.ui
 
 local function PaintFrame(self,w,h)

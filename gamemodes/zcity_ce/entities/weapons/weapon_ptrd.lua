@@ -180,7 +180,7 @@ function SWEP:ThinkAdd()
 		self:PlayAnim("idle", 0.1, false)
 	end
 
-	local israg = hg.GetCurrentCharacter(owner):IsRagdoll()
+	local israg = zc.GetCurrentCharacter(owner):IsRagdoll()
 
 	local hasReloadOffset = self.FakePos ~= reloadPos and self.FakeAng ~= reloadAng
 	local hasIdleOffset = (self.FakePos ~= idlePos and self.FakeAng ~= idleAng) or self.FakeAng == angle_zero
@@ -240,12 +240,12 @@ function SWEP:PrimaryShootPost()
 	if self:IsResting() then return end
 
 	local owner = self:GetOwner()
-	local char = hg.GetCurrentCharacter(owner)
+	local char = zc.GetCurrentCharacter(owner)
 	if not char:IsRagdoll() then
-		hg.AddForceRag(owner, 2, owner:EyeAngles():Forward() * -10000, 0.5)
-		hg.AddForceRag(owner, 0, owner:EyeAngles():Forward() * -10000, 0.5)
+		zc.AddForceRag(owner, 2, owner:EyeAngles():Forward() * -10000, 0.5)
+		zc.AddForceRag(owner, 0, owner:EyeAngles():Forward() * -10000, 0.5)
 
-		hg.LightStunPlayer(owner,1)
+		zc.LightStunPlayer(owner,1)
 	end
 
 	char:GetPhysicsObjectNum(0):SetVelocity(char:GetVelocity() + owner:EyeAngles():Forward() * -2000)

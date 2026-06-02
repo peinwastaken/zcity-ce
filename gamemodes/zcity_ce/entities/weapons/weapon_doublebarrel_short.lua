@@ -233,7 +233,7 @@ function SWEP:Step()
 	if CLIENT then
 		if self.reloadMiddle and self.reloadMiddle < CurTime() then
             if self.Shooted > 0 then
-				local ammotype = hg.ammotypes[string.lower( string.Replace( self.Primary and self.Primary.Ammo or "nil"," ", "") )].BulletSettings
+				local ammotype = zc.ammotypes[string.lower( string.Replace( self.Primary and self.Primary.Ammo or "nil"," ", "") )].BulletSettings
 			    self:MakeShell(ammotype.Shell, owner:GetBonePosition(owner:LookupBone("ValveBiped.Bip01_L_Hand")), Angle(0,0,0), Vector(0,0,0))
                 --self:EmitSound("weapons/tfa_ins2/doublebarrel/shelleject1.wav",70,100,1,CHAN_AUTO)
                 self.Shooted = self.Shooted - 1

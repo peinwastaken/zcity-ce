@@ -75,20 +75,20 @@ MODE.Config = {
     }
 }
 
-zb = zb or {}
-zb.Points = zb.Points or {}
+zc = zc or {}
+zc.Points = zc.Points or {}
 
-zb.Points.NPC_DEFENSE_SPAWN= zb.Points.NPC_DEFENSE_SPAWN or {}
-zb.Points.NPC_DEFENSE_SPAWN.Color = Color(243,9,9)
-zb.Points.NPC_DEFENSE_SPAWN.Name = "NPC_DEFENSE_SPAWN"
+zc.Points.NPC_DEFENSE_SPAWN= zc.Points.NPC_DEFENSE_SPAWN or {}
+zc.Points.NPC_DEFENSE_SPAWN.Color = Color(243,9,9)
+zc.Points.NPC_DEFENSE_SPAWN.Name = "NPC_DEFENSE_SPAWN"
 
-zb.Points.PLY_DEFENSE_SPAWN = zb.Points.PLY_DEFENSE_SPAWN or {}
-zb.Points.PLY_DEFENSE_SPAWN.Color = Color(51,243,9)
-zb.Points.PLY_DEFENSE_SPAWN.Name = "PLY_DEFENSE_SPAWN"
+zc.Points.PLY_DEFENSE_SPAWN = zc.Points.PLY_DEFENSE_SPAWN or {}
+zc.Points.PLY_DEFENSE_SPAWN.Color = Color(51,243,9)
+zc.Points.PLY_DEFENSE_SPAWN.Name = "PLY_DEFENSE_SPAWN"
 
-zb.Points.DEFENSE_POINT = zb.Points.DEFENSE_POINT or {}
-zb.Points.DEFENSE_POINT.Color = Color(13,9,243)
-zb.Points.DEFENSE_POINT.Name = "DEFENSE_POINT"
+zc.Points.DEFENSE_POINT = zc.Points.DEFENSE_POINT or {}
+zc.Points.DEFENSE_POINT.Color = Color(13,9,243)
+zc.Points.DEFENSE_POINT.Name = "DEFENSE_POINT"
 
 
 MODE.SUBMODES = {

@@ -460,7 +460,7 @@ function SWEP:Step()
 					bullet.IgnoreEntity = not owner.suiciding and (owner.InVehicle and owner:InVehicle() and owner:GetVehicle() or owner) or nil
 					bullet.Penetration = 50
 
-					hg.PhysBullet.CreateBullet(bullet)
+					zc.PhysBullet.CreateBullet(bullet)
 					self:DrawBlood()
 					self:EmitShoot()
 					self:PrimarySpread()
@@ -527,7 +527,7 @@ function SWEP:Shoot(override)
 		bullet.IgnoreEntity = not owner.suiciding and (owner.InVehicle and owner:InVehicle() and owner:GetVehicle() or owner) or nil
 		bullet.Penetration = 10
 
-		hg.PhysBullet.CreateBullet(bullet)
+		zc.PhysBullet.CreateBullet(bullet)
 	end
 
 	self:EmitShoot()

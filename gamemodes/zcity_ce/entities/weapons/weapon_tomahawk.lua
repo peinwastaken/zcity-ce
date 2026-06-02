@@ -92,7 +92,7 @@ function SWEP:CustomAttack2()
     
     local ply = self:GetOwner()
 
-    ent:SetPos(hg.eye(ply,60,hg.GetCurrentCharacter(ply)) - ply:GetAimVector() * 2)
+    ent:SetPos(zc.eye(ply,60,zc.GetCurrentCharacter(ply)) - ply:GetAimVector() * 2)
     ent:SetAngles(ply:EyeAngles() + Angle(0,0,90))
     ent:Spawn()
 

@@ -1,11 +1,11 @@
 local CurTime = CurTime
 local time
 local max, min, _ = math.max, math.min, math.Round
---local Organism = hg.organism
-hg.organism.module.blood = {}
-local module = hg.organism.module.blood
+--local Organism = zc.organism
+zc.organism.module.blood = {}
+local module = zc.organism.module.blood
 
-hg.organism.bloodtypes = {
+zc.organism.bloodtypes = {
 	["o-"] = {["o-"] = true,["o+"] = true,["a-"] = true,["a+"] = true,["b-"] = true,["b+"] = true,["ab-"] = true,["ab+"] = true},
 	["o+"] = {["o+"] = true,["a+"] = true,["b+"] = true,["ab+"] = true},
 	["a-"] = {["a+"] = true,["a-"] = true,["ab+"] = true,["ab-"] = true},
@@ -34,7 +34,7 @@ module[1] = function(org)
 	org.wantToVomit = 0
 	org.vomitInThroat = nil
 
-	org.bloodtype = table.GetKeys(hg.organism.bloodtypes)[math.random(8)]
+	org.bloodtype = table.GetKeys(zc.organism.bloodtypes)[math.random(8)]
 
 	if org.bloodtype == "c-" then
 		org.bloodtype = "o-" --epic
@@ -58,7 +58,7 @@ module[2] = function(owner, org, mulTime)
 	local adrenaline = math.min(org.adrenaline, 2)
 
 	if org.vomitInThroat then
-		local ent = hg.GetCurrentCharacter(owner)
+		local ent = zc.GetCurrentCharacter(owner)
 
 		local bon = "ValveBiped.Bip01_Head1"
 		local bone = ent:LookupBone(bon)
@@ -117,7 +117,7 @@ module[2] = function(owner, org, mulTime)
 				org.blood = max(org.blood - bleed, 1)
 
 				if (owner:IsPlayer() and owner:Alive()) or not owner:IsPlayer() then
-					hg.organism.BloodDroplet2(owner, org, wound, ent:GetVelocity() + VectorRand(-15, 15), false)
+					zc.organism.BloodDroplet2(owner, org, wound, ent:GetVelocity() + VectorRand(-15, 15), false)
 					wound[1] = max(wound[1] - coagulate, 0)
 				end
 
@@ -153,7 +153,7 @@ module[2] = function(owner, org, mulTime)
 				local len = dir:Length()
 				local _, dir = LocalToWorld(vecZero, dir:Angle(), vecZero, ang)
 				dir = -dir:Forward() * len
-				hg.organism.BloodDroplet2(owner, org, wound, owner:GetVelocity() + VectorRand(-10, 10) + dir, true)
+				zc.organism.BloodDroplet2(owner, org, wound, owner:GetVelocity() + VectorRand(-10, 10) + dir, true)
 			end
 
 			if wound[1] == 0 then
@@ -190,7 +190,7 @@ module[2] = function(owner, org, mulTime)
 
 		if org.isPly then owner:Notify(internalbleed_phrases[math.random(#internalbleed_phrases)], 15, "internalbleed") end
 
-		hg.organism.Vomit(owner)
+		zc.organism.Vomit(owner)
 	end
 
 	org.bleed = (bleedoutspeed + bleedoutspeed2 + bleed)--per second
@@ -199,14 +199,14 @@ module[2] = function(owner, org, mulTime)
 
 	local bleeding_will_stop = (timetouncon ~= timetouncon) or ((coagulatespeed * timetouncon - org.bleed) > 0)
 	local canwakeup_pain = ((org.pain - 5) / (org.painlessen)) < timetouncon
-	org.timetouncon = (timetouncon ~= timetouncon) and timetouncon or Lerp(hg.lerpFrameTime2(0.01,mulTime), org.timetouncon or 10000, timetouncon)
+	org.timetouncon = (timetouncon ~= timetouncon) and timetouncon or Lerp(zc.lerpFrameTime2(0.01,mulTime), org.timetouncon or 10000, timetouncon)
 
 	local bleedingWillKeepPlayerDown = not bleeding_will_stop and not (canwakeup_pain and org.blood > 3000)
 	local brainTooDamaged = org.brain > 0.4
 	local pulseTooWeak = org.pulse < 15
 	local oxygenTooLow = org.o2[1] < 5
 	local airwayTooDamaged = org.trachea >= 0.5
-	local spineTooDamaged = org.spine3 >= hg.organism.fake_spine3 or org.spine2 >= hg.organism.fake_spine2
+	local spineTooDamaged = org.spine3 >= zc.organism.fake_spine3 or org.spine2 >= zc.organism.fake_spine2
 	local criticalVitalsCannotWake = brainTooDamaged or pulseTooWeak or oxygenTooLow or airwayTooDamaged
 	local shouldStayIncapacitated = org.unconscious and (bleedingWillKeepPlayerDown or criticalVitalsCannotWake or org.heartstop or spineTooDamaged)
 
@@ -227,12 +227,12 @@ end
 
 util.AddNetworkString("ZC_BloodSquirtAlt")
 
-function hg.organism.Vomit(owner, snd)
-	if !hg.IsValidPlayer(owner) then return end
+function zc.organism.Vomit(owner, snd)
+	if !zc.IsValidPlayer(owner) then return end
 
 	local org = owner.organism
 	org.blood = math.max(org.blood - 200, 0)
-	local ent = hg.GetCurrentCharacter(owner)
+	local ent = zc.GetCurrentCharacter(owner)
 
 	local bon = "ValveBiped.Bip01_Head1"
 	local bone = ent:LookupBone(bon)
@@ -250,7 +250,7 @@ function hg.organism.Vomit(owner, snd)
 	ent:EmitSound(snd or "zcitysnd/real_sonar/"..(ThatPlyIsFemale(ent) and "female" or "male").."_cough"..math.random(4)..".mp3")
 	if !on_spine then ent:EmitSound("vomit/vomit5.mp3") end
 
-	if owner.armors and owner.armors.face and hg.armor.face[owner.armors.face].voice_change then
+	if owner.armors and owner.armors.face and zc.armor.face[owner.armors.face].voice_change then
 		owner:SetNetVar("zableval_masku", true)
 	else
 		if !on_spine then
@@ -265,7 +265,7 @@ function hg.organism.Vomit(owner, snd)
 	end
 end
 
-function hg.organism.CoughBlood(org)
+function zc.organism.CoughBlood(org)
 	local ply = org.owner
 	local phr = "zcitysnd/real_sonar/" .. (ThatPlyIsFemale(ply) and "female" or "male") .. "_cough" .. math.random(4) .. ".mp3"
 	ply:EmitSound(phr)
@@ -287,6 +287,6 @@ function hg.organism.CoughBlood(org)
 	end
 end
 
-function hg.organism.BloodDroplet2(owner, org, wound, dir, artery)
+function zc.organism.BloodDroplet2(owner, org, wound, dir, artery)
 	hook.Run("ZC_OnBloodParticleStartedDropping", owner, org, wound, dir, artery)
 end

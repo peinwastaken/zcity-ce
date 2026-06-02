@@ -1,6 +1,6 @@
---local Organism = hg.organism
-hg.organism.module.random_events = {}
-local module = hg.organism.module.random_events
+--local Organism = zc.organism
+zc.organism.module.random_events = {}
+local module = zc.organism.module.random_events
 module[1] = function(org)
 	org.timeToRandom = CurTime() + math.random(120,320)
 end

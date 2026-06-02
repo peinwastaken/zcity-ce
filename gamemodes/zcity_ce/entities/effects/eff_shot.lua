@@ -22,7 +22,7 @@ function EFFECT:Init(data)
     local dir = ang:Forward()
 
     local ammotype = string.lower( string.Replace( gun.Primary and gun.Primary.Ammo or "nil"," ", "") )
-    self.bullet = (hg.ammotypes[ammotype] and hg.ammotypes[ammotype].TracerSetings) or tracer
+    self.bullet = (zc.ammotypes[ammotype] and zc.ammotypes[ammotype].TracerSetings) or tracer
 
     self.SpawnTime = CurTime()
     self.DieTime = CurTime() + 0.1

@@ -124,7 +124,7 @@ props_c17/woodbarrel001_gleb.mdl -- you know why this is here...
 ]]
 
 
-hg.props = {
+zc.props = {
 	["models/props_c17/shelfunit01a.mdl"] = true,
 	["models/props_c17/door01_left.mdl"] = true,
 	["models/props_building_details/Storefront_Template001a_Bars.mdl"] = true,
@@ -171,13 +171,13 @@ hg.props = {
 	["models/props_interiors/VendingMachineSoda01a_door.mdl"] = true,
 }
 
-hg.loot_boxes = {}
+zc.loot_boxes = {}
 
 for name, tbl in pairs(loot_boxes) do
-	hg.loot_boxes[string.lower(name)] = tbl
+	zc.loot_boxes[string.lower(name)] = tbl
 end
 
-function hg.GenerateLoot(ply,ent,func)
+function zc.GenerateLoot(ply,ent,func)
 	local curRound, rtype = CurrentRound()
 
 	local should = curRound.LootSpawn
@@ -189,9 +189,9 @@ function hg.GenerateLoot(ply,ent,func)
 	local traitor_opened = IsValid(ply) and ply.isTraitor
 	local low_karma_player = IsValid(ply) and (ply.Karma < 70)
 	local very_low_karma_player = IsValid(ply) and (ply.Karma < 30)
-	local high_karma_player = IsValid(ply) and (ply.Karma >= zb.MaxKarma)
+	local high_karma_player = IsValid(ply) and (ply.Karma >= zc.MaxKarma)
 
-	local time = CurTime() - (zb.ROUND_START or CurTime())
+	local time = CurTime() - (zc.ROUND_START or CurTime())
 	--print(time)
 
 	local mul = hook.Run("ZC_LootMultiplier", ply)
@@ -203,7 +203,7 @@ function hg.GenerateLoot(ply,ent,func)
 	if curRound.LootOnTime then
 		local div = curRound.LootDivTime or 300
 		mul = math.Rand(1, math.Clamp(mul * (time / div), 0.25, 1.75))
-		if zb.dev.IsDeveloper() and IsValid(ply) then
+		if zc.dev.IsDeveloper() and IsValid(ply) then
 			timer.Simple(0,function()
 				ply:ChatPrint("sv_lootspawn: MUL = "..mul.." TIME/"..div.." = "..(time/div).." TIME = "..time)
 			end)
@@ -230,8 +230,8 @@ function hg.GenerateLoot(ply,ent,func)
 
 	if not tab then
 		local cur = curRound.Type and curRound.Types[rtype] or curRound
-		local chances = cur.LootTable or curRound.LootTable or zb.modes["hmcd"].LootTable
-		local _, tabs = hg.WeightedRandomSelect(chances, mul)
+		local chances = cur.LootTable or curRound.LootTable or zc.modes["hmcd"].LootTable
+		local _, tabs = zc.WeightedRandomSelect(chances, mul)
 
 		tab = tabs
 
@@ -239,7 +239,7 @@ function hg.GenerateLoot(ply,ent,func)
 
 	--print(tab)
 
-	local _, entName = hg.WeightedRandomSelect(tab)
+	local _, entName = zc.WeightedRandomSelect(tab)
 
 	-- if curRound and curRound.name == "scrappers" and math.random(100) < 80 then
 	-- 	local random = math.random(1, 3)
@@ -251,13 +251,13 @@ function hg.GenerateLoot(ply,ent,func)
 
 	-- 		local smallest = 100
 
-	-- 		for k, v in pairs(hg.ScrapChances) do
+	-- 		for k, v in pairs(zc.ScrapChances) do
 	-- 			if random <= k and smallest > k then
 	-- 				smallest = k
 	-- 			end
 	-- 		end
 
-	-- 		AmmoCount = table.Random(hg.ScrapChances[smallest])
+	-- 		AmmoCount = table.Random(zc.ScrapChances[smallest])
 	-- 	end
 	-- end
 
@@ -269,38 +269,38 @@ function hg.GenerateLoot(ply,ent,func)
 				local ammo
 				if IsValid(ply) and math.random(3) == 1 then
 					for _, wep in RandomPairs(ply:GetWeapons()) do
-						if wep:GetMaxClip1() > 0 and hg.ammotypeshuy[wep.Primary.Ammo] then
-							ammo = hg.ammotypeshuy[wep.Primary.Ammo].name
+						if wep:GetMaxClip1() > 0 and zc.ammotypeshuy[wep.Primary.Ammo] then
+							ammo = zc.ammotypeshuy[wep.Primary.Ammo].name
 							break
 						end
 					end
 				end
 
 				if not ammo then--if ammo still was not found
-					ammo = table.Random(hg.ammotypesallowed).name
+					ammo = table.Random(zc.ammotypesallowed).name
 				end
 
 				if ammo then entName = "ent_ammo_" .. ammo end
 
 				if ammo then
-					AmmoCount = math.random(hg.ammoents[ammo].Count or 30)
+					AmmoCount = math.random(zc.ammoents[ammo].Count or 30)
 				end
 			else
-				local tbl = hg.ammotypeshuy[string.Replace(entName, "ent_ammo_", "")]
-				AmmoCount = math.random(tbl and hg.ammoents[tbl.name] and hg.ammoents[tbl.name].Count or 30)
+				local tbl = zc.ammotypeshuy[string.Replace(entName, "ent_ammo_", "")]
+				AmmoCount = math.random(tbl and zc.ammoents[tbl.name] and zc.ammoents[tbl.name].Count or 30)
 			end
 		elseif entName == "*attachments*" then
-			local tbl = table.GetKeys(table.Random(hg.validattachments))
+			local tbl = table.GetKeys(table.Random(zc.validattachments))
 			local att = tbl[math.random(#tbl)]
 			entName = "ent_att_" .. att
 			Tab = "Attachments"
 		elseif entName == "*sight*" then
-			local tbl = table.GetKeys(hg.validattachments.sight)
+			local tbl = table.GetKeys(zc.validattachments.sight)
 			local att = tbl[math.random(#tbl)]
 			entName = "ent_att_" .. att
 			Tab = "Attachments"
 		elseif entName == "*barrel*" then
-			local tbl = table.GetKeys(hg.validattachments.barrel)
+			local tbl = table.GetKeys(zc.validattachments.barrel)
 			local att = tbl[math.random(#tbl)]
 			entName = "ent_att_" .. att
 			Tab = "Attachments"
@@ -326,11 +326,11 @@ local functions = {
 		if ent.inventory.Weapons and ent.inventory.Weapons[wep] then return end
         ent.inventory.Weapons = ent.inventory.Weapons or {}
 		ent.inventory.Weapons[wep] = weapon and weapon.GetInfo and weapon:GetInfo() or true
-		--hg.SetAttachment(ent.inventory.Weapons[wep][2],"supressor2",wep)
+		--zc.SetAttachment(ent.inventory.Weapons[wep][2],"supressor2",wep)
 	end,
     ["Ammo"] = function(ent, ammo, amt)
-		if not hg.ammotypes[ammo] then return end
-		local ammo = isnumber(ammo) and ammo or game.GetAmmoID(hg.ammotypes[ammo].name)
+		if not zc.ammotypes[ammo] then return end
+		local ammo = isnumber(ammo) and ammo or game.GetAmmoID(zc.ammotypes[ammo].name)
 		if not ammo or ammo == -1 then return end
 		ent.inventory.Ammo = ent.inventory.Ammo or {}
 		ent.inventory.Ammo[ammo] = ent.inventory.Ammo[ammo] or 0
@@ -338,7 +338,7 @@ local functions = {
     end,
     ["Armor"] = function(ent, armor)
 		ent.armors = ent.armors or {}
-		hg.AddArmor(ent, armor)
+		zc.AddArmor(ent, armor)
     end,
     ["Attachments"] = function(ent, att)
 		ent.inventory.Attachments = ent.inventory.Attachments or {}
@@ -364,8 +364,8 @@ local functions_break = {
         if weapon.SetInfo then weapon:SetInfo(ent.inventory.Weapons[wep]) end
     end,
     ["Ammo"] = function(ent, ammo)
-		local ammo = isnumber(ammo) and ammo or game.GetAmmoID(hg.ammotypes[ammo].name)
-		local tp = hg.ammotypes[game.GetAmmoName(ammo)]
+		local ammo = isnumber(ammo) and ammo or game.GetAmmoID(zc.ammotypes[ammo].name)
+		local tp = zc.ammotypes[game.GetAmmoName(ammo)]
 		if !tp then return end
 		local ammo = tp.name
 		local ent2 = ents.Create("ent_ammo_" .. ammo)
@@ -398,18 +398,18 @@ local functions_break = {
 hook.Add("ZC_OnInventoryChecked", "ZC_HandleLootSpawn", function(ply, ent)
 	ent:SetNetVar("Inventory", ent.inventory)
 	if not IsValid(ent) or ent:IsPlayer() or ent.was_opened or not string.find(ent:GetClass(),"prop_") then return end
-	if not hg.loot_boxes[string.lower(ent:GetModel())] then return end
+	if not zc.loot_boxes[string.lower(ent:GetModel())] then return end
 
 	ent.armors = {}
 	ent.inventory = {}
 
 	ent.was_opened = true
 
-	local chance = hg.loot_amount[hg.loot_boxes[string.lower(ent:GetModel())][1]] or {0,1}
+	local chance = zc.loot_amount[zc.loot_boxes[string.lower(ent:GetModel())][1]] or {0,1}
 	local amount = math.random(chance[1],chance[2])
 
 	for _ = 0,amount-1 do
-		local entName, AmmoCount, Tab = hg.GenerateLoot(ply,ent)
+		local entName, AmmoCount, Tab = zc.GenerateLoot(ply,ent)
 		if entName then
 			entName = string.Replace(entName,"ent_att_","")
 			entName = string.Replace(entName,"ent_armor_","")
@@ -422,7 +422,7 @@ hook.Add("ZC_OnInventoryChecked", "ZC_HandleLootSpawn", function(ply, ent)
 	ent:SetNetVar("Inventory", ent.inventory)
 end)
 
-hg.loot_amount = {
+zc.loot_amount = {
 	[1] = {0,1},
 	[2] = {0,1},
 	[3] = {1,1},
@@ -439,7 +439,7 @@ hook.Add("PropBreak", "ZC_HandleLootSpawn", function(ply,ent)
 	ent.inventory = ent.inventory or {}
 	ent:SetNetVar("Inventory", ent.inventory)
 	if not IsValid(ent) or ent:GetClass() ~= "prop_physics" then return end
-	if not hg.loot_boxes[string.lower(ent:GetModel())] then return end
+	if not zc.loot_boxes[string.lower(ent:GetModel())] then return end
 
 	hook.Run("ZC_OnInventoryChecked", ply, ent)
 
@@ -514,7 +514,7 @@ end
 table.CopyFromTo(spawns,tbl)
 
 local tbladd = MakeRandomSpawns(tbl,0,500,{})
-local tblnew = zb.TranslateVectorsToPoints(tbladd)
+local tblnew = zc.TranslateVectorsToPoints(tbladd)
 table.CopyFromTo(tbladd,spawns)]]--
 
 hook.Add( "InitPostEntity", "ZC_LoadLootSpawns", function()
@@ -534,10 +534,10 @@ hook.Add( "InitPostEntity", "ZC_LoadLootSpawns", function()
 	table.CopyFromTo(spawns,tbl)
 
 	local tbladd = MakeRandomSpawns(tbl,0,500,{})
-	zb.TranslateVectorsToPoints(tbladd)
+	zc.TranslateVectorsToPoints(tbladd)
 	table.CopyFromTo(tbladd,spawns)
 end )
---zb.SendSpecificPointsToPly(Player(2), "RandomSpawns", true)
+--zc.SendSpecificPointsToPly(Player(2), "RandomSpawns", true)
 
 spawns = {}
 for _, ent in pairs(ents.FindByClass("info_*")) do
@@ -556,10 +556,10 @@ if #spawns > 0 then
 	table.CopyFromTo(spawns,tbl)
 
 	local tbladd = MakeRandomSpawns(tbl,0,500,{})
-	local tblnew = zb.TranslateVectorsToPoints(tbladd)
+	local tblnew = zc.TranslateVectorsToPoints(tbladd)
 
-	zb.SaveMapPoints( "RandomSpawns", tblnew )
-	--zb.SendSpecificPointsToPly(Entity(1), "RandomSpawns", true)
+	zc.SaveMapPoints( "RandomSpawns", tblnew )
+	--zc.SendSpecificPointsToPly(Entity(1), "RandomSpawns", true)
 
 	table.Add(spawns,tbladd)
 end
@@ -584,10 +584,10 @@ hook.Add("PostCleanupMap", "ZC_RestoreLootBoxes", function()
 		table.CopyFromTo(spawns,tbl)
 
 		local tbladd = MakeRandomSpawns(tbl,0,500,{})
-		local tblnew = zb.TranslateVectorsToPoints(tbladd)
+		local tblnew = zc.TranslateVectorsToPoints(tbladd)
 
-		zb.SaveMapPoints( "RandomSpawns", tblnew )
-		--zb.SendSpecificPointsToPly(Entity(1), "RandomSpawns", true)
+		zc.SaveMapPoints( "RandomSpawns", tblnew )
+		--zc.SendSpecificPointsToPly(Entity(1), "RandomSpawns", true)
 
 		table.Add(spawns,tbladd)
 
@@ -600,10 +600,10 @@ timer.Create("SpawnTheBoxes", 8, 0, function() hook_Run("ZC_BoxThink") end)
 
 local vec_dist = Vector(500,500,500)
 hook.Add("ZC_BoxThink", "ZC_SpawnLootBoxes", function()
-	if zb.ROUND_STATE ~= 1 or not CurrentRound().LootSpawn then return end
+	if zc.ROUND_STATE ~= 1 or not CurrentRound().LootSpawn then return end
 	//local spawnPos = table.Random(spawns) + vec
 
-	//local spawnPos = zb:FurthestFromEveryone(spawns) + vec
+	//local spawnPos = zc:FurthestFromEveryone(spawns) + vec
 	local tbl = player.GetAll()
 	local ply = tbl[math.random(#tbl)]
 
@@ -656,7 +656,7 @@ hook.Add("ZC_BoxThink", "ZC_SpawnLootBoxes", function()
 		/*if math.random(4) == 1 then
 			local huy = ents.Create("prop_physics")
 			huy:SetPos(spawnPos)
-			local _, randprop = table.Random(hg.props)
+			local _, randprop = table.Random(zc.props)
 			if not util.IsValidProp(randprop) then huy:Remove() return end
 			huy:SetModel(randprop)
 			huy:Spawn()
@@ -666,7 +666,7 @@ hook.Add("ZC_BoxThink", "ZC_SpawnLootBoxes", function()
 		local huy = ents.Create("prop_physics")
 		huy:SetPos(spawnPos)
 		local randprop
-		for model, tbl in RandomPairs(math.random(6) == 1 and hg.props or hg.loot_boxes) do
+		for model, tbl in RandomPairs(math.random(6) == 1 and zc.props or zc.loot_boxes) do
 			if !istable(tbl) or !tbl[3] then randprop = model break end
 		end
 		if not util.IsValidProp(randprop) then huy:Remove() return end
@@ -687,7 +687,7 @@ hook.Add("ZC_BoxThink", "ZC_SpawnLootBoxes", function()
 		return
 	end
 
-	local entName, AmmoCount, Tab = hg.GenerateLoot()
+	local entName, AmmoCount, Tab = zc.GenerateLoot()
 	//print(entName)
 	if not entName or entName == "" then return end
 
@@ -704,7 +704,7 @@ hook.Add("ZC_BoxThink", "ZC_SpawnLootBoxes", function()
 end)
 --[[
 for i = 1,100 do
-	local entName, AmmoCount, Tab = hg.GenerateLoot()
+	local entName, AmmoCount, Tab = zc.GenerateLoot()
 
 	if not entName or entName == "" then return end
 

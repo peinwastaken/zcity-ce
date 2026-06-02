@@ -3,7 +3,7 @@ local PANEL = {}
 local uiColors = zc.colors.ui
 
 
-BlurBackground = BlurBackground or hg.DrawBlur
+BlurBackground = BlurBackground or zc.DrawBlur
 
 function PANEL:Init()
     self.Map = ""

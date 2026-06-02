@@ -16,11 +16,11 @@ util.AddNetworkString("ZC_AttachmentDrop")
 net.Receive("ZC_AttachmentAdd", function(len, ply)
 	local att = net.ReadString()
 	local wep = ply:GetActiveWeapon()
-	hg.AddAttachment(ply,wep,att)
+	zc.AddAttachment(ply,wep,att)
 	//ply:SetNetVar("Inventory",ply.inventory)
 end)
 
-function hg.AddAttachment(ply,wep,att)
+function zc.AddAttachment(ply,wep,att)
 	if wep:GetNWFloat("addAttachment", 0) + 1 > CurTime() then return end
 
 	if not IsValid(wep) or not wep.attachments or att == "" then return end
@@ -30,30 +30,30 @@ function hg.AddAttachment(ply,wep,att)
 
 	if att and istable(att) then
 		for _,atta in pairs(att) do
-			hg.AddAttachment(ply,wep,atta)
+			zc.AddAttachment(ply,wep,atta)
 		end
 		return
 	end
 
 	local placement = nil
 
-	for _, tbl in pairs(hg.attachments) do
+	for _, tbl in pairs(zc.attachments) do
 		placement = tbl[att] and tbl[att][1] or placement
 	end
 
 	if not wep.attachments[placement].noblock then
-		local restrictAtt = hg.attachments[placement][att].restrictatt
+		local restrictAtt = zc.attachments[placement][att].restrictatt
 
 		for i,att in pairs(wep.attachments) do
 			if not att or not istable(att) or table.IsEmpty(att) or att[1] == "empty" then continue end
 			if restrictAtt then
-				if hg.attachments[i][att[1]][1] == restrictAtt then
-					ply:ChatPrint(zb.locale.GetLocalized("attachments/no_space"))
+				if zc.attachments[i][att[1]][1] == restrictAtt then
+					ply:ChatPrint(zc.locale.GetLocalized("attachments/no_space"))
 					return
 				end
 			else
-				if not wep.availableAttachments[i].noblock and hg.attachments[i][att[1]].restrictatt and hg.attachments[i][att[1]].restrictatt == placement then
-					ply:ChatPrint(zb.locale.GetLocalized("attachments/no_space"))
+				if not wep.availableAttachments[i].noblock and zc.attachments[i][att[1]].restrictatt and zc.attachments[i][att[1]].restrictatt == placement then
+					ply:ChatPrint(zc.locale.GetLocalized("attachments/no_space"))
 					return
 				end
 			end
@@ -62,7 +62,7 @@ function hg.AddAttachment(ply,wep,att)
 
 	if not placement then return end
 	if not (table.IsEmpty(wep.attachments[placement]) or wep.attachments[placement][1] == "empty") then
-		ply:ChatPrint(zb.locale.GetLocalized("attachments/no_space"))
+		ply:ChatPrint(zc.locale.GetLocalized("attachments/no_space"))
 		return
 	end
 
@@ -76,11 +76,11 @@ function hg.AddAttachment(ply,wep,att)
 
 	--if not i then ply:ChatPrint("You cant place this attachment on this weapon.") return end
 	local mountType = wep.availableAttachments[placement] and wep.availableAttachments[placement]["mountType"]
-	local mountType2 = hg.attachments[placement][att] and hg.attachments[placement][att].mountType
+	local mountType2 = zc.attachments[placement][att] and zc.attachments[placement][att].mountType
 	if not wep.availableAttachments[placement] then return end
 
 	if not wep.availableAttachments[placement][i] and not (mountType or mountType2) then return end
-	local mounts = istable(mountType) and table.HasValue(mountType, hg.attachments[placement][att].mountType) or mountType == mountType2
+	local mounts = istable(mountType) and table.HasValue(mountType, zc.attachments[placement][att].mountType) or mountType == mountType2
 
 	if not mounts then
 		return
@@ -104,19 +104,19 @@ function hg.AddAttachment(ply,wep,att)
 	end)
 end
 
-function hg.AddAttachmentForce(ply,wep,att)
+function zc.AddAttachmentForce(ply,wep,att)
 	if not IsValid(wep) or not wep.attachments or att == "" then return end
 
 	if att and istable(att) then
 		for _,atta in pairs(att) do
-			hg.AddAttachmentForce(ply,wep,atta)
+			zc.AddAttachmentForce(ply,wep,atta)
 		end
 		return
 	end
 
 	local placement = nil
 
-	for _, tbl in pairs(hg.attachments) do
+	for _, tbl in pairs(zc.attachments) do
 		placement = tbl[att] and tbl[att][1] or placement
 	end
 
@@ -139,11 +139,11 @@ function hg.AddAttachmentForce(ply,wep,att)
 
 	--if not i then ply:ChatPrint("You cant place this attachment on this weapon.") return end
 	local mountType = wep.availableAttachments[placement] and wep.availableAttachments[placement]["mountType"]
-	local mountType2 = hg.attachments[placement][att] and hg.attachments[placement][att].mountType
+	local mountType2 = zc.attachments[placement][att] and zc.attachments[placement][att].mountType
 	if not wep.availableAttachments[placement] then return end
 
 	if not wep.availableAttachments[placement][i] and not (mountType or mountType2) then return end
-	local mounts = istable(mountType) and table.HasValue(mountType, hg.attachments[placement][att].mountType) or mountType == mountType2
+	local mounts = istable(mountType) and table.HasValue(mountType, zc.attachments[placement][att].mountType) or mountType == mountType2
 
 	if not mounts then
 		return
@@ -165,12 +165,12 @@ net.Receive("ZC_AttachmentRemove", function(len, ply)
 	if not IsValid(ply) then return end
 	if ply.organism.larmamputated or ply.organism.rarmamputated then return end
 	--[[if table.HasValue(ply.inventory.Attachments, att) then
-		ply:ChatPrint(zb.locale.GetLocalized("attachments/already_have"))
+		ply:ChatPrint(zc.locale.GetLocalized("attachments/already_have"))
 		return
 	end--]]
 
 	local placement = nil
-	for _, tbl in pairs(hg.attachments) do
+	for _, tbl in pairs(zc.attachments) do
 		placement = tbl[att] and tbl[att][1] or placement
 	end
 
@@ -199,7 +199,7 @@ end)
 net.Receive("ZC_AttachmentDrop", function(len, ply)
 	local att = net.ReadString()
 	local placement = nil
-	for _, tbl in pairs(hg.attachments) do
+	for _, tbl in pairs(zc.attachments) do
 		placement = tbl[att] and tbl[att][1] or placement
 	end
 
@@ -207,7 +207,7 @@ net.Receive("ZC_AttachmentDrop", function(len, ply)
 
 	if not table.HasValue(ply.inventory["Attachments"],att) then return end
 
-	if hg.attachments[placement][att] then
+	if zc.attachments[placement][att] then
 		local attEnt = ents.Create("ent_att_" .. att)
 		attEnt:Spawn()
 		attEnt:SetPos(ply:EyePos())

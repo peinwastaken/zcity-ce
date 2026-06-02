@@ -1,7 +1,7 @@
-hg = hg or {}
-local hg = hg
+zc = zc or {}
+local zc = zc
 
-function hg.FetchMenuLayers()
+function zc.FetchMenuLayers()
   net.Start("ZC_GetMenuLayers")
   net.SendToServer()
 end
@@ -12,9 +12,9 @@ net.Receive("ZC_SendMenuLayers", function()
 
   PrintTable(layers)
 
-  hg.menuDrawLayers = layers
+  zc.menuDrawLayers = layers
 end)
 
 hook.Add("InitPostEntity", "ZC_LoadMenuLogoLayers", function()
-  hg.FetchMenuLayers()
+  zc.FetchMenuLayers()
 end)

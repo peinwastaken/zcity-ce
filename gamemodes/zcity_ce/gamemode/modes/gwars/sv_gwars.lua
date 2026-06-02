@@ -2,8 +2,8 @@ local MODE = MODE
 
 function MODE:CanLaunch()
 	return true
-	--[[local points = zb.GetMapPoints( "HMCD_TDM_T" )
-	local points2 = zb.GetMapPoints( "HMCD_TDM_CT" )
+	--[[local points = zc.GetMapPoints( "HMCD_TDM_T" )
+	local points2 = zc.GetMapPoints( "HMCD_TDM_CT" )
     return (#points > 0) and (#points2 > 0)--]]
 end
 
@@ -16,9 +16,9 @@ function MODE:Intermission()
 	game.CleanUpMap()
 
 	self.CTPoints = {}
-	table.CopyFromTo(zb.GetMapPoints( "HMCD_TDM_CT" ),self.CTPoints)
+	table.CopyFromTo(zc.GetMapPoints( "HMCD_TDM_CT" ),self.CTPoints)
 	self.TPoints = {}
-	table.CopyFromTo(zb.GetMapPoints( "HMCD_TDM_T" ),self.TPoints)
+	table.CopyFromTo(zc.GetMapPoints( "HMCD_TDM_T" ),self.TPoints)
 
 	for _, ply in player.Iterator() do
 		ply:SetupTeam(ply:Team())
@@ -29,11 +29,11 @@ function MODE:Intermission()
 end
 
 function MODE:CheckAlivePlayers()
-	return zb:CheckAliveTeams(true)
+	return zc:CheckAliveTeams(true)
 end
 
 function MODE:ShouldRoundEnd()
-	local endround, _ = zb:CheckWinner(self:CheckAlivePlayers())
+	local endround, _ = zc:CheckWinner(self:CheckAlivePlayers())
 
 	return endround or boringround
 end
@@ -99,9 +99,9 @@ end
 
 function MODE:GiveEquipment()
 	self.CTPoints = {}
-	table.CopyFromTo(zb.GetMapPoints( "HMCD_TDM_CT" ),self.CTPoints)
+	table.CopyFromTo(zc.GetMapPoints( "HMCD_TDM_CT" ),self.CTPoints)
 	self.TPoints = {}
-	table.CopyFromTo(zb.GetMapPoints( "HMCD_TDM_T" ),self.TPoints)
+	table.CopyFromTo(zc.GetMapPoints( "HMCD_TDM_T" ),self.TPoints)
 	timer.Simple(0.1,function()
 
 		for _, ply in player.Iterator() do
@@ -111,10 +111,10 @@ function MODE:GiveEquipment()
 
 			if ply:Team() == 0 then
 				ply:SetPlayerClass("bloodz")
-				zb.GiveRole(ply, "Bloodz", Color(190,0,0))
+				zc.GiveRole(ply, "Bloodz", Color(190,0,0))
 			else
 				ply:SetPlayerClass("groove")
-				zb.GiveRole(ply, "Groove", Color(0,190,0))
+				zc.GiveRole(ply, "Groove", Color(0,190,0))
 			end
 
 			local tbl = tblweps[ply:Team()]
@@ -143,7 +143,7 @@ function MODE:GiveEquipment()
 end
 
 function MODE:RoundThink()
-    if not swatSpawned and (CurTime() - zb.ROUND_BEGIN) >= 120 then
+    if not swatSpawned and (CurTime() - zc.ROUND_BEGIN) >= 120 then
         local deadPlayers = {}
 
         for _, ply in player.Iterator() do
@@ -152,7 +152,7 @@ function MODE:RoundThink()
             end
         end
 
-		local startpos = self.TPoints and #self.TPoints > 0 and self.TPoints[1].pos or zb:GetRandomSpawn()
+		local startpos = self.TPoints and #self.TPoints > 0 and self.TPoints[1].pos or zc:GetRandomSpawn()
 
 		for i = 1, math.min(4, #deadPlayers) do
             local ply = deadPlayers[i]
@@ -163,19 +163,19 @@ function MODE:RoundThink()
 				if !startpos then
 					startpos = ply:GetPos()
 				else
-					hg.tpPlayer(startpos, ply, i, 0)
+					zc.tpPlayer(startpos, ply, i, 0)
 				end
 
                 ply:SetPlayerClass("swat")
-				zb.GiveRole(ply, "SWAT", Color(0,0,122))
+				zc.GiveRole(ply, "SWAT", Color(0,0,122))
 				local gun = ply:Give("weapon_ar15")
                 ply:GiveAmmo(gun:GetMaxClip1() * 3, gun:GetPrimaryAmmoType(), true)
                 ply:Give("weapon_medkit_sh")
                 ply:Give("weapon_tourniquet")
                 ply:Give("weapon_walkie_talkie")
                 ply:Give("weapon_hg_flashbang_tpik")
-                hg.AddArmor(ply, "ent_armor_helmet1")
-                hg.AddArmor(ply, "ent_armor_vest4")
+                zc.AddArmor(ply, "ent_armor_helmet1")
+                zc.AddArmor(ply, "ent_armor_vest4")
 
                 ply:Give("weapon_hands_sh")
                 ply:SelectWeapon("weapon_hands_sh")
@@ -187,7 +187,7 @@ function MODE:RoundThink()
 end
 
 function MODE:GetTeamSpawn()
-	return zb.TranslatePointsToVectors(zb.GetMapPoints( "HMCD_TDM_T" )), zb.TranslatePointsToVectors(zb.GetMapPoints( "HMCD_TDM_CT" ))
+	return zc.TranslatePointsToVectors(zc.GetMapPoints( "HMCD_TDM_T" )), zc.TranslatePointsToVectors(zc.GetMapPoints( "HMCD_TDM_CT" ))
 end
 
 function MODE:CanSpawn()
@@ -200,7 +200,7 @@ function MODE:EndRound()
 		net.Broadcast()
 	end)
 
-	local _, winner = zb:CheckWinner(self:CheckAlivePlayers())
+	local _, winner = zc:CheckWinner(self:CheckAlivePlayers())
 	for _, ply in player.Iterator() do
 		if ply:Team() == winner then
 			ply:GiveExp(math.random(15,30))

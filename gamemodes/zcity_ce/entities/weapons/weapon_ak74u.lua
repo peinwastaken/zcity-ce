@@ -99,7 +99,7 @@ if CLIENT then
 
 		[0.40] = function(self,timeMul)
 			if self:Clip1() < 1 then
-				hg.CreateMag( self, Vector(50,10,10),nil, true )
+				zc.CreateMag( self, Vector(50,10,10),nil, true )
 				self:GetWM():ManipulateBoneScale(57, vector_origin)
 				self:GetWM():ManipulateBoneScale(58, vector_origin)
 				--self:GetOwner():PullLHTowards("ValveBiped.Bip01_L_Thigh", 0.5 * timeMul)

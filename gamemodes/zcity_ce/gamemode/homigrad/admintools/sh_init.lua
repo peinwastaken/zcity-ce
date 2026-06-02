@@ -11,7 +11,7 @@ Administration tools
     -   Player resurrection --| DONE
 --]]
 
-hg.AdminTools = hg.AdminTools or {}
+zc.AdminTools = zc.AdminTools or {}
 
 local plyMeta = FindMetaTable("Player")
 
@@ -26,8 +26,8 @@ if CLIENT then
     net.Receive("ZC_AdminTools",function()
         local func = net.ReadString()
         local args = net.ReadTable()
-        if hg.AdminTools[func] then
-            hg.AdminTools[func](hg.AdminTools,unpack(args))
+        if zc.AdminTools[func] then
+            zc.AdminTools[func](zc.AdminTools,unpack(args))
         end
     end)
 
@@ -50,7 +50,7 @@ if CLIENT then
     })
 end
 
-function hg.AdminTools:Notify( str )
+function zc.AdminTools:Notify( str )
 
 end
 
@@ -58,7 +58,7 @@ local w, h = 270,72
 
 local color_black_alpha, color_white = Color(0, 0, 0, 150), Color(255, 255, 255)
 
-function hg.AdminTools:Timer( str, time )
+function zc.AdminTools:Timer( str, time )
     local FirstTime = 0
     local Text = str
     local Timer = time - CurTime()
@@ -102,9 +102,9 @@ function hg.AdminTools:Timer( str, time )
 
 end
 
---hg.AdminTools:Timer( "Survive", CurTime()+2 )
+--zc.AdminTools:Timer( "Survive", CurTime()+2 )
 
-function hg.AdminTools:Point( str, vec )
+function zc.AdminTools:Point( str, vec )
 
 end
 
@@ -112,7 +112,7 @@ if not SERVER then return end
 
 util.AddNetworkString("ZC_AdminTools")
 
-function hg.AdminTools:SendNet(strFunc,tArgs,entPly)
+function zc.AdminTools:SendNet(strFunc,tArgs,entPly)
     net.Start("ZC_AdminTools")
         net.WriteString( strFunc )
         net.WriteTable( tArgs )
@@ -123,19 +123,19 @@ function hg.AdminTools:SendNet(strFunc,tArgs,entPly)
     end
 end
 
-function hg.AdminTools:Notify( str )
-    hg.AdminTools:SendNet( "Notify", { str } )
+function zc.AdminTools:Notify( str )
+    zc.AdminTools:SendNet( "Notify", { str } )
 end
 
-function hg.AdminTools:Timer( str, time )
-    hg.AdminTools:SendNet( "Timer", { str, CurTime() + time } )
+function zc.AdminTools:Timer( str, time )
+    zc.AdminTools:SendNet( "Timer", { str, CurTime() + time } )
 end
 
-function hg.AdminTools:Point( str, vec )
-    hg.AdminTools:SendNet( "Point", { str, vec } )
+function zc.AdminTools:Point( str, vec )
+    zc.AdminTools:SendNet( "Point", { str, vec } )
 end
 
 concommand.Add("hg_timer",function( ply, _, args )
     if not ply:IsAdmin() then return end
-    hg.AdminTools:Timer( args[2], args[1] )
+    zc.AdminTools:Timer( args[2], args[1] )
 end)

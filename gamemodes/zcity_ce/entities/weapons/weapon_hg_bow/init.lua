@@ -14,7 +14,7 @@ local bashvpang = Angle(-8,0,0)
 function SWEP:PrimaryAttack()
 	if self.CurState == 0.5 then return end
 	local ply = self:GetOwner()
-	if not hg.CanUseLeftHand(ply) or not hg.CanUseRightHand(ply) then return end
+	if not zc.CanUseLeftHand(ply) or not zc.CanUseRightHand(ply) then return end
 
 	if self.CurState == 1 and ply:GetAmmoCount("Arrow") > 0 then
 		self.CurState = 0.5
@@ -22,7 +22,7 @@ function SWEP:PrimaryAttack()
 
 		ply:SetAmmo(ply:GetAmmoCount("Arrow") - 1, "Arrow")
 
-		local tr = hg.eyeTrace(ply)
+		local tr = zc.eyeTrace(ply)
 		local pos, ang = tr.StartPos, ply:EyeAngles()
 		local _, point = util.DistanceToLine(pos, pos, ply:EyePos())
 		local bullet = {}
@@ -34,21 +34,21 @@ function SWEP:PrimaryAttack()
 		bullet.AmmoType = "Arrow"
 		bullet.Attacker = ply.suiciding and Entity(0) or ply
 		--bullet.Shooter = ply
-		bullet.IgnoreEntity = not ply.suiciding and (ply.InVehicle and ply:InVehicle() and ply:GetVehicle() or hg.GetCurrentCharacter(ply)) or nil
+		bullet.IgnoreEntity = not ply.suiciding and (ply.InVehicle and ply:InVehicle() and ply:GetVehicle() or zc.GetCurrentCharacter(ply)) or nil
 		bullet.Penetration = 1
 		--ply:LagCompensation(true)
-		hg.PhysBullet.CreateBullet(bullet)
+		zc.PhysBullet.CreateBullet(bullet)
 		--ply:LagCompensation(false)
 
 		self:SoundEmit("weapons/bow_deerhunter/bow_fire_01.wav", 60, math.random(90, 115), 1)
 		self:SetNextPrimaryFire(CurTime() + 1.1)
-	elseif self.CurState == -1 and not ply:IsSprinting() then --and hg.KeyDown(ply, IN_USE)
+	elseif self.CurState == -1 and not ply:IsSprinting() then --and zc.KeyDown(ply, IN_USE)
 		self.CurState = 0.5
 		self:PlayAnim(ply:GetAmmoCount("Arrow") == 0 and "meleeattack_empty" or "meleeattack")
 		self:SoundEmit("weapons/slam/throw.wav", 50, math.random(95, 105), 1)
 
 		ply:LagCompensation(true)
-		local tr = hg.eyeTrace(ply)
+		local tr = zc.eyeTrace(ply)
 		if IsValid(tr.Entity) or tr.Entity:IsWorld() then
 			local ent = tr.Entity
 			local dmgInfo = DamageInfo()
@@ -93,7 +93,7 @@ SWEP.Holding = 0
 
 function SWEP:ThinkAdd()
 	local ply = self:GetOwner()
-	local tr = hg.eyeTrace(ply)
+	local tr = zc.eyeTrace(ply)
 
 	local wallblock = tr.Fraction <= 0.4
 	if (ply:IsSprinting() or wallblock) and self.CurState == 1 then
@@ -108,8 +108,8 @@ function SWEP:ThinkAdd()
 		self:PlayAnim("deploy_empty")
 	end
 
-	local handscheck = hg.CanUseLeftHand(ply) and hg.CanUseRightHand(ply)
-	if hg.KeyDown(ply, IN_ATTACK2) and not ply:IsSprinting() and not wallblock and handscheck then
+	local handscheck = zc.CanUseLeftHand(ply) and zc.CanUseRightHand(ply)
+	if zc.KeyDown(ply, IN_ATTACK2) and not ply:IsSprinting() and not wallblock and handscheck then
 		if self.CurState == -1 and self.CurState ~= 0.5 then
 			self.CurState = 0.5
 			self:PlayAnim(ply:GetAmmoCount("Arrow") == 0 and "idle_to_aim_empty" or "idle_to_aim")

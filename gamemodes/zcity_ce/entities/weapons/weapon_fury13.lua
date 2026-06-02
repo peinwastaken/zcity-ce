@@ -169,7 +169,7 @@ if SERVER then
 		if not org then return end
 
 		local owner = self:GetOwner()
-		if ent == hg.GetCurrentCharacter(owner) and zc_healanims:GetBool() then
+		if ent == zc.GetCurrentCharacter(owner) and zc_healanims:GetBool() then
 			self:SetHolding(math.min(self:GetHolding() + 4, 100))
 
 			if self:GetHolding() < 100 then return end
@@ -179,7 +179,7 @@ if SERVER then
 		entOwner:EmitSound("snd_jack_hmcd_needleprick.wav", 80, math.random(75, 90))
 
 		if org.noradrenaline >= 0.4 then
-			hg.ExplodeHead(ent)
+			zc.ExplodeHead(ent)
 		end
 
 			org.berserk = org.berserk + 2

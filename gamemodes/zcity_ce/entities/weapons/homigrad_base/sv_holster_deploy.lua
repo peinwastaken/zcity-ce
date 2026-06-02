@@ -73,13 +73,13 @@ local zc_slings = ConVarExists("zc_slings") and GetConVar("zc_slings") or Create
 hook.Add("ZC_OnFakeWeaponSwitch","ZC_SlingDrop",function(ply,oldWeapon,newWeapon)
 	if not zc_slings:GetBool() then return end
 	if oldWeapon == newWeapon then return end
-	if zb.CROUND and zb.CROUND == "hmcd" or gamemod == "sandbox" then
+	if zc.CROUND and zc.CROUND == "hmcd" or gamemod == "sandbox" then
 		local inv = ply:GetNetVar("Inventory")
 
 		if SERVER and not oldWeapon.bigNoDrop and oldWeapon.weaponInvCategory == 1 and not inv["Weapons"]["hg_sling"] then
 			timer.Simple(0,function()
 				if oldWeapon:GetOwner() == ply then
-					hg.drop(ply, oldWeapon, newWeapon)
+					zc.drop(ply, oldWeapon, newWeapon)
 				end
 			end)
 

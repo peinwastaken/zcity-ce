@@ -75,7 +75,7 @@ function SWEP:DrawWorldModel2()
 	WorldModel:SetModelScale(self.ModelScale or 1)
 	
 	if IsValid(owner) then
-		local ent = hg.GetCurrentCharacter(owner)
+		local ent = zc.GetCurrentCharacter(owner)
 		local offsetVec = self.offsetVec
 		local offsetAng = self.offsetAng
 		local boneid = owner:LookupBone(((owner.organism and owner.organism.rarmamputated) or (owner.zmanipstart ~= nil and owner.zmanipseq == "interact" and not owner.organism.larmamputated)) and "ValveBiped.Bip01_L_Hand" or "ValveBiped.Bip01_R_Hand")
@@ -161,7 +161,7 @@ if SERVER then
 		if self.CDEating > CurTime() then return end
 
 		local owner = self:GetOwner()
-		if ent == hg.GetCurrentCharacter(owner) and zc_healanims:GetBool() then
+		if ent == zc.GetCurrentCharacter(owner) and zc_healanims:GetBool() then
 			self:SetHolding(math.min(self:GetHolding() + 10, 100))
 
 			if self:GetHolding() < 100 then

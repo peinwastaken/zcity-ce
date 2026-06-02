@@ -254,16 +254,16 @@ function MODE.DisarmOther(ply, other_ply, aim_ent)
 			ply:PickupWeapon(weapon, false)
 		end
 
-		hg.LightStunPlayer(other_ply)
+		zc.LightStunPlayer(other_ply)
 		timer.Simple(0,function()
-			local rag = hg.GetCurrentCharacter(other_ply)
+			local rag = zc.GetCurrentCharacter(other_ply)
 			if IsValid(rag) and rag ~= other_ply then
 				local bon = rag:LookupBone("ValveBiped.Bip01_Head1")
 				local physnum = rag:TranslateBoneToPhysBone(bon)
 				local phys = rag:GetPhysicsObjectNum(physnum)
 				local dist = 25--phys:GetPos():Distance(ply:EyePos())
 
-				hg.SetCarryEnt2(ply, rag, bon, phys:GetMass(), Vector(-2,0,0), ply:GetAimVector() * dist + ply:EyeAngles():Up() * 5 + ply:EyeAngles():Right() * -5 + ply:GetShootPos(), ply:EyeAngles() + Angle(-90, 90, 0))
+				zc.SetCarryEnt2(ply, rag, bon, phys:GetMass(), Vector(-2,0,0), ply:GetAimVector() * dist + ply:EyeAngles():Up() * 5 + ply:EyeAngles():Right() * -5 + ply:GetShootPos(), ply:EyeAngles() + Angle(-90, 90, 0))
 			end
 		end)
 	end

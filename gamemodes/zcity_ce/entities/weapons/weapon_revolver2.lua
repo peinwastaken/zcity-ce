@@ -80,7 +80,7 @@ if CLIENT then
 	SWEP.FakeReloadEvents = {
 		[0.35] = function( self )
 			if self:Clip1() < 1 then
-				--hg.CreateMag( self, Vector(0,0,-50) )
+				--zc.CreateMag( self, Vector(0,0,-50) )
 				--self:GetWM():ManipulateBoneScale(50, vector_origin)
 				--self:GetWM():ManipulateBoneScale(51, vector_origin)
 				--self:GetWM():ManipulateBoneScale(52, vector_origin)
@@ -413,7 +413,7 @@ function SWEP:Shoot(override)
 			ply.organism.adrenalineAdd = ply.organism.adrenalineAdd + self:Clip1()
 			ply.organism.fearadd = ply.organism.fearadd + 0.5
 			ply:Notify(phrases[math.random(#phrases)], 1, "suicide", nil, nil, clr_notify)
-			hg.achievements.AddPlayerAchievement(ply, "deadlygambling", 1)
+			zc.achievements.AddPlayerAchievement(ply, "deadlygambling", 1)
 		end
 
 		return false

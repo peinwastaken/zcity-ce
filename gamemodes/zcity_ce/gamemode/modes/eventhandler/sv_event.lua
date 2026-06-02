@@ -39,7 +39,7 @@ function MODE:Intermission()
 		ply:SetupTeam(0)
 	end
 
-	local rndpoints = zb.GetMapPoints("RandomSpawns")
+	local rndpoints = zc.GetMapPoints("RandomSpawns")
 	zonepoint = table.Random(rndpoints)
 
 	net.Start("ZC_EventStart")
@@ -61,7 +61,7 @@ function MODE:ShouldRoundEnd()
         local aliveCount = 0
         local eventerCount = 0
 
-        for _, ply in ipairs(zb:CheckAlive(true)) do
+        for _, ply in ipairs(zc:CheckAlive(true)) do
             aliveCount = aliveCount + 1
             if self.EventersList[ply:SteamID()] then
                 eventerCount = eventerCount + 1
@@ -70,12 +70,12 @@ function MODE:ShouldRoundEnd()
 
         return (aliveCount == eventerCount)
     elseif self.EndLogicType == 2 then
-        return (#zb:CheckAlive(true) <= 1)
+        return (#zc:CheckAlive(true) <= 1)
     elseif self.EndLogicType == 3 then
         return false
     end
 
-    return (#zb:CheckAlive(true) <= 1)
+    return (#zc:CheckAlive(true) <= 1)
 end
 
 function MODE:RoundStart()
@@ -108,9 +108,9 @@ function MODE:RoundStart()
 		ply:SetSuppressPickupNotices(false)
 
         if self.EventersList[ply:SteamID()] then
-            zb.GiveRole(ply, "Eventer", Color(50, 200, 50))
+            zc.GiveRole(ply, "Eventer", Color(50, 200, 50))
         else
-            zb.GiveRole(ply, GetGlobalString("ZB_EventRole","Player"), Color(190,15,15))
+            zc.GiveRole(ply, GetGlobalString("ZB_EventRole","Player"), Color(190,15,15))
         end
 	end
 
@@ -139,8 +139,8 @@ function MODE:RoundThink()
         hook.Run("ZC_BoxThink")
     end
 
-	if (zb.ROUND_START or 0) + 20 < CurTime() then
-		-- radius = (mapsize * math.max(( (zb.ROUND_START + 300) - CurTime()) / 300,0.025))
+	if (zc.ROUND_START or 0) + 20 < CurTime() then
+		-- radius = (mapsize * math.max(( (zc.ROUND_START + 300) - CurTime()) / 300,0.025))
 		-- for _, ent in ents.Iterator() do
 		-- 	if ent:GetPos():Distance( zonepoint and zonepoint.pos or Vector(0,0,0)) > radius then
 		-- 		MakeDissolver( ent, ent:GetPos(), 0 )
@@ -437,8 +437,8 @@ concommand.Add("zb_event_eventer_add", function(ply, _, _, args)
         MODE.EventersList[target:SteamID()] = true
         ply:ChatPrint("Added " .. target:Nick() .. " as an eventer")
 
-        if zb.ROUND_PLAYING then
-            zb.GiveRole(target, "Eventer", Color(50, 200, 50))
+        if zc.ROUND_PLAYING then
+            zc.GiveRole(target, "Eventer", Color(50, 200, 50))
         end
 
         net.Start("ZC_EventParticipantsUpdate")
@@ -459,8 +459,8 @@ concommand.Add("zb_event_eventer_remove", function(ply, _, _, args)
         MODE.EventersList[target:SteamID()] = nil
         ply:ChatPrint("Removed " .. target:Nick() .. " as an eventer")
 
-        if zb.ROUND_PLAYING then
-            zb.GiveRole(target, GetGlobalString("ZB_EventRole","Player"), Color(190,15,15))
+        if zc.ROUND_PLAYING then
+            zc.GiveRole(target, GetGlobalString("ZB_EventRole","Player"), Color(190,15,15))
         end
 
         net.Start("ZC_EventParticipantsUpdate")
@@ -476,7 +476,7 @@ end)
 concommand.Add("zb_event_end", function(ply, _, _, _)
     if not ply:IsAdmin() then return end
 
-    if zb.ROUND_PLAYING then
+    if zc.ROUND_PLAYING then
         MODE:EndRound()
         ply:ChatPrint("Ending the event round...")
     else
@@ -497,7 +497,7 @@ function MODE:EndRound()
 
     timer.Simple(2, function()
         net.Start("ZC_EventEnd")
-        local ent = zb:CheckAlive(true)[1]
+        local ent = zc:CheckAlive(true)[1]
         net.WriteEntity(IsValid(ent) and ent:Alive() and ent or NULL)
         net.Broadcast()
     end)

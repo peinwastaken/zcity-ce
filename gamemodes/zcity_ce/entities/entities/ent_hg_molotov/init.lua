@@ -97,7 +97,7 @@ function ENT:Detonate()
 		end
 	end)
 
-	hg.EmitAISound(SelfPos, 512, 16, 8)
+	zc.EmitAISound(SelfPos, 512, 16, 8)
 
 	--ParticleEffect("pcf_jack_incendiary_ground_sm2",SelfPos,vector_up:Angle())
 

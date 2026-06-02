@@ -13,12 +13,12 @@ if CLIENT then
            end)
 
            timer.Simple(2, function()
-                zb.RemoveFade()
+                zc.RemoveFade()
            end)
         end)
     end)
 
-    function zb.RemoveFade()
+    function zc.RemoveFade()
         hook.Remove("RenderScreenspaceEffects", "ZC_ScreenFade")
     end
 end

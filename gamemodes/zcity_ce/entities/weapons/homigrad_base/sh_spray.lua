@@ -36,7 +36,7 @@ SWEP.weaponSway = Angle(0,0,0)
 local zc_coolcamera = ConVarExists("zc_coolcamera") and GetConVar("zc_coolcamera") or CreateConVar("zc_coolcamera", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Cool camera movement", 0, 1)
 
 function SWEP:PrimarySpread()
-	self.Primary.Force2 = (hg.ammotypeshuy[self.Primary.Ammo] and hg.ammotypeshuy[self.Primary.Ammo].BulletSettings and hg.ammotypeshuy[self.Primary.Ammo].BulletSettings.Force) or self.Primary.Force
+	self.Primary.Force2 = (zc.ammotypeshuy[self.Primary.Ammo] and zc.ammotypeshuy[self.Primary.Ammo].BulletSettings and zc.ammotypeshuy[self.Primary.Ammo].BulletSettings.Force) or self.Primary.Force
 	self:SetLastShootTime(CurTime())
 	self.lastShoot = RealTime()--SysTime()
 
@@ -66,7 +66,7 @@ function SWEP:PrimarySpread()
 		mul = mul * ((owner.posture == 7 or owner.posture == 8 or owner.holdingWeapon) and 2 or 1)
 		mul = mul * self.RecoilMul
 		mul = mul * (owner:Crouching() and 0.75 or 1)
-		--mul = mul * (hg.IsOnGround(hg.GetCurrentCharacter(owner)) and 1 or 5)
+		--mul = mul * (zc.IsOnGround(zc.GetCurrentCharacter(owner)) and 1 or 5)
 		mul = mul * (self:IsResting() and 0.1 or 1)
 
 		local angRand = AngleRand(0.03, 0.05)
@@ -94,7 +94,7 @@ function SWEP:PrimarySpread()
 			angrand2[2] = math.Clamp(angrand2[2],-1,1)
 			angrand2[3] = -angrand2[2] * 1
 			local mulhuy = GetGlobalBool("FullRealismMode",false) and 10 or 1
-			mul = mul * (self.attachments and self.attachments.grip and not table.IsEmpty(self.attachments.grip) and hg.attachments.grip[self.attachments.grip[1]].recoilReduction or 1)
+			mul = mul * (self.attachments and self.attachments.grip and not table.IsEmpty(self.attachments.grip) and zc.attachments.grip[self.attachments.grip[1]].recoilReduction or 1)
 
 			local huyang = angrand2 * mul / 2 * mulhuy
 			huyang[3] = 0
@@ -169,7 +169,7 @@ end
 
 function SWEP:Step_SprayVel(dtime)
 	self.EyeSprayVel = self.EyeSprayVel or Angle(0, 0, 0)
-	self.EyeSprayVel = self.EyeSprayVel - self.EyeSprayVel * hg.lerpFrameTime2(0.95,dtime)--self.EyeSpray * 0.04
+	self.EyeSprayVel = self.EyeSprayVel - self.EyeSprayVel * zc.lerpFrameTime2(0.95,dtime)--self.EyeSpray * 0.04
 	self:ApplyEyeSpray(self.EyeSprayVel)
 end
 
@@ -188,7 +188,7 @@ function SWEP:Step_Spray(time,dtime)
 	local eyeang = owner:EyeAngles()
 
 	owner:SetEyeAngles(eyeang + (eyeSpray * (eyeang.z == 180 and -1 or 1)))
-	eyeSpray:Set(LerpAngle(hg.lerpFrameTime2(0.1,dtime), eyeSpray, angZero))
+	eyeSpray:Set(LerpAngle(zc.lerpFrameTime2(0.1,dtime), eyeSpray, angZero))
 end
 
 --[[else

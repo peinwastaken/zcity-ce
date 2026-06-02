@@ -1,5 +1,4 @@
-zb = zb or {}
-hg = hg or {}
+zc = zc or {}
 lply = lply or NULL
 
 hook.Add("InitPostEntity", "ZC_SetLocalPlayerGlobal", function()
@@ -18,10 +17,10 @@ if not ConVarExists("zc_newspectate") then
 end
 
 function CurrentRound()
-	return zb.modes[zb.CROUND]
+	return zc.modes[zc.CROUND]
 end
 
-zb.ROUND_STATE = 0
+zc.ROUND_STATE = 0
 --0 = players can join, 1 = round is active, 2 = endround
 spect,prevspect,viewmode = nil,nil,1
 local hullscale = Vector(0,0,0)
@@ -41,27 +40,27 @@ net.Receive("ZC_SpectatePlayer", function(len)
 	end)
 end)
 
-zb.ROUND_TIME = zb.ROUND_TIME or 400
-zb.ROUND_START = zb.ROUND_START or CurTime()
-zb.ROUND_BEGIN = zb.ROUND_BEGIN or CurTime() + 5
+zc.ROUND_TIME = zc.ROUND_TIME or 400
+zc.ROUND_START = zc.ROUND_START or CurTime()
+zc.ROUND_BEGIN = zc.ROUND_BEGIN or CurTime() + 5
 
 net.Receive("ZC_RoundTimeUpdate",function()
 	local time = net.ReadFloat()
 	local time2 = net.ReadFloat()
 	local time3 = net.ReadFloat()
 
-	zb.ROUND_TIME = time
-	zb.ROUND_START = time2
-	zb.ROUND_BEGIN = time3
+	zc.ROUND_TIME = time
+	zc.ROUND_START = time2
+	zc.ROUND_BEGIN = time3
 end)
 
 local blur = Material("pp/blurscreen")
 local blursettings = {}
 local zc_potatopc
-function hg.DrawBlur(panel, amount, passes, alpha)
+function zc.DrawBlur(panel, amount, passes, alpha)
 	if is3d2d then return end
 	amount = amount or 5
-	zc_potatopc = zc_potatopc or hg.ConVars.potatopc
+	zc_potatopc = zc_potatopc or zc.ConVars.potatopc
 
 	// old blur
 	if(zc_potatopc:GetBool())then
@@ -103,7 +102,7 @@ function hg.DrawBlur(panel, amount, passes, alpha)
 	-- surface.DrawRect(0, 0, panel:GetWide(), panel:GetTall())
 end
 
-BlurBackground = BlurBackground or hg.DrawBlur
+BlurBackground = BlurBackground or zc.DrawBlur
 
 local keydownattack
 local keydownattack2
@@ -177,7 +176,7 @@ hook.Add("ZC_CalculateView", "ZC_DeathSpectateView", function(ply, pos, angles, 
 			lply:SetPos(spect:GetPos())
 		end
 
-		local ent = hg.GetCurrentCharacter(spect)
+		local ent = zc.GetCurrentCharacter(spect)
 		if not IsValid(ent) then return end
 
 		local headBone = ent:LookupBone("ValveBiped.Bip01_Head1") or ent:LookupBone("ValveBiped.Bip01_Spine1") or 1
@@ -261,44 +260,44 @@ hook.Add("ZC_CalculateView", "ZC_DeathSpectateView", function(ply, pos, angles, 
 	end
 end)
 
-zb.fade = zb.fade or 0
+zc.fade = zc.fade or 0
 
 hook.Add("RenderScreenspaceEffects", "ZC_FadeScreenspace", function()
-	if zb.fade > 0 then
-		zb.fade = math.Approach(zb.fade, 0, FrameTime() * 1)
+	if zc.fade > 0 then
+		zc.fade = math.Approach(zc.fade, 0, FrameTime() * 1)
 
-		surface.SetDrawColor(0, 0, 0, 255 * math.min(zb.fade, 1))
+		surface.SetDrawColor(0, 0, 0, 255 * math.min(zc.fade, 1))
 		surface.DrawRect(-1, -1, ScrW() + 1, ScrH() + 1 )
 	end
 end)
 
-zb.ROUND_STATE = 0
+zc.ROUND_STATE = 0
 net.Receive("ZC_RoundInfo", function()
 	local rnd = net.ReadString()
 
 	hook.Run("ZC_OnRoundInfoCalled", rnd)
 
-	if zb.CROUND ~= rnd then
-		if hg.DynaMusic then
-			hg.DynaMusic:Stop()
+	if zc.CROUND ~= rnd then
+		if zc.DynaMusic then
+			zc.DynaMusic:Stop()
 		end
 	end
 
-	zb.CROUND = rnd
+	zc.CROUND = rnd
 
-	zb.ROUND_STATE = net.ReadInt(4)
+	zc.ROUND_STATE = net.ReadInt(4)
 
-	if zb.ROUND_STATE == 0 then
-		zb.fade = 7
+	if zc.ROUND_STATE == 0 then
+		zc.fade = 7
 	end
 
-	if zb.CROUND ~= "" then
+	if zc.CROUND ~= "" then
 		if CurrentRound() then
-			if zb.ROUND_STATE == 3 then
+			if zc.ROUND_STATE == 3 then
 				if CurrentRound().EndRound then
 					CurrentRound():EndRound()
 				end
-			elseif zb.ROUND_STATE == 1 then
+			elseif zc.ROUND_STATE == 1 then
 				if CurrentRound().RoundStart then
 					CurrentRound():RoundStart()
 				end
@@ -373,31 +372,31 @@ surface.CreateFont("ZB_InterfaceHumongous", {
     antialias = true
 })
 
-hg.playerInfo = hg.playerInfo or {}
+zc.playerInfo = zc.playerInfo or {}
 
 local function addToPlayerInfo(ply, muted, volume)
-	hg.playerInfo[ply:SteamID()] = {muted and true or false, volume}
+	zc.playerInfo[ply:SteamID()] = {muted and true or false, volume}
 
-	local json = util.TableToJSON(hg.playerInfo)
+	local json = util.TableToJSON(zc.playerInfo)
 	file.Write("zcity_muted.txt", json)
 
 	if file.Exists("zcity_muted.txt", "DATA") then
 		local json = file.Read("zcity_muted.txt", "DATA")
 
 		if json then
-			hg.playerInfo = util.JSONToTable(json)
+			zc.playerInfo = util.JSONToTable(json)
 		end
 	end
 
-	//PrintTable(hg.playerInfo)
+	//PrintTable(zc.playerInfo)
 end
 
 gameevent.Listen("player_connect")
 hook.Add("player_connect", "ZC_ShowPlayerConnectMessage", function(data)
 	local ply = Player(data.userid)
-	if IsValid(ply) and ply.SetMuted and hg.playerInfo and hg.playerInfo[data.networkid] then
-		ply:SetMuted(hg.playerInfo[data.networkid][1])
-		ply:SetVoiceVolumeScale(hg.playerInfo[data.networkid][2])
+	if IsValid(ply) and ply.SetMuted and zc.playerInfo and zc.playerInfo[data.networkid] then
+		ply:SetMuted(zc.playerInfo[data.networkid][1])
+		ply:SetVoiceVolumeScale(zc.playerInfo[data.networkid][2])
 	end
 end)
 
@@ -406,21 +405,21 @@ hook.Add("InitPostEntity", "ZC_LoadMutedPlayers", function()
 		local json = file.Read("zcity_muted.txt", "DATA")
 
 		if json then
-			hg.playerInfo = util.JSONToTable(json)
+			zc.playerInfo = util.JSONToTable(json)
 		end
 
-		if hg.playerInfo then
+		if zc.playerInfo then
 			for _, ply in player.Iterator() do
-				if not istable(hg.playerInfo[ply:SteamID()]) then
-					local muted = hg.playerInfo[ply:SteamID()]
-					hg.playerInfo[ply:SteamID()] = {}
-					hg.playerInfo[ply:SteamID()][1] = muted
-					hg.playerInfo[ply:SteamID()][2] = 1
+				if not istable(zc.playerInfo[ply:SteamID()]) then
+					local muted = zc.playerInfo[ply:SteamID()]
+					zc.playerInfo[ply:SteamID()] = {}
+					zc.playerInfo[ply:SteamID()][1] = muted
+					zc.playerInfo[ply:SteamID()][2] = 1
 				end//compatibility with old json
 
-				if hg.playerInfo[ply:SteamID()] then
-					ply:SetMuted(hg.playerInfo[ply:SteamID()][1])
-					ply:SetVoiceVolumeScale(hg.playerInfo[ply:SteamID()][2])
+				if zc.playerInfo[ply:SteamID()] then
+					ply:SetMuted(zc.playerInfo[ply:SteamID()][1])
+					ply:SetVoiceVolumeScale(zc.playerInfo[ply:SteamID()][2])
 				end
 			end
 		end
@@ -435,21 +434,21 @@ local colSpect1 = Color(75,75,75,255)
 local colSpect2 = Color(85,85,85,255)
 
 
-hg.muteall = false
-hg.mutespect = false
+zc.muteall = false
+zc.mutespect = false
 
 local function OpenPlayerSoundSettings(selfa, ply)
 	local Menu = DermaMenu()
 
-	if not hg.playerInfo[ply:SteamID()] or not istable(hg.playerInfo[ply:SteamID()]) then addToPlayerInfo(ply, false, 1) end
+	if not zc.playerInfo[ply:SteamID()] or not istable(zc.playerInfo[ply:SteamID()]) then addToPlayerInfo(ply, false, 1) end
 
 	local mute = Menu:AddOption( "Mute", function(self)
-		if hg.muteall || hg.mutespect then return end
+		if zc.muteall || zc.mutespect then return end
 
 		self:SetChecked(not ply:IsMuted())
 		ply:SetMuted( not ply:IsMuted() )
 		selfa:SetImage(not ply:IsMuted() && "icon16/sound.png" || "icon16/sound_mute.png")
-		addToPlayerInfo(ply, ply:IsMuted(), hg.playerInfo[ply:SteamID()][2])
+		addToPlayerInfo(ply, ply:IsMuted(), zc.playerInfo[ply:SteamID()][2])
 	end ) -- get your stupid one line ass outta here
 
 	mute:SetIsCheckable( true )
@@ -457,13 +456,13 @@ local function OpenPlayerSoundSettings(selfa, ply)
 	local volumeSlider = vgui.Create("DSlider", Menu)
 	volumeSlider:SetLockY( 0.5 )
 	volumeSlider:SetTrapInside( true )
-	volumeSlider:SetSlideX(hg.playerInfo[ply:SteamID()][2])
+	volumeSlider:SetSlideX(zc.playerInfo[ply:SteamID()][2])
 	volumeSlider.OnValueChanged = function(self, x, y)
 		if not IsValid(ply) then return end
-		if hg.muteall or (hg.mutespect && !ply:Alive()) then return end
-		hg.playerInfo[ply:SteamID()][2] = x
-		ply:SetVoiceVolumeScale(hg.playerInfo[ply:SteamID()][2])
-		addToPlayerInfo(ply, ply:IsMuted(), hg.playerInfo[ply:SteamID()][2])
+		if zc.muteall or (zc.mutespect && !ply:Alive()) then return end
+		zc.playerInfo[ply:SteamID()][2] = x
+		ply:SetVoiceVolumeScale(zc.playerInfo[ply:SteamID()][2])
+		addToPlayerInfo(ply, ply:IsMuted(), zc.playerInfo[ply:SteamID()][2])
 	end
 
 	function volumeSlider:Paint(w,h)
@@ -480,10 +479,10 @@ end
 
 
 hook.Add("ZC_PlayerGetUp", "ZC_ClearSpectatorOnGetup", function(ply)
-	if not hg.mutespect then return end
+	if not zc.mutespect then return end
 
 	//ply:SetMuted(ply.oldmutedspect)
-	ply:SetVoiceVolumeScale(!hg.muteall and (hg.playerInfo[ply:SteamID()] and hg.playerInfo[ply:SteamID()][2] or 1) or 0)
+	ply:SetVoiceVolumeScale(!zc.muteall and (zc.playerInfo[ply:SteamID()] and zc.playerInfo[ply:SteamID()][2] or 1) or 0)
 	//ply.oldmutedspect = nil
 
 	//if IsValid(ply.soundButton) then
@@ -492,10 +491,10 @@ hook.Add("ZC_PlayerGetUp", "ZC_ClearSpectatorOnGetup", function(ply)
 end)
 
 hook.Add("ZC_PlayerDeath", "ZC_FixSpectatorVoiceMute", function(ply)
-	if not hg.mutespect then return end
+	if not zc.mutespect then return end
 
 	//ply.oldmutedspect = ply:IsMuted()
-	//ply:SetMuted(hg.mutespect)
+	//ply:SetMuted(zc.mutespect)
 	ply:SetVoiceVolumeScale(0)
 	//if IsValid(ply.soundButton) then
 		//ply.soundButton:SetImage(not ply:IsMuted() && "icon16/sound.png" || "icon16/sound_mute.png")
@@ -532,15 +531,15 @@ function GM:ScoreboardShow()
 	muteallbut:SetText("Mute all")
 
 	muteallbut.Paint = function(self,w,h)
-		surface.SetDrawColor( not hg.muteall and 255 or 0, hg.muteall and 255 or 0, 0, 128)
+		surface.SetDrawColor( not zc.muteall and 255 or 0, zc.muteall and 255 or 0, 0, 128)
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 	end
 
 	muteallbut.DoClick = function(self,w,h)
-		hg.muteall = not hg.muteall
+		zc.muteall = not zc.muteall
 
 		for _,ply in player.Iterator() do
-			if hg.muteall then
+			if zc.muteall then
 				//ply.oldmutedspect = ply:IsMuted()
 
 				ply:SetVoiceVolumeScale(0)
@@ -548,7 +547,7 @@ function GM:ScoreboardShow()
 					//ply.soundButton:SetImage(not ply:IsMuted() && "icon16/sound.png" || "icon16/sound_mute.png")
 				//end
 			else
-				ply:SetVoiceVolumeScale((!hg.mutespect or ply:Alive()) and (hg.playerInfo[ply:SteamID()] and hg.playerInfo[ply:SteamID()][2] or 1) or 0)
+				ply:SetVoiceVolumeScale((!zc.mutespect or ply:Alive()) and (zc.playerInfo[ply:SteamID()] and zc.playerInfo[ply:SteamID()][2] or 1) or 0)
 				//ply:SetMuted(ply.oldmuted)
 				//if IsValid(ply.soundButton) then
 					//ply.soundButton:SetImage(not ply:IsMuted() && "icon16/sound.png" || "icon16/sound_mute.png")
@@ -565,17 +564,17 @@ function GM:ScoreboardShow()
 	mutespectbut:SetText("Mute spectators")
 
 	mutespectbut.Paint = function(self,w,h)
-		surface.SetDrawColor( not hg.mutespect and 255 or 0, hg.mutespect and 255 or 0, 0, 128)
+		surface.SetDrawColor( not zc.mutespect and 255 or 0, zc.mutespect and 255 or 0, 0, 128)
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 	end
 
 	mutespectbut.DoClick = function(self,w,h)
-		hg.mutespect = not hg.mutespect
+		zc.mutespect = not zc.mutespect
 
 		for _,ply in player.Iterator() do
 			if ply:Alive() then continue end
 
-			if hg.mutespect then
+			if zc.mutespect then
 				ply:SetVoiceVolumeScale(0)
 				//ply.oldmutedspect = ply:IsMuted()
 
@@ -584,7 +583,7 @@ function GM:ScoreboardShow()
 					//ply.soundButton:SetImage(not ply:IsMuted() && "icon16/sound.png" || "icon16/sound_mute.png")
 				//end
 			else
-				ply:SetVoiceVolumeScale(!hg.muteall and (hg.playerInfo[ply:SteamID()] and hg.playerInfo[ply:SteamID()][2] or 1) or 0)
+				ply:SetVoiceVolumeScale(!zc.muteall and (zc.playerInfo[ply:SteamID()] and zc.playerInfo[ply:SteamID()][2] or 1) or 0)
 				//ply:SetMuted(ply.oldmutedspect)
 				//if IsValid(ply.soundButton) then
 					//ply.soundButton:SetImage(not ply:IsMuted() && "icon16/sound.png" || "icon16/sound_mute.png")
@@ -608,7 +607,7 @@ function GM:ScoreboardShow()
 
 		surface.SetFont( "ZB_InterfaceSmall" )
 		surface.SetTextColor(col.r,col.g,col.b,col.a*0.1)
-		local txt = zb.locale.GetLocalized("menu/version", hg.Version)
+		local txt = zc.locale.GetLocalized("menu/version", zc.Version)
 		local _, lengthY = surface.GetTextSize(txt)
 		surface.SetTextPos(w*0.01,h - lengthY - h*0.01)
 		surface.DrawText(txt)
@@ -748,7 +747,7 @@ function GM:ScoreboardShow()
 			--if ply:IsBot() then chat.AddText(Color(255,0,0), "no, you can't") return end
 			local Menu = DermaMenu()
 			Menu:AddOption( "Account", function(self)
-				zb.Experience.AccountMenu( ply )
+				zc.Experience.AccountMenu( ply )
 			end)
 			Menu:AddOption( "Copy SteamID", function(self)
 				SetClipboardText(ply:SteamID())
@@ -824,15 +823,15 @@ function GM:ScoreboardShow()
 			--if ply:IsBot() then chat.AddText(Color(255,0,0), "no, you can't") return end
 			local Menu = DermaMenu()
 			Menu:AddOption( "Account", function(self)
-				zb.Experience.AccountMenu( ply )
+				zc.Experience.AccountMenu( ply )
 			end)
 			Menu:AddOption( "Copy SteamID", function(self)
 				SetClipboardText(ply:SteamID())
 			end)
 			--Menu:AddOption( "Medal", function(self)
-			--	zb.Experience.OpenMenu(ply)
+			--	zc.Experience.OpenMenu(ply)
 			--	timer.Simple( .1, function()
-			--		zb.Experience.Menu(ply)
+			--		zc.Experience.Menu(ply)
 			--	end)
 			--end)
 

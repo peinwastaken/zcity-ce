@@ -136,11 +136,11 @@ function CLASS.On(self, data)
 	end
 
     if IsValid(self.FakeRagdoll) then
-        hg.FakeUp(self, nil, nil, true)
+        zc.FakeUp(self, nil, nil, true)
     end
 
     ApplyAppearance(self,nil,nil,nil,true)
-    local Appearance = self.CurAppearance or hg.Appearance.GetRandomAppearance()
+    local Appearance = self.CurAppearance or zc.Appearance.GetRandomAppearance()
     Appearance.AAttachments = ""
     Appearance.AColthes = ""
 
@@ -173,7 +173,7 @@ function CLASS.On(self, data)
 
     local callsign = table.Random(callsigns) .. "-" .. math.random(1,25)
 
-    if zb.GiveRole then zb.GiveRole(self, "Officer", Color(89,230,255)) end
+    if zc.GiveRole then zc.GiveRole(self, "Officer", Color(89,230,255)) end
     self:SetNWString("PlayerName", callsign)
 
     for _,v in ipairs(ents.FindByClass("npc_*")) do

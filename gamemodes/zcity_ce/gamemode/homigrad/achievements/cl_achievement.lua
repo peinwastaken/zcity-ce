@@ -1,17 +1,17 @@
-hg.achievements = hg.achievements or {}
-hg.achievements.achievements_data = hg.achievements.achievements_data or {}
-hg.achievements.achievements_data.player_achievements = hg.achievements.achievements_data.player_achievements or {}
-hg.achievements.achievements_data.created_achevements = {}
+zc.achievements = zc.achievements or {}
+zc.achievements.achievements_data = zc.achievements.achievements_data or {}
+zc.achievements.achievements_data.player_achievements = zc.achievements.achievements_data.player_achievements or {}
+zc.achievements.achievements_data.created_achevements = {}
 
-hg.achievements.MenuPanel = hg.achievements.MenuPanel or nil
+zc.achievements.MenuPanel = zc.achievements.MenuPanel or nil
 
 local curent_panel_ach
 concommand.Add("hg_achievements",function()
-    --hg.DrawAchievmentsMenu() doesn't work as for 15.02.2026 | from bogler with love 🥴
+    --zc.DrawAchievmentsMenu() doesn't work as for 15.02.2026 | from bogler with love 🥴
     print('use esc menu')
 end)
 
-BlurBackground = BlurBackground or hg.DrawBlur
+BlurBackground = BlurBackground or zc.DrawBlur
 local gradient_u = Material("vgui/gradient-u")
 gradient_r = Material("vgui/gradient-r")
 
@@ -26,7 +26,7 @@ local function createButton_2(frame, ach, text, func, y)
 
     ach.img = isstring(ach.img) and Material(ach.img) or ach.img
 
-    local localach = hg.achievements.GetLocalAchievements()
+    local localach = zc.achievements.GetLocalAchievements()
     markup.Parse("<font=HomigradFontMedium>"..ach.description.."<font>", 500 )
 
     function button:Paint(w,h)
@@ -71,12 +71,12 @@ end
 
 local gradient_d = Material("vgui/gradient-d")
 
-function hg.DrawAchievmentsMenu(ParentPanel)
-    hg.achievements.LoadAchievements()
+function zc.DrawAchievmentsMenu(ParentPanel)
+    zc.achievements.LoadAchievements()
 
-    if IsValid(hg.achievements.MenuPanel) then
-        hg.achievements.MenuPanel:Remove()
-        hg.achievements.MenuPanel = nil
+    if IsValid(zc.achievements.MenuPanel) then
+        zc.achievements.MenuPanel:Remove()
+        zc.achievements.MenuPanel = nil
     end
 
     if ParentPanel then
@@ -102,7 +102,7 @@ function hg.DrawAchievmentsMenu(ParentPanel)
         end
 
     end
-    hg.DrawBlur(ParentPanel, 5)
+    zc.DrawBlur(ParentPanel, 5)
     ParentPanel:AlphaTo(255,0.15,0)
     local frame = vgui.Create('DPanel', ParentPanel)
     frame:SetSize(ParentPanel:GetWide()/2.5, ScreenScale(22)*8.25+ScreenScale(2.5))
@@ -110,7 +110,7 @@ function hg.DrawAchievmentsMenu(ParentPanel)
     frame.Paint = function()
     end
 
-    hg.achievements.MenuPanel = frame
+    zc.achievements.MenuPanel = frame
 
     local scroll = vgui.Create("DScrollPanel",frame)
     scroll:SetSize(frame:GetWide(),frame:GetTall())
@@ -134,7 +134,7 @@ function hg.DrawAchievmentsMenu(ParentPanel)
         scroll:Clear()
 
         local y = 0
-        for _,ach in pairs(hg.achievements.achievements_data.created_achevements) do
+        for _,ach in pairs(zc.achievements.achievements_data.created_achevements) do
             local bbb = createButton_2(scroll, ach, ach.name, function() end,y)
             y = bbb:GetTall() + y + 3
             scroll:AddItem(bbb)
@@ -143,7 +143,7 @@ function hg.DrawAchievmentsMenu(ParentPanel)
 
     end
     local y = 0
-    for _,ach in pairs(hg.achievements.achievements_data.created_achevements) do
+    for _,ach in pairs(zc.achievements.achievements_data.created_achevements) do
         local bbb = createButton_2(scroll, ach, ach.name, function() end,y)
         y = bbb:GetTall() + y + 3
         scroll:AddItem(bbb)
@@ -199,7 +199,7 @@ function hg.DrawAchievmentsMenu(ParentPanel)
 end
 
 local time_wait = 0
-function hg.achievements.LoadAchievements()
+function zc.achievements.LoadAchievements()
     if time_wait > CurTime() then return end
     time_wait = CurTime() + 2
 
@@ -207,21 +207,21 @@ function hg.achievements.LoadAchievements()
     net.SendToServer()
 end
 
-function hg.achievements.GetLocalAchievements()
-    return hg.achievements.achievements_data.player_achievements[tostring(LocalPlayer():SteamID())]
+function zc.achievements.GetLocalAchievements()
+    return zc.achievements.achievements_data.player_achievements[tostring(LocalPlayer():SteamID())]
 end
 
 net.Receive("ZC_AchievementRequest",function()
-    hg.achievements.achievements_data.created_achevements = net.ReadTable()
-    hg.achievements.achievements_data.player_achievements[tostring(LocalPlayer():SteamID())] = net.ReadTable()
+    zc.achievements.achievements_data.created_achevements = net.ReadTable()
+    zc.achievements.achievements_data.player_achievements[tostring(LocalPlayer():SteamID())] = net.ReadTable()
 
-    if IsValid(hg.achievements.MenuPanel) then
-        hg.achievements.MenuPanel:UpdateValues()
+    if IsValid(zc.achievements.MenuPanel) then
+        zc.achievements.MenuPanel:UpdateValues()
     end
 end)
 
-hg.achievements.NewAchievements = hg.achievements.NewAchievements or {}
-local AchTable = hg.achievements.NewAchievements
+zc.achievements.NewAchievements = zc.achievements.NewAchievements or {}
+local AchTable = zc.achievements.NewAchievements
 net.Receive("ZC_AchievementUnlocked",function()
     local Ach = {time = CurTime() + 7.5,name = net.ReadString(),img = net.ReadString()}
     table.insert(AchTable,1,Ach)

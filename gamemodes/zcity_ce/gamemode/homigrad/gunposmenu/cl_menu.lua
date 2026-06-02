@@ -1,4 +1,4 @@
-BlurBackground = BlurBackground or hg.DrawBlur
+BlurBackground = BlurBackground or zc.DrawBlur
 
 local function CreateOptionsMenu()
     local sizeX,sizeY = ScrW() / 3.2 ,ScrH() / 2.2

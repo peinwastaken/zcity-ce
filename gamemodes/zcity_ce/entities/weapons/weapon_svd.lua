@@ -56,7 +56,7 @@ if CLIENT then
 		end,
 		[0.36] = function( self, timeMul )
 			if self:Clip1() < 1 then
-				hg.CreateMag( self, Vector(0,0,-50), "111111")
+				zc.CreateMag( self, Vector(0,0,-50), "111111")
 				self:GetWM():ManipulateBoneScale(67, vecPochtiZero)
 
 			end

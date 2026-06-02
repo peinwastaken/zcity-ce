@@ -7,9 +7,9 @@ local zc_deathmatch_nozone = ConVarExists("zc_deathmatch_nozone") and GetConVar(
 net.Receive("ZC_DeathmatchStart",function()
 	roundend = false
 
-	hg.DynaMusic:Start( "mirrors_edge" )
+	zc.DynaMusic:Start( "mirrors_edge" )
 
-	zb.RemoveFade()
+	zc.RemoveFade()
 
 	ZonePos = net.ReadVector()
 	zonedistance = net.ReadFloat()
@@ -17,7 +17,7 @@ net.Receive("ZC_DeathmatchStart",function()
     surface.PlaySound("snd_jack_hmcd_deathmatch.mp3")
 	sound.PlayFile( "sound/ambient/energy/force_field_loop1.wav", "noblock", function( station, errCode, errStr )
 		if ( IsValid( station ) ) then
-			zb.SoundStation = station
+			zc.SoundStation = station
 
 			station:Play()
 			station:EnableLooping( true )
@@ -28,7 +28,7 @@ end)
 
 hook.Add("Think", "ZC_ZoneSoundThink", function()
 	if CurrentRound() and CurrentRound().name ~= "dm" then return end
-	local station = zb.SoundStation
+	local station = zc.SoundStation
 	if not IsValid(station) then return end
 	if zc_deathmatch_nozone:GetBool() then return end
 	local radius = MODE.GetZoneRadius()
@@ -59,16 +59,16 @@ function MODE:PostDrawTranslucentRenderables(bDepth, bSkybox, isDraw3DSkybox)
 end
 
 function MODE:RenderScreenspaceEffects()
-    if zb.ROUND_START + 7.5 < CurTime() then return end
+    if zc.ROUND_START + 7.5 < CurTime() then return end
 
-    local fade = math.Clamp(zb.ROUND_START + 7.5 - CurTime(),0,1)
+    local fade = math.Clamp(zc.ROUND_START + 7.5 - CurTime(),0,1)
 
     surface.SetDrawColor(0,0,0,255 * fade)
     surface.DrawRect(-1,-1,ScrW() + 1,ScrH() + 1)
 end
 
 function MODE:HUDPaint()
-	local safeEndTime = zb.ROUND_START + self.SpawnProtectionTime
+	local safeEndTime = zc.ROUND_START + self.SpawnProtectionTime
 	if safeEndTime > CurTime() then
 		draw.SimpleText( string.FormattedTime(safeEndTime - CurTime(), "%02i:%02i:%02i"	), "ZB_HomicideMedium", sw * 0.5, sh * 0.75, Color(255,55,55), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	else
@@ -86,7 +86,7 @@ function MODE:HUDPaint()
 		--		return
 		--	end
 --
-		--	local vol = math.Clamp((CurTime() - (zb.ROUND_START + 22)),0.1, ply:Alive() and ply.organism.unconscious and 0.1 or 0.2 + math.min((ply.organism.adrenaline or 0) * 25,2))
+		--	local vol = math.Clamp((CurTime() - (zc.ROUND_START + 22)),0.1, ply:Alive() and ply.organism.unconscious and 0.1 or 0.2 + math.min((ply.organism.adrenaline or 0) * 25,2))
 		--	if roundend then
 		--		vol =  math.Clamp((roundend - CurTime() + 1) / 2,0.1, ply:Alive() and ply.organism.unconscious and 0.1 or 0.2 + math.min((ply.organism.adrenaline or 0) * 25,2))
 		--	end
@@ -96,9 +96,9 @@ function MODE:HUDPaint()
 	end
 
 	if not lply:Alive() then return end
-    if zb.ROUND_START + 8.5 < CurTime() then return end
-	zb.RemoveFade()
-    local fade = math.Clamp(zb.ROUND_START + 8 - CurTime(),0,1)
+    if zc.ROUND_START + 8.5 < CurTime() then return end
+	zc.RemoveFade()
+    local fade = math.Clamp(zc.ROUND_START + 8 - CurTime(),0,1)
 
     draw.SimpleText("Homicide | DeathMatch", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     local Rolename = fighter.name
@@ -130,7 +130,7 @@ net.Receive("ZC_DeathmatchEnd",function()
 		wonply = ent
 	end
 
-	zb.SoundStation = nil
+	zc.SoundStation = nil
 	roundend = CurTime()
 
 	if(MODE.SoundStation and MODE.SoundStation:IsValid())then
@@ -153,7 +153,7 @@ local col = Color(255,255,255,255)
 local colSpect1 = Color(75,75,75,255)
 local colSpect2 = Color(255,255,255)
 
-BlurBackground = BlurBackground or hg.DrawBlur
+BlurBackground = BlurBackground or zc.DrawBlur
 
 if IsValid(hmcdEndMenu) then
     hmcdEndMenu:Remove()

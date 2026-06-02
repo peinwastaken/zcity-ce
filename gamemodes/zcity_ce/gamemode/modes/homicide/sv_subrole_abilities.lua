@@ -28,8 +28,8 @@ hook.Add("PlayerPostThink", "ZC_SubRolesAbilities", function(ply)
 			if(ply.SubRole == "traitor_infiltrator" or ply.SubRole == "traitor_infiltrator_soe")then
 				if(ply:KeyDown(IN_WALK))then
 					if(ply:KeyPressed(IN_RELOAD))then
-						local aim_ent, other_ply = hg.eyeTrace(ply,85).Entity
-						other_ply = hg.RagdollOwner(aim_ent) or aim_ent
+						local aim_ent, other_ply = zc.eyeTrace(ply,85).Entity
+						other_ply = zc.RagdollOwner(aim_ent) or aim_ent
 
 						if(IsValid(aim_ent) and aim_ent:IsRagdoll())then	--; REDO
 							local other_appearance = aim_ent.CurAppearance
@@ -45,10 +45,10 @@ hook.Add("PlayerPostThink", "ZC_SubRolesAbilities", function(ply)
 							other_appearance.AFacemaps = aFace1
 							your_appearance.AFacemaps = aFace2
 
-							hg.Appearance.ForceApplyAppearance(ply, other_appearance, true)
-							local char = hg.GetCurrentCharacter(ply)
+							zc.Appearance.ForceApplyAppearance(ply, other_appearance, true)
+							local char = zc.GetCurrentCharacter(ply)
 							if char:IsRagdoll() then
-								hg.Appearance.ForceApplyAppearance(char, other_appearance, true)
+								zc.Appearance.ForceApplyAppearance(char, other_appearance, true)
 							end
 							ply:EmitSound("snd_jack_hmcd_disguise.wav",35,math.random(90,110),0.5)
 
@@ -56,10 +56,10 @@ hook.Add("PlayerPostThink", "ZC_SubRolesAbilities", function(ply)
 							--duplicator.DoGeneric(aim_ent, duplicator_data)
 							aim_ent.CurAppearance = your_appearance
 
-							hg.Appearance.ForceApplyAppearance(aim_ent, your_appearance, true)
+							zc.Appearance.ForceApplyAppearance(aim_ent, your_appearance, true)
 
 							if other_ply:IsPlayer() and other_ply:Alive() then
-								hg.Appearance.ForceApplyAppearance(other_ply, your_appearance, true)
+								zc.Appearance.ForceApplyAppearance(other_ply, your_appearance, true)
 							end
 						end
 					end

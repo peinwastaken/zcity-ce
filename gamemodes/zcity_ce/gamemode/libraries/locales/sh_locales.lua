@@ -5,7 +5,7 @@ local languageCvar = CLIENT and CreateClientConVar("zc_language", "en", true, fa
 }
 
 local locale = {}
-zb.locale = locale or {}
+zc.locale = locale or {}
 
 local LOCALE_PATH = "gamemodes/zcity_ce/gamemode/locales"
 
@@ -25,8 +25,8 @@ local LOCALE_PATH = "gamemodes/zcity_ce/gamemode/locales"
 */
 
 /*
-  zb.locale.GetLocalized("locale_key1") -> "hi, im a locale entry"
-  zb.locale.GetLocalized("locale_key_missing") -> "locale_key_missing"
+  zc.locale.GetLocalized("locale_key1") -> "hi, im a locale entry"
+  zc.locale.GetLocalized("locale_key_missing") -> "locale_key_missing"
 */
 
 locale.locales = {}

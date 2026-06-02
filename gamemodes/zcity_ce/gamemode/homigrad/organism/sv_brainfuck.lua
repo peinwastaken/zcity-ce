@@ -51,12 +51,12 @@ local fencingLegBones = {
 }
 
 local function getRandomSpasm()
-	local _, stype = hg.WeightedRandomSelect(spasmTypes, 1)
+	local _, stype = zc.WeightedRandomSelect(spasmTypes, 1)
 
 	return stype
 end
 
-hg.getRandomSpasm = getRandomSpasm
+zc.getRandomSpasm = getRandomSpasm
 
 local function applySpasm(rag, stype)
 	if not IsValid(rag) then return end
@@ -72,7 +72,7 @@ local function applySpasm(rag, stype)
 	--rag:EmitSound("physics/body/body_medium_break" .. math_random(2, 4) .. ".wav", 60, math_random(70, 90), 0.4)
 end
 
-hg.applySpasm = applySpasm
+zc.applySpasm = applySpasm
 
 local function processExtend(rag, fade)
 	local force, pulse = rag.spasmForce or FORCE, 0.7 + math_sin(CurTime() * 8) * 0.3
@@ -134,14 +134,14 @@ local function applyFencingToPlayer(ply, org)
 	end
 end
 
-hg.applyFencingToPlayer = applyFencingToPlayer
+zc.applyFencingToPlayer = applyFencingToPlayer
 
 local function processFencing(rag, fade)
 	local org = rag.organism
 	local force = 350 * fade
 	local pulse = 0.85 + math_sin(CurTime() * 4) * 0.15
 
-	if org.spine2 < hg.organism.fake_spine2 and org.spine3 < hg.organism.fake_spine3 then
+	if org.spine2 < zc.organism.fake_spine2 and org.spine3 < zc.organism.fake_spine3 then
 		for i = 1, #fencingArmBones do
 			local d = fencingArmBones[i]
 			local bone, targetBone = rag:LookupBone(d[1]), rag:LookupBone(d[2])
@@ -154,7 +154,7 @@ local function processFencing(rag, fade)
 		end
 	end
 
-	if org.spine2 < hg.organism.fake_spine2 and org.spine3 < hg.organism.fake_spine3 and org.spine1 < hg.organism.fake_spine1 then
+	if org.spine2 < zc.organism.fake_spine2 and org.spine3 < zc.organism.fake_spine3 and org.spine1 < zc.organism.fake_spine1 then
 		for i = 1, #fencingLegBones do
 			local d = fencingLegBones[i]
 			local bone, targetBone = rag:LookupBone(d[1]), rag:LookupBone(d[2])

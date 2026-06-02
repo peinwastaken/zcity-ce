@@ -36,7 +36,7 @@ local IsValid, math_Clamp = IsValid, math.Clamp
 		end
 	end
 
-	function hg.MatchUnfakeToGetUpSequence(ent, ply)
+	function zc.MatchUnfakeToGetUpSequence(ent, ply)
 		for i = 0, ent:GetBoneCount() - 1 do
 			local m2 = ply:GetBoneMatrix(i)
 
@@ -52,7 +52,7 @@ local IsValid, math_Clamp = IsValid, math.Clamp
 		end
 	end
 
-	function hg.SmoothUnfake(ent, ply)
+	function zc.SmoothUnfake(ent, ply)
 		if not ply.gettingup_into_getup then return false end
 
 		local lerpTime = math.max(ply.gettingup_lerp or DEFAULT_GET_UP_LERP_TIME, 0.01)
@@ -92,7 +92,7 @@ local IsValid, math_Clamp = IsValid, math.Clamp
 --\\ DrawPlayerRagdoll
 	local zc_ragdollcombat = ConVarExists("zc_ragdollcombat") and GetConVar("zc_ragdollcombat") or CreateConVar("zc_ragdollcombat", 0, FCVAR_REPLICATED, "Toggle ragdoll combat-like ragdoll mode (walking, running in ragdoll, etc.)", 0, 1)
 
-	function hg.RagdollCombatInUse(ply)
+	function zc.RagdollCombatInUse(ply)
 		return zc_ragdollcombat:GetBool() and IsValid(ply.FakeRagdoll)
 	end
 
@@ -106,7 +106,7 @@ local IsValid, math_Clamp = IsValid, math.Clamp
 	local vector_small = Vector(0.01, 0.01, 0.01)
 	local zc_no_camera_in_cars = CreateConVar("zc_no_camera_in_cars","0",FCVAR_ARCHIVE + FCVAR_REPLICATED, "disables camera in cars", 0, 1)
 	function DrawPlayerRagdoll(ent, ply) --// actually not only ragdoll render but player too
-		if ply.prevragdoll_index != nil and ply.prevragdoll_index != ply.ragdoll_index and ply.ragdoll_index == 0 and hg.GetFakeState and hg.GetFakeState(ply) == ((hg.FAKE_STATE and hg.FAKE_STATE.RESTORING) or 2) then
+		if ply.prevragdoll_index != nil and ply.prevragdoll_index != ply.ragdoll_index and ply.ragdoll_index == 0 and zc.GetFakeState and zc.GetFakeState(ply) == ((zc.FAKE_STATE and zc.FAKE_STATE.RESTORING) or 2) then
 			//print(ply.ragdoll_index, ply.prevragdoll_index, Entity(ply.ragdoll_index))
 
 			ClearSmoothUnfakeCache(ply)
@@ -127,26 +127,26 @@ local IsValid, math_Clamp = IsValid, math.Clamp
 			ply:SetupBones()
 		end
 
-		hg.RenderWeapons(ent, ply)
+		zc.RenderWeapons(ent, ply)
 
 		ent:SetupBones()
 
 		if IsValid(ply.OldRagdoll) and ply.gettingup_into_getup then
-			if not hg.SmoothUnfake(ent, ply) then
+			if not zc.SmoothUnfake(ent, ply) then
 				ClearSmoothUnfakeCache(ply)
-				hg.MatchUnfakeToGetUpSequence(ent, ply)
+				zc.MatchUnfakeToGetUpSequence(ent, ply)
 			end
 		else
 			ClearSmoothUnfakeCache(ply)
 		end
 
-		hg.MainTPIKFunction(ent, ply, wep)
+		zc.MainTPIKFunction(ent, ply, wep)
 
-		if ply:GetNetVar("handcuffed", false) then hg.CuffedAnim(ent, ply) end
+		if ply:GetNetVar("handcuffed", false) then zc.CuffedAnim(ent, ply) end
 		
 		if IsValid(wep) then
-			//if wep.isTPIKBase then hg.RenderTPIKBase(ent, ply, wep) end
-			//if wep.ismelee then hg.RenderMelees(ent, ply, wep) end
+			//if wep.isTPIKBase then zc.RenderTPIKBase(ent, ply, wep) end
+			//if wep.ismelee then zc.RenderMelees(ent, ply, wep) end
 			if wep.DrawWorldModel2 then wep:DrawWorldModel2() end
 		end
 
@@ -156,11 +156,11 @@ local IsValid, math_Clamp = IsValid, math.Clamp
 			RenderArmors(ply, armors, ent)
 		end
 
-		hg.RenderBandages(ent, ply)
+		zc.RenderBandages(ent, ply)
 
-		hg.RenderTourniquets(ent, ply)
+		zc.RenderTourniquets(ent, ply)
 
-		hg.GoreCalc(ent, ply)
+		zc.GoreCalc(ent, ply)
 
 		--local current = ent:GetManipulateBoneScale(lkp)
 		local fountains = GetNetVar("fountains") or {}
@@ -179,13 +179,13 @@ local IsValid, math_Clamp = IsValid, math.Clamp
 			--local _, ang = LocalToWorld(vector_origin, angfuck, vector_origin, mat:GetAngles())
 			--mat:SetAngles(ang)
 
-			hg.bone_apply_matrix(ent, lkp, mat)
+			zc.bone_apply_matrix(ent, lkp, mat)
 		--end
 
-		--hg.CoolGloves(ent, ply, wep)
+		--zc.CoolGloves(ent, ply, wep)
 
-		hg.ProjectilesDraw(ent, ply)
+		zc.ProjectilesDraw(ent, ply)
 
-		if ply:GetNetVar("headcrab") then hg.RenderHeadcrab(ent, ply) end
+		if ply:GetNetVar("headcrab") then zc.RenderHeadcrab(ent, ply) end
 	end
 --//

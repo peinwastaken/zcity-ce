@@ -16,7 +16,7 @@ net.Receive("ZC_RiotStart", function()
         end
     end)
 
-    zb.RemoveFade()
+    zc.RemoveFade()
 end)
 
 
@@ -36,25 +36,25 @@ local teams = {
 }
 
 function MODE:RenderScreenspaceEffects()
-    if zb.ROUND_START + 7.5 < CurTime() then return end
-    local fade = math.Clamp(zb.ROUND_START + 7.5 - CurTime(),0,1)
+    if zc.ROUND_START + 7.5 < CurTime() then return end
+    local fade = math.Clamp(zc.ROUND_START + 7.5 - CurTime(),0,1)
 
     surface.SetDrawColor(0,0,0,255 * fade)
     surface.DrawRect(-1,-1,ScrW() + 1,ScrH() + 1)
 end
 
 function MODE:HUDPaint()
-    if zb.ROUND_START + 8.5 < CurTime() then return end
+    if zc.ROUND_START + 8.5 < CurTime() then return end
 
 	if not lply:Alive() then return end
-	zb.RemoveFade()
-    local fade = math.Clamp(zb.ROUND_START + 8 - CurTime(),0,1)
+	zc.RemoveFade()
+    local fade = math.Clamp(zc.ROUND_START + 8 - CurTime(),0,1)
 	local team_ = lply:Team()
-    draw.SimpleText(zb.locale.GetLocalized("riot/title"), "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    draw.SimpleText(zc.locale.GetLocalized("riot/title"), "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     local Rolename = teams[team_].name
     local ColorRole = teams[team_].color1
     ColorRole.a = 255 * fade
-    draw.SimpleText(zb.locale.GetLocalized("tdm/you_are", Rolename), "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.5, ColorRole, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    draw.SimpleText(zc.locale.GetLocalized("tdm/you_are", Rolename), "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.5, ColorRole, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
     local Objective = teams[team_].objective
     local ColorObj = teams[team_].color2
@@ -80,7 +80,7 @@ local colSpect2 = Color(255,255,255)
 
 
 
-BlurBackground = BlurBackground or hg.DrawBlur
+BlurBackground = BlurBackground or zc.DrawBlur
 
 if IsValid(hmcdEndMenu) then
     hmcdEndMenu:Remove()
@@ -195,7 +195,7 @@ CreateEndMenu = function()
 		end
 
 		function but:DoClick()
-			if ply:IsBot() then chat.AddText(Color(255,0,0), zb.locale.GetLocalized("common/no_you_cant")) return end
+			if ply:IsBot() then chat.AddText(Color(255,0,0), zc.locale.GetLocalized("common/no_you_cant")) return end
 			gui.OpenURL("https://steamcommunity.com/profiles/"..ply:SteamID64())
 		end
 

@@ -75,7 +75,7 @@ SWEP.FakeEmptyReloadSounds = {
 SWEP.AnimsEvents = {
 	["reload_empty"] = {
 		[0.2] = function(self)
-			local ent = hg.CreateMag( self, Vector(0,-45,-12), "0", true)
+			local ent = zc.CreateMag( self, Vector(0,-45,-12), "0", true)
 			local phys = ent:GetPhysicsObject()
 
 			if IsValid(phys) then

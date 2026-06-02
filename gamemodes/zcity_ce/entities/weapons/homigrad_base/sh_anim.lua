@@ -55,10 +55,10 @@ end
 function SWEP:BoneSet(lookup_name, vec, ang, layer, lerp)
 	if self:GetOwner():IsPlayer() then
 
-		local bon = hg.bone.client_only[lookup_name]
+		local bon = zc.bone.client_only[lookup_name]
 
 		if bon then
-			local ent = hg.GetCurrentCharacter(self:GetOwner())
+			local ent = zc.GetCurrentCharacter(self:GetOwner())
 			local boneIndex = ent:LookupBone(bon)
 
 			if not boneIndex then return end
@@ -69,11 +69,11 @@ function SWEP:BoneSet(lookup_name, vec, ang, layer, lerp)
 			local nvec, nang = LocalToWorld(vec or vector_origin, ang or angle_zero, mat:GetTranslation(), mat:GetAngles())
 			mat:SetTranslation(nvec)
 			mat:SetAngles(nang)
-			hg.bone_apply_matrix(ent, bon, mat)
+			zc.bone_apply_matrix(ent, bon, mat)
 			return
 		end
 
-		hg.bone.Set(self:GetOwner(), lookup_name, vec, ang, layer, lerp)
+		zc.bone.Set(self:GetOwner(), lookup_name, vec, ang, layer, lerp)
 	end
 end
 
@@ -95,7 +95,7 @@ end
 
 local funcNil = function() end
 
-hg.postureFunctions = {
+zc.postureFunctions = {
 	[1] = function(self,ply)
 	end,
 	[2] = function(self,ply)
@@ -147,7 +147,7 @@ function SWEP:AnimHold()
 		self:BoneSet("head", vecZero, Angle(0, 0, -progress * 25), "buttstockattack", 0.0001)
 	end
 
-	local func = hg.postureFunctions[ply.posture] or funcNil
+	local func = zc.postureFunctions[ply.posture] or funcNil
 
 	func(self,ply)
 
@@ -221,7 +221,7 @@ function SWEP:CloseAnim(dtime)
 	local tr = util.TraceLine({
 		start = point,
 		endpos = pos,
-		filter = {self, self:GetOwner(), hg.GetCurrentCharacter(self:GetOwner()), self:GetOwner():GetNWEntity("FakeRagdollOld")},
+		filter = {self, self:GetOwner(), zc.GetCurrentCharacter(self:GetOwner()), self:GetOwner():GetNWEntity("FakeRagdollOld")},
 		mask = MASK_PLAYERSOLID,
 		collisiongroup = COLLISION_GROUP_PLAYER,
 	})
@@ -232,7 +232,7 @@ function SWEP:CloseAnim(dtime)
 	if dtime and isnumber(dtime) then
 		local set = math.min(dist, (self:IsPistolHoldType() and 0.71 or 0.4))
 
-		self.lerpaddcloseanim = Lerp(self.lerpaddcloseanim > set and hg.lerpFrameTime(0.01, dtime) or hg.lerpFrameTime(0.0000000000001, dtime), self.lerpaddcloseanim, set)
+		self.lerpaddcloseanim = Lerp(self.lerpaddcloseanim > set and zc.lerpFrameTime(0.01, dtime) or zc.lerpFrameTime(0.0000000000001, dtime), self.lerpaddcloseanim, set)
 		self.closeanimdis = dis
 		self.closeanimtr = tr
 	end
@@ -258,26 +258,26 @@ local ang11 = Angle(20, 0, 0)
 
 local function IsZCBindDown(ply, id)
 	if CLIENT then
-		return hg.IsLocal(ply) and zb and zb.binds and zb.binds.IsDown and zb.binds.IsDown(id) or false
+		return zc.IsLocal(ply) and zc and zc.binds and zc.binds.IsDown and zc.binds.IsDown(id) or false
 	end
 
-	return zb and zb.binds and zb.binds.IsDown and zb.binds.IsDown(ply, id) or false
+	return zc and zc.binds and zc.binds.IsDown and zc.binds.IsDown(ply, id) or false
 end
 
 hook.Add("ZC_UpdatePlayerBones", "ZC_UpdateWeaponLeanBones", function(ply, dtime)
-	ply.weightmul = weightmul or hg.CalculateWeight(ply, 140)
+	ply.weightmul = weightmul or zc.CalculateWeight(ply, 140)
 
-	local ragdollcombat = hg.RagdollCombatInUse(ply)
+	local ragdollcombat = zc.RagdollCombatInUse(ply)
 	local isragdoll = IsValid(ply.FakeRagdoll) and !IsValid(ply:GetNWEntity("FakeRagdollOld"))
 	local leftBind = IsZCBindDown(ply, "lean_left")
 	local rightBind = IsZCBindDown(ply, "lean_right")
-	local left = ((isragdoll and !ragdollcombat and hg.KeyDown(ply, IN_MOVERIGHT)) or leftBind) and not rightBind
-	local right = ((isragdoll and !ragdollcombat and hg.KeyDown(ply, IN_MOVELEFT)) or rightBind) and not leftBind
+	local left = ((isragdoll and !ragdollcombat and zc.KeyDown(ply, IN_MOVERIGHT)) or leftBind) and not rightBind
+	local right = ((isragdoll and !ragdollcombat and zc.KeyDown(ply, IN_MOVELEFT)) or rightBind) and not leftBind
 
 	ply.lean = Lerp(
-		hg.lerpFrameTime( ( left or right ) and 0.045 * ply:GetNetVar("leanSpeedMul",1) or 0.075, dtime * game.GetTimeScale()),
+		zc.lerpFrameTime( ( left or right ) and 0.045 * ply:GetNetVar("leanSpeedMul",1) or 0.075, dtime * game.GetTimeScale()),
 		ply.lean or 0,
-		hg.IsLocal(ply) and ( (left and right and 0) or (left and 1.3) or (right and -1.3) or 0) or ply:GetNWFloat("PlayerLean", 0)
+		zc.IsLocal(ply) and ( (left and right and 0) or (left and 1.3) or (right and -1.3) or 0) or ply:GetNWFloat("PlayerLean", 0)
 	)
 
 	if SERVER and !IsValid(ply.FakeRagdoll) then
@@ -303,17 +303,17 @@ hook.Add("ZC_UpdatePlayerBones", "ZC_UpdateWeaponLeanBones", function(ply, dtime
 	if ply.lean < -0.01 then
 		local self = ply:GetActiveWeapon()
 		if self.IsPistolHoldType and not self:IsPistolHoldType() then
-			hg.bone.Set(ply, "r_upperarm", vecZero, ang1 * -ply.lean * amt, "lean", leanspeed, dtime)
-			hg.bone.Set(ply, "spine", vecZero, ang2 * -ply.lean * amt * div, "lean", leanspeed, dtime)
-			hg.bone.Set(ply, "spine1", vecZero, ang2 * -ply.lean * amt * div, "lean", leanspeed, dtime)
-			hg.bone.Set(ply, "spine2", vecZero, ang2 * -ply.lean * amt * div, "lean", leanspeed, dtime)
-			hg.bone.Set(ply, "head", vecZero, ang3 * -ply.lean * amt, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "r_upperarm", vecZero, ang1 * -ply.lean * amt, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "spine", vecZero, ang2 * -ply.lean * amt * div, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "spine1", vecZero, ang2 * -ply.lean * amt * div, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "spine2", vecZero, ang2 * -ply.lean * amt * div, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "head", vecZero, ang3 * -ply.lean * amt, "lean", leanspeed, dtime)
 		else
-			hg.bone.Set(ply, "spine", vecZero, ang4 * -ply.lean * amt * div, "lean", leanspeed, dtime)
-			hg.bone.Set(ply, "spine1", vecZero, ang4 * -ply.lean * amt * div, "lean", leanspeed, dtime)
-			hg.bone.Set(ply, "spine2", vecZero, ang4 * -ply.lean * amt * div, "lean", leanspeed, dtime)
-			hg.bone.Set(ply, "pelvis", vecZero, ang4 * -ply.lean * amt * -div, "lean", leanspeed, dtime)
-			hg.bone.Set(ply, "l_upperarm", vecZero, ang8 * -ply.lean * amt, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "spine", vecZero, ang4 * -ply.lean * amt * div, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "spine1", vecZero, ang4 * -ply.lean * amt * div, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "spine2", vecZero, ang4 * -ply.lean * amt * div, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "pelvis", vecZero, ang4 * -ply.lean * amt * -div, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "l_upperarm", vecZero, ang8 * -ply.lean * amt, "lean", leanspeed, dtime)
 		end
 	end
 
@@ -342,17 +342,17 @@ hook.Add("ZC_UpdatePlayerBones", "ZC_UpdateWeaponLeanBones", function(ply, dtime
 	if ply.lean > 0.01 then
 		local self = ply:GetActiveWeapon()
 		if self.IsPistolHoldType and not self:IsPistolHoldType() then
-			hg.bone.Set(ply, "r_upperarm", vecZero, ang5 * ply.lean * amt, "lean", leanspeed, dtime)
-			hg.bone.Set(ply, "spine", vecZero, ang6 * ply.lean * amt * div, "lean", leanspeed, dtime)
-			hg.bone.Set(ply, "spine1", vecZero, ang6 * ply.lean * amt * div, "lean", leanspeed, dtime)
-			hg.bone.Set(ply, "spine2", vecZero, ang6 * ply.lean * amt * div, "lean", leanspeed, dtime)
-			hg.bone.Set(ply, "head", vecZero, ang9 * ply.lean * amt, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "r_upperarm", vecZero, ang5 * ply.lean * amt, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "spine", vecZero, ang6 * ply.lean * amt * div, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "spine1", vecZero, ang6 * ply.lean * amt * div, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "spine2", vecZero, ang6 * ply.lean * amt * div, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "head", vecZero, ang9 * ply.lean * amt, "lean", leanspeed, dtime)
 		else
-			hg.bone.Set(ply, "spine", vecZero, ang10 * ply.lean * amt * div, "lean", leanspeed, dtime)
-			hg.bone.Set(ply, "spine1", vecZero, ang10 * ply.lean * amt * div, "lean", leanspeed, dtime)
-			hg.bone.Set(ply, "spine2", vecZero, ang10 * ply.lean * amt * div, "lean", leanspeed, dtime)
-			hg.bone.Set(ply, "pelvis", vecZero, ang4 * ply.lean * amt * div, "lean", leanspeed, dtime)
-			hg.bone.Set(ply, "r_upperarm", vecZero, ang11 * ply.lean * amt, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "spine", vecZero, ang10 * ply.lean * amt * div, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "spine1", vecZero, ang10 * ply.lean * amt * div, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "spine2", vecZero, ang10 * ply.lean * amt * div, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "pelvis", vecZero, ang4 * ply.lean * amt * div, "lean", leanspeed, dtime)
+			zc.bone.Set(ply, "r_upperarm", vecZero, ang11 * ply.lean * amt, "lean", leanspeed, dtime)
 		end
 	end
 
@@ -369,8 +369,8 @@ hook.Add("ZC_UpdatePlayerBones", "ZC_UpdateWeaponLeanBones", function(ply, dtime
 		local dist = tr.HitPos:Distance(ply:GetPos())
 		local frac = math.max(1 - dist / normaldist,0)
 
-		hg.bone.Set(ply, "spine1", vecZero, Angle(0, frac * (60 + (isMoving(ply) and 30 or 0)), 0), "crouch", 0.2, dtime)
-		hg.bone.Set(ply, "head", vecZero, Angle(0, frac * (30 + (isMoving(ply) and 30 or 0)), 0), "crouch", 0.2, dtime)
+		zc.bone.Set(ply, "spine1", vecZero, Angle(0, frac * (60 + (isMoving(ply) and 30 or 0)), 0), "crouch", 0.2, dtime)
+		zc.bone.Set(ply, "head", vecZero, Angle(0, frac * (30 + (isMoving(ply) and 30 or 0)), 0), "crouch", 0.2, dtime)
 	end
 end)
 

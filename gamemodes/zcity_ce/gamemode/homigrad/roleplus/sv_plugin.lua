@@ -1,1 +1,1 @@
-hg.RolePlus = hg.RolePlus or {}
+zc.RolePlus = zc.RolePlus or {}

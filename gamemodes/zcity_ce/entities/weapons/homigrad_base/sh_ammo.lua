@@ -1,5 +1,5 @@
 AddCSLuaFile()
-hg.ammotypes = hg.ammotypes or {}
+zc.ammotypes = zc.ammotypes or {}
 
 /*
 BulletSettings = {
@@ -28,9 +28,9 @@ function SWEP:ApplyAmmoChanges(type_)
 		return
 	end
 
-	local ammohuy = hg.ammotypeshuy[ammo[1]]
+	local ammohuy = zc.ammotypeshuy[ammo[1]]
 	if not ammohuy then
-		print("ЭРРАР: говно с патриками в hg.ammotypeshuy")
+		print("ЭРРАР: говно с патриками в zc.ammotypeshuy")
 		return
 	end
 

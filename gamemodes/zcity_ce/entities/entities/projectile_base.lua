@@ -168,7 +168,7 @@ if SERVER then
 
 		for _, enta in ipairs(ents.FindInSphere(SelfPos, disorientation_dis)) do
 			local tracePos = enta:IsPlayer() and (enta:GetPos() + enta:OBBCenter()) or enta:GetPos()
-			local tr = hg.ExplosionTrace(SelfPos, tracePos, {self})
+			local tr = zc.ExplosionTrace(SelfPos, tracePos, {self})
 
 			local force = (enta:GetPos() - SelfPos)
 			local len = force:Length()
@@ -178,8 +178,8 @@ if SERVER then
 			if enta.organism then
 				local behindwall = tr.Entity != enta and tr.MatType != MAT_GLASS
 				if IsValid(enta.organism.owner) and enta.organism.owner:IsPlayer() and not behindwall then
-					hg.ExplosionDisorientation(enta, 5 * frac, 6 * frac)
-					hg.RunZManipAnim(enta.organism.owner, "shieldexplosion")
+					zc.ExplosionDisorientation(enta, 5 * frac, 6 * frac)
+					zc.RunZManipAnim(enta.organism.owner, "shieldexplosion")
 				end
 			end
 
@@ -198,7 +198,7 @@ if SERVER then
 		hgWreckBuildings(self, SelfPos, self.BlastDamage / 100, self.BlastDis/6, false)
 		hgBlastDoors(self, SelfPos, self.BlastDamage / 100, self.BlastDis/6, false)
 
-		hg.ExplosionEffect(SelfPos, self.BlastDis / 0.2, 80)
+		zc.ExplosionEffect(SelfPos, self.BlastDis / 0.2, 80)
 
 		timer.Simple(.01, function()
 			if not IsValid(self) then return end

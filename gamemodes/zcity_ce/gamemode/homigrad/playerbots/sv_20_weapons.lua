@@ -1,6 +1,6 @@
-hg = hg or {}
-hg.PlayerBots = hg.PlayerBots or {}
-local _ENV = hg.PlayerBots
+zc = zc or {}
+zc.PlayerBots = zc.PlayerBots or {}
+local _ENV = zc.PlayerBots
 setmetatable(_ENV, {__index = _G})
 setfenv(1, _ENV)
 
@@ -33,7 +33,7 @@ end
 function GetBotFakeWeapon(bot)
 	if not IsValid(bot) then return nil end
 
-	local ragdoll = IsValid(bot.FakeRagdoll) and bot.FakeRagdoll or hg.ragdollFake and hg.ragdollFake[bot]
+	local ragdoll = IsValid(bot.FakeRagdoll) and bot.FakeRagdoll or zc.ragdollFake and zc.ragdollFake[bot]
 	if not IsValid(ragdoll) then return nil end
 
 	local fakeGun = ragdoll.fakeGun
@@ -444,17 +444,17 @@ function TryBotSelfCare(bot, cmd)
 end
 
 function TryBotFakeUp(bot)
-	if not hg.GetFakeState or not hg.FAKE_STATE then return false end
+	if not zc.GetFakeState or not zc.FAKE_STATE then return false end
 	if (bot.ZCBotFakeUpCooldownUntil or 0) > CurTime() then return true end
 	if (bot.LastFakeUp or 0) + BOT_FAKEUP_COOLDOWN > CurTime() then return true end
 
-	local fakeState = hg.GetFakeState(bot)
-	if fakeState == hg.FAKE_STATE.NONE then
+	local fakeState = zc.GetFakeState(bot)
+	if fakeState == zc.FAKE_STATE.NONE then
 		bot.ZCBotFakeUpAllowedAt = nil
 		return false
 	end
 
-	if fakeState == hg.FAKE_STATE.ACTIVE then
+	if fakeState == zc.FAKE_STATE.ACTIVE then
 		if not bot.ZCBotFakeUpAllowedAt then
 			bot.ZCBotFakeUpAllowedAt = CurTime() + BOT_FAKEUP_INITIAL_DELAY
 		end
@@ -464,9 +464,9 @@ function TryBotFakeUp(bot)
 		end
 	end
 
-	if fakeState == hg.FAKE_STATE.ACTIVE and (bot.ZCBotNextFakeUpTry or 0) <= CurTime() then
+	if fakeState == zc.FAKE_STATE.ACTIVE and (bot.ZCBotNextFakeUpTry or 0) <= CurTime() then
 		bot.ZCBotNextFakeUpTry = CurTime() + BOT_FAKEUP_INTERVAL
-		if hg.FakeUp and hg.FakeUp(bot) then
+		if zc.FakeUp and zc.FakeUp(bot) then
 			bot.ZCBotFakeUpCooldownUntil = CurTime() + BOT_FAKEUP_COOLDOWN
 			BotDevPrint(string.format("%s fakeup", bot:Name()))
 		end
@@ -481,6 +481,6 @@ end
 
 function IsDeathmatchRoundActive(round)
 	round = round or GetCurrentRound()
-	return round and round.name == "dm" and zb and zb.ROUND_STATE == 1
+	return round and round.name == "dm" and zc and zc.ROUND_STATE == 1
 end
 

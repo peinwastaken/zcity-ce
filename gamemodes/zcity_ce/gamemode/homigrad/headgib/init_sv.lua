@@ -1,4 +1,4 @@
-local net, hg, pairs, Vector, ents, IsValid, util = net, hg, pairs, Vector, ents, IsValid, util
+local net, zc, pairs, Vector, ents, IsValid, util = net, zc, pairs, Vector, ents, IsValid, util
 
 local vecZero = Vector(0,0,0)
 
@@ -100,7 +100,7 @@ function SpawnMeatGore(mainent, pos, count, force, scale)
 			phys:AddAngleVelocity(VectorRand(-65,65))
 		end
 
-		if zb.CROUND and zb.CROUND ~= "hmcd" or gamemod == "sandbox" then
+		if zc.CROUND and zc.CROUND ~= "hmcd" or gamemod == "sandbox" then
 			ent:DrawShadow(false)
 			ent:SetModelScale(0, gibRemoveTime)
 			SafeRemoveEntityDelayed(ent, gibRemoveTime)
@@ -114,7 +114,7 @@ local headpos_male, headpos_female, headang = Vector(0,0,5), Vector(-2,0,4), Ang
 
 util.AddNetworkString("ZC_AddBloodFountain")
 
-hg.fountains = hg.fountains or {}
+zc.fountains = zc.fountains or {}
 local headboom_mdl = Model("models/gleb/zcity/headboom.mdl")
 local sounds = {
 	Sound("player/zombie_head_explode_01.wav"),
@@ -169,13 +169,13 @@ function Gib_Input(rag, bone, force)
 
 		local armors = rag:GetNetVar("Armor",{})
 
-		if armors["head"] and !hg.armor["head"][armors["head"]].nodrop then
-			local ent = hg.DropArmorForce(rag, armors["head"])
+		if armors["head"] and !zc.armor["head"][armors["head"]].nodrop then
+			local ent = zc.DropArmorForce(rag, armors["head"])
 			ent:SetPos(phys_obj:GetPos())
 		end
 
-		if armors["face"] and !hg.armor["face"][armors["face"]].nodrop then
-			local ent = hg.DropArmorForce(rag, armors["face"])
+		if armors["face"] and !zc.armor["face"][armors["face"]].nodrop then
+			local ent = zc.DropArmorForce(rag, armors["face"])
 			ent:SetPos(phys_obj:GetPos())
 		end
 
@@ -187,13 +187,13 @@ function Gib_Input(rag, bone, force)
 		net.WriteVector(force or vector_origin)
 		net.Broadcast()
 
-		hg.fountains[rag] = {bone = rag:LookupBone("ValveBiped.Bip01_Neck1"), lpos = ThatPlyIsFemale(rag) and Vector(4,0,0) or Vector(5,0,0),lang = Angle(0,0,0)}
+		zc.fountains[rag] = {bone = rag:LookupBone("ValveBiped.Bip01_Neck1"), lpos = ThatPlyIsFemale(rag) and Vector(4,0,0) or Vector(5,0,0),lang = Angle(0,0,0)}
 
 		rag:CallOnRemove("removefountain", function()
-			hg.fountains[rag] = nil
-			SetNetVar("fountains", hg.fountains)
+			zc.fountains[rag] = nil
+			SetNetVar("fountains", zc.fountains)
 		end)
 
-		SetNetVar("fountains", hg.fountains)
+		SetNetVar("fountains", zc.fountains)
 	end
 end

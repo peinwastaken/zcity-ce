@@ -1,14 +1,14 @@
-hg = hg or {}
-local hg = hg
+zc = zc or {}
+local zc = zc
 
 util.AddNetworkString("ZC_GetMenuLayers")
 util.AddNetworkString("ZC_SendMenuLayers")
 
-function hg.RandomizeMenuLayers()
-  local baseKeys = table.GetKeys(hg.menuBaseLogos)
+function zc.RandomizeMenuLayers()
+  local baseKeys = table.GetKeys(zc.menuBaseLogos)
   table.Shuffle(baseKeys)
   
-  local layerKeys = table.GetKeys(hg.menuLogoLayers)
+  local layerKeys = table.GetKeys(zc.menuLogoLayers)
   table.Shuffle(layerKeys)
   
   local layerCount = math.random(0, #layerKeys)
@@ -22,15 +22,15 @@ function hg.RandomizeMenuLayers()
     data.layers[i] = layerKeys[i]
   end
 
-  hg.menuDrawLayers = data
+  zc.menuDrawLayers = data
 end
 
 hook.Add("InitPostEntity", "ZC_RandomizeMenuLayersOnLoad", function()
-  hg.RandomizeMenuLayers()
+  zc.RandomizeMenuLayers()
 end)
 
 net.Receive("ZC_GetMenuLayers", function(len, ply)
   net.Start("ZC_SendMenuLayers")
-  net.WriteTable(hg.menuDrawLayers)
+  net.WriteTable(zc.menuDrawLayers)
   net.Send(ply)
 end)

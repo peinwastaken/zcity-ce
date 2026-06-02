@@ -1,6 +1,5 @@
-zb = zb or {}
-hg = hg or {}
-zb.ROUND_STATE = zb.ROUND_STATE or 0
+zc = zc or {}
+zc.ROUND_STATE = zc.ROUND_STATE or 0
 --0 = players can join, 1 = round is active, 2 = endround
 
 AddCSLuaFile("cl_init.lua")
@@ -11,7 +10,7 @@ include("loader.lua")
 
 local PLAYER = FindMetaTable("Player")
 function PLAYER:CanSpawn()
-	return ( CurrentRound and CurrentRound() and CurrentRound().CanSpawn and CurrentRound():CanSpawn(self)) or (zb.ROUND_STATE == 0)
+	return ( CurrentRound and CurrentRound() and CurrentRound().CanSpawn and CurrentRound():CanSpawn(self)) or (zc.ROUND_STATE == 0)
 end
 
 util.AddNetworkString("ZC_SpectatePlayer")
@@ -35,8 +34,8 @@ local spawners = {}
 local function getRandSpawn()
 	spawners = {}
 
-	if #zb.GetMapPoints( "Spawnpoint" ) > 0 then
-		for _, v in RandomPairs(zb.GetMapPoints( "Spawnpoint" )) do
+	if #zc.GetMapPoints( "Spawnpoint" ) > 0 then
+		for _, v in RandomPairs(zc.GetMapPoints( "Spawnpoint" )) do
 			spawners[#spawners + 1] = v.pos
 		end
 	else
@@ -66,40 +65,40 @@ hook.Add("InitPostEntity", "ZC_RefreshSpawns", function()
 end)
 
 hook.Add("ZC_PreRoundStart", "ZC_ResetTeamSpawns", function()
-	zb.ctspawn = nil
-	zb.tspawn = nil
+	zc.ctspawn = nil
+	zc.tspawn = nil
 end)
 
-function zb:GetTeamSpawn(ply)
+function zc:GetTeamSpawn(ply)
 	local team_ = ply:Team()
 
 	local team0spawns, team1spawns = CurrentRound():GetTeamSpawn()
 
 	if !team0spawns or !next(team0spawns) then
-		team0spawns = {zb:GetRandomSpawn()}
+		team0spawns = {zc:GetRandomSpawn()}
 	end
 
 	if !team1spawns or !next(team1spawns) then
-		team1spawns = {zb:GetRandomSpawn()}
+		team1spawns = {zc:GetRandomSpawn()}
 	end
 
 	local pos
 
 	if team_ == 0 then
-		if !zb.tspawn then
-			zb.tspawn = table.Random(team0spawns)
-			pos = zb.tspawn
+		if !zc.tspawn then
+			zc.tspawn = table.Random(team0spawns)
+			pos = zc.tspawn
 		else
-			pos = hg.tpPlayer(zb.tspawn, ply, math.Clamp(ply:EntIndex() % 24 + 1, 1, 24), 0)
+			pos = zc.tpPlayer(zc.tspawn, ply, math.Clamp(ply:EntIndex() % 24 + 1, 1, 24), 0)
 		end
 
 		return pos
 	else
-		if !zb.ctspawn then
-			zb.ctspawn = table.Random(team1spawns)
-			pos = zb.ctspawn
+		if !zc.ctspawn then
+			zc.ctspawn = table.Random(team1spawns)
+			pos = zc.ctspawn
 		else
-			pos = hg.tpPlayer(zb.ctspawn, ply, math.Clamp(ply:EntIndex() % 24 + 1, 1, 24), 0)
+			pos = zc.tpPlayer(zc.ctspawn, ply, math.Clamp(ply:EntIndex() % 24 + 1, 1, 24), 0)
 		end
 
 		return pos
@@ -123,15 +122,15 @@ local check_playerspawns = function(SpawnPos, ply, tolerance)
 	return true
 end
 
-function zb:GetRandomSpawn(target, spawns)
+function zc:GetRandomSpawn(target, spawns)
 	if !spawns or table.IsEmpty(spawns) then
 		spawns = spawners
 	end
 
-	return zb:FurthestFromEveryone(spawns, player.GetAll(), check_playerspawns)
+	return zc:FurthestFromEveryone(spawns, player.GetAll(), check_playerspawns)
 end
 
-function zb:FurthestFromEveryone(chooseTbl, restrictTbl, func, iStart, iEnd)
+function zc:FurthestFromEveryone(chooseTbl, restrictTbl, func, iStart, iEnd)
 	if not chooseTbl or table.IsEmpty(chooseTbl) then
 		chooseTbl = spawners
 	end
@@ -165,7 +164,7 @@ function zb:FurthestFromEveryone(chooseTbl, restrictTbl, func, iStart, iEnd)
 end
 
 function PLAYER:GetRandomSpawn()
-	local spawnPos = zb:GetRandomSpawn(self)
+	local spawnPos = zc:GetRandomSpawn(self)
 
 	if not spawnPos then return end
 
@@ -178,16 +177,16 @@ end
 function PlayerSelectSpawn(ply, transition)
 	local mode = CurrentRound()
 	if mode.randomSpawns or not mode.GetTeamSpawn then
-		local randSpawn = zb:GetRandomSpawn()
+		local randSpawn = zc:GetRandomSpawn()
 		if randSpawn then ply:SetPos(randSpawn) end
 
 		return
 	end
 
-	local spawnPos = zb:GetTeamSpawn(ply)
+	local spawnPos = zc:GetTeamSpawn(ply)
 
 	if not spawnPos then
-		local randSpawn = zb:GetRandomSpawn()
+		local randSpawn = zc:GetRandomSpawn()
 		ply:SetPos(randSpawn)
 	else
 		ply:SetPos(spawnPos)
@@ -197,7 +196,7 @@ end
 function PLAYER:SetupTeam(team_)
 	self:SetTeam(team_)
 
-	hg.CreateInv(self)
+	zc.CreateInv(self)
 
 	PlayerSelectSpawn(self)
 end
@@ -223,7 +222,7 @@ function GM:PlayerSpawn(ply)
     if CurrentRound() and not CurrentRound().OverrideSpawn then
         ply:SetTeam(1001)
         ApplyAppearance(ply,nil,nil,nil,true)
-        ply:SetTeam(zb:BalancedChoice(0, 1))
+        ply:SetTeam(zc:BalancedChoice(0, 1))
     end
 
 end
@@ -241,7 +240,7 @@ net.Receive("ZC_SpectateChoosePlayer",function(len,ply)
 	if ply:Alive() then return end
 
 	local key = net.ReadInt(32)
-	local tbl = zb:CheckAlive()
+	local tbl = zc:CheckAlive()
 
 	if #tbl == 0 then return end
 
@@ -313,7 +312,7 @@ hook.Add("PlayerDeathThink", "ZC_NetworkSpectatorTarget", function(ply)
 				if (ply.netsendtime or 0) < CurTime() then
 					ply.netsendtime = CurTime() + 1
 
-					hg.send_organism(ent.organism, ply)
+					zc.send_organism(ent.organism, ply)
 				end
 			end
 			local pos = ent:GetPos()
@@ -366,7 +365,7 @@ function GM:PlayerDeath(ply)
 
 	timer.Simple(0.1, function()
 		if IsValid(ply) and not ply:Alive() then
-			local alivePlayers = zb:CheckAlive()
+			local alivePlayers = zc:CheckAlive()
 			if #alivePlayers > 0 then
 				ply.chosenSpectEntity = alivePlayers[1]
 				ply.chosenspect = 1
@@ -375,22 +374,22 @@ function GM:PlayerDeath(ply)
 	end)
 end
 
-hg.addbot = hg.addbot or false
+zc.addbot = zc.addbot or false
 
 function GM:PlayerInitialSpawn(ply)
 	ply.initialspawn = true
 
 	if #player.GetAll() == 1 then
 		RunConsoleCommand("bot")
-		hg.addbot = true
-		zb:EndRound()
+		zc.addbot = true
+		zc:EndRound()
 	end
 
-	if #player.GetHumans() > 1 and hg.addbot then
+	if #player.GetHumans() > 1 and zc.addbot then
 		for _,bot in pairs(player.GetListByName("bot")) do
 			RunConsoleCommand("kick",bot:Name())
 		end
-		hg.addbot = false
+		zc.addbot = false
 	end
 end
 
@@ -428,14 +427,14 @@ end
 
 util.AddNetworkString("ZC_RoundTimeUpdate")
 
-function hg.UpdateRoundTime(time, time2, time3)
-	zb.ROUND_TIME = time or zb.ROUND_TIME
-	zb.ROUND_START = time2 or zb.ROUND_START or CurTime()
-	zb.ROUND_BEGIN = time3 or zb.ROUND_BEGIN or CurTime() + 5
+function zc.UpdateRoundTime(time, time2, time3)
+	zc.ROUND_TIME = time or zc.ROUND_TIME
+	zc.ROUND_START = time2 or zc.ROUND_START or CurTime()
+	zc.ROUND_BEGIN = time3 or zc.ROUND_BEGIN or CurTime() + 5
 	net.Start("ZC_RoundTimeUpdate")
-	net.WriteFloat(zb.ROUND_TIME)
-	net.WriteFloat(zb.ROUND_START)
-	net.WriteFloat(zb.ROUND_BEGIN)
+	net.WriteFloat(zc.ROUND_TIME)
+	net.WriteFloat(zc.ROUND_START)
+	net.WriteFloat(zc.ROUND_BEGIN)
 	net.Broadcast()
 end
 

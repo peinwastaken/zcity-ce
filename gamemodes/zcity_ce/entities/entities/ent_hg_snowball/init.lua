@@ -70,7 +70,7 @@ function ENT:Detonate(data)
 		end
 	end)
 
-	hg.EmitAISound(SelfPos, 256, 8, 128)
+	zc.EmitAISound(SelfPos, 256, 8, 128)
 
 	timer.Simple(.02, function()
 		if not IsValid(self) then return end

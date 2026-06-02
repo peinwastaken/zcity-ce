@@ -119,7 +119,7 @@ if CLIENT then
 		if GetViewEntity() ~= owner then return end
 		if owner:InVehicle() then return end
 		if not IsValid(modelshuy[self.Model or self.WorldModel]) then return end
-		local Tr = hg.eyeTrace(owner)
+		local Tr = zc.eyeTrace(owner)
 		if !Tr then return end
 		local Size = math.max(math.min(1 - Tr.Fraction, 0.5), 0.1)
 		local x, y = Tr.HitPos:ToScreen().x, Tr.HitPos:ToScreen().y
@@ -246,10 +246,10 @@ function SWEP:SecondaryAttack()
 	--self:SetHolding(math.min(self:GetHolding() + 9, 100))
 	if SERVER then
 		if IsValid(self:GetNWEntity("fakeGun")) then return end
-		local ent = hg.eyeTrace(self:GetOwner()).Entity
+		local ent = zc.eyeTrace(self:GetOwner()).Entity
 		self.healbuddy = ent
 		if !IsValid(self.healbuddy) then return end
-		if hg.GetCurrentCharacter(self.healbuddy) == hg.GetCurrentCharacter(self:GetOwner()) then return end
+		if zc.GetCurrentCharacter(self.healbuddy) == zc.GetCurrentCharacter(self:GetOwner()) then return end
 		local done = self:Heal(self.healbuddy, self.mode)
 		if(done and self.PostHeal)then
 			self:PostHeal(self.healbuddy, self.mode)
@@ -297,7 +297,7 @@ if SERVER then
 		local org = ent.organism
 		if not org then return end
 
-		return self.modeValues[1] >= 0 and hg.medicine.HasBandageTarget(org)
+		return self.modeValues[1] >= 0 and zc.medicine.HasBandageTarget(org)
 	end
 
 	function SWEP:Bandage(ent, bone)
@@ -306,7 +306,7 @@ if SERVER then
 		if not org then return end
 
 		-- If you shoot up a corpse, then blow it up with a grenade and bandage it after, the server crashes; why?
-		if self.modeValues[1] <= 0 or not hg.medicine.HasBandageTarget(org) then return end
+		if self.modeValues[1] <= 0 or not zc.medicine.HasBandageTarget(org) then return end
 		table.sort(org.wounds, function(a, b) return a[1] > b[1] end)
 
 		local done = false
@@ -328,7 +328,7 @@ if SERVER then
 
 					local owner = self:GetOwner()
 					if owner.Karma then
-						--owner.Karma = math.Clamp(owner.Karma + 0.25,0,zb.MaxKarma)
+						--owner.Karma = math.Clamp(owner.Karma + 0.25,0,zc.MaxKarma)
 					end
 					ent.bandaged_limbs = ent.bandaged_limbs or {}
 					local bone_name = org.wounds[1][4]
@@ -381,8 +381,8 @@ if SERVER then
 		org.owner:SetNetVar("wounds",org.wounds)
 		timer.Create("bandage_limbs"..ent:EntIndex(),0.1,1,function()
 			ent:SetNetVar("bandaged_limbs",ent.bandaged_limbs)
-			if ent:IsRagdoll() and hg.RagdollOwner(ent) and hg.RagdollOwner(ent):Alive() then
-				hg.RagdollOwner(ent):SetNetVar("bandaged_limbs",ent.bandaged_limbs)
+			if ent:IsRagdoll() and zc.RagdollOwner(ent) and zc.RagdollOwner(ent):Alive() then
+				zc.RagdollOwner(ent):SetNetVar("bandaged_limbs",ent.bandaged_limbs)
 			end
 		end)
 
@@ -556,7 +556,7 @@ if SERVER then
 	function SWEP:RagdollFunc(pos, angles, ragdoll)
 		GetPhysBoneNum(ragdoll,"ValveBiped.Bip01_L_Hand")
 		GetPhysBoneNum(ragdoll,"ValveBiped.Bip01_R_Hand")
-		shadowControl = shadowControl or hg.ShadowControl
+		shadowControl = shadowControl or zc.ShadowControl
 		pos:Add(angles:Forward() * 20)
 		--shadowControl(fakeGun, 0, 0.001, angles, 100, 90, pos, 1000, 900)
 		angles:RotateAroundAxis(angles:Forward(), 180)
@@ -565,7 +565,7 @@ if SERVER then
 end
 
 
-hg.TourniquetGuys = hg.TourniquetGuys or {}
+zc.TourniquetGuys = zc.TourniquetGuys or {}
 
 if SERVER then
 	util.AddNetworkString("ZC_TourniquetSync")
@@ -673,15 +673,15 @@ if SERVER then
 				ent.FakeRagdoll:SetNetVar("Tourniquets",ent.tourniquets)
 			end
 
-			if not table.HasValue(hg.TourniquetGuys,ent) then
-				table.insert(hg.TourniquetGuys,ent)
+			if not table.HasValue(zc.TourniquetGuys,ent) then
+				table.insert(zc.TourniquetGuys,ent)
 			end
 
-			for i,ent in ipairs(hg.TourniquetGuys) do
-				if not IsValid(ent) or not ent.tourniquets or table.IsEmpty(ent.tourniquets) then table.remove(hg.TourniquetGuys,i) end
+			for i,ent in ipairs(zc.TourniquetGuys) do
+				if not IsValid(ent) or not ent.tourniquets or table.IsEmpty(ent.tourniquets) then table.remove(zc.TourniquetGuys,i) end
 			end
 
-			SetNetVar("TourniquetGuys",hg.TourniquetGuys)
+			SetNetVar("TourniquetGuys",zc.TourniquetGuys)
 
 			self:GetOwner():EmitSound("snd_jack_hmcd_bandage.wav", 65, math.random(95, 105))
 			return true
@@ -799,7 +799,7 @@ else
 	end)
 
 	--hook.Add("ZC_PostDrawPlayerRagdoll", "ZC_DrawTourniquets", function(ent,ply)
-	function hg.RenderTourniquets(ent, ply)
+	function zc.RenderTourniquets(ent, ply)
 		if !ply.tourniquets or !next(ply.tourniquets) then return end
 		for i, wound in ipairs(ply.tourniquets) do
 			ply.tourniquetsM = ply.tourniquetsM or {}
@@ -899,7 +899,7 @@ else
 	}
 
 	--hook.Add("ZC_PostDrawPlayerRagdoll", "ZC_DrawBandages", function(ent,ply)
-	function hg.RenderBandages(ent, ply)
+	function zc.RenderBandages(ent, ply)
 		--PrintTable(ent.bandaged_limbs)
 		if not ent.bandaged_limbs then return end
 		if !next(ent.bandaged_limbs) then return end
@@ -920,7 +920,7 @@ else
 		model:SetParent(ent)
 		model:AddEffects(EF_BONEMERGE)
 		local dontmakehands = false
-		if !hg.Appearance.FuckYouModels[1][ent:GetModel()] and !hg.Appearance.FuckYouModels[2][ent:GetModel()] then dontmakehands = true end
+		if !zc.Appearance.FuckYouModels[1][ent:GetModel()] and !zc.Appearance.FuckYouModels[2][ent:GetModel()] then dontmakehands = true end
 
 		if not model.BodygroupsApplied then
 			for k, _ in pairs(ent.bandaged_limbs) do
@@ -928,12 +928,12 @@ else
 				model:SetBodygroup(model:FindBodygroupByName( ThatPlyIsFemale(ent) and BodyGroupsFemale[k] or BodyGroupsMale[k] or ""), 1)
 			end
 
-			for k, _ in pairs(hg.amputatedlimbs2) do
-				local children = hg.get_children(ent, k)
+			for k, _ in pairs(zc.amputatedlimbs2) do
+				local children = zc.get_children(ent, k)
 				table.insert(children, k)
 
 				for _, v2 in ipairs(children) do
-					if ent.bandaged_limbs[v2] and ent.organism and ent.organism[hg.amputatedlimbs2[v2].."amputated"] then
+					if ent.bandaged_limbs[v2] and ent.organism and ent.organism[zc.amputatedlimbs2[v2].."amputated"] then
 						model:SetBodygroup(model:FindBodygroupByName( ThatPlyIsFemale(ent) and BodyGroupsFemale[v2] or BodyGroupsMale[v2] or ""), 0)
 					end
 				end

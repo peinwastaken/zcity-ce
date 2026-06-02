@@ -21,13 +21,13 @@ function ENT:Initialize()
 
 end
 
-hg = hg or {}
+zc = zc or {}
 
 -- Called when an entity touches me :D
 function ENT:StartTouch( ent )
-	local ent = ent:IsRagdoll() and hg.RagdollOwner(ent) or ent
+	local ent = ent:IsRagdoll() and zc.RagdollOwner(ent) or ent
 	if ( IsValid( ent ) && ent:IsPlayer() && ent:Alive() ) then
-		--if hg.CheckMapCompleted(self.map) then return end
+		--if zc.CheckMapCompleted(self.map) then return end
 
 		--ent.CompletedMap = true
 	
@@ -40,15 +40,15 @@ function ENT:StartTouch( ent )
 		end
 	
 		--;; oops
-		if hg.CoopPersistence and hg.CoopPersistence.SavePlayerData then
-			hg.CoopPersistence.SavePlayerData(ent)
+		if zc.CoopPersistence and zc.CoopPersistence.SavePlayerData then
+			zc.CoopPersistence.SavePlayerData(ent)
 		end
 	
 		-- Freeze them and make sure they don't push people away
         ent:KillSilent()
 	
-		hg.MapCompleted = true
-		hg.NextMap = self.map or ""
+		zc.MapCompleted = true
+		zc.NextMap = self.map or ""
 	end
 
 end

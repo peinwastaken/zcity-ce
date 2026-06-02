@@ -1,4 +1,4 @@
-hg.armor = {}
+zc.armor = {}
 local zc_gopro = ConVarExists("zc_gopro") and GetConVar("zc_gopro") or CreateClientConVar("zc_gopro", "0", true, false, "Toggle GoPro-like first-person camera view", 0, 1)
 
 local vecAdjust2 = Vector(5, -6.3, -5)
@@ -84,7 +84,7 @@ local function DrawFirstPersonHelmet(ply, strModel, vecAdjust, fFov, setMat)
 	cam.End3D()
 end
 
-hg.armor.torso = {
+zc.armor.torso = {
 	["vest1"] = {
 		"torso",
 		"models/combataegis/body/ballisticvest_d.mdl",
@@ -305,7 +305,7 @@ local vectors = {
 	[4] = Vector(-2,0,0),
 	[5] = Vector(-4.5,0,-2)
 }
-hg.armor.head = {
+zc.armor.head = {
 	["helmet1"] = {
 		"head",
 		"models/barney_helmet.mdl",
@@ -526,7 +526,7 @@ hg.armor.head = {
 	},
 }
 
-hg.armor.ears = {
+zc.armor.ears = {
 	["headphones1"] = {
 		"ears",
 		"models/eft_props/gear/headsets/headset_msa.mdl",
@@ -614,7 +614,7 @@ local colormodify02 = {
 	["$pp_colour_mulb"] = 0
 }
 
-hg.armor.face = {
+zc.armor.face = {
 	["mask1"] = {
 		"face", -- "face"
 		"models/jmod/ballistic_mask.mdl",
@@ -752,7 +752,7 @@ if CLIENT then
 		local time = net.ReadFloat()
 		local size = net.ReadInt(20)
 		if not IsValid(lply) then return end
-		hg.AddFlash(hg.eye(lply), 1, pos, time, size)
+		zc.AddFlash(zc.eye(lply), 1, pos, time, size)
 	end)
 end
 
@@ -780,7 +780,7 @@ local armorNames = {
 	["helmet6"] = "SWAT Balistic Helmet",
 	["gordon_helmet"] = "HEV Suit Helmet",
 }
-hg.armorNames = armorNames
+zc.armorNames = armorNames
 local armorIcons = {
 	["vest1"] = "scrappers/armor1.png",
 	["helmet1"] = "vgui/icons/helmet.png",
@@ -804,13 +804,13 @@ local armorIcons = {
 	["vest8"] = "vgui/icons/armor01.png",
 	["helmet6"] = "vgui/icons/helmet.png",
 }
-hg.armorIcons = armorIcons
+zc.armorIcons = armorIcons
 
 local entityMeta = FindMetaTable("Entity")
 function entityMeta:SyncArmor()
 	if self.armors then
 		self:SetNetVar("Armor", self.armors)
-		local rag = hg.GetCurrentCharacter(self)
+		local rag = zc.GetCurrentCharacter(self)
 		if IsValid(rag) and rag:IsRagdoll() then
 			rag:SetNetVar("Armor", self.armors)
 			rag:SetNetVar("HideArmorRender", self:GetNetVar("HideArmorRender", false))
@@ -819,7 +819,7 @@ function entityMeta:SyncArmor()
 end
 
 local function initArmor()
-	for _, armors in pairs(hg.armor) do
+	for _, armors in pairs(zc.armor) do
 		for armorkey, armorData in pairs(armors) do
 			if CLIENT then language.Add(armorkey, armorNames[armorkey] or armorkey) end
 			if armorData.inbuilt then continue end
@@ -852,12 +852,12 @@ local function initArmor()
 	end
 end
 
-function hg.GetArmorPlacement(armor)
+function zc.GetArmorPlacement(armor)
 	if istable(armor) then return end
 	armor = string.Replace(armor,"ent_armor_","")
 
 	local found
-	for i,armplc in pairs(hg.armor) do
+	for i,armplc in pairs(zc.armor) do
 		for i2 in pairs(armplc) do
 			if i2 == armor then found = i end
 		end
@@ -871,8 +871,8 @@ local stringToNum = {
 	["face"] = 3,
 }
 
-function hg.GetArmorPlacementNum(armor)
-	return stringToNum[hg.GetArmorPlacement(armor)]
+function zc.GetArmorPlacementNum(armor)
+	return stringToNum[zc.GetArmorPlacement(armor)]
 end
 
 initArmor()

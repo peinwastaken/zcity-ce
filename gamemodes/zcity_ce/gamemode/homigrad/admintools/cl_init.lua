@@ -1,5 +1,5 @@
 -- HUY
-function hg.DermaPlayerQuery( fSelected, strName, strDesc )
+function zc.DermaPlayerQuery( fSelected, strName, strDesc )
     local query = vgui.Create("ZFrame")
     query:SetSize(300,150)
     query:SetTitle( strName or "Player Query")

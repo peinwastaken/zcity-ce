@@ -7,7 +7,7 @@ hook.Add("ZC_PlayerThink","ZC_ShadowControlAdmin",function(ply, time)
 	if ply:KeyDown(IN_ATTACK) and ply:GetMoveType() == MOVETYPE_NOCLIP then
 		local enta = ply:GetEyeTrace().Entity
 		if enta:IsPlayer() and !enta.FakeRagdoll and !IsValid(ply.ShadowCarryEnt) then
-			hg.Fake(enta)
+			zc.Fake(enta)
 		end
 		if !IsValid(enta:GetPhysicsObject()) then return end
 		ply.ShadowCarryEntPhysbone = ply.ShadowCarryEntPhysbone or ply:GetEyeTrace().PhysicsBone

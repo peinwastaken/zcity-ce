@@ -3,7 +3,7 @@ local PLAYER = FindMetaTable("Player")
 
 local vpang = Angle(2, -1, 1)
 function PLAYER:LegAttack()
-    if not self:Alive() or hg.GetCurrentCharacter(self):IsRagdoll() or self:GetNWFloat("InLegKick",0) > CurTime() or not self:IsOnGround() or self:IsSprinting() then return end
+    if not self:Alive() or zc.GetCurrentCharacter(self):IsRagdoll() or self:GetNWFloat("InLegKick",0) > CurTime() or not self:IsOnGround() or self:IsSprinting() then return end
     if self.InLegKick and self.InLegKick > CurTime() then return end
     if self:GetNWBool("TauntStopMoving", false) then return end
     if hook.Run( "ZC_CanPlayerLegAttack", self ) == false then return end
@@ -37,7 +37,7 @@ function PLAYER:LegAttack()
     --print(speedmul)
     self:PlayCustomAnims(anim, true, speed, true, animstopAdjust, {
         [0.12] = function(self)
-            if hg.GetCurrentCharacter(self):IsRagdoll() then return end
+            if zc.GetCurrentCharacter(self):IsRagdoll() then return end
             if !self:IsOnGround() then self:PlayCustomAnims("") return end
             local ang = self:EyeAngles()
             ang[1] = 0
@@ -47,14 +47,14 @@ function PLAYER:LegAttack()
             local tr = util.TraceLine({
                 start = reportPos,
                 endpos = reportPos + ang:Forward() * 32,
-                filter = {hg.GetCurrentCharacter(self),self}
+                filter = {zc.GetCurrentCharacter(self),self}
             })
             if tr.Hit and self:IsOnGround() then
                 self:SetVelocity(ang:Forward() * -300)
             end
         end,
         [0.21] = function(self)
-            if hg.GetCurrentCharacter(self):IsRagdoll() then return end
+            if zc.GetCurrentCharacter(self):IsRagdoll() then return end
             if !self:IsOnGround() then self:PlayCustomAnims("") return end
             local ang = self:EyeAngles()
             if ang[1] > 55 and not (self:KeyDown(IN_DUCK) or self:Crouching()) then
@@ -68,7 +68,7 @@ function PLAYER:LegAttack()
             local tr = util.TraceLine({
                 start = reportPos,
                 endpos = reportPos + ang:Forward() * 72,
-                filter = {hg.GetCurrentCharacter(self),self}
+                filter = {zc.GetCurrentCharacter(self),self}
             })
             if tr.Hit and self:IsOnGround() then
                 --self:EmitSound("weapons/melee/blunt_light" .. math.random(1,8) .. ".wav")
@@ -76,7 +76,7 @@ function PLAYER:LegAttack()
             end
         end,
         [0.33] = function(self) -- kick moment
-            if hg.GetCurrentCharacter(self):IsRagdoll() then return end
+            if zc.GetCurrentCharacter(self):IsRagdoll() then return end
             if !self:IsOnGround() then self:PlayCustomAnims("") return end
             local ang = self:EyeAngles()
             ang[1] = 0
@@ -92,7 +92,7 @@ function PLAYER:LegAttack()
             local tr = util.TraceHull({
                 start = (inDuck and reportPos) or self:EyePos(),
                 endpos = ((inDuck and reportPos) or self:EyePos()) + ang:Forward() * 82 ,
-                filter = {hg.GetCurrentCharacter(self),self},
+                filter = {zc.GetCurrentCharacter(self),self},
                 maxs = rad,
                 mins = -rad
             })
@@ -107,7 +107,7 @@ function PLAYER:LegAttack()
                 entss[#entss+1] = tr.Entity
             end
             local soundplayed = false
-            local blacklist = {[self] = true, [hg.GetCurrentCharacter(self)] = true}
+            local blacklist = {[self] = true, [zc.GetCurrentCharacter(self)] = true}
             if tr.Hit then
                 soundplayed = true
                 if org.rleg == 1 or org.rlegdislocation then
@@ -155,7 +155,7 @@ function PLAYER:LegAttack()
 
                     PenetrationGlobal = 1
 					MaxPenLenGlobal = 1
-                    hg.AddForceRag(ent, tr.PhysicsBone or 0, normal * dmg * 1000, 0.25)
+                    zc.AddForceRag(ent, tr.PhysicsBone or 0, normal * dmg * 1000, 0.25)
                     ent:TakeDamageInfo(dmginfo)
 
                     if IsValid(phys) then
@@ -169,7 +169,7 @@ function PLAYER:LegAttack()
                     if ent:IsPlayer() then
                         if math.random(1,5) > 1 then
                             timer.Simple(0,function()
-                                hg.Fake(ent)
+                                zc.Fake(ent)
                             end)
                         end
 

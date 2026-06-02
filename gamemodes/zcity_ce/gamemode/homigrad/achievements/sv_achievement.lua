@@ -1,14 +1,14 @@
-hg.achievements = hg.achievements or {}
-hg.achievements.achievements_data = hg.achievements.achievements_data or {}
-hg.achievements.achievements_data.player_achievements = hg.achievements.achievements_data.player_achievements or {}
-hg.achievements.achievements_data.created_achevements = {}
+zc.achievements = zc.achievements or {}
+zc.achievements.achievements_data = zc.achievements.achievements_data or {}
+zc.achievements.achievements_data.player_achievements = zc.achievements.achievements_data.player_achievements or {}
+zc.achievements.achievements_data.created_achevements = {}
 
 local function updatePlayer(ply)
     local name = ply:Name()
 	local steamID64 = ply:SteamID64()
 
-    if not hg.achievements.SqlActive then
-        hg.achievements.achievements_data.player_achievements[steamID64] = {}
+    if not zc.achievements.SqlActive then
+        zc.achievements.achievements_data.player_achievements[steamID64] = {}
         return
     end
 
@@ -24,9 +24,9 @@ local function updatePlayer(ply)
 					updateQuery:Where("steamid", steamID64)
 				updateQuery:Execute()
 
-                hg.achievements.achievements_data.player_achievements[steamID64] = util.JSONToTable(result[1].achievements)
+                zc.achievements.achievements_data.player_achievements[steamID64] = util.JSONToTable(result[1].achievements)
 
-                --PrintTable(hg.achievements.achievements_data.player_achievements[steamID64])
+                --PrintTable(zc.achievements.achievements_data.player_achievements[steamID64])
 			else
 				local insertQuery = mysql:Insert("hg_achievements")
 					insertQuery:Insert("steamid", steamID64)
@@ -34,7 +34,7 @@ local function updatePlayer(ply)
 					insertQuery:Insert("achievements", util.TableToJSON({}))
 				insertQuery:Execute()
 
-				hg.achievements.achievements_data.player_achievements[steamID64] = {}
+				zc.achievements.achievements_data.player_achievements[steamID64] = {}
 			end
 		end)
 	query:Execute()
@@ -50,7 +50,7 @@ hook.Add("ZC_OnDatabaseConnected", "ZC_AchievementsCreateData", function()
 		query:PrimaryKey("steamid")
 	query:Execute()
 
-    hg.achievements.SqlActive = true
+    zc.achievements.SqlActive = true
 
     print("Achievements SQL database connected.")
 
@@ -61,36 +61,36 @@ end)
 
 hook.Add( "PlayerInitialSpawn","ZC_ExpOnInitSpawn", updatePlayer)
 hook.Add("PlayerDisconnected", "ZC_SaveRoundValues", function(ply)
-    if !hg.achievements.SqlActive then print("Tried to save achievement data to SQL, but it is not active.") return end
+    if !zc.achievements.SqlActive then print("Tried to save achievement data to SQL, but it is not active.") return end
 
-    hg.achievements.SaveToSQL(ply)
+    zc.achievements.SaveToSQL(ply)
 end)
 
-function hg.achievements.SaveToSQL(ply, data)
-    if not hg.achievements.SqlActive then return end
+function zc.achievements.SaveToSQL(ply, data)
+    if not zc.achievements.SqlActive then return end
 
     local name = ply:Name()
 	local steamID64 = ply:SteamID64()
     local updateQuery = mysql:Update("hg_achievements")
-        updateQuery:Update("achievements", util.TableToJSON(data or hg.achievements.GetPlayerAchievements(ply) or {}) )
+        updateQuery:Update("achievements", util.TableToJSON(data or zc.achievements.GetPlayerAchievements(ply) or {}) )
         updateQuery:Update("steam_name", name)
         updateQuery:Where("steamid", steamID64)
     updateQuery:Execute()
 end
 
-function hg.achievements.SavePlayerAchievements()
-    if !hg.achievements.SqlActive then print("Tried to save achievement data to SQL, but it is not active.") return end
+function zc.achievements.SavePlayerAchievements()
+    if !zc.achievements.SqlActive then print("Tried to save achievement data to SQL, but it is not active.") return end
 
     for _, ply in player.Iterator() do
-        hg.achievements.SaveToSQL(ply)
+        zc.achievements.SaveToSQL(ply)
     end
 end
 
 local replacement_img = "homigrad/vgui/models/star.png"
 
-function hg.achievements.CreateAchievementType(key, needed_value, start_value, description, name, img, showpercent)
+function zc.achievements.CreateAchievementType(key, needed_value, start_value, description, name, img, showpercent)
     img = img or replacement_img
-    hg.achievements.achievements_data.created_achevements[key] = {
+    zc.achievements.achievements_data.created_achevements[key] = {
         start_value = start_value,
         needed_value = needed_value,
         description = description,
@@ -102,46 +102,46 @@ function hg.achievements.CreateAchievementType(key, needed_value, start_value, d
 end
 
 
-function hg.achievements.GetAchievements()
-    return hg.achievements.achievements_data.created_achevements
+function zc.achievements.GetAchievements()
+    return zc.achievements.achievements_data.created_achevements
 end
 
 
-function hg.achievements.GetAchievementInfo(key)
-    return hg.achievements.achievements_data.created_achevements[key]
+function zc.achievements.GetAchievementInfo(key)
+    return zc.achievements.achievements_data.created_achevements[key]
 end
 
 
-function hg.achievements.GetPlayerAchievements(ply)
+function zc.achievements.GetPlayerAchievements(ply)
     local steamID = ply:SteamID64()
-    hg.achievements.achievements_data.player_achievements[steamID] = hg.achievements.achievements_data.player_achievements[steamID] or {}
-    return hg.achievements.achievements_data.player_achievements[steamID]
+    zc.achievements.achievements_data.player_achievements[steamID] = zc.achievements.achievements_data.player_achievements[steamID] or {}
+    return zc.achievements.achievements_data.player_achievements[steamID]
 end
 
 
-function hg.achievements.GetPlayerAchievement(ply, key)
+function zc.achievements.GetPlayerAchievement(ply, key)
     local steamID = ply:SteamID64()
-    hg.achievements.achievements_data.player_achievements[steamID] = hg.achievements.achievements_data.player_achievements[steamID] or {}
-    return hg.achievements.achievements_data.player_achievements[steamID][key] or {}
+    zc.achievements.achievements_data.player_achievements[steamID] = zc.achievements.achievements_data.player_achievements[steamID] or {}
+    return zc.achievements.achievements_data.player_achievements[steamID][key] or {}
 end
 
 
 local function isAchievementCompleted(ply, key, val)
-    local ach = hg.achievements.achievements_data.created_achevements[key]
-    return val >= ach.needed_value and (hg.achievements.achievements_data.player_achievements[ply:SteamID64()][key].value or 0) < val
+    local ach = zc.achievements.achievements_data.created_achevements[key]
+    return val >= ach.needed_value and (zc.achievements.achievements_data.player_achievements[ply:SteamID64()][key].value or 0) < val
 end
 
 util.AddNetworkString("ZC_AchievementUnlocked")
 
-function hg.achievements.SetPlayerAchievement(ply, key, val)
+function zc.achievements.SetPlayerAchievement(ply, key, val)
     --print("Triggered achievement for player " .. ply:Name() .. " ; " .. ply:SteamID() .. ": " .. (key or "none") .. ", value " .. (val or "none"))
     local steamID = ply:SteamID64()
-    hg.achievements.achievements_data.player_achievements[steamID] = hg.achievements.achievements_data.player_achievements[steamID] or {}
-    local playerAchievements = hg.achievements.achievements_data.player_achievements[steamID]
+    zc.achievements.achievements_data.player_achievements[steamID] = zc.achievements.achievements_data.player_achievements[steamID] or {}
+    local playerAchievements = zc.achievements.achievements_data.player_achievements[steamID]
     playerAchievements[key] = playerAchievements[key] or {}
 
     if isAchievementCompleted(ply, key, val) then
-        local ach = hg.achievements.achievements_data.created_achevements[key]
+        local ach = zc.achievements.achievements_data.created_achevements[key]
         net.Start("ZC_AchievementUnlocked")
             net.WriteString(ach.name)
             net.WriteString(ach.img)
@@ -151,11 +151,11 @@ function hg.achievements.SetPlayerAchievement(ply, key, val)
     playerAchievements[key].value = val
 end
 
-function hg.achievements.AddPlayerAchievement(ply, key, val)
-    local ach = hg.achievements.GetPlayerAchievement(ply, key)
-    local ach_info = hg.achievements.GetAchievementInfo(key)
+function zc.achievements.AddPlayerAchievement(ply, key, val)
+    local ach = zc.achievements.GetPlayerAchievement(ply, key)
+    local ach_info = zc.achievements.GetAchievementInfo(key)
 
-    hg.achievements.SetPlayerAchievement(ply, key, math.Approach(ach.value or ach_info.start_value, ach_info.needed_value, val))
+    zc.achievements.SetPlayerAchievement(ply, key, math.Approach(ach.value or ach_info.start_value, ach_info.needed_value, val))
 end
 
 util.AddNetworkString("ZC_AchievementRequest")
@@ -164,30 +164,30 @@ net.Receive("ZC_AchievementRequest", function(len, ply)
     if (ply.ach_cooldown or 0) > CurTime() then return end
     ply.ach_cooldown = CurTime() + 2
     net.Start("ZC_AchievementRequest")
-        net.WriteTable(hg.achievements.GetAchievements())
-        net.WriteTable(hg.achievements.GetPlayerAchievements(ply))
+        net.WriteTable(zc.achievements.GetAchievements())
+        net.WriteTable(zc.achievements.GetPlayerAchievements(ply))
     net.Send(ply)
 end)
 
-//if !hg.init_ach then
+//if !zc.init_ach then
     -- braindeath
-    hg.achievements.CreateAchievementType("brain",1,0,"Die from hypoxia.","I will definitely survive...", nil, false)
+    zc.achievements.CreateAchievementType("brain",1,0,"Die from hypoxia.","I will definitely survive...", nil, false)
     -- death from drugs
-    hg.achievements.CreateAchievementType("drugs",1,0,"Die from opioids overdose.","Overstimulated", nil, false)
+    zc.achievements.CreateAchievementType("drugs",1,0,"Die from opioids overdose.","Overstimulated", nil, false)
     -- TERMINATOR
-    hg.achievements.CreateAchievementType("illbeback",3,0,"Get shot in the head and get up alive.","I'll be back", nil, true)
+    zc.achievements.CreateAchievementType("illbeback",3,0,"Get shot in the head and get up alive.","I'll be back", nil, true)
     -- kill everyone
-    hg.achievements.CreateAchievementType("killemall",1,0,"Kill everyone being a traitor and win the round\nplayers on the server should be more than 9.","Kill Em All", nil, false)
+    zc.achievements.CreateAchievementType("killemall",1,0,"Kill everyone being a traitor and win the round\nplayers on the server should be more than 9.","Kill Em All", nil, false)
     -- russian roulette
-    hg.achievements.CreateAchievementType("deadlygambling",10,0,"Survive 10 games of Russian roulette in one life.","Deadly Gambling", nil, true)
+    zc.achievements.CreateAchievementType("deadlygambling",10,0,"Survive 10 games of Russian roulette in one life.","Deadly Gambling", nil, true)
     -- lobotomized kill
-    hg.achievements.CreateAchievementType("lobotomygaming",1,0,"Kill the traitor while having brain damage","Hydrogen bomb vs Lobotomized patient", nil, false)
+    zc.achievements.CreateAchievementType("lobotomygaming",1,0,"Kill the traitor while having brain damage","Hydrogen bomb vs Lobotomized patient", nil, false)
     -- hot potato
-    hg.achievements.CreateAchievementType("hotpotato",1,0,"Kill the traitor using his own grenade","Hot Potato", nil, false)
+    zc.achievements.CreateAchievementType("hotpotato",1,0,"Kill the traitor using his own grenade","Hot Potato", nil, false)
     -- please calm down
-    hg.achievements.CreateAchievementType("bking", 1, 0, "Something terrible happened on that plane...", "Sir please calm down", nil, false)
+    zc.achievements.CreateAchievementType("bking", 1, 0, "Something terrible happened on that plane...", "Sir please calm down", nil, false)
 
-    //hg.init_ach = true
+    //zc.init_ach = true
 //end
 
 local roundply = 0
@@ -203,24 +203,24 @@ hook.Add("ZC_CheckTraitorWin","ZC_KillEmAllAchievement",function(ply,winner)
     --if gmod.GetGamemode() ~= "zcity" then return end
 
     if winner == 1 and (ply.TraitorKills or 0 >= roundply - 1) and roundply >= 10 then
-        hg.achievements.SetPlayerAchievement(ply,"killemall",1)
+        zc.achievements.SetPlayerAchievement(ply,"killemall",1)
     end
 end)
 
 hook.Add("PlayerDeath", "ZC_KillEmAllAchievement", function(ply)
-    local ach = hg.achievements.GetPlayerAchievement(ply,"deadlygambling")
+    local ach = zc.achievements.GetPlayerAchievement(ply,"deadlygambling")
     if ach["value"] ~= 10 and ach["value"] ~= 0 then
-        hg.achievements.SetPlayerAchievement(ply, "deadlygambling", 0)
+        zc.achievements.SetPlayerAchievement(ply, "deadlygambling", 0)
     end
 
     if ply.isTraitor then
         if IsValid(ply.ZBestAttacker) and ply != ply.ZBestAttacker then
             if ply.ZBestAttacker:Alive() and ply.ZBestAttacker.organism.brain >= 0.1 then
-                hg.achievements.SetPlayerAchievement(ply.ZBestAttacker, "lobotomygaming", 1)
+                zc.achievements.SetPlayerAchievement(ply.ZBestAttacker, "lobotomygaming", 1)
             end
 
             if IsValid(ply.ZBestInflictor) and ply.ZBestInflictor.ishggrenade and ply.ZBestInflictor.owner2 == ply and IsValid(ply.ZBestInflictor.owner) then
-                hg.achievements.SetPlayerAchievement(ply.ZBestInflictor.owner, "hotpotato", 1)
+                zc.achievements.SetPlayerAchievement(ply.ZBestInflictor.owner, "hotpotato", 1)
             end
         end
 
@@ -241,40 +241,40 @@ end)
 hook.Add("ZC_OnOrganismDamage","ZC_TrackIllBeBackAchievement",function(ply, dmgInfo, hitgroup, ent, harm, hitBoxs)
     --if gmod.GetGamemode() ~= "zcity" then return end
     if not ply:IsPlayer() then return end
-    if (dmgInfo:IsDamageType(128) or dmgInfo:IsDamageType(DMG_BULLET)) and hitgroup == HITGROUP_HEAD and hg.achievements.GetPlayerAchievement(ply,"illbeback")["value"] ~= 3 then
-        hg.achievements.SetPlayerAchievement(ply,"illbeback",1)
+    if (dmgInfo:IsDamageType(128) or dmgInfo:IsDamageType(DMG_BULLET)) and hitgroup == HITGROUP_HEAD and zc.achievements.GetPlayerAchievement(ply,"illbeback")["value"] ~= 3 then
+        zc.achievements.SetPlayerAchievement(ply,"illbeback",1)
         ply.illbeback = CurTime() + 10
     end
 end)
 
 hook.Add("ZC_OnPlayerUnconscious","ZC_TrackIllBeBackAchievement",function(ply)
     if ply:IsRagdoll() then
-        ply = hg.RagdollOwner(ply)
+        ply = zc.RagdollOwner(ply)
     end
-    if hg.achievements.GetPlayerAchievement(ply,"illbeback")["value"] == 1 and ply.illbeback > CurTime() then
-        hg.achievements.SetPlayerAchievement(ply,"illbeback",2)
+    if zc.achievements.GetPlayerAchievement(ply,"illbeback")["value"] == 1 and ply.illbeback > CurTime() then
+        zc.achievements.SetPlayerAchievement(ply,"illbeback",2)
     end
 end)
 
 hook.Add("PlayerDeath","ZC_TrackIllBeBackAchievement",function(ply)
-    local val = hg.achievements.GetPlayerAchievement(ply,"illbeback")["value"]
+    local val = zc.achievements.GetPlayerAchievement(ply,"illbeback")["value"]
     if val ~= 3 and val ~= 0 then
-        hg.achievements.SetPlayerAchievement(ply,"illbeback", 0)
+        zc.achievements.SetPlayerAchievement(ply,"illbeback", 0)
     end
 end)
 
 hook.Add("PlayerSilentDeath","ZC_TrackIllBeBackAchievement",function(ply)
-    if hg.achievements.GetPlayerAchievement(ply,"illbeback")["value"] ~= 3 then
-        hg.achievements.SetPlayerAchievement(ply,"illbeback",0)
+    if zc.achievements.GetPlayerAchievement(ply,"illbeback")["value"] ~= 3 then
+        zc.achievements.SetPlayerAchievement(ply,"illbeback",0)
     end
 end)
 
 hook.Add("ZC_OnPlayerWakeFromUnconscious","ZC_TrackIllBeBackAchievement",function(ply)
     if ply:IsRagdoll() then
-        ply = hg.RagdollOwner(ply)
+        ply = zc.RagdollOwner(ply)
     end
-    if hg.achievements.GetPlayerAchievement(ply,"illbeback")["value"] == 2 then
-        hg.achievements.SetPlayerAchievement(ply,"illbeback",3)
+    if zc.achievements.GetPlayerAchievement(ply,"illbeback")["value"] == 2 then
+        zc.achievements.SetPlayerAchievement(ply,"illbeback",3)
     end
 end)
 
@@ -301,7 +301,7 @@ hook.Add("ZC_OnPlayerSay","ZC_BurgerKing",function(ply, txtTbl, txt)
     end
 
     if bking["sir"] and bking["please"] and bking["calm down"] then
-        hg.achievements.SetPlayerAchievement(ply,"bking",1)
+        zc.achievements.SetPlayerAchievement(ply,"bking",1)
 		ply:PS_AddItem("burger king crown")
     end
 end)

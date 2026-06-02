@@ -20,8 +20,8 @@ local teams = {
 }
 
 function MODE:RenderScreenspaceEffects()
-    if zb.ROUND_START + 7.5 < CurTime() then return end
-    local fade = math.Clamp(zb.ROUND_START + 7.5 - CurTime(), 0, 1)
+    if zc.ROUND_START + 7.5 < CurTime() then return end
+    local fade = math.Clamp(zc.ROUND_START + 7.5 - CurTime(), 0, 1)
 
     surface.SetDrawColor(0, 0, 0, 255 * fade)
     surface.DrawRect(-1, -1, ScrW() + 1, ScrH() + 1)
@@ -45,10 +45,10 @@ function MODE:HUDPaint()
 		draw.SimpleText( "Next wave in ".. time.m ..":" .. time.s, "ZB_HomicideMedium", sw * 0.5, sh * (0.9 + timePos), Color(87,146,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 
-    if zb.ROUND_START + 8.5 < CurTime() then return end
+    if zc.ROUND_START + 8.5 < CurTime() then return end
 
 	if not lply:Alive() then return end
-    local fade = math.Clamp(zb.ROUND_START + 8 - CurTime(), 0, 1)
+    local fade = math.Clamp(zc.ROUND_START + 8 - CurTime(), 0, 1)
 	local team_ = lply:Team()
     draw.SimpleText("ZBattle | HL2 Base Defense", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
@@ -120,7 +120,7 @@ local colSpect2 = Color(255,255,255)
 
 
 
-BlurBackground = BlurBackground or hg.DrawBlur
+BlurBackground = BlurBackground or zc.DrawBlur
 
 
 if IsValid(hmcdEndMenu) then
@@ -284,7 +284,7 @@ hook.Add("ZC_RadialOptions", "ZC_CommanderSupportOptions", function()
 
     if ply:GetNWString("PlayerRole") == "Commander" and not organism.unconscious then
         local tbl = {createSupportMenu, "Request support"}
-        hg.radialOptions[#hg.radialOptions + 1] = tbl
+        zc.radialOptions[#zc.radialOptions + 1] = tbl
     end
 end)
 

@@ -8,8 +8,8 @@
 --//
 
 --\\Translate plugin things into your things
-	hg.Abnormalties = hg.Abnormalties or {}
-	local PLUGIN = hg.Abnormalties
+	zc.Abnormalties = zc.Abnormalties or {}
+	local PLUGIN = zc.Abnormalties
 --//
 
 PLUGIN.Name = "Abnormalties"

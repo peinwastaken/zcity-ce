@@ -1,7 +1,7 @@
 util.AddNetworkString("ZC_VirusStageUpdate")
 
 local VirusModule = {}
-hg.organism.module.virus = VirusModule
+zc.organism.module.virus = VirusModule
 
 function VirusModule.InfectPlayer(ply)
     if ply.Virus and ply.Virus.Infected then return end
@@ -126,7 +126,7 @@ end
 function VirusModule.ApplyVirusConvulsions(ply)
     local virus = ply.Virus
     if virus and virus.Convulsions and virus.Stage == 5 and ply.organism.unconscious then
-        local character = hg.GetCurrentCharacter(ply) or ply
+        local character = zc.GetCurrentCharacter(ply) or ply
         local mul = (60 - CurTime()) / 60
         if mul > 0 then
             for i = 0, character:GetPhysicsObjectCount() - 1 do

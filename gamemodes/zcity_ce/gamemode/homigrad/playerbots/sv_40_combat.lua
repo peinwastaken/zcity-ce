@@ -1,6 +1,6 @@
-hg = hg or {}
-hg.PlayerBots = hg.PlayerBots or {}
-local _ENV = hg.PlayerBots
+zc = zc or {}
+zc.PlayerBots = zc.PlayerBots or {}
+local _ENV = zc.PlayerBots
 setmetatable(_ENV, {__index = _G})
 setfenv(1, _ENV)
 
@@ -637,12 +637,12 @@ function FaceFakeCombatTarget(bot, cmd, safeTime)
 end
 
 function HandleBotFakeState(bot, cmd, safeTime)
-	if not hg.GetFakeState or not hg.FAKE_STATE then return false end
+	if not zc.GetFakeState or not zc.FAKE_STATE then return false end
 
-	local fakeState = hg.GetFakeState(bot)
-	if fakeState == hg.FAKE_STATE.NONE then return false end
+	local fakeState = zc.GetFakeState(bot)
+	if fakeState == zc.FAKE_STATE.NONE then return false end
 
-	if fakeState == hg.FAKE_STATE.ACTIVE then
+	if fakeState == zc.FAKE_STATE.ACTIVE then
 		UpdateBotFakeTarget(bot)
 		cmd:SetButtons(bit_bor(cmd:GetButtons(), GetBotFakeAimButtons()))
 		if not TryBotAttackCurrentTarget(bot, cmd, safeTime, true) and not FaceFakeCombatTarget(bot, cmd, safeTime) and not FaceRecentThreat(bot, cmd) then

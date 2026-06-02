@@ -148,9 +148,9 @@ function CLASS.GiveEquipment(self, class)
     local vesta = vest[math.random(#vest)]
     local facea = face[math.random(#face)]
     local helmeta = helmet[math.random(#helmet)]
-    hg.AddArmor(ply, vesta)
-    hg.AddArmor(ply, helmeta)
-    hg.AddArmor(ply, facea)
+    zc.AddArmor(ply, vesta)
+    zc.AddArmor(ply, helmeta)
+    zc.AddArmor(ply, facea)
 
     ply:SyncArmor()
 
@@ -184,7 +184,7 @@ function CLASS.On(self, data)
         if specialModelChance == 1 then
             self:SetModel("models/dejtriyev/dreamybuss/prigozhin.mdl")
         else
-            local appearance = self.CurAppearance or hg.Appearance.GetRandomAppearance()
+            local appearance = self.CurAppearance or zc.Appearance.GetRandomAppearance()
             appearance.AAttachments = ""
             appearance.AColthes = ""
             local currentModel = string.lower(appearance.AModel)

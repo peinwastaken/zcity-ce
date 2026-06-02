@@ -9,12 +9,12 @@ MODE.ForBigMaps = true
 MODE.Chance = 1
 MODE.ROUND_TIME = 9000
 
-zb = zb or {}
-zb.Points = zb.Points or {}
+zc = zc or {}
+zc.Points = zc.Points or {}
 
-zb.Points.HMCD_COOP_SPAWN = zb.Points.HMCD_COOP_SPAWN or {}
-zb.Points.HMCD_COOP_SPAWN.Color = Color(255,255,255)
-zb.Points.HMCD_COOP_SPAWN.Name = "HMCD_COOP_SPAWN"
+zc.Points.HMCD_COOP_SPAWN = zc.Points.HMCD_COOP_SPAWN or {}
+zc.Points.HMCD_COOP_SPAWN.Color = Color(255,255,255)
+zc.Points.HMCD_COOP_SPAWN.Name = "HMCD_COOP_SPAWN"
 
 MODE.Maps = {
     ["d1_trainstation_01"] = {PlayerEquipment = "citizen"},

@@ -1,6 +1,6 @@
-if !hg or !hg.AdminSystem then return end
+if !zc or !zc.AdminSystem then return end
 
-local AS = hg.AdminSystem
+local AS = zc.AdminSystem
 local ESP = {}
 
 local adminMode = {}

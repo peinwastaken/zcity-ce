@@ -80,7 +80,7 @@ end
 SWEP.traceLen = 5
 
 function SWEP:GetEyeTrace()
-	return hg.eyeTrace(self:GetOwner())
+	return zc.eyeTrace(self:GetOwner())
 end
 
 if CLIENT then

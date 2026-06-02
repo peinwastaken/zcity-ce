@@ -1,6 +1,6 @@
---local Organism = hg.organism
-hg.organism.module.liver = {}
-local module = hg.organism.module.liver
+--local Organism = zc.organism
+zc.organism.module.liver = {}
+local module = zc.organism.module.liver
 module[1] = function(org)
 	org.liver = 0
 end

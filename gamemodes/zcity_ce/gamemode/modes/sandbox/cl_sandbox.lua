@@ -5,11 +5,11 @@ local white = Color(255, 255, 255, 255)
 
 function MODE:HUDPaint()
 	if not lply:Alive() then return end
-  if zb.ROUND_START + 8.5 < CurTime() then return end
+  if zc.ROUND_START + 8.5 < CurTime() then return end
 
-	zb.RemoveFade()
+	zc.RemoveFade()
   
-  local fade = math.Clamp(zb.ROUND_START + 8 - CurTime(), 0, 1)
+  local fade = math.Clamp(zc.ROUND_START + 8 - CurTime(), 0, 1)
   color.a = 255 * fade
   white.a = 255 * fade
 

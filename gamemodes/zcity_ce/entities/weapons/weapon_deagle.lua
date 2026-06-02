@@ -121,7 +121,7 @@ if CLIENT then
 		[0.33] = function( self, timeMul )
 			SetFakeMagazineBones(self, vector_origin)
 			if self:Clip1() < 1 then
-				hg.CreateMag( self, Vector(0,55,0) )
+				zc.CreateMag( self, Vector(0,55,0) )
 			end
 			if self:Clip1() > 0 then
 				local owner = self:GetOwner()

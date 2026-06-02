@@ -4,8 +4,8 @@ local MODE = MODE
 
 net.Receive("ZC_HL2DeathmatchStart",function()
     surface.PlaySound("hl2mode1.wav")
-	zb.RemoveFade()
-	hg.DynaMusic:Start( "hl_coop" )
+	zc.RemoveFade()
+	zc.DynaMusic:Start( "hl_coop" )
 end)
 
 local teams = {
@@ -34,8 +34,8 @@ local teams = {
 }
 
 function MODE:RenderScreenspaceEffects()
-    if zb.ROUND_START + 7.5 < CurTime() then return end
-    local fade = math.Clamp(zb.ROUND_START + 7.5 - CurTime(),0,1)
+    if zc.ROUND_START + 7.5 < CurTime() then return end
+    local fade = math.Clamp(zc.ROUND_START + 7.5 - CurTime(),0,1)
 
     surface.SetDrawColor(0,0,0,255 * fade)
     surface.DrawRect(-1,-1,ScrW() + 1,ScrH() + 1)
@@ -43,12 +43,12 @@ end
 
 --// Well, I made it a bit more readable
 function MODE:HUDPaint()
-    if zb.ROUND_START + 8.5 < CurTime() then return end
+    if zc.ROUND_START + 8.5 < CurTime() then return end
 
     if not lply:Alive() then return end
-    zb.RemoveFade()
+    zc.RemoveFade()
 
-    local fade = math.Clamp(zb.ROUND_START + 8 - CurTime(), 0, 1)
+    local fade = math.Clamp(zc.ROUND_START + 8 - CurTime(), 0, 1)
     local team_id = lply:Team()
     local team_data = teams[team_id]
 
@@ -84,7 +84,7 @@ hook.Add("ZC_RadialOptions", "ZC_CombineAirstrike", function()
 			end,
 			"Request Airstrike"
 		}
-		hg.radialOptions[#hg.radialOptions + 1] = tbl
+		zc.radialOptions[#zc.radialOptions + 1] = tbl
     end
 end)
 
@@ -105,7 +105,7 @@ local col = Color(255,255,255,255)
 local colSpect1 = Color(75,75,75,255)
 local colSpect2 = Color(255,255,255)
 
-BlurBackground = BlurBackground or hg.DrawBlur
+BlurBackground = BlurBackground or zc.DrawBlur
 
 if IsValid(hmcdEndMenu) then
     hmcdEndMenu:Remove()

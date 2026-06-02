@@ -8,7 +8,7 @@ local MusicVolume = GetConVar("snd_musicvolume")
 
 net.Receive("ZC_GangWarsStart", function()
 	surface.PlaySound("zbattle/nigshit.mp3")
-	zb.RemoveFade()
+	zc.RemoveFade()
 	playstart = true
 	ended = nil
 
@@ -49,8 +49,8 @@ local teams = {
 }
 local lerpsnd = 0.3
 function MODE:RenderScreenspaceEffects()
-	if zb.ROUND_START + 7.5 < CurTime() then return end
-	local fade = math.Clamp(zb.ROUND_START + 7.5 - CurTime(), 0, 1)
+	if zc.ROUND_START + 7.5 < CurTime() then return end
+	local fade = math.Clamp(zc.ROUND_START + 7.5 - CurTime(), 0, 1)
 	surface.SetDrawColor(0, 0, 0, 255 * fade)
 	surface.DrawRect(-1, -1, ScrW() + 1, ScrH() + 1)
 end
@@ -67,8 +67,8 @@ surface.CreateFont("timer_Font2", {
 function MODE:HUDPaint()
 	//if !lply.organism or !lply.organism.fear then return end
 
-	local timeBeforeSWAT = (zb.ROUND_START - CurTime() + 120)
-	if timeBeforeSWAT > 0 and zb.ROUND_START + 10.5 < CurTime() then
+	local timeBeforeSWAT = (zc.ROUND_START - CurTime() + 120)
+	if timeBeforeSWAT > 0 and zc.ROUND_START + 10.5 < CurTime() then
 		local time = string.FormattedTime(timeBeforeSWAT, "%02i:%02i:%02i")
 		local text = "00:00:00"
 		surface.SetFont("timer_Font2")
@@ -83,7 +83,7 @@ function MODE:HUDPaint()
 		//draw.SimpleText(time, "timer_Font2", sw * 0.36, sh * 0.05, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
 
-	if zb.ROUND_START + 8 < CurTime() then
+	if zc.ROUND_START + 8 < CurTime() then
 		if playstart then
 			sound.PlayFile("sound/music_themes/ghetto_start.wav", "noblock noplay", function(station)
 				if IsValid(station) then
@@ -97,7 +97,7 @@ function MODE:HUDPaint()
 
 		lerpsnd = LerpFT(0.01, lerpsnd, !ended and (lply:Alive() and lply.organism and !lply.organism.unconscious and lply.organism.fear and math.Clamp(lply.organism.fear + 0.3 + (timeBeforeSWAT <= 0 and 2 or 0), 0, 1) or 0.3) or 0)
 
-		if zb.ROUND_START + 12 < CurTime() then
+		if zc.ROUND_START + 12 < CurTime() then
 			if IsValid(GWARS_LoopStation) then
 				GWARS_LoopStation:SetVolume(lerpsnd * MusicVolume:GetFloat())
 				GWARS_LoopStation:Play()
@@ -124,11 +124,11 @@ function MODE:HUDPaint()
 		end
 	end
 
-	if zb.ROUND_START + 8.5 < CurTime() then return end
+	if zc.ROUND_START + 8.5 < CurTime() then return end
 
 	if not lply:Alive() then return end
-	zb.RemoveFade()
-	local fade = math.Clamp(zb.ROUND_START + 8 - CurTime(), 0, 1)
+	zc.RemoveFade()
+	local fade = math.Clamp(zc.ROUND_START + 8 - CurTime(), 0, 1)
 	local team_ = lply:Team()
 	draw.SimpleText("ZBattle | Gang Wars", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0, 162, 255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	local Rolename = teams[team_].name
@@ -154,7 +154,7 @@ local colRedUp = Color(160, 30, 30)
 local col = Color(255, 255, 255, 255)
 local colSpect1 = Color(75, 75, 75, 255)
 local colSpect2 = Color(255, 255, 255)
-BlurBackground = BlurBackground or hg.DrawBlur
+BlurBackground = BlurBackground or zc.DrawBlur
 
 if IsValid(hmcdEndMenu) then
 	hmcdEndMenu:Remove()

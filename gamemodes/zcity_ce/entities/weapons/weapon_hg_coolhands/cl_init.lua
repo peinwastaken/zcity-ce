@@ -37,7 +37,7 @@ function SWEP:DrawHUD()
 
 	if GetViewEntity() ~= owner then return end
 	if owner:InVehicle() then return end
-	local Tr = hg.eyeTrace(owner,self.ReachDistance)
+	local Tr = zc.eyeTrace(owner,self.ReachDistance)
 	if not Tr then return end
 	local Size = math.max(math.min(1 - (Tr and Tr.Fraction or 0), 1), 0.1)
 	local x, y = Tr.HitPos:ToScreen().x, Tr.HitPos:ToScreen().y
@@ -52,8 +52,8 @@ function SWEP:DrawHUD()
 
 	local ent = IsValid(Tr.Entity) and Tr.Entity.organism and Tr.Entity or owner
 	if ent.organism then
-		if Tr.Entity == ent then ent.is_lookedat = hg.KeyDown(owner, IN_RELOAD) end
-		lerpalpha = LerpFT(0.1, lerpalpha, hg.KeyDown(owner, IN_RELOAD) and 255 + 2000 or 0)
+		if Tr.Entity == ent then ent.is_lookedat = zc.KeyDown(owner, IN_RELOAD) end
+		lerpalpha = LerpFT(0.1, lerpalpha, zc.KeyDown(owner, IN_RELOAD) and 255 + 2000 or 0)
 		local lerpalpha = lerpalpha - 2000
 		local org = ent.organism
 		local add_x = 0
@@ -75,60 +75,60 @@ function SWEP:DrawHUD()
 		surface.DrawText(txt)
 
 		if org.blood and org.blood < 4000 then
-			hg.DrawAffliction(posx + add_x, posy - h, w, h, (4000 - org.blood) / 4000, hg.afflictions.pale, lerpalpha, "Pale skin")
+			zc.DrawAffliction(posx + add_x, posy - h, w, h, (4000 - org.blood) / 4000, zc.afflictions.pale, lerpalpha, "Pale skin")
 
 			add_x = add_x + w + add
 		end
 
 		if org.bleed and org.bleed > 0.1 then
-			hg.DrawAffliction(posx + add_x, posy - h, w, h, math.min(org.bleed / 10, 1), hg.afflictions.bleeding, lerpalpha, "Bleeding")
+			zc.DrawAffliction(posx + add_x, posy - h, w, h, math.min(org.bleed / 10, 1), zc.afflictions.bleeding, lerpalpha, "Bleeding")
 
 			add_x = add_x + w + add
 		end
 
 		if org.disorientation and org.disorientation > 0.1 and ent == owner then
-			hg.DrawAffliction(posx + add_x, posy - h, w, h, math.min(org.disorientation / 2, 1), hg.afflictions.concussion, lerpalpha, "Concussion")
+			zc.DrawAffliction(posx + add_x, posy - h, w, h, math.min(org.disorientation / 2, 1), zc.afflictions.concussion, lerpalpha, "Concussion")
 
 			add_x = add_x + w + add
 		end
 
 		if org.rleg and org.rleg > 0 then
-			hg.DrawAffliction(posx + add_x, posy - h, w, h, org.rleg, org.rleg > 0.999 and hg.afflictions.lfracture or hg.afflictions.lblunt, lerpalpha, org.rleg > 0.999 and "Right leg fracture" or "Right leg blunt trauma")
+			zc.DrawAffliction(posx + add_x, posy - h, w, h, org.rleg, org.rleg > 0.999 and zc.afflictions.lfracture or zc.afflictions.lblunt, lerpalpha, org.rleg > 0.999 and "Right leg fracture" or "Right leg blunt trauma")
 
 			add_x = add_x + w + add
 		end
 
 		if org.lleg and org.lleg > 0 then
-			hg.DrawAffliction(posx + add_x, posy - h, w, h, org.lleg, org.lleg > 0.999 and hg.afflictions.lfracture or hg.afflictions.lblunt, lerpalpha, org.lleg > 0.999 and "Left leg fracture" or "Left leg blunt trauma")
+			zc.DrawAffliction(posx + add_x, posy - h, w, h, org.lleg, org.lleg > 0.999 and zc.afflictions.lfracture or zc.afflictions.lblunt, lerpalpha, org.lleg > 0.999 and "Left leg fracture" or "Left leg blunt trauma")
 
 			add_x = add_x + w + add
 		end
 
 		if org.rarm and org.rarm > 0 then
-			hg.DrawAffliction(posx + add_x, posy - h, w, h, org.rarm, org.rarm > 0.999 and hg.afflictions.afracture or hg.afflictions.ablunt, lerpalpha, org.rarm > 0.999 and "Right arm fracture" or "Right arm blunt trauma")
+			zc.DrawAffliction(posx + add_x, posy - h, w, h, org.rarm, org.rarm > 0.999 and zc.afflictions.afracture or zc.afflictions.ablunt, lerpalpha, org.rarm > 0.999 and "Right arm fracture" or "Right arm blunt trauma")
 
 			add_x = add_x + w + add
 		end
 
 		if org.larm and org.larm > 0 then
-			hg.DrawAffliction(posx + add_x, posy - h, w, h, org.larm, org.larm > 0.999 and hg.afflictions.afracture or hg.afflictions.ablunt, lerpalpha, org.larm > 0.999 and "Left arm fracture" or "Left arm blunt trauma")
+			zc.DrawAffliction(posx + add_x, posy - h, w, h, org.larm, org.larm > 0.999 and zc.afflictions.afracture or zc.afflictions.ablunt, lerpalpha, org.larm > 0.999 and "Left arm fracture" or "Left arm blunt trauma")
 
 			add_x = add_x + w + add
 		end
 
 		if org.pain and org.pain > 20 and not org.unconscious then
-			hg.DrawAffliction(posx + add_x, posy - h, w, h, (org.pain - 20) / 30, hg.afflictions.pain, lerpalpha, "Pain")
+			zc.DrawAffliction(posx + add_x, posy - h, w, h, (org.pain - 20) / 30, zc.afflictions.pain, lerpalpha, "Pain")
 
 			add_x = add_x + w + add
 		end
 
 		if org.o2 and org.o2[1] < 5 then
-			hg.DrawAffliction(posx + add_x, posy - h, w, h, (5 - org.o2[1]) / 5, hg.afflictions.lung_failure, lerpalpha, "Lung failure")
+			zc.DrawAffliction(posx + add_x, posy - h, w, h, (5 - org.o2[1]) / 5, zc.afflictions.lung_failure, lerpalpha, "Lung failure")
 
 			add_x = add_x + w + add
 		end
 
-		--hg.DrawAffliction(scrw * 0.05 + add_x, scrh * 0.95 - h, w, h, 1, 3, 255)
+		--zc.DrawAffliction(scrw * 0.05 + add_x, scrh * 0.95 - h, w, h, 1, 3, 255)
 
 		if add_x == 0 then
 			surface.SetFont("HomigradFontLarge")
@@ -169,7 +169,7 @@ function SWEP:DrawWorldModel()
 
 	if (IsValid(owner)) then
 		local ang = owner:EyeAngles()
-		local tr = hg.eyeTrace(owner)
+		local tr = zc.eyeTrace(owner)
 
 		local pos = tr.StartPos + ang:Forward() * (-14) + ang:Up() * -9 * self.blockinganim
 		if owner.PlayerClassName == "sc_infiltrator" then
@@ -206,8 +206,8 @@ function SWEP:ModelAnim(model, pos, ang)
 
 	if !IsValid(owner) or !owner:IsPlayer() then return end
 
-	local ent = hg.GetCurrentCharacter(owner)
-	local tr = hg.eyeTrace(owner, 60, ent)
+	local ent = zc.GetCurrentCharacter(owner)
+	local tr = zc.eyeTrace(owner, 60, ent)
 	local eyeAng = owner:EyeAngles()
 
 	local vel = ent:GetVelocity()
@@ -290,7 +290,7 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen)
 	local owner = self:GetOwner()
 	if not IsValid(owner) then return end
 
-	self.walkinglerp = Lerp(hg.lerpFrameTime2(0.1),self.walkinglerp or 0, owner.InVehicle and owner:InVehicle() and 0 or hg.GetCurrentCharacter(owner):GetVelocity():LengthSqr())
+	self.walkinglerp = Lerp(zc.lerpFrameTime2(0.1),self.walkinglerp or 0, owner.InVehicle and owner:InVehicle() and 0 or zc.GetCurrentCharacter(owner):GetVelocity():LengthSqr())
 	self.huytime = self.huytime or 0
 	local walk = math_Clamp(self.walkinglerp / 10000,0,1)
 
@@ -337,7 +337,7 @@ function SWEP:SetHandPos(noset)
 	-- ply:SetupBones()
 
 	self.rhandik = (self:GetFists()) or (IsValid(ent) and twohands)
-	self.lhandik = (self:GetFists() and hg.CanUseLeftHand(ply)) or IsValid(ent)
+	self.lhandik = (self:GetFists() and zc.CanUseLeftHand(ply)) or IsValid(ent)
 
 
 	local ply_spine_index = ply:LookupBone("ValveBiped.Bip01_Spine4")
@@ -358,7 +358,7 @@ function SWEP:SetHandPos(noset)
 	end
 
 	if ply:GetNetVar("handcuffed",false) then
-		hg.handcuffedhands(ply)
+		zc.handcuffedhands(ply)
 
 		return
 	end
@@ -373,7 +373,7 @@ function SWEP:SetHandPos(noset)
 
 		ang[2] = ang[2] - break_data.Progress / 5
 
-		hg.DragHandsToPos(ply, ply:GetActiveWeapon(), head, true, 2, ang:Forward(), ang4, ang5)
+		zc.DragHandsToPos(ply, ply:GetActiveWeapon(), head, true, 2, ang:Forward(), ang4, ang5)
 	end
 
 	local ang = ply:EyeAngles()
@@ -385,7 +385,7 @@ function SWEP:SetHandPos(noset)
 	ply.lhold = lhmat
 
 	if self:GetFists() then
-		local bones = hg.TPIKBonesRH
+		local bones = zc.TPIKBonesRH
 
 		local lastaddpos = self:IsLocal() and self.lastAddPos or vector_origin
 		local posadd, _ = LocalToWorld(lastaddpos, angle_zero, vector_origin, ply:EyeAngles())
@@ -425,10 +425,10 @@ function SWEP:SetHandPos(noset)
 			self.blockAngR = LerpFT(0.1, self.blockAngR or angle_zero, (self:GetBlocking() and blockAng or (self:GetNextIdle() < CurTime() and idleAng or angle_zero)))
 			local _, ang = LocalToWorld(vector_origin, self.blockAngR, vector_origin, ang)
 			mat:SetAngles(ang)
-			hg.bone_apply_matrix(ply, rh, mat)
+			zc.bone_apply_matrix(ply, rh, mat)
 		end
 
-		local bones = hg.TPIKBonesLH
+		local bones = zc.TPIKBonesLH
 
 		posadd:Rotate(angle_zero)
 
@@ -466,7 +466,7 @@ function SWEP:SetHandPos(noset)
 			self.blockAngL = LerpFT(0.1, self.blockAngL or angle_zero, (self:GetBlocking() and -blockAng or (self:GetNextIdle() < CurTime() and -idleAng or angle_zero)))
 			local _, ang = LocalToWorld(vector_origin, self.blockAngL, vector_origin, ang)
 			mat:SetAngles(ang)
-			hg.bone_apply_matrix(ply, lh, mat)
+			zc.bone_apply_matrix(ply, lh, mat)
 		end
 	end
 
@@ -485,7 +485,7 @@ function SWEP:SetHandPos(noset)
 		kastet:SetModelScale(0.9) -- with new hands, 1 can be left
 	end
 
-	hg.DragHands(self:GetOwner(),self)
+	zc.DragHands(self:GetOwner(),self)
 
 	if self:GetFists() or self:GetBlocking() or IsValid(ply:GetNetVar("carryent")) then return end
 
@@ -504,7 +504,7 @@ function SWEP:SetHandPos(noset)
 			if self.laptime < CurTime() then
 				self.laptime = CurTime() + 1
 			end
-			hg.DragRightHand(ply, self, trace2.HitPos - ply:GetAimVector() * 5, ply:GetAimVector(), (trace2.Entity:IsWorld() and Lerp(1, trace2.HitNormal:Angle(), ply:EyeAngles() + ang180) or ply:EyeAngles() + ang180) + ang2 - ply:EyeAngles())
+			zc.DragRightHand(ply, self, trace2.HitPos - ply:GetAimVector() * 5, ply:GetAimVector(), (trace2.Entity:IsWorld() and Lerp(1, trace2.HitNormal:Angle(), ply:EyeAngles() + ang180) or ply:EyeAngles() + ang180) + ang2 - ply:EyeAngles())
 		end
 	end
 
@@ -521,7 +521,7 @@ function SWEP:SetHandPos(noset)
 			if self.laptime < CurTime() then
 				self.laptime = CurTime() + 1
 			end
-			hg.DragLeftHand(ply, self, trace.HitPos - ply:GetAimVector() * 5, ply:GetAimVector(), (trace.Entity:IsWorld() and Lerp(1, trace.HitNormal:Angle(), ply:EyeAngles() + ang180) or ply:EyeAngles() + ang180) + ang1 - ply:EyeAngles())
+			zc.DragLeftHand(ply, self, trace.HitPos - ply:GetAimVector() * 5, ply:GetAimVector(), (trace.Entity:IsWorld() and Lerp(1, trace.HitNormal:Angle(), ply:EyeAngles() + ang180) or ply:EyeAngles() + ang180) + ang1 - ply:EyeAngles())
 		end
 	end
 

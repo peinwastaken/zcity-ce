@@ -65,7 +65,7 @@ end
 
 function SKIN:PaintFrame(panel)
 	if (panel.bBackgroundBlur) then
-		hg.DrawBlur(panel, 10)
+		zc.DrawBlur(panel, 10)
 	end
 
 	surface.SetDrawColor(HOKMAH_VGUI.BackgroundColor)
@@ -89,7 +89,7 @@ end
 
 function SKIN:PaintBaseFrame(panel, width, height)
 	if (panel.bBackgroundBlur) then
-		hg.DrawBlur(panel, 10)
+		zc.DrawBlur(panel, 10)
 	end
 	surface.SetDrawColor(HOKMAH_VGUI.BackgroundColor)
 	surface.DrawRect(0, 0, width, height)
@@ -112,7 +112,7 @@ end
 function SKIN:PaintPanel(panel)
 	if(panel.m_bBackground)then
 		if(!panel.Blur)then
-			hg.DrawBlur(panel, 2, 0.2, 200)
+			zc.DrawBlur(panel, 2, 0.2, 200)
 		end
 
 		local width, height = panel:GetSize()
@@ -141,7 +141,7 @@ function SKIN:PaintMenuBackground(panel, width, height, alphaFraction)
 	surface.SetTexture(gradient)
 	surface.DrawTexturedRect(0, 0, width, height)
 
-	hg.DrawBlur(panel, alphaFraction * 15, nil, 200)
+	zc.DrawBlur(panel, alphaFraction * 15, nil, 200)
 end
 
 function SKIN:PaintPlaceholderPanel(panel, width, height, barWidth, padding)
@@ -381,7 +381,7 @@ function SKIN:PaintTextEntry( panel, w, h )
 end
 
 function SKIN:PaintEntityInfoBackground(panel, width, height)
-	-- hg.DrawBlur(panel, 1)
+	-- zc.DrawBlur(panel, 1)
 	surface.SetDrawColor(HOKMAH_VGUI.BackgroundColor)
 	surface.DrawRect(0, 0, width, height)
 
@@ -390,7 +390,7 @@ function SKIN:PaintEntityInfoBackground(panel, width, height)
 end
 
 function SKIN:PaintTooltipBackground(panel, width, height)
-	-- hg.DrawBlur(panel, 1)
+	-- zc.DrawBlur(panel, 1)
 	surface.SetDrawColor(HOKMAH_VGUI.BackgroundColor)
 	surface.DrawRect(0, 0, width, height)
 
@@ -521,7 +521,7 @@ function SKIN:PaintPropertySheet( panel, width, height )
 
 	--self.tex.Tab_Control( 0, Offset, w, h-Offset )
 
-	hg.DrawBlur(panel)
+	zc.DrawBlur(panel)
 
 	surface.SetDrawColor(uiColors.darkPanel)
 	surface.DrawRect(0, 0, width, height)
@@ -549,7 +549,7 @@ function SKIN:PaintActiveTab( panel, w, h )
 end
 
 function SKIN:PaintMenu(panel, width, height)
-	hg.DrawBlur(panel)
+	zc.DrawBlur(panel)
 
 	surface.SetDrawColor(uiColors.darkPanel)
 	surface.DrawRect(0, 0, width, height)
@@ -603,7 +603,7 @@ function SKIN:PaintChatboxTabs(panel, width, height, alpha)
 end
 
 function SKIN:PaintChatboxBackground(panel, width, height)
-	hg.DrawBlur(panel, 10)
+	zc.DrawBlur(panel, 10)
 
 	if (panel:GetActive()) then
 		surface.SetDrawColor(ColorAlpha(HOKMAH_VGUI.MainColor, 120))

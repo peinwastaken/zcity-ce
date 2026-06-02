@@ -1,9 +1,9 @@
 --
-zb = zb or {}
+zc = zc or {}
 
-zb.Experience = zb.Experience or {}
-zb.Experience.PlayerInstances = zb.Experience.PlayerInstances or {}
-zb.Experience.Active = zb.Experience.Active or false
+zc.Experience = zc.Experience or {}
+zc.Experience.PlayerInstances = zc.Experience.PlayerInstances or {}
+zc.Experience.Active = zc.Experience.Active or false
 
 hook.Add("ZC_OnDatabaseConnected", "ZC_ExperienceCreateData", function()
 	local query
@@ -19,7 +19,7 @@ hook.Add("ZC_OnDatabaseConnected", "ZC_ExperienceCreateData", function()
 		query:PrimaryKey("steamid")
 	query:Execute()
 
-    zb.Experience.Active = true
+    zc.Experience.Active = true
 end)
 
 --local query = mysql:Drop("zb_experience")
@@ -29,8 +29,8 @@ hook.Add( "PlayerInitialSpawn","ZC_LoadExperienceOnSpawn", function( ply )
     local name = ply:Name()
 	local steamID64 = ply:SteamID64()
 
-    if not zb.Experience.Active then
-        zb.Experience.PlayerInstances[steamID64] = {}
+    if not zc.Experience.Active then
+        zc.Experience.PlayerInstances[steamID64] = {}
         return
     end 
 
@@ -48,13 +48,13 @@ hook.Add( "PlayerInitialSpawn","ZC_LoadExperienceOnSpawn", function( ply )
 					updateQuery:Where("steamid", steamID64)
 				updateQuery:Execute()
 
-				zb.Experience.PlayerInstances[steamID64] = {}
+				zc.Experience.PlayerInstances[steamID64] = {}
 
-                zb.Experience.PlayerInstances[steamID64].skill = tonumber(result[1].skill)
-                zb.Experience.PlayerInstances[steamID64].experience = tonumber(result[1].experience)
-                zb.Experience.PlayerInstances[steamID64].deaths = tonumber(result[1].deaths)
-                zb.Experience.PlayerInstances[steamID64].kills = tonumber(result[1].kills)
-                zb.Experience.PlayerInstances[steamID64].suicides = tonumber(result[1].suicides)
+                zc.Experience.PlayerInstances[steamID64].skill = tonumber(result[1].skill)
+                zc.Experience.PlayerInstances[steamID64].experience = tonumber(result[1].experience)
+                zc.Experience.PlayerInstances[steamID64].deaths = tonumber(result[1].deaths)
+                zc.Experience.PlayerInstances[steamID64].kills = tonumber(result[1].kills)
+                zc.Experience.PlayerInstances[steamID64].suicides = tonumber(result[1].suicides)
 
 			else
 				local insertQuery = mysql:Insert("zb_experience")
@@ -67,13 +67,13 @@ hook.Add( "PlayerInitialSpawn","ZC_LoadExperienceOnSpawn", function( ply )
                     insertQuery:Insert("suicides", 0)
 				insertQuery:Execute()
 
-				zb.Experience.PlayerInstances[steamID64] = {}
+				zc.Experience.PlayerInstances[steamID64] = {}
 
-				zb.Experience.PlayerInstances[steamID64].skill = 0
-                zb.Experience.PlayerInstances[steamID64].experience = 0
-                zb.Experience.PlayerInstances[steamID64].deaths = 0
-                zb.Experience.PlayerInstances[steamID64].kills = 0
-                zb.Experience.PlayerInstances[steamID64].suicides = 0
+				zc.Experience.PlayerInstances[steamID64].skill = 0
+                zc.Experience.PlayerInstances[steamID64].experience = 0
+                zc.Experience.PlayerInstances[steamID64].deaths = 0
+                zc.Experience.PlayerInstances[steamID64].kills = 0
+                zc.Experience.PlayerInstances[steamID64].suicides = 0
 
 			end
 		end)
@@ -85,7 +85,7 @@ local plyMeta = FindMetaTable("Player")
 
 function plyMeta:GetExp()
 
-    return math.Round(zb.Experience.PlayerInstances[self:SteamID64()].experience) or 0
+    return math.Round(zc.Experience.PlayerInstances[self:SteamID64()].experience) or 0
 
 end
 
@@ -93,9 +93,9 @@ function plyMeta:GiveExp( ammout )
 
     local steamID64 = self:SteamID64()
 
-    if !zb.Experience or !zb.Experience.PlayerInstances or !zb.Experience.PlayerInstances[steamID64] then return end
+    if !zc.Experience or !zc.Experience.PlayerInstances or !zc.Experience.PlayerInstances[steamID64] then return end
 
-    zb.Experience.PlayerInstances[steamID64].experience =  math.max( (zb.Experience.PlayerInstances[steamID64].experience or 0) + ammout, 0 )
+    zc.Experience.PlayerInstances[steamID64].experience =  math.max( (zc.Experience.PlayerInstances[steamID64].experience or 0) + ammout, 0 )
 
 	local updateQuery = mysql:Update("zb_experience")
 		updateQuery:Update("experience", self:GetExp(),0)
@@ -111,7 +111,7 @@ end
 
 function plyMeta:GetSkill()
 
-    return zb.Experience.PlayerInstances[self:SteamID64()].skill or 0
+    return zc.Experience.PlayerInstances[self:SteamID64()].skill or 0
 
 end
 
@@ -119,13 +119,13 @@ function plyMeta:GiveSkill( ammout )
 
     local steamID64 = self:SteamID64()
 
-    if not zb.Experience.Active then
-        zb.Experience.PlayerInstances[steamID64] = {}
+    if not zc.Experience.Active then
+        zc.Experience.PlayerInstances[steamID64] = {}
         return
     end 
 
 
-    zb.Experience.PlayerInstances[steamID64].skill = math.max( zb.Experience.PlayerInstances[steamID64].skill + ammout, 0 )
+    zc.Experience.PlayerInstances[steamID64].skill = math.max( zc.Experience.PlayerInstances[steamID64].skill + ammout, 0 )
 
 	local updateQuery = mysql:Update("zb_experience")
 		updateQuery:Update("skill", self:GetSkill())
@@ -137,7 +137,7 @@ end
 
 function plyMeta:GetDeaths()
 
-    return zb.Experience.PlayerInstances[self:SteamID64()].deaths or 0
+    return zc.Experience.PlayerInstances[self:SteamID64()].deaths or 0
 
 end
 
@@ -145,13 +145,13 @@ function plyMeta:GiveDeaths( ammout )
 
     local steamID64 = self:SteamID64()
 
-    if not zb.Experience.Active then
-        zb.Experience.PlayerInstances[steamID64] = {}
+    if not zc.Experience.Active then
+        zc.Experience.PlayerInstances[steamID64] = {}
         return
     end 
 
 
-    zb.Experience.PlayerInstances[steamID64].deaths = math.max( zb.Experience.PlayerInstances[steamID64].deaths + ammout, 0 )
+    zc.Experience.PlayerInstances[steamID64].deaths = math.max( zc.Experience.PlayerInstances[steamID64].deaths + ammout, 0 )
 
 	local updateQuery = mysql:Update("zb_experience")
 		updateQuery:Update("deaths", self:GetDeaths())
@@ -162,7 +162,7 @@ end
 
 function plyMeta:GetKills()
 
-    return zb.Experience.PlayerInstances[self:SteamID64()].kills or 0
+    return zc.Experience.PlayerInstances[self:SteamID64()].kills or 0
 
 end
 
@@ -170,12 +170,12 @@ function plyMeta:GiveKills( ammout )
 
     local steamID64 = self:SteamID64()
 
-    if not zb.Experience.Active then
-        zb.Experience.PlayerInstances[steamID64] = {}
+    if not zc.Experience.Active then
+        zc.Experience.PlayerInstances[steamID64] = {}
         return
     end 
 
-    zb.Experience.PlayerInstances[steamID64].kills = math.max( zb.Experience.PlayerInstances[steamID64].kills + ammout, 0 )
+    zc.Experience.PlayerInstances[steamID64].kills = math.max( zc.Experience.PlayerInstances[steamID64].kills + ammout, 0 )
 
 	local updateQuery = mysql:Update("zb_experience")
 		updateQuery:Update("kills", self:GetKills())
@@ -187,7 +187,7 @@ end
 
 function plyMeta:GetSuicides( ammout )
 
-    return zb.Experience.PlayerInstances[self:SteamID64()].suicides or 0
+    return zc.Experience.PlayerInstances[self:SteamID64()].suicides or 0
 
 end
 
@@ -195,12 +195,12 @@ function plyMeta:GiveSuicides( ammout )
 
     local steamID64 = self:SteamID64()
 
-    if not zb.Experience.Active then
-        zb.Experience.PlayerInstances[steamID64] = {}
+    if not zc.Experience.Active then
+        zc.Experience.PlayerInstances[steamID64] = {}
         return
     end 
 
-    zb.Experience.PlayerInstances[steamID64].suicides =  math.max( zb.Experience.PlayerInstances[steamID64].suicides + ammout, 0 )
+    zc.Experience.PlayerInstances[steamID64].suicides =  math.max( zc.Experience.PlayerInstances[steamID64].suicides + ammout, 0 )
 
 	local updateQuery = mysql:Update("zb_experience")
 		updateQuery:Update("suicides", self:GetSuicides())
@@ -216,8 +216,8 @@ net.Receive("ZC_ExperienceGet",function(len,ply)
 
     local steamID64 = ply:SteamID64()
 
-    if not zb.Experience.Active then
-        zb.Experience.PlayerInstances[steamID64] = {}
+    if not zc.Experience.Active then
+        zc.Experience.PlayerInstances[steamID64] = {}
         return
     end 
 

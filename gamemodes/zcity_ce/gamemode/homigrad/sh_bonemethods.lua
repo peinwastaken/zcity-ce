@@ -1,4 +1,4 @@
-hg.bone = hg.bone or {} -- post-traumatic personality syndrome
+zc.bone = zc.bone or {} -- post-traumatic personality syndrome
 
 local tbl = {
 	["head"] = "ValveBiped.Bip01_Head1",
@@ -12,7 +12,7 @@ local tbl = {
 	["l_forearm"] = "ValveBiped.Bip01_L_Forearm",
 }
 
-hg.bone.client_only = {
+zc.bone.client_only = {
 	["r_finger0"] = "ValveBiped.Bip01_R_Finger0",
 	["r_finger1"] = "ValveBiped.Bip01_R_Finger1",
 	["r_finger11"] = "ValveBiped.Bip01_R_Finger11",
@@ -48,7 +48,7 @@ function PLAYER:MBAngles(bone, ang)
 	end)
 end
 
-hg.bone.matrixManual_Name = tbl
+zc.bone.matrixManual_Name = tbl
 
 
 local vecZero, angZero, vecFull = Vector(0, 0, 0), Angle(0, 0, 0), Vector(1, 1, 1)
@@ -70,7 +70,7 @@ local function reset(ply)
 end
 
 local function createLayer(ply, layer, lookup_name)
-	boneName = hg.bone.matrixManual_Name[lookup_name]
+	boneName = zc.bone.matrixManual_Name[lookup_name]
 	boneID = isnumber(lookup_name) and lookup_name or ply:LookupBone(boneName)
 
 	if not boneID then return end
@@ -148,7 +148,7 @@ local function recursive_bones(ply, bone)
 end
 
 local dtime
-function hg.HomigradBones(ply, dtime)
+function zc.HomigradBones(ply, dtime)
 	--if !IsValid(ply) or !ply:IsPlayer() or !ply:Alive() or IsValid(ply.FakeRagdoll) then return end
 	if !IsValid(ply) or !ply:IsPlayer() or !ply:Alive() then return end
 
@@ -168,7 +168,7 @@ function hg.HomigradBones(ply, dtime)
 	hook_Run("ZC_UpdatePlayerBones", ply, dtime2)
 
 	--[[for bonename, tbl in pairs(ply.manipulated) do
-		boneName = hg.bone.matrixManual_Name[bonename]
+		boneName = zc.bone.matrixManual_Name[bonename]
 		boneID = ply:LookupBone(boneName)
 		ply:ManipulateBonePosition(boneID, tbl.Pos, false)
 		ply:ManipulateBoneAngles(boneID, tbl.Ang, false)
@@ -178,7 +178,7 @@ function hg.HomigradBones(ply, dtime)
 		print(ent:GetFlexName(i))
 	end--]]
 
-	--[[local ent = hg.GetCurrentCharacter(ply)
+	--[[local ent = zc.GetCurrentCharacter(ply)
 	local blink = ent:GetFlexIDByName("blink")
 	local set = ply.suiciding and 1 or 0
 	if blink and ent:GetFlexWeight(blink) != set then
@@ -186,7 +186,7 @@ function hg.HomigradBones(ply, dtime)
 	end--]]
 
 	if ply.organism and ply.IsBerserk and ply:IsBerserk() and !IsValid(ply.FakeRagdoll) and ply.organism.llegamputated and ply.organism.rlegamputated then
-		hg.bone.Set(ply, 0, -vector_up * 15, angle_zero, "berserk", 0.01, dtime2)
+		zc.bone.Set(ply, 0, -vector_up * 15, angle_zero, "berserk", 0.01, dtime2)
 	end
 
 	--ent:SetFlexWeight()
@@ -204,7 +204,7 @@ function hg.HomigradBones(ply, dtime)
 					continue
 				end
 
-				hg.bone.Set(ply, bone, vector_origin, angle_zero, layer, 0.01, dtime2, true)
+				zc.bone.Set(ply, bone, vector_origin, angle_zero, layer, 0.01, dtime2, true)
 			end
 		end
 	end
@@ -329,11 +329,11 @@ function hg.HomigradBones(ply, dtime)
 
 	--[[for i = 0, ply:GetBoneCount() - 1 do
 		if not ply.manipulate[i] then continue end
-		hg.bone.Set(ply, i, ply.manipulate[i][1], ply.manipulate[i][2], "huy", 1, dtime, true)
+		zc.bone.Set(ply, i, ply.manipulate[i][1], ply.manipulate[i][2], "huy", 1, dtime, true)
 	end--]]
 end
 
-function hg.get_unmanipulated_bones(ply, bone, matmodify)--set bone to 0 for the 1-st recurse
+function zc.get_unmanipulated_bones(ply, bone, matmodify)--set bone to 0 for the 1-st recurse
 	ply.unmanipulated = ply.unmanipulated or {}
 	matmodify = matmodify or Matrix()
 
@@ -370,17 +370,17 @@ function hg.get_unmanipulated_bones(ply, bone, matmodify)--set bone to 0 for the
 	for i = 1, #children do
 		local bonec = children[i]
 
-		hg.get_unmanipulated_bones(ply, bonec, modify)
+		zc.get_unmanipulated_bones(ply, bonec, modify)
 	end
 end
 
 hook.Add("ZC_PlayerThink", "ZC_RunPlayerBoneUpdates", function(ply, time, dtime)
-	hg.HomigradBones(ply, dtime)
+	zc.HomigradBones(ply, dtime)
 end)
 
-function hg.bone.Set(ply, lookup_name, vec, ang, layer, lerp, dtime2)
+function zc.bone.Set(ply, lookup_name, vec, ang, layer, lerp, dtime2)
 	local dtime = dtime2 or dtime
-	boneName = hg.bone.matrixManual_Name[lookup_name]
+	boneName = zc.bone.matrixManual_Name[lookup_name]
 	boneID = isnumber(lookup_name) and lookup_name or ply:LookupBone(boneName ~= nil and boneName or lookup_name)
 
 	if not boneID then return end
@@ -391,16 +391,16 @@ function hg.bone.Set(ply, lookup_name, vec, ang, layer, lerp, dtime2)
 		createLayer(ply, layer, boneID)
 
 		if lerp then
-			vec = LerpVector(hg.lerpFrameTime(lerp, dtime), ply.manipulated[boneID].layers[layer].Pos, vec)
-			ang = LerpAngle(hg.lerpFrameTime(lerp, dtime), ply.manipulated[boneID].layers[layer].Ang, ang)
+			vec = LerpVector(zc.lerpFrameTime(lerp, dtime), ply.manipulated[boneID].layers[layer].Pos, vec)
+			ang = LerpAngle(zc.lerpFrameTime(lerp, dtime), ply.manipulated[boneID].layers[layer].Ang, ang)
 		end
 
-		local oldpos, oldang = hg.bone.Get(ply, boneID)
+		local oldpos, oldang = zc.bone.Get(ply, boneID)
 		--print(oldang)
 		local setPos = oldpos - ply.manipulated[boneID].layers[layer].Pos + vec
 		local setAng = oldang - ply.manipulated[boneID].layers[layer].Ang + ang
 
-		hg.bone.SetRaw(ply, boneID, setPos, setAng)
+		zc.bone.SetRaw(ply, boneID, setPos, setAng)
 
 		--print(layer, lookup_name, oldang, ply.layers[layer][lookup_name].Ang, ang, setAng)
 
@@ -410,7 +410,7 @@ function hg.bone.Set(ply, lookup_name, vec, ang, layer, lerp, dtime2)
 	end
 end
 --PrintTable(Player(3).manipulated)
-function hg.bone.SetRaw(ply, boneID, vec, ang)
+function zc.bone.SetRaw(ply, boneID, vec, ang)
 	ply.manipulated = ply.manipulated or {}
 	ply.manipulated[boneID] = ply.manipulated[boneID] or {}
 
@@ -421,8 +421,8 @@ function hg.bone.SetRaw(ply, boneID, vec, ang)
 	ply:ManipulateBoneAngles(boneID, ang, false)
 end
 
-function hg.bone.Get(ply, lookup_name)
-	boneName = hg.bone.matrixManual_Name[lookup_name]
+function zc.bone.Get(ply, lookup_name)
+	boneName = zc.bone.matrixManual_Name[lookup_name]
 	boneID = isnumber(lookup_name) and lookup_name or ply:LookupBone(boneName)
 
 	if not boneID or not ply.manipulated[boneID] then return end

@@ -10,13 +10,13 @@ teams = {
 }
 
 local team_GetPlayers = team.GetPlayers
-function zb:BalancedChoice(first, second)
+function zc:BalancedChoice(first, second)
 	local team0, team1 = team_GetPlayers(first), team_GetPlayers(second)
 	return (#team0 > #team1 and second) or (#team1 > #team0 and first) or first
 end
 
 local player_GetAll = player.GetAll
-function zb:AutoBalance()
+function zc:AutoBalance()
 	local mode = CurrentRound()
 
 	if mode.OverrideBalance and mode:OverrideBalance() then return end
@@ -28,6 +28,6 @@ function zb:AutoBalance()
 
 	for _, ply in RandomPairs(player_GetAll()) do
 		if ply:Team() == TEAM_SPECTATOR then continue end
-		ply:SetTeam(zb:BalancedChoice(0, 1))
+		ply:SetTeam(zc:BalancedChoice(0, 1))
 	end
 end

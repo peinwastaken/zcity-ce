@@ -1,6 +1,6 @@
 --\\Translate plugin things into your things
-hg.Abnormalties = hg.Abnormalties or {}
-local PLUGIN = hg.Abnormalties
+zc.Abnormalties = zc.Abnormalties or {}
+local PLUGIN = zc.Abnormalties
 --//
 
 --\\
@@ -73,8 +73,8 @@ hook.Add("Think", "ZC_AbnormalitiesConjureEqualizer", function()
 		end
 	end
 end)
--- ulx luarun hg.Abnormalties.FunMode = true for _, ply in player.Iterator() do hg.AddArmor(ply, 'ego_equalizer') end
--- ulx luarun hg.Abnormalties.FunMode = true for _, ply in player.Iterator() do ply:Give('weapon_bleeding_musket') ply.Abnormalties_Blood = 1000000 end
+-- ulx luarun zc.Abnormalties.FunMode = true for _, ply in player.Iterator() do zc.AddArmor(ply, 'ego_equalizer') end
+-- ulx luarun zc.Abnormalties.FunMode = true for _, ply in player.Iterator() do ply:Give('weapon_bleeding_musket') ply.Abnormalties_Blood = 1000000 end
 hook.Add("PostCleanupMap", "ZC_AbnormalitiesConjureEqualizer", function()
 	PLUGIN.ConjureEqualizer.ToConjure = {}
 end)
@@ -83,7 +83,7 @@ hook.Add("PlayerPostThink", "ZC_AbnormalitiesConjureEqualizer", function(ply)
 	if(!PLUGIN.FunMode)then
 		if(ply.armors and ply:Alive())then
 			if(ply.armors["torso"] == "ego_equalizer")then
-				if(ply.Karma and ply.Karma < zb.MaxKarma)then
+				if(ply.Karma and ply.Karma < zc.MaxKarma)then
 					ply:Kill()
 					PLUGIN.ShowMessage(ply, "You received your punishment")
 				end
@@ -95,7 +95,7 @@ end)
 hook.Add("ZC_CanEquipArmor", "ZC_AbnormalitiesConjureEqualizer", function(ply, armor_name)
 	if(!PLUGIN.FunMode)then
 		if(armor_name == "ego_equalizer")then
-			if(ply.Karma and ply.Karma < zb.MaxKarma)then
+			if(ply.Karma and ply.Karma < zc.MaxKarma)then
 				PLUGIN.ShowMessage(ply, "It seems that I'm unworthy")
 				
 				return false

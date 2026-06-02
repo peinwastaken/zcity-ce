@@ -1,8 +1,8 @@
-hg.underberserk = hg.underberserk or false
-hg.underberserk2 = hg.underberserk2 or false
-hg.berserkStartTime = hg.berserkStartTime or 0
-hg.berserkStartTime2 = hg.berserkStartTime2 or 0
-hg.berserkStation = hg.berserkStation or nil
+zc.underberserk = zc.underberserk or false
+zc.underberserk2 = zc.underberserk2 or false
+zc.berserkStartTime = zc.berserkStartTime or 0
+zc.berserkStartTime2 = zc.berserkStartTime2 or 0
+zc.berserkStation = zc.berserkStation or nil
 
 local tab = {
 	[ "$pp_colour_addr" ] = 0,
@@ -38,17 +38,17 @@ hook.Add("RenderScreenspaceEffects", "ZC_BerserkEffect", function()
 	local organism = lply:Alive() and lply.organism
 
 	if !organism then
-		hg.underberserk = false
-		hg.underberserk2 = false
+		zc.underberserk = false
+		zc.underberserk2 = false
 
-		if IsValid(hg.berserkStation) then
-			hg.berserkStation:Stop()
-			hg.berserkStation = nil
+		if IsValid(zc.berserkStation) then
+			zc.berserkStation:Stop()
+			zc.berserkStation = nil
 			-- atlaschat.font:SetString("atlaschat.theme.text")
 		end
 
-		hg.notificationFont = "HuyFont"
-		hg.berserkIntensity = 0
+		zc.notificationFont = "HuyFont"
+		zc.berserkIntensity = 0
 
 		return
 	end
@@ -56,17 +56,17 @@ hook.Add("RenderScreenspaceEffects", "ZC_BerserkEffect", function()
 	local berserk = (organism.berserk or 0)
 	local berserkClamped = math.Clamp(berserk, 0, 3) * (organism.consciousness or 1)
 
-	if berserk > 0.0001 and (!hg.underberserk and !hg.underberserk2) then
-		hg.underberserk = true
+	if berserk > 0.0001 and (!zc.underberserk and !zc.underberserk2) then
+		zc.underberserk = true
 		surface.PlaySound("zbattle/deathsample.ogg")
 
-		hg.berserkStartTime = SysTime()
+		zc.berserkStartTime = SysTime()
 
 		local part = CreateParticleSystem( LocalPlayer(), "[2]sparkle1", PATTACH_POINT_FOLLOW, 1)
 
-		hg.currentNotification = nil
-		hg.notifications = {}
-		hg.CreateNotificationBerserk("I feel...")
+		zc.currentNotification = nil
+		zc.notifications = {}
+		zc.CreateNotificationBerserk("I feel...")
 
 		timer.Simple(3.95, function()
 			if IsValid(part) then
@@ -79,35 +79,35 @@ hook.Add("RenderScreenspaceEffects", "ZC_BerserkEffect", function()
 				end)
 			end
 
-			hg.underberserk = false
-			hg.underberserk2 = true
+			zc.underberserk = false
+			zc.underberserk2 = true
 			sound.PlayFile(path:GetString(), "noblock", function(channel)
-				hg.berserkStation = channel
+				zc.berserkStation = channel
 				channel:EnableLooping(true)
 				-- atlaschat.font:SetString("BerserkChatFont")
 			end)
 
-			hg.currentNotification = nil
-			hg.notifications = {}
-			hg.CreateNotificationBerserk("GREAT.")
+			zc.currentNotification = nil
+			zc.notifications = {}
+			zc.CreateNotificationBerserk("GREAT.")
 
-			hg.berserkStartTime2 = SysTime()
+			zc.berserkStartTime2 = SysTime()
 		end)
 	elseif berserk < 0.0001 then
-		hg.underberserk = false
-		hg.underberserk2 = false
-		if IsValid(hg.berserkStation) then
-			hg.berserkStation:Stop()
-			hg.berserkStation = nil
+		zc.underberserk = false
+		zc.underberserk2 = false
+		if IsValid(zc.berserkStation) then
+			zc.berserkStation:Stop()
+			zc.berserkStation = nil
 			-- atlaschat.font:SetString("atlaschat.theme.text")
 		end
 
-		hg.notificationFont = "HuyFont"
-		hg.berserkIntensity = 0
+		zc.notificationFont = "HuyFont"
+		zc.berserkIntensity = 0
 	end
 
-	if hg.underberserk then
-		local intensity = (SysTime() - hg.berserkStartTime)
+	if zc.underberserk then
+		local intensity = (SysTime() - zc.berserkStartTime)
 		tab[ "$pp_colour_contrast" ] = intensity / 2
 		tab[ "$pp_colour_addr" ] = intensity / 10
 		tab[ "$pp_colour_brightness" ] = intensity / 10
@@ -121,10 +121,10 @@ hook.Add("RenderScreenspaceEffects", "ZC_BerserkEffect", function()
 		render.DrawScreenQuad()
 	end
 
-	if hg.underberserk2 and IsValid(hg.berserkStation) then
-		--local intensity = ((hg.berserkStartTime2 + SysTime()) / 60) * 70 % 1
+	if zc.underberserk2 and IsValid(zc.berserkStation) then
+		--local intensity = ((zc.berserkStartTime2 + SysTime()) / 60) * 70 % 1
 		--intensity = math.abs(math.cos(1 - (intensity * 2))) * berserkClamped
-		local intensity = 1 - ((hg.berserkStation:GetTime() - offset:GetFloat()) / 60 * bpm:GetInt())
+		local intensity = 1 - ((zc.berserkStation:GetTime() - offset:GetFloat()) / 60 * bpm:GetInt())
 		intensity = (intensity - math.Round(intensity)) % 1
 		--intensity = math.sqrt(math.sqrt(intensity))
 		intensity = math.Clamp((intensity * 0.25 + 0.75), 0, 1)
@@ -141,14 +141,14 @@ hook.Add("RenderScreenspaceEffects", "ZC_BerserkEffect", function()
 		DrawColorModify(tab2)
 		DrawBloom( 0.65, intensity, 9, 9, 1, 1, intensity / 16, 0.2, 0.2 )
 
-		hg.notificationFont = "BerserkFont"
+		zc.notificationFont = "BerserkFont"
 
-		hg.berserkIntensity = intensity
-		hg.berserkClamped = berserkClamped
+		zc.berserkIntensity = intensity
+		zc.berserkClamped = berserkClamped
 	end
 
-	if IsValid(hg.berserkStation) then
-		hg.berserkStation:SetVolume(math.min(1, (organism.unconscious and 0) or berserkClamped))
+	if IsValid(zc.berserkStation) then
+		zc.berserkStation:SetVolume(math.min(1, (organism.unconscious and 0) or berserkClamped))
 	end
 end)
 
@@ -172,14 +172,14 @@ local grainMat = CreateMaterial("grain2berserk","screenspace_general",{
 })
 
 hook.Add("ZC_PostProcessingDraw", "ZC_BerserkEffect", function()
-	if hg.underberserk2 and hg.berserkClamped then
+	if zc.underberserk2 and zc.berserkClamped then
 		render.UpdateScreenEffectTexture()
 		render.UpdateFullScreenDepthTexture()
 
 		grainMat:SetFloat("$c0_x", CurTime()) -- time
 		grainMat:SetFloat("$c0_y", 0.5) -- gate
 		grainMat:SetFloat("$c0_z", 2) -- Pixelize
-		grainMat:SetFloat("$c1_x", 0.2 * hg.berserkClamped) -- lerp
+		grainMat:SetFloat("$c1_x", 0.2 * zc.berserkClamped) -- lerp
 		grainMat:SetFloat("$c1_y", 1.5) -- vignette intensity
 		grainMat:SetFloat("$c1_z", 0.2) -- BlurIntensity
 		grainMat:SetFloat("$c2_x", 6) -- r
@@ -193,12 +193,12 @@ hook.Add("ZC_PostProcessingDraw", "ZC_BerserkEffect", function()
 end)
 
 hook.Add("ZC_CalculateView","ZC_InsaneRollCam",function(ply, origin, angles, fova)
-	if ply:Alive() and hg.underberserk2 and IsValid(hg.berserkStation) and hg.berserkClamped then
-		local intensity = 1 - ((hg.berserkStation:GetTime() - offset:GetFloat()) / 60 * bpm:GetInt())
-		angles[1] = angles[1] - hg.berserkIntensity * 0.2
-		angles[3] = math.cos(CurTime() * 0.3) * hg.berserkClamped + hg.berserkIntensity * 2 * (intensity % 2 > 1 and 1 or -1)
+	if ply:Alive() and zc.underberserk2 and IsValid(zc.berserkStation) and zc.berserkClamped then
+		local intensity = 1 - ((zc.berserkStation:GetTime() - offset:GetFloat()) / 60 * bpm:GetInt())
+		angles[1] = angles[1] - zc.berserkIntensity * 0.2
+		angles[3] = math.cos(CurTime() * 0.3) * zc.berserkClamped + zc.berserkIntensity * 2 * (intensity % 2 > 1 and 1 or -1)
 		--print(fova)
-		fova[1] = fova[1] + hg.berserkIntensity * -2
+		fova[1] = fova[1] + zc.berserkIntensity * -2
 	end
 end)
 
@@ -243,7 +243,7 @@ local matGlow = Material("Sprites/light_glow02_add_noz")
 local red = Color(255, 58, 84)
 
 hook.Add("PostDrawTranslucentRenderables", "ZC_BerserkSky", function(depth, drawsky, sky3d)
-	if !hg.underberserk2 then return end
+	if !zc.underberserk2 then return end
 
 	if !drawsky then
 		cam.Start3D()
@@ -253,7 +253,7 @@ hook.Add("PostDrawTranslucentRenderables", "ZC_BerserkSky", function(depth, draw
 
 				local pos = (IsValid(ply.FakeRagdoll) and ply.FakeRagdoll:WorldSpaceCenter()) or ply:WorldSpaceCenter()
 				render.SetMaterial(matGlow)
-				local size = 20 * hg.berserkIntensity * (distance / 3000000)
+				local size = 20 * zc.berserkIntensity * (distance / 3000000)
 				if size > 1 then
 					render.DrawSprite(pos, size * 3, size, red)
 					render.DrawSprite(pos, size, size * 3, red)
@@ -265,11 +265,11 @@ hook.Add("PostDrawTranslucentRenderables", "ZC_BerserkSky", function(depth, draw
 	if (drawsky or sky3d) then
 		local sun_info = util.GetSunInfo()
 		if sun_info != nil then HM_sky_material:SetVector("$sunnormal", sun_info.direction) end
-		--alphacolor.a = hg.berserkIntensity
+		--alphacolor.a = zc.berserkIntensity
 		HM_sky_material:SetFloat("$duskscale",math.abs(math.sin(CurTime()*1.5))*1)
-		HM_sky_material:SetFloat("$duskintensity",0.2*hg.berserkIntensity/(hg.berserkIntensity/3))
+		HM_sky_material:SetFloat("$duskintensity",0.2*zc.berserkIntensity/(zc.berserkIntensity/3))
 
-		--print(hg.berserkIntensity)
+		--print(zc.berserkIntensity)
 		cam.Start3D(vector_origin, EyeAngles())
 			render.SetMaterial(HM_sky_material)
 			cam.IgnoreZ(true)

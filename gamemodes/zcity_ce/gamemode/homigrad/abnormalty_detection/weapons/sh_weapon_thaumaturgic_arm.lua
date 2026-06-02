@@ -116,8 +116,8 @@ function SWEP:HurtOwner()
 	ent.Abnormalties_Blood = (ent.Abnormalties_Blood or 0) + (lost_blood / max_blood_take) * 200
 	ent.organism.blood = new_blood
 	
-	if(hg.Abnormalties)then
-		hg.Abnormalties.ShowMessage(ent, tostring(math.Round(ent.Abnormalties_Blood)))
+	if(zc.Abnormalties)then
+		zc.Abnormalties.ShowMessage(ent, tostring(math.Round(ent.Abnormalties_Blood)))
 	end
 end
 
@@ -187,8 +187,8 @@ hook.Add("EntityTakeDamage", "ZC_AbnormalitiesWeapon", function(ent, dmg)
 				attacker.Abnormalties_Blood = (attacker.Abnormalties_Blood or 0) + (lost_blood / max_blood_take) * 200
 				ent.organism.blood = new_blood
 				
-				if(hg.Abnormalties)then
-					hg.Abnormalties.ShowMessage(attacker, tostring(math.Round(attacker.Abnormalties_Blood)))
+				if(zc.Abnormalties)then
+					zc.Abnormalties.ShowMessage(attacker, tostring(math.Round(attacker.Abnormalties_Blood)))
 				end
 			end
 		end

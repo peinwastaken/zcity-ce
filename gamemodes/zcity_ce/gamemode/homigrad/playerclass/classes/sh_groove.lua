@@ -19,7 +19,7 @@ local subnames = {
 function CLASS.On(self)
     if CLIENT then return end
     ApplyAppearance(self,nil,nil,nil,true)
-    local Appearance = self.CurAppearance or hg.Appearance.GetRandomAppearance()
+    local Appearance = self.CurAppearance or zc.Appearance.GetRandomAppearance()
     Appearance.AAttachments = ""
     Appearance.AColthes = ""
 	self:SetNWString("PlayerName",subnames[math.random(#subnames)] .. Appearance.AName)

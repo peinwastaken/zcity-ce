@@ -47,7 +47,7 @@ end
 function ENT:TakeByPlayer(activator)
 	if not activator:IsPlayer() then return end
 
-	local can = hg.AddArmor(activator,self.name, self)
+	local can = zc.AddArmor(activator,self.name, self)
     if can then
 		if self.zablevano then
 			activator:SetNetVar("zableval_masku", true)

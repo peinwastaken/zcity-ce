@@ -1,14 +1,14 @@
 --\\
 local uiColors = zc.colors.ui
 
-hg.VGUI = hg.VGUI or {}
-hg.VGUI.MainColor = uiColors.primaryColor
-hg.VGUI.SecondaryColor = uiColors.secondaryColor
-hg.VGUI.BackgroundColor = uiColors.backgroundColor
-hg.VGUI.MainSkin = "ZCity"
+zc.VGUI = zc.VGUI or {}
+zc.VGUI.MainColor = uiColors.primaryColor
+zc.VGUI.SecondaryColor = uiColors.secondaryColor
+zc.VGUI.BackgroundColor = uiColors.backgroundColor
+zc.VGUI.MainSkin = "ZCity"
 
-function hg.GetMainSkin()
-	return hg.VGUI.MainSkin
+function zc.GetMainSkin()
+	return zc.VGUI.MainSkin
 end
 --//
 
@@ -18,7 +18,7 @@ end)
 
 --; Adapted from Helix
 
--- HG.DrawBlur is in cl_pointshop.lua... sorry for this SHIT but this is needed so it loads everywhere properly.
+-- zc.DrawBlur is in cl_pointshop.lua... sorry for this SHIT but this is needed so it loads everywhere properly.
 
 --local zc_coolvetica = ConVarExists("zc_coolvetica") and GetConVar("zc_coolvetica") or CreateClientConVar("zc_coolvetica", "0", true, false, "changes every text to coolvetica because its good", 0, 1)
 local zc_font = ConVarExists("zc_font") and GetConVar("zc_font") or CreateClientConVar("zc_font", "Bahnschrift", true, false, "change every text font to selected because ui customization is cool")
@@ -157,7 +157,7 @@ function SKIN.tex.Menu_Strip(x, y, width, height, color)
 	surface.SetDrawColor(uiColors.blackHeavyOverlay)
 	surface.DrawRect(x, y, width, height)
 
-	surface.SetDrawColor(ColorAlpha(color or hg.VGUI.MainColor, 175))
+	surface.SetDrawColor(ColorAlpha(color or zc.VGUI.MainColor, 175))
 	surface.SetTexture(gradient)
 	surface.DrawTexturedRect(x, y, width, height)
 
@@ -166,14 +166,14 @@ end
 
 function SKIN:PaintFrame(panel)
 	if (!panel.bNoBackgroundBlur) then
-		hg.DrawBlur(panel, 10)
+		zc.DrawBlur(panel, 10)
 	end
 
 	surface.SetDrawColor(uiColors.darkPanel)
 	surface.DrawRect(0, 0, panel:GetWide(), panel:GetTall())
 
 	if (panel:GetTitle() != "" or panel.btnClose:IsVisible()) then
-		surface.SetDrawColor(hg.VGUI.MainColor)
+		surface.SetDrawColor(zc.VGUI.MainColor)
 		surface.DrawRect(0, 0, panel:GetWide(), 24)
 
 		if (panel.bHighlighted) then
@@ -181,19 +181,19 @@ function SKIN:PaintFrame(panel)
 		end
 	end
 
-	surface.SetDrawColor(hg.VGUI.MainColor)
+	surface.SetDrawColor(zc.VGUI.MainColor)
 	surface.DrawOutlinedRect(0, 0, panel:GetWide(), panel:GetTall())
 end
 
 function SKIN:PaintBaseFrame(panel, width, height)
 	if (!panel.bNoBackgroundBlur) then
-		hg.DrawBlur(panel, 10)
+		zc.DrawBlur(panel, 10)
 	end
 
 	surface.SetDrawColor(uiColors.darkPanel)
 	surface.DrawRect(0, 0, width, height)
 
-	surface.SetDrawColor(hg.VGUI.MainColor)
+	surface.SetDrawColor(zc.VGUI.MainColor)
 	surface.DrawOutlinedRect(0, 0, width, height)
 end
 
@@ -208,7 +208,7 @@ end
 function SKIN:PaintPanel(panel)
 	if(panel.m_bBackground)then
 		if(!panel.NoBlur)then
-			hg.DrawBlur(panel, 2, 0.2, 200)
+			zc.DrawBlur(panel, 2, 0.2, 200)
 		end
 
 		local width, height = panel:GetSize()
@@ -237,7 +237,7 @@ function SKIN:PaintMenuBackground(panel, width, height, alphaFraction)
 	surface.SetTexture(gradient)
 	surface.DrawTexturedRect(0, 0, width, height)
 
-	hg.DrawBlur(panel, alphaFraction * 15, nil, 200)
+	zc.DrawBlur(panel, alphaFraction * 15, nil, 200)
 end
 
 function SKIN:PaintPlaceholderPanel(panel, width, height, barWidth, padding)
@@ -255,7 +255,7 @@ end
 
 function SKIN:PaintCategoryPanel(panel, text, color)
 	text = text or ""
-	color = color or hg.VGUI.MainColor
+	color = color or zc.VGUI.MainColor
 
 	surface.SetFont(self.fontCategoryBlur)
 
@@ -384,14 +384,14 @@ function SKIN:PaintTextEntry( panel, w, h )
 end
 
 function SKIN:PaintEntityInfoBackground(panel, width, height)
-	hg.DrawBlur(panel, 1)
+	zc.DrawBlur(panel, 1)
 
 	surface.SetDrawColor(self.Colours.DarkerBackground)
 	surface.DrawRect(0, 0, width, height)
 end
 
 function SKIN:PaintTooltipBackground(panel, width, height)
-	hg.DrawBlur(panel, 1)
+	zc.DrawBlur(panel, 1)
 
 	surface.SetDrawColor(self.Colours.DarkerBackground)
 	surface.DrawRect(0, 0, width, height)
@@ -438,7 +438,7 @@ function SKIN:PaintCharacterLoadBackground(panel, width, height)
 end
 
 function SKIN:PaintCharacterTransitionOverlay(panel, x, y, width, height, color)
-	color = color or hg.VGUI.MainColor
+	color = color or zc.VGUI.MainColor
 
 	surface.SetDrawColor(color)
 	surface.DrawRect(x, y, width, height)
@@ -506,7 +506,7 @@ function SKIN:PaintComboDownArrow(panel, width, height)
 	local textWidth, textHeight = surface.GetTextSize("r")
 	local alpha = (panel.ComboBox:IsMenuOpen() or panel.ComboBox.Hovered) and 200 or 100
 
-	surface.SetTextColor(ColorAlpha(hg.VGUI.MainColor, alpha))
+	surface.SetTextColor(ColorAlpha(zc.VGUI.MainColor, alpha))
 	surface.SetTextPos(width * 0.5 - textWidth * 0.5, height * 0.5 - textHeight * 0.5)
 	surface.DrawText("r")
 end
@@ -520,7 +520,7 @@ function SKIN:PaintPropertySheet( panel, width, height )
 
 	--self.tex.Tab_Control( 0, Offset, w, h-Offset )
 
-	hg.DrawBlur(panel)
+	zc.DrawBlur(panel)
 
 	surface.SetDrawColor(uiColors.darkPanel)
 	surface.DrawRect(0, 0, width, height)
@@ -548,7 +548,7 @@ function SKIN:PaintActiveTab( panel, w, h )
 end
 
 function SKIN:PaintMenu(panel, width, height)
-	hg.DrawBlur(panel)
+	zc.DrawBlur(panel)
 
 	surface.SetDrawColor(uiColors.darkPanel)
 	surface.DrawRect(0, 0, width, height)
@@ -556,13 +556,13 @@ end
 
 function SKIN:PaintMenuOption(panel, width, height)
 	if (panel.m_bBackground and (panel.Hovered or panel.Highlight)) then
-		self:DrawImportantBackground(0, 0, width, height, hg.VGUI.MainColor)
+		self:DrawImportantBackground(0, 0, width, height, zc.VGUI.MainColor)
 	end
 end
 
 function SKIN:PaintChatboxTabButton(panel, width, height)
 	if (panel:GetActive()) then
-		surface.SetDrawColor(hg.VGUI.MainColor or uiColors.styledAccent)
+		surface.SetDrawColor(zc.VGUI.MainColor or uiColors.styledAccent)
 		surface.DrawRect(0, 0, width, height)
 	else
 		surface.SetDrawColor(uiColors.blackOverlay)
@@ -602,10 +602,10 @@ function SKIN:PaintChatboxTabs(panel, width, height, alpha)
 end
 
 function SKIN:PaintChatboxBackground(panel, width, height)
-	hg.DrawBlur(panel, 10)
+	zc.DrawBlur(panel, 10)
 
 	if (panel:GetActive()) then
-		surface.SetDrawColor(ColorAlpha(hg.VGUI.MainColor, 120))
+		surface.SetDrawColor(ColorAlpha(zc.VGUI.MainColor, 120))
 		surface.SetTexture(gradientUp)
 		surface.DrawTexturedRect(0, panel.tabs.buttons:GetTall(), width, height * 0.25)
 	end
@@ -618,14 +618,14 @@ function SKIN:PaintChatboxEntry(panel, width, height)
 	surface.SetDrawColor(uiColors.chatboxEntryBackground)
 	surface.DrawRect(0, 0, width, height)
 
-	panel:DrawTextEntryText(uiColors.white, hg.VGUI.MainColor, uiColors.white)
+	panel:DrawTextEntryText(uiColors.white, zc.VGUI.MainColor, uiColors.white)
 
 	surface.SetDrawColor(uiColors.black)
 	surface.DrawOutlinedRect(0, 0, width, height)
 end
 
 function SKIN:DrawChatboxPreviewBox(x, y, text, color)
-	color = color or hg.VGUI.MainColor
+	color = color or zc.VGUI.MainColor
 
 	local textWidth, textHeight = surface.GetTextSize(text)
 	local width, height = textWidth + 8, textHeight + 8
@@ -662,7 +662,7 @@ end
 function SKIN:PaintChatboxAutocompleteEntry(panel, width, height)
 	-- selected background
 	if (panel.highlightAlpha > 0) then
-		self:DrawImportantBackground(0, 0, width, height, ColorAlpha(hg.VGUI.MainColor, panel.highlightAlpha * 66))
+		self:DrawImportantBackground(0, 0, width, height, ColorAlpha(zc.VGUI.MainColor, panel.highlightAlpha * 66))
 	end
 
 	-- lower border

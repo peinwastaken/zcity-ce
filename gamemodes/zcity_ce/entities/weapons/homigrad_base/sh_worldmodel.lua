@@ -54,9 +54,9 @@ function SWEP:ChangeGunPos(dtime)
 
 	local should = true and not (fakeRagdoll and not (inuse))
 
-	self.lerped_positioning = Lerp(hg.lerpFrameTime2(0.1, dtime), self.lerped_positioning or 0, should and 1 or 0.3)
-	self.lerped_angle = Lerp(hg.lerpFrameTime2(0.1, dtime), self.lerped_angle or 0, should and 1 or (hg.KeyDown(owner, IN_ATTACK2) and 1 or 0))
-	self.restlerp = Lerp(hg.lerpFrameTime(0.0001, dtime), self.restlerp or 0, self:IsResting() and 1 or 0)
+	self.lerped_positioning = Lerp(zc.lerpFrameTime2(0.1, dtime), self.lerped_positioning or 0, should and 1 or 0.3)
+	self.lerped_angle = Lerp(zc.lerpFrameTime2(0.1, dtime), self.lerped_angle or 0, should and 1 or (zc.KeyDown(owner, IN_ATTACK2) and 1 or 0))
+	self.restlerp = Lerp(zc.lerpFrameTime(0.0001, dtime), self.restlerp or 0, self:IsResting() and 1 or 0)
 
 	self.weaponAng[1] = 0
 	self.weaponAng[2] = 0
@@ -121,7 +121,7 @@ function SWEP:PosAngChanges(ply, desiredPos, desiredAng, bNoAdditional, closeani
 	self.setlhik = !self:IsResting() and (not (ply.posture == 7 or ply.posture == 8 or ( (self:IsPistolHoldType() or self.CanEpicRun) and self:IsSprinting() and !(ply.organism and ply.organism.rarmamputated) ) or (self:IsPistolHoldType() and ply.posture == 9) or (self:IsPistolHoldType() and ply.suiciding) ) or self.reload and self.setlhik or false)
 	self.setlhik = !(self:IsPistolHoldType() and (self:GetButtstockAttack() - CurTime() > -0.5)) and self.setlhik
 
-	local tr = hg.eyeTrace(ply, 60, ent)
+	local tr = zc.eyeTrace(ply, 60, ent)
 	if not tr then return end
 	local pos = tr.StartPos - tr.Normal:Angle():Up() * 1
 	local wepang = ply:GetAimVector():Angle()
@@ -200,7 +200,7 @@ function SWEP:PosAngChanges(ply, desiredPos, desiredAng, bNoAdditional, closeani
         desiredPos = LocalToWorld(LerpVector(self.restlerp, vector_origin, -self.RestPosition - self.WorldPos) + lpos, lang, LerpVector(self.restlerp, desiredPos, restpos), desiredAng)
     end
 
-	local x,y,z = hg.GunPositions[ply] and hg.GunPositions[ply][1], hg.GunPositions[ply] and hg.GunPositions[ply][2], hg.GunPositions[ply] and hg.GunPositions[ply][3]
+	local x,y,z = zc.GunPositions[ply] and zc.GunPositions[ply][1], zc.GunPositions[ply] and zc.GunPositions[ply][2], zc.GunPositions[ply] and zc.GunPositions[ply][3]
 
 	veccopy.x = x or 0
 	veccopy.x = ((ply.posture == 7 or ply.posture == 8) and not self.reload) and 1 or veccopy.x
@@ -366,7 +366,7 @@ local function DrawWorldModel(self, force)
 		else
 			if IsValid(self.DebugMagazineModel) then self.DebugMagazineModel:Remove() end
 		end
-		--hg.StartCaptureRender()
+		--zc.StartCaptureRender()
 		self.worldModel:SetupBones()
 		self.worldModel:DrawModel()
 
@@ -380,7 +380,7 @@ local function DrawWorldModel(self, force)
 	end
 end
 
-hg.DrawWorldModel = DrawWorldModel
+zc.DrawWorldModel = DrawWorldModel
 
 function SWEP:CreateWorldModel()
 	if not IsValid(self) then return end
@@ -405,7 +405,7 @@ function SWEP:CreateWorldModel()
 		end
 		local swep = self
 		function model:GetShellColor()
-			local ammotype = hg.ammotypeshuy[swep.Primary.Ammo].BulletSettings
+			local ammotype = zc.ammotypeshuy[swep.Primary.Ammo].BulletSettings
 			return ammotype.ShellColor or color_white
 		end
 
@@ -429,7 +429,7 @@ function SWEP:CreateWorldModel()
 	end
 
 	self:CallOnRemove("clientsidemodel", function() model:Remove() end)
-	model:CallOnRemove("removeAtts", function() hg.ClearAttModels(model) end)
+	model:CallOnRemove("removeAtts", function() zc.ClearAttModels(model) end)
 
 	if IsValid(model) then
 		if self.MagIndex then
@@ -461,7 +461,7 @@ function SWEP:WorldModel_Transform(bNoApply, bNoAdditional, model)
 		local dtime = SysTime() - (self.last_transform or SysTime())
 		self.last_transform = SysTime()
 
-		local should = hg.ShouldTPIK(owner) and not (ent ~= owner and not (inuse))
+		local should = zc.ShouldTPIK(owner) and not (ent ~= owner and not (inuse))
 		if not should and not IsValid(owner.FakeRagdoll) then
 			if IsValid(model) then
 				model:SetModel(self.WorldModel)
@@ -649,7 +649,7 @@ function SWEP:ClearAttModels()
 	end
 end
 
-function hg.ClearAttModels(model)
+function zc.ClearAttModels(model)
 	if model.modelAtt then
 		for atta, modela in pairs(model.modelAtt) do
 			if not atta or not IsValid(modela) then continue end
@@ -676,7 +676,7 @@ function SWEP:DrawWorldModel()
 	if CLIENT then
 		if self.Primary.Next + 1 < CurTime() then
 			self.dmgStack = 0
-			self.dmgStack2 = Lerp(hg.lerpFrameTime2(0.001,dtime), self.dmgStack2, 0)
+			self.dmgStack2 = Lerp(zc.lerpFrameTime2(0.001,dtime), self.dmgStack2, 0)
 		end
 	end
 
@@ -685,7 +685,7 @@ function SWEP:DrawWorldModel()
 	end
 end
 
-function hg.RenderWeapons(ent, owner)
+function zc.RenderWeapons(ent, owner)
 	local wep = owner.GetActiveWeapon and owner:GetActiveWeapon()
 
 	if IsValid(wep) and wep.ishgweapon then
@@ -721,10 +721,10 @@ local table_IsEmpty = table.IsEmpty
 local string_find = string.find
 
 hook.Add("PostDrawTranslucentRenderables", "ZC_DrawWeaponWorldModels", function()
-	hg.weapons = hg.weapons or {}
-	for i=1, #hg.weapons do
-		self = hg.weapons[i]
-		if not IsValid(self) then table.remove(hg.weapons,i) continue end
+	zc.weapons = zc.weapons or {}
+	for i=1, #zc.weapons do
+		self = zc.weapons[i]
+		if not IsValid(self) then table.remove(zc.weapons,i) continue end
 		if IsValid(self:GetOwner()) and self:GetOwner().GetActiveWeapon and self:GetOwner():GetActiveWeapon() ~= self and self.shouldntDrawHolstered then removeFlashlights(self) continue end
 		if not self.attachments then continue end
 		if not self.lasertoggle then removeFlashlights(self) end

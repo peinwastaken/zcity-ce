@@ -63,16 +63,16 @@ MODE.Config = {
     }
 }
 
-zb = zb or {}
-zb.Points = zb.Points or {}
+zc = zc or {}
+zc.Points = zc.Points or {}
 
-zb.Points.HMCD_TDM_CT = zb.Points.HMCD_TDM_CT or {}
-zb.Points.HMCD_TDM_CT.Color = Color(0,0,150)
-zb.Points.HMCD_TDM_CT.Name = "HMCD_TDM_CT"
+zc.Points.HMCD_TDM_CT = zc.Points.HMCD_TDM_CT or {}
+zc.Points.HMCD_TDM_CT.Color = Color(0,0,150)
+zc.Points.HMCD_TDM_CT.Name = "HMCD_TDM_CT"
 
-zb.Points.HMCD_TDM_T = zb.Points.HMCD_TDM_T or {}
-zb.Points.HMCD_TDM_T.Color = Color(150,95,0)
-zb.Points.HMCD_TDM_T.Name = "HMCD_TDM_T"
+zc.Points.HMCD_TDM_T = zc.Points.HMCD_TDM_T or {}
+zc.Points.HMCD_TDM_T.Color = Color(150,95,0)
+zc.Points.HMCD_TDM_T.Name = "HMCD_TDM_T"
 
 MODE.PrintName = "Team Deathmatch"
 
@@ -247,7 +247,7 @@ AddItemToBUY( ".44 Remington Magnum (20)", "Ammo", "ent_ammo_.44remingtonmagnum"
 AddItemToBUY( "Arrow", "Ammo", "ent_ammo_arrow", 25, "Ammo", {}, 5)
 
 function MODE:ZC_CalculateMovementModifiers( mul, ply, cmd, mv )
-    if (zb.ROUND_START or 0) + 20 > CurTime() and cmd then
+    if (zc.ROUND_START or 0) + 20 > CurTime() and cmd then
         cmd:RemoveKey(IN_ATTACK)
         cmd:RemoveKey(IN_FORWARD)
         cmd:RemoveKey(IN_BACK)
@@ -272,7 +272,7 @@ function MODE:ZC_CalculateMovementModifiers( mul, ply, cmd, mv )
 end
 
 function MODE:ZC_CanPlayerLegAttack( ply )
-	if zb.CROUND == "dm" and (zb.ROUND_START or 0) + 20 > CurTime() then
+	if zc.CROUND == "dm" and (zc.ROUND_START or 0) + 20 > CurTime() then
 		return false
 	end
 end

@@ -2,7 +2,7 @@ local convar = CreateConVar("zc_developer", 0, FCVAR_SERVER_CAN_EXECUTE, "Enable
 
 local dev = {}
 
-zb.dev = dev or {}
+zc.dev = dev or {}
 
 function dev.IsDeveloper()
   if CLIENT then

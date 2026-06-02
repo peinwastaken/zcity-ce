@@ -12,8 +12,8 @@
 --//
 
 --\\Translate plugin things into your things
-	hg.PhysBullet = hg.PhysBullet or {}
-	local PLUGIN = hg.PhysBullet
+	zc.PhysBullet = zc.PhysBullet or {}
+	local PLUGIN = zc.PhysBullet
 	PLUGIN.ID = "PhysBullet"
 
 	function PLUGIN:AddHook(id, func)
@@ -88,7 +88,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 			bullet.AmmoForce = bullet.AmmoForce or game.GetAmmoForce(bullet.AmmoID)	--; ????????????????????
 		--=//
 
-		local hg_ammo_table = hg.ammotypeshuy[game.GetAmmoName(bullet.AmmoID)] or game.GetAmmoData(bullet.AmmoID)
+		local hg_ammo_table = zc.ammotypeshuy[game.GetAmmoName(bullet.AmmoID)] or game.GetAmmoData(bullet.AmmoID)
 		hg_ammo_table = hg_ammo_table or {}
 		hg_ammo_table.BulletSettings = hg_ammo_table.BulletSettings or {}
 		hg_ammo_table.BulletFunctions = hg_ammo_table.BulletFunctions or {}
@@ -381,7 +381,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 		--=\\speed length changes
 
 		--[[
-		local tbl = hg.ammotypeshuy[game.GetAmmoName(self.AmmoID)].BulletSettings
+		local tbl = zc.ammotypeshuy[game.GetAmmoName(self.AmmoID)].BulletSettings
 
 		local Cd = tbl.AirResistanceCoef
 		local p = 1.2255--; in air
@@ -408,7 +408,7 @@ PLUGIN.Bullet_StandartMask = MASK_SHOT
 
 		--=//
 
-		if(hg.IsChanged(self.Size, "Size", self))then
+		if(zc.IsChanged(self.Size, "Size", self))then
 			local size = self.Size / 2
 			self.SizeMins = Vector(-size, -size, -size)
 			self.SizeMaxs = Vector(size, size, size)

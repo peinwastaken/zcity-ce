@@ -1,7 +1,7 @@
 local max, min, _, Approach = math.max, math.min, math.Clamp, math.Approach
---local Organism = hg.organism
-hg.organism.module.pain = {}
-local module = hg.organism.module.pain
+--local Organism = zc.organism
+zc.organism.module.pain = {}
+local module = zc.organism.module.pain
 module[1] = function(org)
 	org.shock = 0
 	org.pain = 0
@@ -23,7 +23,7 @@ module[1] = function(org)
 	org.lightstun = 0
 end
 
-function hg.organism.paincheck(org)
+function zc.organism.paincheck(org)
 	local analgesiaMul = (org.analgesia * 4 + 1)
 	min(max(1 + org.adrenaline, 1), 1.2)
 
@@ -104,7 +104,7 @@ module[2] = function(owner, org, timeValue)
 
 	//org.painkiller = Approach(org.painkiller, 0, timeValue / 240 * (org.naloxone * 25 + 1))
 
-	if hg.organism.paincheck(org) then
+	if zc.organism.paincheck(org) then
 		org.needunconscious = true
 	end
 

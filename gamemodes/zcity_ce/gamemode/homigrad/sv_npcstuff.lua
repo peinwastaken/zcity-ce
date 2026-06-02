@@ -55,8 +55,8 @@ local math_random = math.random
 
 		local class = ent:GetClass()
 		if ent:IsNPC() and lootNPCs[class] then
-			hg.organism.Add(ent)
-			hg.organism.Clear(ent.organism)
+			zc.organism.Add(ent)
+			zc.organism.Clear(ent.organism)
 			ent.organism.fakePlayer = true
 
 			if funcspawnNPCs[class] then
@@ -75,7 +75,7 @@ local math_random = math.random
 
 	--[[hook.Add("EntityTakeDamage", "ZC_NPCDamage", function(ent, dmgInfo)
 		if ent:IsNPC() then
-			hg.organism.AddWound(ent, tr, bone, dmgInfo, dmgPos, hook_info.bleed, inputHole, outputHole)
+			zc.organism.AddWound(ent, tr, bone, dmgInfo, dmgPos, hook_info.bleed, inputHole, outputHole)
 		end
 	end)--]]
 
@@ -94,18 +94,18 @@ local math_random = math.random
 			rag.inventory.Weapons = {}
 
 			if ent.organism then
-				local newOrg = hg.organism.Add(rag)
+				local newOrg = zc.organism.Add(rag)
 				table.Merge(newOrg, ent.organism)
 
 				hook.Run("ZC_OnRagdollDeath", ent, rag)
 
-				table.Merge(zb.net.list[rag], zb.net.list[ent])
+				table.Merge(zc.net.list[rag], zc.net.list[ent])
 
 				newOrg.alive = false
 				newOrg.owner = rag
-				rag:CallOnRemove("organism", hg.organism.Remove, rag)
+				rag:CallOnRemove("organism", zc.organism.Remove, rag)
 				newOrg.owner.fullsend = true
-				hg.send_bareinfo(newOrg)
+				zc.send_bareinfo(newOrg)
 
 				ent.organism = nil
 			end

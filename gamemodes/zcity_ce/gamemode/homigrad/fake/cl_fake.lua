@@ -16,7 +16,7 @@ end
 local vpangs
 
 hook.Add("CreateMove", "ZC_ApplyCoolCameraCreateMove", function(cmd)
-	if hg.InGame() or !GetCoolCameraBool() then return end
+	if zc.InGame() or !GetCoolCameraBool() then return end
 
 	hook.Run("InputMouseApply", cmd, 0, 0, (realanglelerp or Angle()) + (vpangs or Angle()))
 end)
@@ -101,7 +101,7 @@ hook.Add("ZC_InputMouseApply", "ZC_FakeCameraAngles2", function(tbl)
 
 	local wep = lply:GetActiveWeapon()
 
-	local consmul = 1 - hg.CalculateConsciousnessMul()
+	local consmul = 1 - zc.CalculateConsciousnessMul()
 
 	if (wep.weight or wep.visualweight) and ((wep.weight and wep.weight > 0 or wep.visualweight and wep.visualweight > 0) or lply.organism.larmamputated or consmul > 0.3) then
 		ViewPunch3(Angle(-y / 50 / 16, x / 50 / 16, 0) * math.min(((wep.visualweight ~= nil and wep.visualweight > 0) and wep.visualweight) or wep.weight, 10) / 3 / (1 - consmul * 0.5) * (lply.organism.larmamputated and 4 or 1) * (lply.organism.rarmamputated and 2 or 1))
@@ -200,26 +200,26 @@ local zc_fov = CreateClientConVar("zc_fov", "70", true, false, "Change first-per
 local zc_gopro = CreateClientConVar("zc_gopro", "0", true, false, "Toggle GoPro-like camera view", 0, 1)
 local zc_thirdperson = CreateConVar("zc_thirdperson", "0", FCVAR_REPLICATED, "Toggle third-person camera view", 0, 1)
 
-hg.FAKE_STATE = hg.FAKE_STATE or {
+zc.FAKE_STATE = zc.FAKE_STATE or {
 	NONE = 0,
 	ACTIVE = 1,
 	RESTORING = 2,
 	DEATH = 3,
 }
 
-local FAKE_STATE_NONE = hg.FAKE_STATE.NONE
-local FAKE_STATE_ACTIVE = hg.FAKE_STATE.ACTIVE
-local FAKE_STATE_RESTORING = hg.FAKE_STATE.RESTORING
-local FAKE_STATE_DEATH = hg.FAKE_STATE.DEATH
+local FAKE_STATE_NONE = zc.FAKE_STATE.NONE
+local FAKE_STATE_ACTIVE = zc.FAKE_STATE.ACTIVE
+local FAKE_STATE_RESTORING = zc.FAKE_STATE.RESTORING
+local FAKE_STATE_DEATH = zc.FAKE_STATE.DEATH
 local FAKE_ENTITY_INDEX_BITS = 13
 local FAKE_CAMERA_BLEND_TIME = 0.16
 local fakeCamera = {}
 
-function hg.GetFakeState(ply)
+function zc.GetFakeState(ply)
 	return IsValid(ply) and (ply.ZCFakeState or ply:GetNWInt("FakeRagdollState", FAKE_STATE_NONE)) or FAKE_STATE_NONE
 end
 
-function hg.GetFakeSequence(ply)
+function zc.GetFakeSequence(ply)
 	return IsValid(ply) and (ply.ZCFakeSequence or ply:GetNWInt("FakeRagdollSeq", 0)) or 0
 end
 
@@ -303,7 +303,7 @@ local function GetRecentFakeCameraView()
 	end
 end
 
-function hg.ApplyFakeCameraBlend(ply, view, target)
+function zc.ApplyFakeCameraBlend(ply, view, target)
 	if ply ~= lply or not istable(view) then return view end
 
 	if fakeCamera.target ~= target then
@@ -321,7 +321,7 @@ function hg.ApplyFakeCameraBlend(ply, view, target)
 	return view
 end
 
-function hg.ApplyFakeCameraBlendOut(ply, view)
+function zc.ApplyFakeCameraBlendOut(ply, view)
 	if ply ~= lply or not istable(view) or not fakeCamera.outFrom then return view end
 
 	local done = BlendCameraView(view, fakeCamera.outFrom, fakeCamera.outStart)
@@ -345,11 +345,11 @@ local function ApplyFakeHeadScale(ent, scale)
 	ent:ManipulateBoneScale(head, scale)
 end
 
-function hg.SetFakeHeadHidden(ent, hidden)
+function zc.SetFakeHeadHidden(ent, hidden)
 	ApplyFakeHeadScale(ent, hidden and vecPochtiZero or vecFull)
 end
 
-function hg.RestoreFakeHead(ent)
+function zc.RestoreFakeHead(ent)
 	ApplyFakeHeadScale(ent, vecFull)
 end
 
@@ -364,7 +364,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	if GetViewEntity() ~= (ply or LocalPlayer()) then return end
 	local oldangles = -(-angles)
 	fov = zc_fov:GetInt()
-	local zoomHeld = zb and zb.binds and zb.binds.IsDown and zb.binds.IsDown("zoom") or false
+	local zoomHeld = zc and zc.binds and zc.binds.IsDown and zc.binds.IsDown("zoom") or false
 	lerpfovadd2 = LerpFT(0.1, lerpfovadd2, (zooming or zoomHeld) and -25 or 0)
 
 	if not lply:Alive() then
@@ -401,7 +401,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	end
 
 
-	if not lply:Alive() and hg.DeathCam and hg.DeathCamAvailable(ply) then return hg.DeathCam(ply,origin,angles,fov,znear,zfar) end
+	if not lply:Alive() and zc.DeathCam and zc.DeathCamAvailable(ply) then return zc.DeathCam(ply,origin,angles,fov,znear,zfar) end
 
 	if not IsValid(ply) then return end
 	if not IsValid(follow) then return end
@@ -448,8 +448,8 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	local alwaysRagdollAimEnabled = alwaysRagdollAim and alwaysRagdollAim:GetBool()
 	local forceFakeAim = ply.forcefakeaim
 	if forceFakeAim == nil then forceFakeAim = alwaysRagdollAimEnabled end
-	local ragdollAimHeld = zb and zb.binds and zb.binds.IsDown and zb.binds.IsDown("ragdoll_aim") or false
-	local inUse = (alwaysRagdollAimEnabled and forceFakeAim) or ragdollAimHeld or hg.KeyDown(ply, IN_USE)
+	local ragdollAimHeld = zc and zc.binds and zc.binds.IsDown and zc.binds.IsDown("ragdoll_aim") or false
+	local inUse = (alwaysRagdollAimEnabled and forceFakeAim) or ragdollAimHeld or zc.KeyDown(ply, IN_USE)
 	local inVehicle = ply:InVehicle()
 	local unconscious = ply.organism and ply.organism.unconscious
 	local freeRagdollView = not inUse and not inVehicle
@@ -458,7 +458,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	
 	if IsValid(ply.OldRagdoll) then DrawPlayerRagdoll(follow, ply) end
 
-	local pos = hg.eye(ply, 10, follow, att_Ang)
+	local pos = zc.eye(ply, 10, follow, att_Ang)
 
 	--local dot = ang:Forward():Dot((pos - att.Pos):GetNormalized())
 
@@ -479,19 +479,19 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		deathLocalAng:Set(view.angles)
 	end
 
-	hg.cam_things(ply, view, angleZero)
+	zc.cam_things(ply, view, angleZero)
 
-	if zc_thirdperson:GetBool() or hg.RagdollCombatInUse(ply) or (fakeTimer and fakeTimer > CurTime()) then
+	if zc_thirdperson:GetBool() or zc.RagdollCombatInUse(ply) or (fakeTimer and fakeTimer > CurTime()) then
 		if zc_firstperson_death:GetBool() then
 			deathlerp = LerpFT(0.05,deathlerp,1)
 			LerpAngle(deathlerp,deathLocalAng,att_Ang)
 
-			hg.SetFakeHeadHidden(follow, firstPerson)
+			zc.SetFakeHeadHidden(follow, firstPerson)
 
 			view.origin = pos
 			view.angles = att_Ang
 		else
-			hg.SetFakeHeadHidden(follow, lerpasad <= 0.9)
+			zc.SetFakeHeadHidden(follow, lerpasad <= 0.9)
 
 			lerpasad = Lerp(0.1, lerpasad, (IsAimingNoScope(ply) and 0 or 1))
 
@@ -566,12 +566,12 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		return result
 	end
 
-	view = hg.ApplyFakeCameraBlend(ply, view, follow) or view
+	view = zc.ApplyFakeCameraBlend(ply, view, follow) or view
 
 	return view
 end
 
-hg.CalcViewFake = CalcView
+zc.CalcViewFake = CalcView
 
 --hook.Add("EntityNetworkedVarChanged","ZC_DebugFakeRagdollNetVarChange",function()
 
@@ -613,7 +613,7 @@ local function BeginClientFakeRestore(ply, ragdoll, seq, state)
 
 	local oldrag = IsValid(ragdoll) and ragdoll or ply.FakeRagdoll
 	if IsValid(oldrag) then
-		hg.RestoreFakeHead(oldrag)
+		zc.RestoreFakeHead(oldrag)
 
 		if state == FAKE_STATE_RESTORING then
 			ply.ZCSmoothUnfakeStart = nil
@@ -737,7 +737,7 @@ hook.Add("NetworkEntityCreated", "ZC_GiveRenderOverride", function(ragdoll)
 				local ply = self:GetNWEntity("ply")
 				local ply = (IsValid(ply) and ply:IsPlayer() and ply:Alive() and ply.FakeRagdoll == self) and ply or self
 
-				hg.renderOverride(ply, self, flags)
+				zc.renderOverride(ply, self, flags)
 			end
 		end
 
@@ -769,7 +769,7 @@ hook.Add("ZC_OnRagdollEntityCreated", "ZC_RagdollFinder", function(ply, ent, key
 			if not self:GetBonePosition(1) or self:GetBonePosition(1):IsEqualTol(self:GetPos(), 0.01) then return end
 			local ply = (IsValid(ply) and ply:IsPlayer() and ply:Alive() and ply.FakeRagdoll == self) and ply or self
 
-			hg.renderOverride(ply, self, flags)
+			zc.renderOverride(ply, self, flags)
 		end
 	end
 
@@ -797,7 +797,7 @@ hook.Add("ZC_OnRagdollEntityCreated", "ZC_RagdollFinder", function(ply, ent, key
 	if ply == lply then
 		follow = ragdoll
 
-		if follow and hg.IsChanged(follow,1,tblfollow) then
+		if follow and zc.IsChanged(follow,1,tblfollow) then
 			if IsValid(tblfollow[1]) then
 				//tblfollow[1]:ManipulateBoneScale(tblfollow[1]:LookupBone("ValveBiped.Bip01_Head1"),vecFull)
 			elseif IsValid(follow) and not follow:GetManipulateBoneScale(follow:LookupBone("ValveBiped.Bip01_Head1")):IsEqualTol(vecZero,0.001) then
@@ -814,7 +814,7 @@ hook.Add("ZC_OnRagdollEntityCreated", "ZC_RagdollFinder", function(ply, ent, key
 		ragdoll.ply = ply
 		ragdoll.organism = ply.organism
 
-		hg.ragdolls[#hg.ragdolls + 1] = ragdoll
+		zc.ragdolls[#zc.ragdolls + 1] = ragdoll
 
 		ragdoll:CallOnRemove("RagdollRemove",function()
 			hook.Run("ZC_OnRagdollRemoved",ply,ragdoll)
@@ -887,7 +887,7 @@ end
 -- 	for i,ent in ipairs(ents_FindByClass("prop_ragdoll")) do
 -- 		if not ent:LookupBone("ValveBiped.Bip01_Head1") then continue end
 -- 		if ent:GetManipulateBoneScale(ent:LookupBone("ValveBiped.Bip01_Head1")) == vector_origin then continue end
--- 		--if not hg.RagdollOwner(ent) then continue end
+-- 		--if not zc.RagdollOwner(ent) then continue end
 -- 		if ent == viewEnt then
 -- 			ent:ManipulateBoneScale(ent:LookupBone("ValveBiped.Bip01_Head1"),firstPerson and vecPochtiZero or vecFull)
 -- 		else
@@ -954,7 +954,7 @@ hook.Add("ZC_PlayerGetUp", "ZC_ResetLocalFakeRagdollState", function(ply)
 	ply:SetNWVarProxy("FakeRagdoll", funcrag)
 end)
 
-function hg.RagdollOwner(ragdoll)
+function zc.RagdollOwner(ragdoll)
 	if not IsValid(ragdoll) then return end
 	local ply = ragdoll:GetNWEntity("ply")
 	return IsValid(ply) and ply:GetNWEntity("FakeRagdoll") == ragdoll and ply
@@ -965,14 +965,14 @@ hook.Add("ZC_PlayerDeath", "ZC_StartLocalFakeDeathTimer", function(ply)
 
 	fakeTimer = CurTime() + 5
 
-	hg.override[ply] = nil
+	zc.override[ply] = nil
 
 	-- timer.Simple(0.5 * math.max(ply:Ping() / 30,1),function()
 	-- 	//ply:BoneScaleChange()
 	-- end)
 end)
 
-function hg.GetCurrentCharacter(ply)
+function zc.GetCurrentCharacter(ply)
 	if not IsValid(ply) then return end
 
 	return (IsValid(ply.FakeRagdoll) and ply.FakeRagdoll) or ply
@@ -983,7 +983,7 @@ hook.Add("ZC_PlayerSpawn", "ZC_RemoveRagdoll", function(ply)
 
 	if IsValid(ragdoll) then
 		ragdoll:SetNWEntity("ply", NULL)
-		hg.RestoreFakeHead(ragdoll)
+		zc.RestoreFakeHead(ragdoll)
 	end
 	--FUCKING SHIT
 	if IsValid(ply.FakeRagdoll) then
@@ -1002,7 +1002,7 @@ hook.Add("ZC_PlayerSpawn", "ZC_RemoveRagdoll", function(ply)
 end)
 
 local override = {}
-hg.override = override
+zc.override = override
 net.Receive("ZC_OverrideSpawn", function() override[net.ReadEntity()] = true end)
 hook.Add("ZC_PlayerSpawn", "ZC_BlockOverrideSpawnClient", function(ply)
 	if override[ply] then
@@ -1053,7 +1053,7 @@ end)]]
 --[[local sphereRadius = 12
 hook.Add("Move","ZC_PushAwayRagdolls",function(ply) --// lagging
 	do return end
-	if not ply:Alive() and not hg.GetCurrentCharacter(ply):IsPlayer() then return end
+	if not ply:Alive() and not zc.GetCurrentCharacter(ply):IsPlayer() then return end
 	local playerPos = ply:GetPos()
     local sphereCenter = playerPos
     local entities = ents.FindInSphere(sphereCenter, sphereRadius)

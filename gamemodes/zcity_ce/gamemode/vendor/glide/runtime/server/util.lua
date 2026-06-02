@@ -231,7 +231,7 @@ function Glide.SwitchSeat( ply, seatIndex )
         return
     end
     
-    hg.RemoveDeadBodies(seat)
+    zc.RemoveDeadBodies(seat)
 
     ply.switchingseat = true
     ply:ExitVehicle()

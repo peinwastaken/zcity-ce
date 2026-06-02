@@ -1,20 +1,20 @@
-hg = hg or {}
+zc = zc or {}
 
-hg.menuBaseLogos = {
+zc.menuBaseLogos = {
   ["base"] = Material("gui/logo_pause.png"),
   ["shrapnel"] = Material("gui/logo_pause_shrapnel.png")
 }
 
-hg.menuLogoLayers = {
+zc.menuLogoLayers = {
   ["blood"] = Material("gui/pause_layers/logo_blood.png"),
   ["bulletholes"] = Material("gui/pause_layers/logo_bulletholes.png"),
   ["bullets_and_smoke"] = Material("gui/pause_layers/logo_bullets.png"),
   ["fire"] = Material("gui/pause_layers/logo_fire.png"),
 }
 
-hg.menuLayerOrder = {"blood", "bulletholes", "bullets_and_smoke", "fire"}
+zc.menuLayerOrder = {"blood", "bulletholes", "bullets_and_smoke", "fire"}
 
-hg.menuDrawLayers = {
+zc.menuDrawLayers = {
   ["base"] = "base",
   ["layers"] = {}
 }

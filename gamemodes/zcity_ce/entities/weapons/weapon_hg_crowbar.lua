@@ -117,7 +117,7 @@ SWEP.SwingAng2 = 0
 
 
 function SWEP:PrimaryAttack()
-    if hg.KeyDown(self:GetOwner(),IN_USE) then
+    if zc.KeyDown(self:GetOwner(),IN_USE) then
         local tr = self.Owner:GetEyeTrace()
         if IsValid(tr.Entity) and string.find(string.lower(tr.Entity:GetClass()), "door") and self:GetOwner():GetPos():Distance(tr.Entity:GetPos()) <= 80 then
             local locked = false
@@ -148,7 +148,7 @@ end
 
 function SWEP:Think()
     if self.BreakingDoor then
-        if not (hg.KeyDown(self:GetOwner(),IN_USE) and hg.KeyDown(self:GetOwner(),IN_ATTACK)) then
+        if not (zc.KeyDown(self:GetOwner(),IN_USE) and zc.KeyDown(self:GetOwner(),IN_ATTACK)) then
             self.BreakingDoor = false
         elseif not (IsValid(self.DoorEntity) and self:GetOwner():GetPos():Distance(self.DoorEntity:GetPos()) <= 80) then
             self.BreakingDoor = false

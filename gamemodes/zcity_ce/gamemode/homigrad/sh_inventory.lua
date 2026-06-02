@@ -1,4 +1,4 @@
-hg.TraitorLoot = {
+zc.TraitorLoot = {
 	["weapon_sogknife"] = 10,
 	["weapon_buck200knife"] = 10,
 	["weapon_hg_shuriken"] = 9,
@@ -31,8 +31,8 @@ if CLIENT then
 		local entss = scripted_ents.Get(i)
 		if weps then return weps.PrintName end
 		if entss then return entss.PrintName end
-		if hg.armor and hg.armor[i] and hg.armor[i][thing] then return thing end
-		if hg.attachmentslaunguage and hg.attachmentslaunguage[thing] then return thing end
+		if zc.armor and zc.armor[i] and zc.armor[i][thing] then return thing end
+		if zc.attachmentslaunguage and zc.attachmentslaunguage[thing] then return thing end
 		if i == "Money" then return "Money, " .. tostring(thing) .. "$" end
 		return tostring(i)
 	end
@@ -47,14 +47,14 @@ if CLIENT then
 			return Icon, HaveIcon, Overide, GunTable.WepSelectIcon2box
 		end
 
-		if tab == "Attachments" and hg.attachmentsIcons[thing] then
-			local AttIcon = hg.attachmentsIcons[thing]
+		if tab == "Attachments" and zc.attachmentsIcons[thing] then
+			local AttIcon = zc.attachmentsIcons[thing]
 			local HaveIcon = true
 			return AttIcon, HaveIcon, false, true
 		end
 
 		if tab == "Armor" then
-			local AttIcon = hg.armorIcons[thing]
+			local AttIcon = zc.armorIcons[thing]
 			local HaveIcon = true
 			return AttIcon, HaveIcon, false, true
 		end
@@ -74,7 +74,7 @@ if CLIENT then
 			if true then return true end
 		end,
 		["Armor"] = function(ply, ent, placement, armor)
-			if hg.armor[placement][armor].nodrop then return false end
+			if zc.armor[placement][armor].nodrop then return false end
 			if true then return true end
 		end,
 		["Attachments"] = function(ply, ent, att, tbl)
@@ -89,7 +89,7 @@ if CLIENT then
 		["Weapons"] = function(ply, ent, wep)
 			weapons.Get(wep)
 			if (ent:IsPlayer() and IsValid(ent:GetActiveWeapon()) and ent:GetActiveWeapon() == wep) then return end
-			--if not hg.weaponInv.CanInsert(ply, weapon) or ply:HasWeapon(wep) then return false end
+			--if not zc.weaponInv.CanInsert(ply, weapon) or ply:HasWeapon(wep) then return false end
 			return true
 		end,
 		["Ammo"] = function(ply, ent, ammo, amt)
@@ -122,7 +122,7 @@ if CLIENT then
 	end
 
 	local plyMenu
-	BlurBackground = BlurBackground or hg.DrawBlur
+	BlurBackground = BlurBackground or zc.DrawBlur
 
 	hook.Add("ZC_OnNetVarSet","ZC_InventoryNetVarChanged",function(index,key,var)
 		if key == "Inventory" then
@@ -234,7 +234,7 @@ if CLIENT then
 			if not istable(things) then continue end
 			for i, _ in pairs(things) do
 				ent.foundloot = ent.foundloot or {}
-				count = count + ((ent:IsPlayer() or ent:IsRagdoll()) and ((hg.TraitorLoot[i] and ent:IsPlayer()) and 2 or 0.5) or 1) * (not ent.foundloot[i] and 1 or 0)
+				count = count + ((ent:IsPlayer() or ent:IsRagdoll()) and ((zc.TraitorLoot[i] and ent:IsPlayer()) and 2 or 0.5) or 1) * (not ent.foundloot[i] and 1 or 0)
 			end
 		end
 		local time = CurTime() + 3
@@ -257,7 +257,7 @@ if CLIENT then
 			local keys = table.GetKeys(things)
 			table.sort(keys,function(a,b)
 				weapons.Get(a)
-				return (ent.foundloot[a] and 1 or 0) > (ent.foundloot[b] and 1 or 0)//(hg.TraitorLoot[a] or 0) < (hg.TraitorLoot[b] or (wep and 1 or 0) or 0)
+				return (ent.foundloot[a] and 1 or 0) > (ent.foundloot[b] and 1 or 0)//(zc.TraitorLoot[a] or 0) < (zc.TraitorLoot[b] or (wep and 1 or 0) or 0)
 			end)
 
 			for _, i in ipairs(keys) do
@@ -270,7 +270,7 @@ if CLIENT then
 				ent.foundloot = ent.foundloot or {}
 
 				if ent:IsPlayer() and IsValid(ent:GetActiveWeapon()) and ent:GetActiveWeapon():GetClass() == i then continue end
-				count2 = count2 + (!ent.foundloot[i] and 1 or 0)//((ent:IsPlayer() or ent:IsRagdoll()) and ((hg.TraitorLoot[i] and ent:IsPlayer()) and 2 or 0.5) or 1) * (not ent.foundloot[i] and 1 or 0)
+				count2 = count2 + (!ent.foundloot[i] and 1 or 0)//((ent:IsPlayer() or ent:IsRagdoll()) and ((zc.TraitorLoot[i] and ent:IsPlayer()) and 2 or 0.5) or 1) * (not ent.foundloot[i] and 1 or 0)
 
 				local button = vgui.Create("DButton", plyMenu)
 				button:SetText("")

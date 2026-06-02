@@ -1,6 +1,6 @@
-hg.undernoradrenaline = hg.undernoradrenaline or false
-hg.noradrenalineStartTime = hg.noradrenalineStartTime or 0
-hg.noradrenalineStation = hg.noradrenalineStation or nil
+zc.undernoradrenaline = zc.undernoradrenaline or false
+zc.noradrenalineStartTime = zc.noradrenalineStartTime or 0
+zc.noradrenalineStation = zc.noradrenalineStation or nil
 
 
 
@@ -8,13 +8,13 @@ hook.Add("RenderScreenspaceEffects", "ZC_NoradrenalineEffect", function()
 	local organism = lply:Alive() and lply.organism
 
 	if !organism then
-		if hg.undernoradrenaline then
-			hg.DynamicMusicV2.Player.Stop()
+		if zc.undernoradrenaline then
+			zc.DynamicMusicV2.Player.Stop()
 		end
 
-		hg.undernoradrenaline = false
+		zc.undernoradrenaline = false
 
-		hg.noradrenalineIntensity = 0
+		zc.noradrenalineIntensity = 0
 
 		return
 	end
@@ -22,14 +22,14 @@ hook.Add("RenderScreenspaceEffects", "ZC_NoradrenalineEffect", function()
 	local noradrenaline = (organism.noradrenaline or 0)
 	local noradrenalineClamped = math.Clamp(noradrenaline, 0, 3) * (organism.consciousness or 1)
 
-	hg.noradrenalineClamped = noradrenalineClamped
+	zc.noradrenalineClamped = noradrenalineClamped
 
-	if noradrenaline > 0.0001 and !hg.undernoradrenaline then
-		hg.undernoradrenaline = true
+	if noradrenaline > 0.0001 and !zc.undernoradrenaline then
+		zc.undernoradrenaline = true
 		surface.PlaySound("shitty/music/mi_deathcam.mp3")
-		hg.DynamicMusicV2.Player.Start("overdose")
+		zc.DynamicMusicV2.Player.Start("overdose")
 
-		hg.noradrenalineStartTime = SysTime()
+		zc.noradrenalineStartTime = SysTime()
 
 		for i = 1, 90 do
 			timer.Simple(i/120,function()
@@ -37,13 +37,13 @@ hook.Add("RenderScreenspaceEffects", "ZC_NoradrenalineEffect", function()
 			end)
 		end
 	elseif noradrenaline < 0.0001 then
-		if hg.undernoradrenaline then
-			hg.DynamicMusicV2.Player.Stop()
+		if zc.undernoradrenaline then
+			zc.DynamicMusicV2.Player.Stop()
 		end
 
-		hg.noradrenalineIntensity = 0
+		zc.noradrenalineIntensity = 0
 
-		hg.undernoradrenaline = false
+		zc.undernoradrenaline = false
 	end
 end)
 
@@ -67,18 +67,18 @@ local grainMat = CreateMaterial("grain2noradrenaline", "screenspace_general",{
 })
 
 hook.Add("ZC_PostProcessingDraw", "ZC_NoradrenalineEffect", function()
-	if hg.undernoradrenaline and hg.noradrenalineClamped then
+	if zc.undernoradrenaline and zc.noradrenalineClamped then
 		render.UpdateScreenEffectTexture()
 		render.UpdateFullScreenDepthTexture()
 
-		local start = math.Clamp((SysTime() - hg.noradrenalineStartTime) * 2, 0, 1) * lply.organism.noradrenaline
+		local start = math.Clamp((SysTime() - zc.noradrenalineStartTime) * 2, 0, 1) * lply.organism.noradrenaline
 
 		local asad = math.sin(CurTime() * 10) / 4
 		--print(asad)
 		grainMat:SetFloat("$c0_x", CurTime() * start) -- time
 		grainMat:SetFloat("$c0_y", asad * start) -- gate
 		grainMat:SetFloat("$c0_z", 1) -- Pixelize
-		grainMat:SetFloat("$c1_x", (0.2 * hg.noradrenalineClamped) * start) -- lerp
+		grainMat:SetFloat("$c1_x", (0.2 * zc.noradrenalineClamped) * start) -- lerp
 		grainMat:SetFloat("$c1_y", 0.6 * start) -- vignette intensity
 		grainMat:SetFloat("$c1_z", (0.2 * asad) * start) -- BlurIntensity
 		grainMat:SetFloat("$c2_x", 0) -- r
@@ -95,7 +95,7 @@ local META = FindMetaTable("Player")
 function META:IsStimulated()
 	if !self:Alive() then return false end
 
-	return hg.undernoradrenaline or false
+	return zc.undernoradrenaline or false
 end
 
 local META2 = FindMetaTable("Entity")

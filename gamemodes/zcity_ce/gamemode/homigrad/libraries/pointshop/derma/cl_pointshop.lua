@@ -1,5 +1,5 @@
 --
-hg.PointShop = hg.PointShop or {}
+zc.PointShop = zc.PointShop or {}
 
 local function AltDonate()
     Derma_Query(
@@ -13,10 +13,10 @@ end
 
 local blur = Material("pp/blurscreen")
 local zc_potatopc
-function hg.DrawBlur(panel, amount, passes, alpha)
+function zc.DrawBlur(panel, amount, passes, alpha)
 	if is3d2d then return end
 	amount = amount or 5
-	zc_potatopc = zc_potatopc or hg.ConVars.potatopc
+	zc_potatopc = zc_potatopc or zc.ConVars.potatopc
 
 	if(zc_potatopc:GetBool())then
 		surface.SetDrawColor(0, 0, 0, alpha or (amount * 20))
@@ -38,7 +38,7 @@ function hg.DrawBlur(panel, amount, passes, alpha)
 	end
 end
 
-local PLUGIN = hg.PointShop
+local PLUGIN = zc.PointShop
 
 local PANEL = {}
 
@@ -353,7 +353,7 @@ end
 
 function PANEL:Paint(w,h)
     draw.RoundedBox(0,0,0,w,h,color_blacky)
-    hg.DrawBlur(self, 10)
+    zc.DrawBlur(self, 10)
 end
 
 function PANEL:First( ply )

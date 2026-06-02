@@ -12,7 +12,7 @@ util.AddNetworkString("ZC_SendAllModeConfigs")
 local MODES_CONFIG_PATH = "zcity-ce/config/modes.json"
 
 local modeconfig = {}
-zb.modeconfig = modeconfig or {}
+zc.modeconfig = modeconfig or {}
 
 local modes = zc.modes
 // local dm = modes["dm"]
@@ -20,17 +20,17 @@ local modes = zc.modes
 
 net.Receive("ZC_SendModeConfig", function(len, ply)
   if !ply:IsAdmin() then return end
-  local dev = zb.dev.IsDeveloper()
+  local dev = zc.dev.IsDeveloper()
 
   local id = net.ReadString()
   local settings = net.ReadTable()
 
   if dev then
-    zb.dev.DevPrint("received mode data")
-    zb.dev.DevPrint(settings)
+    zc.dev.DevPrint("received mode data")
+    zc.dev.DevPrint(settings)
   end
 
-  local mode = zb.modes[id]
+  local mode = zc.modes[id]
   if !mode then
     print(string.format("could not save config for mode with id %s because it doesn't exist", id))
   end
@@ -43,7 +43,7 @@ net.Receive("ZC_SendModeConfig", function(len, ply)
   end
 
   if dev then
-    zb.dev.DevPrint(string.format("updated config for mode %s", id))
+    zc.dev.DevPrint(string.format("updated config for mode %s", id))
   end
 
   modeconfig.BroadcastConfig(mode, settings)
@@ -57,7 +57,7 @@ end)
 function modeconfig.SendAllToPlayer(ply)
   local data = {}
 
-  for id, mode in pairs(zb.modes) do
+  for id, mode in pairs(zc.modes) do
     data[id] = GetSettingVariablePairsFromMode(mode)
   end
 
@@ -76,7 +76,7 @@ function modeconfig.BroadcastConfig(mode, config)
 end
 
 function modeconfig.BroadcastAll()
-  for _, mode in ipairs(zb.modes) do
+  for _, mode in ipairs(zc.modes) do
     if !mode.Config then continue end
 
     local settingPairs = GetSettingVariablePairsFromMode(mode)
@@ -98,7 +98,7 @@ function modeconfig.LoadAll()
   local configs = util.JSONToTable(json)
 
   for id, settings in pairs(configs) do
-    local mode = zb.modes[id]
+    local mode = zc.modes[id]
     if !mode then continue end
 
     for settingId, settingValue in pairs(settings) do
@@ -110,7 +110,7 @@ function modeconfig.LoadAll()
 end
 
 function modeconfig.SaveAll()
-  local modes = zb.modes
+  local modes = zc.modes
   
   local result = {}
   for id, mode in pairs(modes) do

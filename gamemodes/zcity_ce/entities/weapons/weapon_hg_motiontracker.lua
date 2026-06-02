@@ -102,7 +102,7 @@ if CLIENT then
 		
 		local ent = IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or owner
 
-		if (IsValid(owner)) and (ent == owner or hg.KeyDown(owner,IN_USE) or (owner:GetNetVar("lastFake",0) > CurTime())) then
+		if (IsValid(owner)) and (ent == owner or zc.KeyDown(owner,IN_USE) or (owner:GetNetVar("lastFake",0) > CurTime())) then
 			local timing = 0
 			if not self.cycling then
 				timing = (1 - math.Clamp((self.animtime - CurTime()) / self.animspeed,0,1))
@@ -120,7 +120,7 @@ if CLIENT then
 
 			self.sprintanim = qerp(0.02 * FrameTime() / engine.TickInterval(),self.sprintanim or 0,(owner.IsSprinting and owner:IsSprinting()) and 1 or 0)
 			
-			local tr = hg.eyeTrace(owner,60)
+			local tr = zc.eyeTrace(owner,60)
 			local ang = owner:EyeAngles()
 			if not tr then return end
 
@@ -147,7 +147,7 @@ if CLIENT then
 			WorldModel:SetRenderAngles(self:GetAngles())
 		end
 
-		if IsValid(owner) and not (ent == owner or hg.KeyDown(owner,IN_USE) or (owner:GetNetVar("lastFake",0) > CurTime())) then
+		if IsValid(owner) and not (ent == owner or zc.KeyDown(owner,IN_USE) or (owner:GetNetVar("lastFake",0) > CurTime())) then
 			local bon = ent:LookupBone("ValveBiped.Bip01_R_Hand")
 			if not bon then return end
 			local mat = ent:GetBoneMatrix(bon)

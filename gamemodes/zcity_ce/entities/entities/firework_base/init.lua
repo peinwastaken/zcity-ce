@@ -119,7 +119,7 @@ function ENT:Detonate()
 		util.Effect("eff_jack_genericboom", effectdata)
 	end
 
-	hg.ExplosionEffect(SelfPos, self.BlastDis / 0.2, 80)
+	zc.ExplosionEffect(SelfPos, self.BlastDis / 0.2, 80)
 
 	timer.Simple(.01, function()
 		if not IsValid(self) then return end

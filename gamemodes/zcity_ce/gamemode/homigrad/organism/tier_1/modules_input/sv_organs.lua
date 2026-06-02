@@ -1,4 +1,4 @@
---local Organism = hg.organism
+--local Organism = zc.organism
 local function isCrush(dmgInfo)
 	return not dmgInfo:IsDamageType(DMG_BULLET + DMG_BUCKSHOT + DMG_SLASH + DMG_BLAST)
 end
@@ -14,13 +14,13 @@ local function damageOrgan(org, dmg, dmgInfo, key)
 	return 0//isCrush(dmgInfo) and 0 or prot
 end
 
-local input_list = hg.organism.input_list
+local input_list = zc.organism.input_list
 input_list.heart = function(org, bone, dmg, dmgInfo)
 	local oldDmg = org.heart
 
 	local result = damageOrgan(org, dmg * 0.3, dmgInfo, "heart")
 
-	hg.AddHarmToAttacker(dmgInfo, (org.heart - oldDmg) * 10, "Heart damage harm")
+	zc.AddHarmToAttacker(dmgInfo, (org.heart - oldDmg) * 10, "Heart damage harm")
 
 	org.shock = org.shock + dmg * 20
 	org.internalBleed = org.internalBleed + (org.heart - oldDmg) * 10
@@ -31,7 +31,7 @@ end
 input_list.liver = function(org, bone, dmg, dmgInfo)
 	local oldDmg = org.liver
 
-	hg.AddHarmToAttacker(dmgInfo, (org.liver - oldDmg) * 3, "Liver damage harm")
+	zc.AddHarmToAttacker(dmgInfo, (org.liver - oldDmg) * 3, "Liver damage harm")
 
 	org.shock = org.shock + dmg * 20
 	org.painadd = org.painadd + dmg * 35
@@ -41,9 +41,9 @@ input_list.liver = function(org, bone, dmg, dmgInfo)
 	if org.analgesia < 0.4 and harmed >= 0.2 then
 		timer.Simple(0, function()
 			if harmed > 0 then -- wtf? whatever
-				hg.StunPlayer(org.owner,2)
+				zc.StunPlayer(org.owner,2)
 			else
-				hg.LightStunPlayer(org.owner,2)
+				zc.LightStunPlayer(org.owner,2)
 			end
 		end)
 	end
@@ -60,7 +60,7 @@ input_list.stomach = function(org, bone, dmg, dmgInfo)
 
 	local result = damageOrgan(org, dmg, dmgInfo, "stomach")
 
-	hg.AddHarmToAttacker(dmgInfo, (org.stomach - oldDmg) * 2, "Stomach damage harm")
+	zc.AddHarmToAttacker(dmgInfo, (org.stomach - oldDmg) * 2, "Stomach damage harm")
 
 	org.internalBleed = org.internalBleed + (org.stomach - oldDmg) * 2
 	return result
@@ -71,7 +71,7 @@ input_list.intestines = function(org, bone, dmg, dmgInfo)
 
 	local result = damageOrgan(org, dmg, dmgInfo, "intestines")
 
-	hg.AddHarmToAttacker(dmgInfo, (org.intestines - oldDmg) * 2, "Intestines damage harm")
+	zc.AddHarmToAttacker(dmgInfo, (org.intestines - oldDmg) * 2, "Intestines damage harm")
 
 	org.internalBleed = org.internalBleed + (org.intestines - oldDmg) * 2
 	return result
@@ -82,7 +82,7 @@ input_list.brain = function(org, bone, dmg, dmgInfo)
 	local oldDmg = org.brain
 	local result = damageOrgan(org, dmg * 1, dmgInfo, "brain")
 
-	hg.AddHarmToAttacker(dmgInfo, (org.brain - oldDmg) * 15, "Brain damage harm")
+	zc.AddHarmToAttacker(dmgInfo, (org.brain - oldDmg) * 15, "Brain damage harm")
 
 	if dmgInfo:IsDamageType(DMG_BULLET + DMG_BUCKSHOT) then
 		local dmgPos = dmgInfo:GetDamagePosition()
@@ -95,7 +95,7 @@ input_list.brain = function(org, bone, dmg, dmgInfo)
 		effdata:SetScale(1)
 		util.Effect("BloodImpact",effdata)
 
-		local ent = hg.GetCurrentCharacter(org.owner)
+		local ent = zc.GetCurrentCharacter(org.owner)
 
 		if !ent.organism.SpawnedBrainChunks and math.random(5) == 1 then
 			SpawnMeatGore(ent, dmgPos + dirCool * 5, 3, dirCool * 1000, 0.4)
@@ -104,16 +104,16 @@ input_list.brain = function(org, bone, dmg, dmgInfo)
 	end
 
 	if org.brain >= 0.01 and (org.brain - oldDmg) > 0.01 and math.random(3) == 1 then
-		--hg.applyFencingToPlayer(org.owner, org)
+		--zc.applyFencingToPlayer(org.owner, org)
 		org.shock = 70
 
 		timer.Simple(0.1, function()
-			local rag = hg.GetCurrentCharacter(org.owner)
+			local rag = zc.GetCurrentCharacter(org.owner)
 
 			if IsValid(rag) and rag:IsRagdoll() then
-				hg.applyFencingToPlayer(org.owner, org) -- looks more appealing anyways
-				--local stype = "rigor"--hg.getRandomSpasm()
-				--hg.applySpasm(rag, stype)
+				zc.applyFencingToPlayer(org.owner, org) -- looks more appealing anyways
+				--local stype = "rigor"--zc.getRandomSpasm()
+				--zc.applySpasm(rag, stype)
 				--if rag.organism then rag.organism.spasm, rag.organism.spasmType = true, stype end
 			end
 		end)
@@ -166,13 +166,13 @@ local function hitArtery(artery, org, dmg, dmgInfo, boneindex, dir, hit)
 	if org[string.Replace(artery, "artery", "").."amputated"] then return end
 
 	if artery ~= "arteria" then
-		hg.AddHarmToAttacker(dmgInfo, 4, "Random artery punctured harm")//((1 - org[artery]) - math.max((1 - org[artery]) - dmg,0)) / 4
+		zc.AddHarmToAttacker(dmgInfo, 4, "Random artery punctured harm")//((1 - org[artery]) - math.max((1 - org[artery]) - dmg,0)) / 4
 	else
 		if org.isPly and not org.unconscious then
 			org.owner:Notify(table.Random(arteryMessages), true, "arteria", 0)
 		end
 
-		hg.AddHarmToAttacker(dmgInfo, 15, "Carotid artery punctured harm")
+		zc.AddHarmToAttacker(dmgInfo, 15, "Carotid artery punctured harm")
 	end
 
 	org[artery] = math.min(org[artery] + 1, 1)
@@ -198,7 +198,7 @@ input_list.spineartery = function(org, bone, dmg, dmgInfo, boneindex, dir, hit) 
 input_list.lungsL = function(org, bone, dmg, dmgInfo)
 	local oldval = org.lungsL[1]
 
-	hg.AddHarmToAttacker(dmgInfo, (dmg * 0.25), "Lung left damage harm")
+	zc.AddHarmToAttacker(dmgInfo, (dmg * 0.25), "Lung left damage harm")
 
 	org.lungsL[1] = math.min(org.lungsL[1] + dmg / 4, 1)
 	if (dmgInfo:IsDamageType(DMG_BULLET+DMG_SLASH+DMG_BUCKSHOT)) or (math.random(3) == 1) then org.lungsL[2] = math.min(org.lungsL[2] + dmg * 1, 1) end
@@ -213,7 +213,7 @@ end
 input_list.lungsR = function(org, bone, dmg, dmgInfo)
 	local oldval = org.lungsR[1]
 
-	hg.AddHarmToAttacker(dmgInfo, (dmg * 0.25), "Lung right damage harm")
+	zc.AddHarmToAttacker(dmgInfo, (dmg * 0.25), "Lung right damage harm")
 
 	org.lungsR[1] = math.min(org.lungsR[1] + dmg / 4, 1)
 	if (dmgInfo:IsDamageType(DMG_BULLET+DMG_SLASH+DMG_BUCKSHOT)) or (math.random(3) == 1) then org.lungsR[2] = math.min(org.lungsR[2] + dmg * 1, 1) end
@@ -233,7 +233,7 @@ input_list.trachea = function(org, bone, dmg, dmgInfo)
 
 	local result = damageOrgan(org, dmg * 2, dmgInfo, "trachea")
 
-	hg.AddHarmToAttacker(dmgInfo, (org.trachea - oldDmg) * 8, "Trachea damage harm")
+	zc.AddHarmToAttacker(dmgInfo, (org.trachea - oldDmg) * 8, "Trachea damage harm")
 
 	//org.internalBleed = org.internalBleed + dmg * 2
 

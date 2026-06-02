@@ -1,5 +1,5 @@
 function GetModeConfig(modeId)
-  local mode = zb.modes[modeId]
+  local mode = zc.modes[modeId]
   if !mode then return nil end
 
   local config = mode.Config

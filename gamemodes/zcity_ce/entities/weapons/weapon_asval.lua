@@ -45,7 +45,7 @@ if CLIENT then
 			self:GetWM():ManipulateBoneScale(49, vector_full)
 		end,
 		[0.52] = function( self, timeMul )
-			hg.CreateMag( self, Vector(0,0,-50) )
+			zc.CreateMag( self, Vector(0,0,-50) )
 			self:GetWM():ManipulateBoneScale(48, vecPochtiZero)
 			self:GetWM():ManipulateBoneScale(49, vecPochtiZero)
 		end

@@ -1,5 +1,5 @@
-hg.Abnormalties = hg.Abnormalties or {}
-local PLUGIN = hg.Abnormalties
+zc.Abnormalties = zc.Abnormalties or {}
+local PLUGIN = zc.Abnormalties
 
 SetGlobalBool("AbnormaltiesEnabled", false)
 util.AddNetworkString("ZC_AbnormalityTranslation")
@@ -273,7 +273,7 @@ util.AddNetworkString("ZC_AbnormalityHelpPage")
 		end
 	end
 
-	-- ulx luarun hg.Abnormalties.SetConsequences(Entity(1), 500)
+	-- ulx luarun zc.Abnormalties.SetConsequences(Entity(1), 500)
 
 	function PLUGIN.AddConsequences(ply, amt)
 		local stored_amt = ply:GetNWInt("AbnormaltiesConsequences", 0)
@@ -478,7 +478,7 @@ util.AddNetworkString("ZC_AbnormalityHelpPage")
 									ply.AbnormaltiesConsequencesBleedingPower = 0
 									ply.AbnormaltiesConsequencesBleedingPowerCDTime = CurTime() + 0.5
 
-									hg.organism.AddWoundManual(ply, bleeding_chance * 20, vector_origin, AngleRand(), find_valid_bone_random(ply, PLUGIN.ConsequencesValidBleedBones), CurTime())
+									zc.organism.AddWoundManual(ply, bleeding_chance * 20, vector_origin, AngleRand(), find_valid_bone_random(ply, PLUGIN.ConsequencesValidBleedBones), CurTime())
 								end
 							end
 						end
@@ -909,13 +909,13 @@ util.AddNetworkString("ZC_AbnormalityHelpPage")
 
 	--=\\Testing
 		--[[
-			ulx luarun hg.Abnormalties.TestZone(Entity(1), Entity(1):GetPos(), {['ritual'] = 10}, 50)
-			ulx luarun hg.Abnormalties.AddPhraseAbnormaltyToZone(hg.Abnormalties.Zones[1], 'help', 1)
-			ulx luarun hg.Abnormalties.AddPhraseAbnormaltyToZone(hg.Abnormalties.Zones[1], 'ritual', 1)
-			ulx luarun =hg.Abnormalties.CompareZonePhrasesToPattern(hg.Abnormalties.Zones[1], {{'help', 1}, {'ritual', 1}}, 5)
+			ulx luarun zc.Abnormalties.TestZone(Entity(1), Entity(1):GetPos(), {['ritual'] = 10}, 50)
+			ulx luarun zc.Abnormalties.AddPhraseAbnormaltyToZone(zc.Abnormalties.Zones[1], 'help', 1)
+			ulx luarun zc.Abnormalties.AddPhraseAbnormaltyToZone(zc.Abnormalties.Zones[1], 'ritual', 1)
+			ulx luarun =zc.Abnormalties.CompareZonePhrasesToPattern(zc.Abnormalties.Zones[1], {{'help', 1}, {'ritual', 1}}, 5)
 		]]
 
-		--; ulx luarun hg.Abnormalties.FindValidPhrase('ritual', 40, '')
+		--; ulx luarun zc.Abnormalties.FindValidPhrase('ritual', 40, '')
 
 		function PLUGIN.FindValidPhrase(abnormalty_name, tries, text_start)
 			local text = text_start or ""

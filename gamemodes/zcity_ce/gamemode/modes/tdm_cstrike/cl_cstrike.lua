@@ -1,9 +1,9 @@
 function MODE:AddHudPaint()
     local w, h = ScreenScale(60), ScreenScale(10)
     
-    if zb.rtype == "bomb" then
-        local pts = zb.ClPoints["BOMB_ZONE_A"]
-        local pts2 = zb.ClPoints["BOMB_ZONE_B"]
+    if zc.rtype == "bomb" then
+        local pts = zc.ClPoints["BOMB_ZONE_A"]
+        local pts2 = zc.ClPoints["BOMB_ZONE_B"]
         
         if pts and #pts >= 2 then
             local center = pts[2].pos - pts[1].pos
@@ -12,7 +12,7 @@ function MODE:AddHudPaint()
 
             local tscr = pos:ToScreen()
 
-            local clr = zb.Points["BOMB_ZONE_A"].Color
+            local clr = zc.Points["BOMB_ZONE_A"].Color
             
             if BombInSite(LocalPlayer():EyePos(),1) then
                 surface.SetDrawColor(122,0,0,255)
@@ -44,7 +44,7 @@ function MODE:AddHudPaint()
 
             local tscr = pos:ToScreen()
 
-            local clr = zb.Points["BOMB_ZONE_B"].Color
+            local clr = zc.Points["BOMB_ZONE_B"].Color
             
             if BombInSite(LocalPlayer():EyePos(),2) then
                 surface.SetDrawColor(122,0,0,255)
@@ -68,15 +68,15 @@ function MODE:AddHudPaint()
             surface.SetTextPos(tscr.x - lx / 2, h / 2 - ly / 2)
             surface.DrawText(txt)
         end
-    elseif zb.rtype == "hostage" then
-        local pts = zb.ClPoints["HOSTAGE_DELIVERY_ZONE"]
+    elseif zc.rtype == "hostage" then
+        local pts = zc.ClPoints["HOSTAGE_DELIVERY_ZONE"]
         if not pts or #pts < 2 then return end
         local center = pts[2].pos + pts[1].pos + (#pts >= 4 and (pts[3].pos + pts[4].pos) or vector_origin)
         local pos = center / #pts
 
         local tscr = pos:ToScreen()
 
-        local clr = zb.Points["HOSTAGE_DELIVERY_ZONE"].Color
+        local clr = zc.Points["HOSTAGE_DELIVERY_ZONE"].Color
 
         surface.SetDrawColor(clr:Unpack())
         surface.DrawRect(tscr.x - w * 1.15, 0, w * 1.15 * 2, h)

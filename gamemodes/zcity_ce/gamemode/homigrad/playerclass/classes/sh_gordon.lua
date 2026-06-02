@@ -51,7 +51,7 @@ local function createhev(ply)
     ply.armors["head"] = "gordon_helmet"
     ply:SyncArmor()
 
-    local Appearance = ply.CurAppearance or hg.Appearance.GetRandomAppearance()
+    local Appearance = ply.CurAppearance or zc.Appearance.GetRandomAppearance()
     Appearance.AAttachments = ""
     Appearance.AColthes = ""
     ply:SetNetVar("Accessories", "")
@@ -65,7 +65,7 @@ function CLASS.On(self, data)
     local equipment = data and data.equipment
     local bRestored = data and data.bRestored
     ApplyAppearance(self,nil,nil,nil,true)
-    local Appearance = self.CurAppearance or hg.Appearance.GetRandomAppearance()
+    local Appearance = self.CurAppearance or zc.Appearance.GetRandomAppearance()
     Appearance.AAttachments = ""
     Appearance.AColthes = ""
 
@@ -196,7 +196,7 @@ end
 
 hook.Add("ZC_PlayerThink","ZC_UpdateGordonSuitChargers",function(ply)
     if not (ply.PlayerClassName == "Gordon" and ply:GetNetVar("HEVSuit")) then return end
-    local ent = hg.eyeTrace(ply).Entity
+    local ent = zc.eyeTrace(ply).Entity
     if not (ent.armorcharger or ent.healthcharger) then return end
     if (ent.ThinkCharge or 0) > CurTime() then return end
     ent:SetCycle(1 - ent.power / 100)
@@ -595,7 +595,7 @@ elseif SERVER then
 
         if org.HEV and not org.alive and not org.emitflatline then
             org.emitflatline = true
-            hg.GetCurrentCharacter(ply):EmitSound("hl1/fvox/flatline.wav")
+            zc.GetCurrentCharacter(ply):EmitSound("hl1/fvox/flatline.wav")
 
             if CurrentRound and CurrentRound().name == "coop" then
                 if zChatPrint then
@@ -668,7 +668,7 @@ elseif SERVER then
                     org.COThink = CurTime() + (1 / 120) * 60
 
                     if org.alive then
-                        org.o2[1] = math.min(org.o2[1] + hg.organism.OxygenateBlood(org) * 2, org.o2.range)
+                        org.o2[1] = math.min(org.o2[1] + zc.organism.OxygenateBlood(org) * 2, org.o2.range)
                         org.CO = math.Approach(org.CO, 0, 2)
                         org.COregen = math.Approach(org.COregen, 0, 2)
                     end
@@ -758,7 +758,7 @@ elseif SERVER then
                     org.CPRThink = CurTime() + (1 / 120) * 60
 
                     if org.alive then
-                        org.o2[1] = math.min(org.o2[1] + hg.organism.OxygenateBlood(org) * 2, org.o2.range)
+                        org.o2[1] = math.min(org.o2[1] + zc.organism.OxygenateBlood(org) * 2, org.o2.range)
                         org.pulse = math.min(org.pulse + 5,70)
                         org.CO = math.Approach(org.CO, 0, 1)
                         org.COregen = math.Approach(org.COregen, 0, 1)

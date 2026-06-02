@@ -78,7 +78,7 @@ function SlipWeapon(self, bullet)
 					local dmgInfo = DamageInfo()
 					dmgInfo:SetDamage(0.5)
 					dmgInfo:SetDamageType(DMG_CLUB)
-					hg.organism.input_list.rarmdown(owner.organism, 1, dmgInfo:GetDamage(), dmgInfo, owner:LookupBone("ValveBiped.Bip01_R_Forearm"), vector_up)
+					zc.organism.input_list.rarmdown(owner.organism, 1, dmgInfo:GetDamage(), dmgInfo, owner:LookupBone("ValveBiped.Bip01_R_Forearm"), vector_up)
 				end
 			end)
 		end
@@ -184,7 +184,7 @@ function SWEP:Step()
 	self:CoreStep()
 	local owner = self:GetOwner()
 	if not IsValid(owner) then return end
-	if hg.KeyDown(owner, IN_WALK) and hg.KeyDown(owner, IN_USE) and not self.reload then
+	if zc.KeyDown(owner, IN_WALK) and zc.KeyDown(owner, IN_USE) and not self.reload then
 		if not self.huybut then
 			if SERVER then
 				local twohands = self.HoldType == "revolver"

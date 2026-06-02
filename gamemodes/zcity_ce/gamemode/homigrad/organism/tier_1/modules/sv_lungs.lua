@@ -1,7 +1,7 @@
 local max, min, _, Lerp, halfValue2 = math.max, math.min, math.Round, Lerp, util.halfValue2
---local Organism = hg.organism
-hg.organism.module.lungs = {}
-local module = hg.organism.module.lungs
+--local Organism = zc.organism
+zc.organism.module.lungs = {}
+local module = zc.organism.module.lungs
 module[1] = function(org)
 	org.lungsL = {
 		0, --state, pneumothorax
@@ -31,11 +31,11 @@ module[1] = function(org)
 	org.mannitol = 0
 end
 
-function hg.organism.OxygenateBlood(org)
+function zc.organism.OxygenateBlood(org)
 	return (math.max(((1 - org.lungsL[1]) + (1 - org.lungsR[1])) / 2, 0.5) * (1 - org.trachea)) * org.o2.regen / 4 * (org.owner:WaterLevel() < 3 and 1 or 0)// * (1 - org.pneumothorax)
 end
 
-function hg.organism.CanBreath(org)
+function zc.organism.CanBreath(org)
 	return org.o2 and org.o2.curregen >= org.losing_oxy
 end
 
@@ -84,7 +84,7 @@ local function togglebreath(ply, toggle)
 		end
 	end
 
-	local ent = hg.GetCurrentCharacter(ply)
+	local ent = zc.GetCurrentCharacter(ply)
 	ent:StopSound(ply.lastPhr or "")
 	ply.phrCld = 0
 end
@@ -178,7 +178,7 @@ module[2] = function(owner, org, timeValue)
 	local losing_oxy = timeValue * 1 * math.Clamp(org.o2[1] / 30, 0.25, 1)
 	org.losing_oxy = losing_oxy
 	o2[1] = max(o2[1] - losing_oxy, 0)
-	local ent = hg.GetCurrentCharacter(owner)
+	local ent = zc.GetCurrentCharacter(owner)
 	local bone = ent:LookupBone("ValveBiped.Bip01_Head1")
 
 	if (not bone) or (bone < 0) then bone = 6 end
@@ -228,7 +228,7 @@ module[2] = function(owner, org, timeValue)
 
 	org.CO = max(org.CO - timeValue, 0)
 	if success then
-		local oxygenate = hg.organism.OxygenateBlood(org) * 0.5
+		local oxygenate = zc.organism.OxygenateBlood(org) * 0.5
 		local lerp = min(max(org.pulse - 20, 0) / 20, 1)
 		local regen = Lerp(lerp, 0, o2.regen * oxygenate * math.Rand(0.95, 1.05))
 
@@ -338,7 +338,7 @@ module[2] = function(owner, org, timeValue)
 
 	if o2[1] < 10 then
 		if org.isPly then
-			hg.StunPlayer(owner, 3)
+			zc.StunPlayer(owner, 3)
 		end
 	end
 
@@ -346,7 +346,7 @@ module[2] = function(owner, org, timeValue)
 		org.needfake = true
 
 		if org.isPly then
-			hg.LightStunPlayer(owner, 3)
+			zc.LightStunPlayer(owner, 3)
 		end
 	end
 
@@ -410,9 +410,9 @@ module[2] = function(owner, org, timeValue)
 
 	if k < 0.25 then
 		if not org.alive and owner:IsPlayer() and death_from_braindamage and org.o2[1] == 0 then
-			hg.achievements.AddPlayerAchievement(owner,"brain",1)
+			zc.achievements.AddPlayerAchievement(owner,"brain",1)
 			if org.analgesia > 1 then
-				hg.achievements.AddPlayerAchievement(owner,"drugs",1)
+				zc.achievements.AddPlayerAchievement(owner,"drugs",1)
 			end
 		end
 

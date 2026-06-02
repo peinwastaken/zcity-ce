@@ -708,7 +708,7 @@ hook.Add("ZC_RadialOptions", "ZC_CommanderSupplyMenu", function()
             end,
             "Order Supplies (" .. points .. " pts)"
         }
-        hg.radialOptions[#hg.radialOptions + 1] = tbl
+        zc.radialOptions[#zc.radialOptions + 1] = tbl
     end
 end)
 

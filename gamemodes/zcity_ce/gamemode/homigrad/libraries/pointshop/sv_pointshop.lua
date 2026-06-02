@@ -1,7 +1,7 @@
 --
-hg.Pointshop = hg.Pointshop or {}
+zc.Pointshop = zc.Pointshop or {}
 
-local PLUGIN = hg.Pointshop
+local PLUGIN = zc.Pointshop
 PLUGIN.PlayerInstances = PLUGIN.PlayerInstances or {}
 
 hook.Add("ZC_OnDatabaseConnected", "ZC_PointshopCreateData", function()
@@ -200,7 +200,7 @@ function plyMeta:PS_SetItems( tItems )
 end
 
 function plyMeta:PS_AddItem( uid )
-    if not hg.PointShop.Items[uid] then return end
+    if not zc.PointShop.Items[uid] then return end
     local pointshopVars = self:GetPointshopVars()
 
     pointshopVars.items[ uid ] = true
@@ -234,16 +234,16 @@ util.AddNetworkString("ZC_PointshopNotify")
 
 function PLUGIN:NET_BuyItem( ply, uid )
     if not util.IsBinaryModuleInstalled("mysqloo") then return end
-    if hg.PointShop.Items[uid].ISDONATE then return end
-    if not hg.PointShop.Items[uid] then print(ply, "[PS-ZCity] The player is trying to buy invalid item.", "UID: "..uid ) return end
+    if zc.PointShop.Items[uid].ISDONATE then return end
+    if not zc.PointShop.Items[uid] then print(ply, "[PS-ZCity] The player is trying to buy invalid item.", "UID: "..uid ) return end
     if ply:PS_HasItem( uid ) then PLUGIN:NET_SendPointShopVars( ply ) return end
 
     local reason = ""
 
-    if hg.PointShop.Items[uid].ISDONATE then
-        yes, reason = ply:PS_TakeDPoints(hg.PointShop.Items[uid].PRICE, function() ply:PS_AddItem( uid ) end)
+    if zc.PointShop.Items[uid].ISDONATE then
+        yes, reason = ply:PS_TakeDPoints(zc.PointShop.Items[uid].PRICE, function() ply:PS_AddItem( uid ) end)
     else
-        yes, reason = ply:PS_TakePoints(hg.PointShop.Items[uid].PRICE, function() ply:PS_AddItem( uid ) end)
+        yes, reason = ply:PS_TakePoints(zc.PointShop.Items[uid].PRICE, function() ply:PS_AddItem( uid ) end)
     end
 
     net.Start( "ZC_PointshopNotify" )

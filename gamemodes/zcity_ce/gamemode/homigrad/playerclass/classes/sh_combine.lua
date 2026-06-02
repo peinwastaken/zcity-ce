@@ -275,11 +275,11 @@ function CLASS.On(self, data)
 	end
 
     if IsValid(self.FakeRagdoll) then
-        hg.FakeUp(self, nil, nil, true)
+        zc.FakeUp(self, nil, nil, true)
     end
 
     ApplyAppearance(self,nil,nil,nil,true)
-    local Appearance = self.CurAppearance or hg.Appearance.GetRandomAppearance()
+    local Appearance = self.CurAppearance or zc.Appearance.GetRandomAppearance()
     Appearance.AAttachments = ""
     Appearance.AColthes = ""
 
@@ -320,7 +320,7 @@ function CLASS.On(self, data)
     local callsign = AssignCombineCallsign(self, isLeader)
 
     self.oldname_cmb = self:GetNWString("PlayerName")
-    if zb.GiveRole then zb.GiveRole(self, self.leader and "Leader" or "Soldier", Color(89,230,255)) end
+    if zc.GiveRole then zc.GiveRole(self, self.leader and "Leader" or "Soldier", Color(89,230,255)) end
     self:SetNWString("PlayerName", callsign)
 
     for _,v in ipairs(ents.FindByClass("npc_*")) do
@@ -708,7 +708,7 @@ end)
 --;; Server hooks and footstep/death sounds
 if SERVER then
     hook.Add("ZC_PlayerFootstep","ZC_CombineFootsteps",function(ply)
-        local chr = hg.GetCurrentCharacter(ply)
+        local chr = zc.GetCurrentCharacter(ply)
         if ply:Alive() and ply.PlayerClassName == "Combine" then
             --;; If there is a ragdoll, etc.
             ply.CombineLerpedFootStep = LerpFT(0.5,ply.CombineLerpedFootStep or 60, (not ply:IsSprinting() and (ply:KeyDown(IN_DUCK) or ply:KeyDown(IN_WALK))) and 20 or 60)

@@ -13,7 +13,7 @@ local Selects = {
     GamemodeOnly = true,
     CreatedFunc = function(self, parent, luaMenu)
         local btn = vgui.Create( "DLabel", self )
-        btn:SetText( zb.locale.GetLocalized("menu/traitor_role/soe") )
+        btn:SetText( zc.locale.GetLocalized("menu/traitor_role/soe") )
         btn:SetMouseInputEnabled( true )
         btn:SizeToContents()
         btn:SetFont( "ZCity_Small" )
@@ -28,7 +28,7 @@ local Selects = {
 
         function btn:DoClick()
             luaMenu:Close()
-            hg.SelectPlayerRole(nil, "soe")
+            zc.SelectPlayerRole(nil, "soe")
         end
 
         local selfa = self
@@ -41,7 +41,7 @@ local Selects = {
         end
 
         local btn = vgui.Create( "DLabel", btn )
-        btn:SetText( zb.locale.GetLocalized("menu/traitor_role/std") )
+        btn:SetText( zc.locale.GetLocalized("menu/traitor_role/std") )
         btn:SetMouseInputEnabled( true )
         btn:SizeToContents()
         btn:SetFont( "ZCity_Small" )
@@ -56,7 +56,7 @@ local Selects = {
 
         function btn:DoClick()
             luaMenu:Close()
-            hg.SelectPlayerRole(nil, "standard")
+            zc.SelectPlayerRole(nil, "standard")
         end
 
         function btn:Think()
@@ -72,15 +72,15 @@ local Selects = {
     end,
     },
     {Title = "menu/achievements", Func = function(luaMenu,pp)
-        hg.DrawAchievmentsMenu(pp)
+        zc.DrawAchievmentsMenu(pp)
     end},
     {Title = "menu/settings", Func = function(luaMenu,pp)
-        hg.DrawSettings(pp)
+        zc.DrawSettings(pp)
     end},
     {Title = "menu/binds", Func = function(luamenu, pp)
-        hg.DrawBinds(pp)
+        zc.DrawBinds(pp)
     end},
-    {Title = "menu/appearance", Func = function(luaMenu,pp) hg.CreateApperanceMenu(pp) end},
+    {Title = "menu/appearance", Func = function(luaMenu,pp) zc.CreateApperanceMenu(pp) end},
     {Title = "menu/return", Func = function(luaMenu) luaMenu:Close() end},
 }
 
@@ -102,7 +102,7 @@ surface.CreateFont("ZC_MM_Title", {
 
 
 function PANEL:GetRandomText()
-    return zb.locale.GetLocalized(splasheh[math.random(#splasheh)])
+    return zc.locale.GetLocalized(splasheh[math.random(#splasheh)])
 end
 
 function PANEL:GetMapName()
@@ -148,10 +148,10 @@ function PANEL:Init()
     logoPanel:DockMargin(0, 0, 0, 0)
     logoPanel:Dock(TOP)
     logoPanel.Paint = function(self, w, h)
-        local layerData = hg.menuDrawLayers
+        local layerData = zc.menuDrawLayers
         if !layerData then return end
 
-        local baseMat = hg.menuBaseLogos[layerData.base]
+        local baseMat = zc.menuBaseLogos[layerData.base]
         local logoW, logoH = baseMat:Width(), baseMat:Height()
 
         surface.SetMaterial(baseMat)
@@ -159,11 +159,11 @@ function PANEL:Init()
         surface.DrawTexturedRect(0, 0, logoW, logoH)
 
         local layers = layerData.layers
-        for _, id in ipairs(hg.menuLayerOrder) do
+        for _, id in ipairs(zc.menuLayerOrder) do
             local layer = table.HasValue(layers, id)
             if !layer then continue end
 
-            surface.SetMaterial(hg.menuLogoLayers[id])
+            surface.SetMaterial(zc.menuLogoLayers[id])
             surface.SetDrawColor(255, 255, 255, 255)
             surface.DrawTexturedRect(0, 0, logoW, logoH)
         end
@@ -172,7 +172,7 @@ function PANEL:Init()
     local textLabel = vgui.Create("DLabel", lDock)
     textLabel:SetFont("ZCity_Tiny")
     textLabel:SetTextColor(clr_gray)
-    textLabel:SetText(zb.locale.GetLocalized("menu/playing_on", randomText, mapName))
+    textLabel:SetText(zc.locale.GetLocalized("menu/playing_on", randomText, mapName))
     textLabel:SizeToContentsY(5)
     textLabel:DockMargin(0, ScreenScale(3), 0, ScreenScale(5))
     textLabel:Dock(TOP)
@@ -197,13 +197,13 @@ function PANEL:Init()
     git:DockMargin(ScreenScale(10), 0, 0, 0)
     git:SetFont("ZCity_Tiny")
     git:SetTextColor(clr_gray)
-    git:SetText("GitHub: github.com/" .. hg.GitHub_ReposOwner .. "/" .. hg.GitHub_ReposName)
+    git:SetText("GitHub: github.com/" .. zc.GitHub_ReposOwner .. "/" .. zc.GitHub_ReposName)
     git:SetContentAlignment(4)
     git:SetMouseInputEnabled(true)
     git:SizeToContents()
 
     function git:DoClick()
-        gui.OpenURL("https://github.com/" .. hg.GitHub_ReposOwner .. "/" .. hg.GitHub_ReposName)
+        gui.OpenURL("https://github.com/" .. zc.GitHub_ReposOwner .. "/" .. zc.GitHub_ReposName)
     end
 
     local version = vgui.Create("DLabel", bottomDock)
@@ -211,7 +211,7 @@ function PANEL:Init()
     version:DockMargin(ScreenScale(10), 0, 0, 0)
     version:SetFont("ZCity_Tiny")
     version:SetTextColor(clr_gray)
-    version:SetText(zb.locale.GetLocalized("menu/version", hg.Version))
+    version:SetText(zc.locale.GetLocalized("menu/version", zc.Version))
     version:SetContentAlignment(4)
     version:SizeToContents()
 
@@ -220,7 +220,7 @@ function PANEL:Init()
     ceTeam:DockMargin(ScreenScale(10), 0, 0, 0)
     ceTeam:SetFont("ZCity_Tiny")
     ceTeam:SetTextColor(clr_gray)
-    ceTeam:SetText(zb.locale.GetLocalized("menu/authors_ce", FormatAuthors(hg.Authors_CE)))
+    ceTeam:SetText(zc.locale.GetLocalized("menu/authors_ce", FormatAuthors(zc.Authors_CE)))
     ceTeam:SetContentAlignment(4)
     ceTeam:SizeToContents()
 
@@ -229,7 +229,7 @@ function PANEL:Init()
     zteam:DockMargin(ScreenScale(10), 0, 0, 0)
     zteam:SetFont("ZCity_Tiny")
     zteam:SetTextColor(clr_gray)
-    zteam:SetText(zb.locale.GetLocalized("menu/authors", FormatAuthors(hg.Authors)))
+    zteam:SetText(zc.locale.GetLocalized("menu/authors", FormatAuthors(zc.Authors)))
     zteam:SetContentAlignment(4)
     zteam:SizeToContents()
 end
@@ -245,7 +245,7 @@ local gradient_l = surface.GetTextureID("vgui/gradient-l")
 local clr_1 = uiColors.mainMenuGradient
 function PANEL:Paint(w,h)
     draw.RoundedBox( 0, 0, 0, w, h, self.ColorBG )
-    hg.DrawBlur(self, 5)
+    zc.DrawBlur(self, 5)
     surface.SetDrawColor( self.ColorBG )
     surface.SetTexture( gradient_l )
     surface.DrawTexturedRect(0,0,w,h)
@@ -255,7 +255,7 @@ function PANEL:Paint(w,h)
 end
 
 function PANEL:AddSelect( pParent, strTitle, tbl )
-    local localizedTitle = zb.locale.GetLocalized(strTitle)
+    local localizedTitle = zc.locale.GetLocalized(strTitle)
     local id = #self.Buttons + 1
     self.Buttons[id] = vgui.Create( "DLabel", pParent )
     local btn = self.Buttons[id]

@@ -76,7 +76,7 @@ function SWEP:GetVehicleFromTrace( trace, user )
 end
 
 function SWEP:GetEyeTrace()
-	return hg.eyeTrace(self:GetOwner())
+	return zc.eyeTrace(self:GetOwner())
 end
 
 function SWEP:Think()
@@ -244,7 +244,7 @@ function SWEP:DrawWorldModel2()
 	local owner = self:GetOwner()
 	WorldModel:SetNoDraw(true)
 	WorldModel:SetModelScale(self.ModelScale or 1)
-	local renderGuy = hg.GetCurrentCharacter(owner)
+	local renderGuy = zc.GetCurrentCharacter(owner)
 	if IsValid(owner) then
 		local offsetVec = self.offsetVec
 		local offsetAng = self.offsetAng

@@ -19,5 +19,5 @@ function SWEP:IsClient()
 end
 
 function SWEP:KeyDown(key)
-	return hg.KeyDown(self:GetOwner(),key)
+	return zc.KeyDown(self:GetOwner(),key)
 end

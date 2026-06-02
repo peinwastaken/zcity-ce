@@ -25,7 +25,7 @@ local drawfuncopendoor = function(ent, ply, vm, time)
 		mat:SetTranslation(LerpVector(math.Clamp((1 - time) * distmul, 0, 1), mat:GetTranslation(), pos))
 		--mat:SetAngles(ang)
 
-		hg.bone_apply_matrix(vm, lh, mat)
+		zc.bone_apply_matrix(vm, lh, mat)
 	end
 end
 
@@ -52,7 +52,7 @@ local drawfuncinteract = function(ent, ply, vm, time)
 		mat:SetTranslation(LerpVector(math.Clamp((1 - time) * distmul, 0, 1), mat:GetTranslation(), pos))
 		--mat:SetAngles(ang)
 
-		hg.bone_apply_matrix(vm, lh, mat)
+		zc.bone_apply_matrix(vm, lh, mat)
 	end
 end
 
@@ -120,10 +120,10 @@ local tbl = {
 	}
 }
 
-hg.ZManipAnims = {}
+zc.ZManipAnims = {}
 for mdl, tbl2 in pairs(tbl) do
 	for anim, tSettings in pairs(tbl2) do
-		hg.ZManipAnims[anim] = {
+		zc.ZManipAnims[anim] = {
 			mdl = mdl,
 			seq = tSettings.seq,
 			playTime = tSettings.playTime or 1,
@@ -134,12 +134,12 @@ for mdl, tbl2 in pairs(tbl) do
 	end
 end
 
-function hg.RunZManipAnim(ply, anim, revers, timeOveride, addtbl)
+function zc.RunZManipAnim(ply, anim, revers, timeOveride, addtbl)
 	local zmdl = ply.zmodel
 
 	if !IsValid(zmdl) then return end
 	--if ply.zmanipstart ~= nil then return end
-	local tbl = hg.ZManipAnims[anim] or anim
+	local tbl = zc.ZManipAnims[anim] or anim
 	if not tbl.mdl then return end
 
 	zmdl:SetModel(tbl.mdl)
@@ -167,11 +167,11 @@ net.Receive("ZC_ZManipRunAnimation", function()
 	local timeOveride = net.ReadFloat()
 	local addtbl = net.ReadTable()
 
-	hg.RunZManipAnim(ply, anim, revers, timeOveride != 0 and timeOveride or nil, addtbl)
+	zc.RunZManipAnim(ply, anim, revers, timeOveride != 0 and timeOveride or nil, addtbl)
 end)
 
 local mdl = Model("models/zmanip/c_zmanipinteract.mdl") -- interact use
-function hg.DoZManip(ent, ply)
+function zc.DoZManip(ent, ply)
 	if not IsValid(ply.zmodel) then
 		ply.zmodel = ClientsideModel(mdl)
 		ply.zmodel:SetNoDraw(true)
@@ -193,7 +193,7 @@ function hg.DoZManip(ent, ply)
 	if wep.ShouldDoZManip and !wep:ShouldDoZManip() then return end
 	if !IsValid(wep) then return end
 
-	local tr = hg.eyeTrace(ply, 60)
+	local tr = zc.eyeTrace(ply, 60)
 	if not tr then return end
 
 	local ang = ply:EyeAngles()
@@ -241,7 +241,7 @@ function hg.DoZManip(ent, ply)
 
 	local camBone = WorldModel:LookupBone("ValveBiped.Bip01_L_Hand")
 
-    if camBone and hg.IsLocal(ply) then
+    if camBone and zc.IsLocal(ply) then
         local matrix = WorldModel:GetBoneMatrix(camBone)
 
         if matrix then
@@ -266,7 +266,7 @@ function hg.DoZManip(ent, ply)
 		ply.zmanipdrawFunc(ent, ply, WorldModel, time)
 	end
 
-	local bones = hg.TPIKBonesLH
+	local bones = zc.TPIKBonesLH
 	for _, bone in ipairs(bones) do
 		local wm_boneindex = WorldModel:LookupBone(bone)
 		if !wm_boneindex then continue end
@@ -307,7 +307,7 @@ function hg.DoZManip(ent, ply)
 		--ply_bonematrix:SetTranslation(bonepos + lpos * lerp)
 		--ply_bonematrix:SetAngles(q1:Angle())
 
-		--hg.bone_apply_matrix(ent, ply_boneindex, ply_bonematrix)
+		--zc.bone_apply_matrix(ent, ply_boneindex, ply_bonematrix)
 		ent:SetBoneMatrix(ply_boneindex, ply_bonematrix)
 		--ply:SetBonePosition(ply_boneindex, bonepos, boneang)
 	end

@@ -1,7 +1,7 @@
 if not util.IsBinaryModuleInstalled("mysqloo") then return end
 
-hg.EarlyAccess = hg.EarlyAccess or {}
-local PLUGIN = hg.EarlyAccess
+zc.EarlyAccess = zc.EarlyAccess or {}
+local PLUGIN = zc.EarlyAccess
 PLUGIN.PlayerInstances = PLUGIN.PlayerInstances or {}
 
 hook.Add("ZC_OnDatabaseConnected", "ZC_EarlyAccessCreateData", function()

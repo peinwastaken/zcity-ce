@@ -36,8 +36,8 @@
 --//
 
 --\\Translate plugin things into your things
-hg.RolePlus = hg.RolePlus or {}
-local PLUGIN = hg.RolePlus
+zc.RolePlus = zc.RolePlus or {}
+local PLUGIN = zc.RolePlus
 PLUGIN.ID = "RolePlus"
 
 function PLUGIN:AddHook(id, func)

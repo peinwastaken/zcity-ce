@@ -74,7 +74,7 @@ function SWEP:Reload()
     if SERVER then
         if self:GetOwner():KeyPressed(IN_ATTACK) then
             self:SetNetVar("mode", not self:GetNetVar("mode"))
-            self:GetOwner():ChatPrint(zb.locale.GetLocalized("weapon/changed_mode", zb.locale.GetLocalized(self:GetNetVar("mode") and "weapon/mode/slash" or "weapon/mode/stab")))
+            self:GetOwner():ChatPrint(zc.locale.GetLocalized("weapon/changed_mode", zc.locale.GetLocalized(self:GetNetVar("mode") and "weapon/mode/slash" or "weapon/mode/stab")))
         end
     end
 end

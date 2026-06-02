@@ -1,8 +1,8 @@
 --if not util.IsBinaryModuleInstalled("mysqloo") then return end
 
-hg.db = hg.db or {}
+zc.db = zc.db or {}
 
-function hg.db.Connect()
+function zc.db.Connect()
     local standart_tbl = {
             dbmodule = "sqlite",
             hostname = "your_MySQLServerAddres",
@@ -29,10 +29,10 @@ function hg.db.Connect()
 end
 
 hook.Add("InitPostEntity", "ZC_DatabaseConnect", function()
-	hg.db.Connect()
+	zc.db.Connect()
 end)
 
---zb.db.Connect()
+--zc.db.Connect()
 
 hook.Add("ZC_OnDatabaseConnected", "ZC_DatabaseThink", function()
     --print("asd")

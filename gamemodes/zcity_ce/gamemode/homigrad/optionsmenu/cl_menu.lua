@@ -31,7 +31,7 @@ end
 local options = {}
 
 -- optiondata = {desc = "descreption", and mode vars}
-function hg.AddOptionPanel( convarname, mode, optiondata, category )
+function zc.AddOptionPanel( convarname, mode, optiondata, category )
     optiondata = optiondata or {}
     category = category or "other"
     optiondata.convar = convarname
@@ -41,18 +41,18 @@ function hg.AddOptionPanel( convarname, mode, optiondata, category )
     options[category][convarname] = {mode, optiondata}
 end
 
-hg.AddOptionPanel( "zc_potatopc", "switcher", {desc = "Enables weaker effects. Use for weak PCs"}, "optimization" )
-hg.AddOptionPanel( "zc_dynamic_mags", "switcher", {desc = "Enables the \"floating Ammo HUD\" feature"}, "other" )
-hg.AddOptionPanel( "zc_anims_draw_distance", "slider", {desc = "Changes the rendering distance of animations\nCan help increase FPS | 0 - inf",min = 0,max = 4096}, "optimization" )
-hg.AddOptionPanel( "zc_attachment_draw_distance", "slider", {desc = "Changes the rendering distance of attachments\nCan help increase FPS | 0 - inf",min = 0,max = 4096}, "optimization" )
-hg.AddOptionPanel( "zc_old_notificate", "switcher", {desc = "Enables old damage notifications (in chat)",min = 0,max = 4096}, "other" )
-hg.AddOptionPanel( "zc_weaponshotblur_enable", "switcher", {desc = "Enables blur when you are shooting the weapon",min = 0,max = 4096}, "other" )
-hg.AddOptionPanel( "zc_weaponshotblur_mul", "slider", {desc = "Multiplicates the blur that happens when you are shooting the weapon",min = 0,max = 1,decimals = 3}, "other" )
-hg.AddOptionPanel( "zc_maxsmoketrails", "slider", {desc = "Max amount of smoke trail effects (lags after 10)",min = 0,max = 30,decimals = 0}, "optimization" )
-hg.AddOptionPanel( "zc_optimise_scopes", "slider", {desc = "Enable this if scoping makes your fps cry (1 - lowers quality of props around you, 2 - \"disables\" main render)",min = 0,max = 2,decimals = 0}, "optimization" )
+zc.AddOptionPanel( "zc_potatopc", "switcher", {desc = "Enables weaker effects. Use for weak PCs"}, "optimization" )
+zc.AddOptionPanel( "zc_dynamic_mags", "switcher", {desc = "Enables the \"floating Ammo HUD\" feature"}, "other" )
+zc.AddOptionPanel( "zc_anims_draw_distance", "slider", {desc = "Changes the rendering distance of animations\nCan help increase FPS | 0 - inf",min = 0,max = 4096}, "optimization" )
+zc.AddOptionPanel( "zc_attachment_draw_distance", "slider", {desc = "Changes the rendering distance of attachments\nCan help increase FPS | 0 - inf",min = 0,max = 4096}, "optimization" )
+zc.AddOptionPanel( "zc_old_notificate", "switcher", {desc = "Enables old damage notifications (in chat)",min = 0,max = 4096}, "other" )
+zc.AddOptionPanel( "zc_weaponshotblur_enable", "switcher", {desc = "Enables blur when you are shooting the weapon",min = 0,max = 4096}, "other" )
+zc.AddOptionPanel( "zc_weaponshotblur_mul", "slider", {desc = "Multiplicates the blur that happens when you are shooting the weapon",min = 0,max = 1,decimals = 3}, "other" )
+zc.AddOptionPanel( "zc_maxsmoketrails", "slider", {desc = "Max amount of smoke trail effects (lags after 10)",min = 0,max = 30,decimals = 0}, "optimization" )
+zc.AddOptionPanel( "zc_optimise_scopes", "slider", {desc = "Enable this if scoping makes your fps cry (1 - lowers quality of props around you, 2 - \"disables\" main render)",min = 0,max = 2,decimals = 0}, "optimization" )
 
 
-BlurBackground = BlurBackground or hg.DrawBlur
+BlurBackground = BlurBackground or zc.DrawBlur
 
 local function CreateOptionsMenu()
     local sizeX,sizeY = ScrW() / 3.2 ,ScrH() / 2.2

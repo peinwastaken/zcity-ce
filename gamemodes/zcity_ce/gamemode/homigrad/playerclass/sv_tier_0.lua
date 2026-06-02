@@ -17,7 +17,7 @@ function Player:SetPlayerClass(value, data)
 		net.WriteTable(data)
 	net.Broadcast()
 	--if self:Alive() then
-	--	hg.FakeUp(self, true, true)
+	--	zc.FakeUp(self, true, true)
 	--end
 end
 

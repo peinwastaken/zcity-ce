@@ -3,11 +3,11 @@ local IsValid = IsValid
 
 --\\ View Punch
 	local PLAYER = FindMetaTable("Player")
-	hg.SetEyeAngles = hg.SetEyeAngles or PLAYER.SetEyeAngles
+	zc.SetEyeAngles = zc.SetEyeAngles or PLAYER.SetEyeAngles
 
 	function PLAYER:SetEyeAngles(ang)
 		if !self.lockcamera then
-			hg.SetEyeAngles(self, ang)
+			zc.SetEyeAngles(self, ang)
 		end
 	end
 
@@ -31,7 +31,7 @@ local IsValid = IsValid
 		local vp_punch_angle_velocity4 = Angle()
 		vp_punch_angle_last4 = vp_punch_angle_last4 or vp_punch_angle4
 
-		function hg.CalculateConsciousnessMul()
+		function zc.CalculateConsciousnessMul()
 			local consciousness = 1
 
 			local org = lply.organism
@@ -47,14 +47,14 @@ local IsValid = IsValid
 			return math_Clamp(((consciousness - 1) * 3 + 1), 0.4, 1)
 		end
 
-		function hg.InGame()
+		function zc.InGame()
 			local x, y = input.GetCursorPos()
 
 			return !(vgui.CursorVisible() or (x == 0 and y == 0))
 		end
 
 		hook.Add("Think", "ZC_ViewPunchThink", function()
-			if IsValid(lply.FakeRagdoll) and hg.InGame() then return end
+			if IsValid(lply.FakeRagdoll) and zc.InGame() then return end
 
 			hook.Run("ZC_ViewPunchThink")
 		end)
@@ -63,7 +63,7 @@ local IsValid = IsValid
 		hook.Add("ZC_ViewPunchThink", "ZC_ApplyViewPunch", function(tblang)
 			--if lply:InVehicle() then return end
 
-			local consmul = hg.CalculateConsciousnessMul()
+			local consmul = zc.CalculateConsciousnessMul()
 
 			if not vp_punch_angle:IsZero() or not vp_punch_angle_velocity:IsZero() then
 				vp_punch_angle = vp_punch_angle + vp_punch_angle_velocity * ftlerped * 1
@@ -130,7 +130,7 @@ local IsValid = IsValid
 			local add = vp_punch_angle - vp_punch_angle_last + vp_punch_angle2 - vp_punch_angle_last2 + vp_punch_angle3 - vp_punch_angle_last3 + vp_punch_angle4 * consmulrev - vp_punch_angle_last4 * consmulrev
 			if lply.organism and lply.organism.unconscious then add:Zero() end
 
-			if hg.InGame() then
+			if zc.InGame() then
 				lastplyroll = lply:EyeAngles()[3]
 			end
 
@@ -237,7 +237,7 @@ local IsValid = IsValid
 		end
 
 		function GetViewPunchAngles4()
-			local consmul = hg.CalculateConsciousnessMul()
+			local consmul = zc.CalculateConsciousnessMul()
 
 			return vp_punch_angle4 * (1 - consmul)
 		end

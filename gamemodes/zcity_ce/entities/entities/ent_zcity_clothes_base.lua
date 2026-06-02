@@ -138,7 +138,7 @@ end
                 self.OldSubMaterials[mat] = entUser:GetSubMaterial(mat)
 
                 entUser:SetSubMaterial(mat,"NULL")
-                local curchar = hg.GetCurrentCharacter(entUser)
+                local curchar = zc.GetCurrentCharacter(entUser)
                 if IsValid(curchar) and curchar:IsRagdoll() then
                     curchar:SetSubMaterial(mat,"NULL")
                 end
@@ -175,7 +175,7 @@ end
         if !bDontChangeMaterials and self.OldSubMaterials then
             for k,v in pairs(self.OldSubMaterials) do
                 entUser:SetSubMaterial(k,v)
-                local curchar = hg.GetCurrentCharacter(entUser)
+                local curchar = zc.GetCurrentCharacter(entUser)
                 if IsValid(curchar) and curchar:IsRagdoll() then
                     curchar:SetSubMaterial(k,v)
                 end
@@ -195,13 +195,13 @@ end
 
         timer.Simple(0,function()
             if !IsValid(self) or !IsValid(entUser) then return end
-            self:SetPos(entUser:IsPlayer() and hg.eyeTrace(entUser).StartPos or entUser:GetPos())
+            self:SetPos(entUser:IsPlayer() and zc.eyeTrace(entUser).StartPos or entUser:GetPos())
         end)
         if !noChange then
             local phys = self:GetPhysicsObject()
             if IsValid(phys) then
                 phys:Wake()
-                phys:AddVelocity(entUser:IsPlayer() and hg.eyeTrace(entUser).Normal * 65 or vector_origin)
+                phys:AddVelocity(entUser:IsPlayer() and zc.eyeTrace(entUser).Normal * 65 or vector_origin)
             end
 
             self:SetAngles(entUser:EyeAngles())
@@ -341,7 +341,7 @@ end
         local ply = LocalPlayer()
         local organism = ply.organism or {}
 
-        if ply:Alive() and !organism.unconscious and hg.GetCurrentCharacter(ply) == ply and ply:KeyDown(IN_WALK) then
+        if ply:Alive() and !organism.unconscious and zc.GetCurrentCharacter(ply) == ply and ply:KeyDown(IN_WALK) then
             local Clothes = ply:GetNetVar("zc_clothes", {})
             if !Clothes or #Clothes < 1 then return end
             local tbl = {function()
@@ -360,10 +360,10 @@ end
                         }
                     end
                 end
-                hg.CreateRadialMenu(commands)
+                zc.CreateRadialMenu(commands)
                 return -1
             end, "Drop clothes"}
-            hg.radialOptions[#hg.radialOptions + 1] = tbl
+            zc.radialOptions[#zc.radialOptions + 1] = tbl
         end
     end)
 --//

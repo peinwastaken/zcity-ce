@@ -215,7 +215,7 @@ end
 function SWEP:DrawWorldModel2()
 	self.model = IsValid(self.model) and self.model or ClientsideModel(self.WorldModel)
 	local WorldModel = self.model
-	local owner = hg.GetCurrentCharacter(self:GetOwner())
+	local owner = zc.GetCurrentCharacter(self:GetOwner())
 
 	WorldModel:SetNoDraw(true)
 	WorldModel:SetModelScale(self.ModelScale or 1)
@@ -271,7 +271,7 @@ end
 function SWEP:BoneSet(lookup_name, vec, ang)
 	local owner = self:GetOwner()
     if IsValid(owner) and !owner:IsPlayer() then return end
-	hg.bone.Set(owner, lookup_name, vec, ang, "walkietalkie", 0.01)
+	zc.bone.Set(owner, lookup_name, vec, ang, "walkietalkie", 0.01)
 end
 
 local handAng1, handAng2 = Angle(-15, -10, 10), Angle(5, -65, -60)
@@ -322,7 +322,7 @@ if CLIENT then
 			local tbl1 = {}
 			tbl1[#tbl1 + 1] = {function() RunConsoleCommand("hg_walkietalkie_adjust", howmuch) return -1 end,"Increase"}
 			tbl1[#tbl1 + 1] = {function() RunConsoleCommand("hg_walkietalkie_adjust", -howmuch) return -1 end,"Decrease"}
-			hg.CreateRadialMenu(tbl1)
+			zc.CreateRadialMenu(tbl1)
 			return -1
 		end, strName}
 	end
@@ -349,7 +349,7 @@ function SWEP:PrimaryAttack()
 			for i = 1, #self.Frequencies do
 				local station = math.Round(self.Frequencies[i], 1)
 				tbl1[#tbl1 + 1] = { function() RunConsoleCommand("hg_walkietalkie_adjust", station - self:GetHudFrequency() ) end, "Station " .. station .. "MHz" }
-				hg.CreateRadialMenu(tbl1)
+				zc.CreateRadialMenu(tbl1)
 			end
 			return -1
 		end, "Public stations"}
@@ -362,7 +362,7 @@ function SWEP:PrimaryAttack()
 		RunConsoleCommand("+reload")
 		timer.Simple(0,function() RunConsoleCommand("-reload") end)
 	end, self:GetIsOn() and "Turn off Walkie-Talkie" or "Turn on Walkie-Talkie"}
-	hg.CreateRadialMenu(tbl)
+	zc.CreateRadialMenu(tbl)
 end
 
 function SWEP:AdjustFrequency(numAdjust)
@@ -476,7 +476,7 @@ if(SERVER)then
 	end
 
 	function SWEP:RagdollFunc(pos, angles, ragdoll)
-		shadowControl = shadowControl or hg.ShadowControl
+		shadowControl = shadowControl or zc.ShadowControl
 
 		//pos:Add(angles:Right() * 5)
 		shadowControl(ragdoll, 5, 0.001, angles, 500, 30, pos, 500, 50)

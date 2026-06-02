@@ -69,7 +69,7 @@ end
 
 function SWEP:BoneSet(lookup_name, vec, ang)
     if IsValid(self:GetOwner()) and !self:GetOwner():IsPlayer() then return end
-	hg.bone.Set(self:GetOwner(), lookup_name, vec, ang)
+	zc.bone.Set(self:GetOwner(), lookup_name, vec, ang)
 end
 
 function SWEP:Initialize()
@@ -123,7 +123,7 @@ if CLIENT then
             csent:SetNoDraw(true)
         end
         local ply = self:GetOwner()
-        local tr = hg.eyeTrace(ply)
+        local tr = zc.eyeTrace(ply)
         if not tr.Hit or tr.HitSky then return end
 		if not IsValid(tr.Entity) then return end
 		if tr.Entity and tr.Entity:IsPlayer() then return end
@@ -170,7 +170,7 @@ function SWEP:SecondaryAttack()
     local ply = self:GetOwner()
 
     if not self:GetPlaced() then
-        local tr = hg.eyeTrace(ply)
+        local tr = zc.eyeTrace(ply)
         if not tr.Hit or tr.HitSky then return end
 
         self:SetHolding(math.min(self:GetHolding() + 6,100))

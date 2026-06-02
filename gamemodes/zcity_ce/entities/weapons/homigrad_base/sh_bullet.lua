@@ -38,12 +38,12 @@ local effect = {
 }
 
 if SERVER then
-	hg.bulletholes = hg.bulletholes or {}
+	zc.bulletholes = zc.bulletholes or {}
 
 	hook.Add("PostCleanupMap", "ZC_CleanupBulletHoles", function()
-		hg.bulletholes = {}
+		zc.bulletholes = {}
 
-		SetNetVar("BulletHoles", hg.bulletholes)
+		SetNetVar("BulletHoles", zc.bulletholes)
 	end)
 end
 
@@ -100,8 +100,8 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 		end
 
 		if CLIENT and Penetrated then
-			hg.addBulletHoleEffect(hitPos)
-			hg.addBulletHoleEffect(hit.HitPos)
+			zc.addBulletHoleEffect(hitPos)
+			zc.addBulletHoleEffect(hit.HitPos)
 		end
 
 		if Penetrated then
@@ -163,13 +163,13 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 
 				local size = bullet.Diameter / 25.4 * math.Rand(2, 4) * math.Rand(1, (bulletSource.NumBullet or 1))
 				local dontadd = false
-				for i = 1, #hg.bulletholes do
-					if hitPos2:IsEqualTol(hg.bulletholes[i][1], size * 1.414) then --sqrt of 2, cuz it's a square
-						--hg.bulletholes[i][1] = LerpVector(lerp, hitPos2, hg.bulletholes[i][1])
-						--hg.bulletholes[i][5] = math.min(3, (size + hg.bulletholes[i][5]) * 0.9)
+				for i = 1, #zc.bulletholes do
+					if hitPos2:IsEqualTol(zc.bulletholes[i][1], size * 1.414) then --sqrt of 2, cuz it's a square
+						--zc.bulletholes[i][1] = LerpVector(lerp, hitPos2, zc.bulletholes[i][1])
+						--zc.bulletholes[i][5] = math.min(3, (size + zc.bulletholes[i][5]) * 0.9)
 
-						if hg.bulletholes[i + 1] then
-							--hg.bulletholes[i + 1][5] = math.min(3, (size + hg.bulletholes[i + 1][5]) * 0.9)
+						if zc.bulletholes[i + 1] then
+							--zc.bulletholes[i + 1][5] = math.min(3, (size + zc.bulletholes[i + 1][5]) * 0.9)
 						end
 
 						dontadd = true
@@ -179,11 +179,11 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 
 				if !dontadd then
 					local dist = hitPos:Distance(hit.HitPos)
-					table.insert(hg.bulletholes, {hitPos2, dir2, dist, hitNormal2, size, ent})
+					table.insert(zc.bulletholes, {hitPos2, dir2, dist, hitNormal2, size, ent})
 
 					local hitPos2, dir2 = WorldToLocal(hit.HitPos, (-dir):Angle(), ent:GetPos(), ent:GetAngles())
 					local _, hitNormal2 = WorldToLocal(hit.HitPos, hit.HitNormal:Angle(), ent:GetPos(), ent:GetAngles())
-					table.insert(hg.bulletholes, {hitPos2, dir2, dist, hitNormal2, size, ent})
+					table.insert(zc.bulletholes, {hitPos2, dir2, dist, hitNormal2, size, ent})
 
 					if hgIsDoor(ent) then -- open the areaportal so it can be seen through
 						for _, enta in ipairs(ents.FindByClass("func_areaportal")) do
@@ -197,13 +197,13 @@ local function callbackBullet(self, tr, dmg, force, bullet, penetration)
 						end
 					end
 
-					if #hg.bulletholes > 160 then
-						table.remove(hg.bulletholes, 1)
-						table.remove(hg.bulletholes, 1)
+					if #zc.bulletholes > 160 then
+						table.remove(zc.bulletholes, 1)
+						table.remove(zc.bulletholes, 1)
 					end
 				end
 
-				SetNetVar("BulletHoles", hg.bulletholes, nil, true)
+				SetNetVar("BulletHoles", zc.bulletholes, nil, true)
 			end
 
 			local tr = util.TraceLine( {
@@ -336,7 +336,7 @@ bulletHit = function(ply, tr, dmgInfo, bullet, Weapon)
 
 	local penetration, dmgmul
 	if tr.Entity:IsVehicle() then
-		penetration, dmgmul = hg.VehiclePenetration(tr.Entity, tr, bullet)
+		penetration, dmgmul = zc.VehiclePenetration(tr.Entity, tr, bullet)
 
 		dmgInfo:SetDamage(dmgInfo:GetDamage() * dmgmul)
 	end
@@ -347,8 +347,8 @@ bulletHit = function(ply, tr, dmgInfo, bullet, Weapon)
 	end)
 end
 
-hg.bulletHit = bulletHit
-hg.callbackBullet = callbackBullet
+zc.bulletHit = bulletHit
+zc.callbackBullet = callbackBullet
 
 local math_Rand, math_random = math.Rand, math.random
 function SWEP:GetWeaponEntity()
@@ -553,10 +553,10 @@ function SWEP:FireBullet()
 	end
 
 	if isply then
-    	ent = hg.GetCurrentCharacter(owner)
+    	ent = zc.GetCurrentCharacter(owner)
 	end
 
-    local ammotype = hg.ammotypeshuy[self.Primary.Ammo].BulletSettings
+    local ammotype = zc.ammotypeshuy[self.Primary.Ammo].BulletSettings
 
 	if SERVER and !timer.Exists("ShootWeaponAfterDeath"..self:EntIndex()) then
 		timer.Create("ShootWeaponAfterDeath"..self:EntIndex(), 0.1, 1, function()
@@ -592,7 +592,7 @@ function SWEP:FireBullet()
 		local tr = {}
 		tr.start = point
 		tr.endpos = pos
-		tr.filter = {owner, ent, SERVER and hg.ragdollFake[owner]}
+		tr.filter = {owner, ent, SERVER and zc.ragdollFake[owner]}
 		trace = util.TraceLine(tr)
 	end
 
@@ -605,7 +605,7 @@ function SWEP:FireBullet()
 			phys:ApplyForceOffset(-dir * self.Primary.Force * 5, pos)
 		end
 	else
-		local char = hg.GetCurrentCharacter(owner)
+		local char = zc.GetCurrentCharacter(owner)
 		local phys = char:GetPhysicsObjectNum(0)
 
 		if IsValid(phys) then
@@ -750,9 +750,9 @@ function SWEP:FireBullet()
 			ent:TakeDamageInfo(dmginfo)
 		end
 
-		if(hg.PhysBullet and self.UsePhysBullets)then
+		if(zc.PhysBullet and self.UsePhysBullets)then
 			if(SERVER)then
-				hg.PhysBullet.CreateBullet(bullet)
+				zc.PhysBullet.CreateBullet(bullet)
 			end
 		else
 			--if owner.suiciding then bullet.DisableLagComp = true end
@@ -785,7 +785,7 @@ function SWEP:FireBullet()
 			else
 				ParticleEffect(self.PPSMuzzleEffectSuppress, pos, ang, self)
 			end
-			zc_potatopc = zc_potatopc or hg.ConVars.potatopc
+			zc_potatopc = zc_potatopc or zc.ConVars.potatopc
 			if not zc_potatopc:GetBool() then
 				local dlight = DynamicLight(self:EntIndex())
 				dlight.pos = pos
@@ -833,7 +833,7 @@ if CLIENT then
 				ang = ejectAng
 			end
 
-		local ammotype = hg.ammotypeshuy[self.Primary.Ammo].BulletSettings
+		local ammotype = zc.ammotypeshuy[self.Primary.Ammo].BulletSettings
 		local ejectAng = attmuzle.Ang
 		if self.EjectAddAng then
 			_,ejectAng = LocalToWorld(vecZero,self.EjectAddAng,vecZero,attmuzle.Ang)

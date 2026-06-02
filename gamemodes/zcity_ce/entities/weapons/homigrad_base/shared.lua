@@ -18,7 +18,7 @@ SWEP.AutoSwitchFrom = false
 SWEP.DrawAmmo = true
 SWEP.DrawCrosshair = false
 SWEP.shouldntDrawHolstered = false
-hg.weapons = hg.weapons or {}
+zc.weapons = zc.weapons or {}
 
 SWEP.ishgwep = true
 
@@ -143,7 +143,7 @@ function SWEP:Initialize()
 
 	self:WorldModel_Transform()
 
-	table.insert(hg.weapons,self)
+	table.insert(zc.weapons,self)
 	self.ishgweapon = true
 
 	if SERVER then
@@ -176,7 +176,7 @@ function SWEP:Initialize()
 		end
 	end)
 
-	if SERVER then hg.SyncWeapons() end
+	if SERVER then zc.SyncWeapons() end
 	self:InitializePost()
 end
 
@@ -215,7 +215,7 @@ end
 if CLIENT then
 	hook.Add("ZC_OnGlobalVarSet","ZC_Weapons",function(key,var)
 		if key == "weapons" then
-			hg.weapons = var
+			zc.weapons = var
 		end
 	end)
 
@@ -236,8 +236,8 @@ if CLIENT then
 		end
 	end)
 else
-	function hg.SyncWeapons()
-		SetNetVar("weapons",hg.weapons)
+	function zc.SyncWeapons()
+		SetNetVar("weapons",zc.weapons)
 	end
 end
 
@@ -277,12 +277,12 @@ end
 function SWEP:InitializePost()
 end
 
-hg.weaponsDead = hg.weaponsDead or {}
+zc.weaponsDead = zc.weaponsDead or {}
 function SWEP:OnRemove()
 	if SERVER then
-		table.RemoveByValue(hg.weapons,self)
+		table.RemoveByValue(zc.weapons,self)
 
-		SetNetVar("weapons",hg.weapons)
+		SetNetVar("weapons",zc.weapons)
 	end
 end
 
@@ -291,13 +291,13 @@ local zc_aimtoshoot = ConVarExists("zc_aimtoshoot") and GetConVar("zc_aimtoshoot
 local CurTime = CurTime
 function SWEP:IsZoom()
 	local owner = self:GetOwner()
-	--print( (owner.armors and (hg.armor.head[owner.armors["head"]] and not hg.armor.head[owner.armors["head"]].cantsight)))
+	--print( (owner.armors and (zc.armor.head[owner.armors["head"]] and not zc.armor.head[owner.armors["head"]].cantsight)))
 	return self:CanUse() and
 		(!zc_aimtoshoot:GetBool() or self:GetNWBool("aiming")) and
 		(self:GetButtstockAttack() - CurTime() < -1) and
 		(self:GetOwner():IsPlayer() and self:KeyDown(IN_ATTACK2) and not self:IsSprinting()) and
 		!(self:IsSprinting() and !IsValid(owner.FakeRagdoll)) and
-		((IsValid(owner.FakeRagdoll) and (self:InUse() or hg.RagdollCombatInUse(owner))) or
+		((IsValid(owner.FakeRagdoll) and (self:InUse() or zc.RagdollCombatInUse(owner))) or
 		(owner:IsOnGround() or owner:InVehicle())) and
 		not owner.suiciding and !(owner.organism and (owner.organism.larm and !self:IsPistolHoldType())
 		and owner.organism.rarm and (owner.organism.larm > 0.99 or owner.organism.rarm > 0.99))
@@ -339,10 +339,10 @@ if not ConVarExists("zc_coolcameralerpmult") then
 end
 
 if CLIENT then
-	EmitSound = hg.EmitSound
+	EmitSound = zc.EmitSound
 
 	hook.Add("InitPostEntity", "ZC_RestoreWeaponEmitSound", function()
-		EmitSound = hg.EmitSound
+		EmitSound = zc.EmitSound
 	end)
 end
 local zc_gopro = ConVarExists("zc_gopro") and GetConVar("zc_gopro") or CreateClientConVar("zc_gopro", "0", true, false, "Toggle GoPro-like first-person camera view", 0, 1)
@@ -393,7 +393,7 @@ function SWEP:PlaySnd(snd, server, chan, vol, pitch, entity, tripleaffirmative)
 	end
 end
 
-hg.PlaySnd = SWEP.PlaySnd
+zc.PlaySnd = SWEP.PlaySnd
 
 SOUND_LEVEL_GUNFIRE = 150
 
@@ -525,7 +525,7 @@ SWEP.ShootAnimMul = 2
 SWEP.shot2 = 0
 SWEP.shot = 0
 function SWEP:PrimaryShoot()
-	local ammotype = hg.ammotypeshuy[self.Primary.Ammo].BulletSettings
+	local ammotype = zc.ammotypeshuy[self.Primary.Ammo].BulletSettings
 	if ammotype.IsBlank then
 		self.dwr_reverbDisable = nil
 		self.shooanim = self.ShootAnimMul
@@ -632,7 +632,7 @@ function SWEP:EmitShoot()
 		for j = 1, 4 do
 			local dir = Vector(math.sin(math.pi * 0.5 * i), math.cos(math.pi * 0.5 * i), math.sin(math.pi * 0.25 * j))
 			dir:Mul(10000)
-			local inside = util.QuickTrace(ply:EyePos(), dir, {ply, self, hg.GetCurrentCharacter(ply)})
+			local inside = util.QuickTrace(ply:EyePos(), dir, {ply, self, zc.GetCurrentCharacter(ply)})
 
 			--debugoverlay.Line(ply:EyePos(), ply:EyePos() + dir, 1, color_white, true)
 			insideVal = insideVal + (inside.Hit and !inside.HitSky and 1 or 0)
@@ -685,7 +685,7 @@ SWEP.AutoSwitchTo = false
 SWEP.AutoSwitchFrom = false
 
 function SWEP:GetInfo()
-	if not IsValid(self) then return {self.Primary.ClipSize,hg.ClearAttachments(self.ClassName)} end -- fool
+	if not IsValid(self) then return {self.Primary.ClipSize,zc.ClearAttachments(self.ClassName)} end -- fool
 	return {self:Clip1(),self:GetNetVar("attachments")}
 end
 
@@ -904,15 +904,15 @@ if CLIENT then
 
 	function SWEP:DrawHUD()
 		if not IsValid(self:GetOwner()) then return end
-		local ammotype = (hg.ammotypeshuy[self.Primary.Ammo].BulletSettings and hg.ammotypeshuy[self.Primary.Ammo].BulletSettings.Icon) or matPistolAmmo
+		local ammotype = (zc.ammotypeshuy[self.Primary.Ammo].BulletSettings and zc.ammotypeshuy[self.Primary.Ammo].BulletSettings.Icon) or matPistolAmmo
 		self.DrawAmmoMetods[self.AmmoDrawMetod](self,ammotype)
 
 		self.isscoping = false
 		if self.attachments then
 			for plc,att in pairs(self.attachments) do
 				if not self:HasAttachment(plc) then continue end
-				if hg.attachments[plc][att[1]].sightFunction then
-					hg.attachments[plc][att[1]].sightFunction(self)
+				if zc.attachments[plc][att[1]].sightFunction then
+					zc.attachments[plc][att[1]].sightFunction(self)
 				end
 			end
 		end
@@ -927,7 +927,7 @@ end
 
 if CLIENT then
 	hook.Add("Think", "ZC_UpdateWeaponClientState", function()
-		for _,wep in ipairs(hg.weapons) do
+		for _,wep in ipairs(zc.weapons) do
 			--local wep = ply:GetActiveWeapon()
 
 			if not IsValid(wep) or not wep.Step or (not IsValid(wep:GetOwner()) and wep:GetVelocity():LengthSqr() < 5) then continue end
@@ -1148,7 +1148,7 @@ function SWEP:CoreStep()
 		--self:WorldModel_Transform()
 	end]]
 
-	if owner:IsPlayer() and zc_slings:GetBool() and (zb.CROUND and zb.CROUND == "hmcd" or gamemod == "sandbox") then
+	if owner:IsPlayer() and zc_slings:GetBool() and (zc.CROUND and zc.CROUND == "hmcd" or gamemod == "sandbox") then
 		local inv = owner:GetNetVar("Inventory")
 		local noSling = inv and (not inv["Weapons"] or not inv["Weapons"]["hg_sling"])
 
@@ -1164,11 +1164,11 @@ function SWEP:CoreStep()
 	end
 
 	if CLIENT then
-		self.sprayAngles = Lerp(hg.lerpFrameTime2(0.1,dtime),self.sprayAngles or Angle(0,0,0),angle_zero)
+		self.sprayAngles = Lerp(zc.lerpFrameTime2(0.1,dtime),self.sprayAngles or Angle(0,0,0),angle_zero)
 	end
 
 	if SERVER then
-		if owner.suiciding and not hg.CanSuicide(owner) then
+		if owner.suiciding and not zc.CanSuicide(owner) then
 			owner.suiciding = false
 		end
 	end
@@ -1179,7 +1179,7 @@ function SWEP:CoreStep()
 		--local inv = owner:GetNetVar("Inventory",{})
 
 		if not (inv["Weapons"] and inv["Weapons"]["hg_sling"] and not self:IsPistolHoldType()) then
-			//hg.drop(owner, self)
+			//zc.drop(owner, self)
 			hook.Run("ZC_PlayerDropWeapon", owner)
 		end
 	end
@@ -1194,10 +1194,10 @@ function SWEP:CoreStep()
 	if SERVER and not owner:IsNPC() and ownerCannotUseWeapon and IsValid(actwep) and self == actwep then
 		self:RemoveFake()
 
-		if zc_slings:GetBool() and (zb.CROUND and zb.CROUND == "hmcd" or gamemod == "sandbox") then
+		if zc_slings:GetBool() and (zc.CROUND and zc.CROUND == "hmcd" or gamemod == "sandbox") then
 			local inv = owner:GetNetVar("Inventory",{})
 			if not (inv["Weapons"] and inv["Weapons"]["hg_sling"] and not self:IsPistolHoldType()) then
-				hg.drop(owner, self)
+				zc.drop(owner, self)
 				hook.Run("ZC_PlayerDropWeapon", owner)
 			else
 				hook.Run("ZC_PlayerDropWeapon", owner)
@@ -1224,7 +1224,7 @@ function SWEP:CoreStep()
 	if CLIENT then
 		if self.Primary.Next + 1 < time then
 			//self.dmgStack = 0
-			--self.dmgStack2 = Lerp(hg.lerpFrameTime(0.001,dtime), self.dmgStack2, 0)
+			--self.dmgStack2 = Lerp(zc.lerpFrameTime(0.001,dtime), self.dmgStack2, 0)
 		end
 	end
 
@@ -1250,7 +1250,7 @@ function SWEP:CoreStep()
 		if SERVER then
 			//timer.Simple(0.15, function()
 				owner:LagCompensation(true)
-				local tr = hg.eyeTrace(owner)
+				local tr = zc.eyeTrace(owner)
 				if IsValid(tr.Entity) or tr.Entity:IsWorld() then
 					local ent = tr.Entity
 					local dmgInfo = DamageInfo()
@@ -1345,7 +1345,7 @@ end
 function SWEP:GunOverHead(height)
 	local _, pos = self:GetTrace()
 	local owner = self:GetOwner()
-	local eyepos = hg.eye(owner)
+	local eyepos = zc.eye(owner)
 	return eyepos[3] + 10 < (height and height[3] or pos[3]) or eyepos:DistToSqr(height or pos) > 40 * 40
 end
 
@@ -1384,7 +1384,7 @@ SWEP.AllowedInspect = true
 
 local funcNil = function() end
 
-hg.postureFuncWorldModel = {
+zc.postureFuncWorldModel = {
 	[1] = function(self,ply)
 	end,
 	[2] = function(self,ply)
@@ -1425,7 +1425,7 @@ local posLegkick = Vector(12,-8,1)
 local angRunning = Angle(20,10,0)
 local angPostureHighReady = Angle(-30,-25,30)
 
-hg.postureFunctions2 = {
+zc.postureFunctions2 = {
 	[1] = function(self,ply)
 		if self:IsZoom() then return end
 
@@ -1455,7 +1455,7 @@ hg.postureFunctions2 = {
 		self.AdditionalAngPreLerp[3] = self.AdditionalAngPreLerp[3] - 4
 	end,
 	[2] = function(self,ply)
-		local add = (hg.GunPositions[ply] and hg.GunPositions[ply][2]) or 0
+		local add = (zc.GunPositions[ply] and zc.GunPositions[ply][2]) or 0
 		self.AdditionalAngPreLerp[3] = self.AdditionalAngPreLerp[3] - 15
 		self.AdditionalPosPreLerp[3] = self.AdditionalPosPreLerp[3] - 6 - add
 		if self:IsPistolHoldType() then return end
@@ -1515,13 +1515,13 @@ hg.postureFunctions2 = {
 		self.AdditionalAngPreLerp:Add((self:IsPistolHoldType() and angPosture7) or (ply:IsFlagSet(FL_ANIMDUCKING) and angPosture8 or angPosture4))
 	end,
 	[5] = function(self,ply,force)
-		local add = (hg.GunPositions[ply] and hg.GunPositions[ply][2]) or 0
+		local add = (zc.GunPositions[ply] and zc.GunPositions[ply][2]) or 0
 		self.AdditionalPosPreLerp[3] = self.AdditionalPosPreLerp[3] - 1 - add
 		self.AdditionalAngPreLerp[3] = self.AdditionalAngPreLerp[3] - 20
 	end,
 	[6] = function(self,ply,force)
 		if self:IsZoom() then return end
-		local add = (hg.GunPositions[ply] and hg.GunPositions[ply][2]) or 0
+		local add = (zc.GunPositions[ply] and zc.GunPositions[ply][2]) or 0
 		if self:IsPistolHoldType() then
 			self.AdditionalPosPreLerp[2] = self.AdditionalPosPreLerp[2] - 2
 			self.AdditionalPosPreLerp[3] = self.AdditionalPosPreLerp[3] + 6 - add
@@ -1535,7 +1535,7 @@ hg.postureFunctions2 = {
 	end,
 	[9] = function(self,ply,force)
 		if self:IsZoom() and not force then return end
-		local add = (hg.GunPositions[ply] and hg.GunPositions[ply][3]) or 0
+		local add = (zc.GunPositions[ply] and zc.GunPositions[ply][3]) or 0
 		self.AdditionalPosPreLerp[3] = self.AdditionalPosPreLerp[3] + 3
 		if self:IsPistolHoldType() then
 			self.AdditionalPosPreLerp[2] = self.AdditionalPosPreLerp[2] + 14 - add
@@ -1554,8 +1554,8 @@ hg.postureFunctions2 = {
 
 	["legkicking"] = function(self,ply,force)
 		local mul = math.min(math.max(ply:GetNWFloat("InLegKick",0) - CurTime(), 0),1)
-		if hg.postureFunctions2[ply.posture] then
-			hg.postureFunctions2[ply.posture](self,ply,force)
+		if zc.postureFunctions2[ply.posture] then
+			zc.postureFunctions2[ply.posture](self,ply,force)
 		end
 		if self:IsZoom() or self:IsPistolHoldType() then return end
 		self.AdditionalPosPreLerp = LerpVector(math.ease.InSine(mul),self.AdditionalPosPreLerp, posLegkick)
@@ -1604,7 +1604,7 @@ function SWEP:GetAdditionalValues()
 	self.AdditionalAng2 = Angle(0, 0, 0)--:Zero()
 
 	--self.AdditionalAng:Zero()
-	local add = (hg.GunPositions[ply] and hg.GunPositions[ply][3]) or 0
+	local add = (zc.GunPositions[ply] and zc.GunPositions[ply][3]) or 0
 	self.AdditionalPosPreLerp[2] = (CLIENT and !self:IsLocal2()) and self:IsZoom() and 1 - add or 0
 	self.AdditionalPosPreLerp[3] = (CLIENT and !self:IsLocal2()) and self:IsZoom() and -0.5 or 0
 
@@ -1614,7 +1614,7 @@ function SWEP:GetAdditionalValues()
 		self.AdditionalPosPreLerp[1] = (self.AdditionalPosPreLerp[1] - (ply.organism.rarmamputated and -1 or 6)) + 0 * math.Clamp((ply:EyeAngles()[1] - 25) / 25, 0, 1)
 		self.AdditionalPosPreLerp[3] = self.AdditionalPosPreLerp[3] + (ply.organism.rarmamputated and -6 or 3) * math.Clamp((-ply:EyeAngles()[1] + 75) / 45, 0.2, 1)
 
-		if hg.KeyDown(ply, IN_ATTACK2) then
+		if zc.KeyDown(ply, IN_ATTACK2) then
 			self.AdditionalPosPreLerp[2] = self.AdditionalPosPreLerp[2] + 8
 			self.AdditionalPosPreLerp[3] = self.AdditionalPosPreLerp[3] - 3
 		end
@@ -1671,8 +1671,8 @@ function SWEP:GetAdditionalValues()
 		self.zoomingBigSnd = false
 	end
 
-	local func = hg.postureFunctions2[(self:IsSprinting() or huya) and (self:GetButtstockAttack() - CurTime() < -1) and ((ply.posture == 3 and 3) or (ply.posture == 3 and 3) or (self:IsPistolHoldType() and 3 or 3)) or ply.posture] or funcNil
-	func = ply:GetNWFloat("InLegKick", 0) > CurTime() and hg.postureFunctions2["legkicking"] or func
+	local func = zc.postureFunctions2[(self:IsSprinting() or huya) and (self:GetButtstockAttack() - CurTime() < -1) and ((ply.posture == 3 and 3) or (ply.posture == 3 and 3) or (self:IsPistolHoldType() and 3 or 3)) or ply.posture] or funcNil
+	func = ply:GetNWFloat("InLegKick", 0) > CurTime() and zc.postureFunctions2["legkicking"] or func
 	if not self.inspect then
 		func(self, ply, huya)
 	end
@@ -1772,7 +1772,7 @@ function SWEP:GetAdditionalValues()
 	//self.AdditionalAngPreLerp[2] = self.AdditionalAngPreLerp[2] - ply.offsetView[1]
 
 	local pranktime = CurTime() / 2
-	local vellen = (ply:InVehicle()) and 0 or hg.GetCurrentCharacter(ply):GetVelocity():Length()
+	local vellen = (ply:InVehicle()) and 0 or zc.GetCurrentCharacter(ply):GetVelocity():Length()
 	self.walkinglerp = math.Round(vellen)
 
 	self.huytime = self.huytime or 0
@@ -1847,7 +1847,7 @@ function SWEP:GetAdditionalValues()
 	local suiciding = false--ply.suiciding
 	local huypitch = ((ply.suiciding and !IsValid(ply.FakeRagdoll)) or huya or (self:IsSprinting() or ((ply.posture == 4 or ply.posture == 3) and not self:IsZoom())))
 
-	self.pitch = Lerp(hg.lerpFrameTime(0.001,dtime), self.pitch, ply:GetNWFloat("InLegKick",0) > CurTime() and 0.5 or suiciding and 1 or huypitch and 0.65 or (self.reload and self.ReloadNoPitch) and 0.75 or 0)
+	self.pitch = Lerp(zc.lerpFrameTime(0.001,dtime), self.pitch, ply:GetNWFloat("InLegKick",0) > CurTime() and 0.5 or suiciding and 1 or huypitch and 0.65 or (self.reload and self.ReloadNoPitch) and 0.75 or 0)
 
 	if not huypitch then
 		local torso = ply:LookupBone("ValveBiped.Bip01_Spine1")
@@ -1924,8 +1924,8 @@ function SWEP:GetAdditionalValues()
 		self.AdditionalPos2[3] = self.AdditionalPos2[3] + ply.lean * 2
 	end
 
-	self.AdditionalPos = Lerp(hg.lerpFrameTime(0.001,dtime) * self.Ergonomics * speed_add, self.AdditionalPos, self.AdditionalPosPreLerp)
-	self.AdditionalAng = Lerp(hg.lerpFrameTime(0.001,dtime) * self.Ergonomics * speed_add, self.AdditionalAng, self.AdditionalAngPreLerp + self.weaponAng)
+	self.AdditionalPos = Lerp(zc.lerpFrameTime(0.001,dtime) * self.Ergonomics * speed_add, self.AdditionalPos, self.AdditionalPosPreLerp)
+	self.AdditionalAng = Lerp(zc.lerpFrameTime(0.001,dtime) * self.Ergonomics * speed_add, self.AdditionalAng, self.AdditionalAngPreLerp + self.weaponAng)
 
 	self:CloseAnim(dtime)
 	local animpos = self.lerpaddcloseanim
@@ -1986,10 +1986,10 @@ function SWEP:InUse()
 	end
 
 	local alwaysRagdollAim = GetConVar("zc_always_ragdoll_aim")
-	local ragdollAimHeld = CLIENT and zb and zb.binds and zb.binds.IsDown and zb.binds.IsDown("ragdoll_aim") or SERVER and ply.ZCBindDown and ply:ZCBindDown("ragdoll_aim")
+	local ragdollAimHeld = CLIENT and zc and zc.binds and zc.binds.IsDown and zc.binds.IsDown("ragdoll_aim") or SERVER and ply.ZCBindDown and ply:ZCBindDown("ragdoll_aim")
 	local isUseHeld = (alwaysRagdollAim and alwaysRagdollAim:GetBool() and ply.forcefakeaim ~= false) or ragdollAimHeld or ply:KeyDown(IN_USE)
 	local inVehicle = ply.InVehicle and ply:InVehicle()
-	local ragdollCombatInUse = hg.RagdollCombatInUse(ply)
+	local ragdollCombatInUse = zc.RagdollCombatInUse(ply)
 	local canAimRagdoll = not inVehicle and not ragdollCombatInUse
 	local wantsAimControl = isUseHeld or self:IsResting()
 	local forcedAimControl = (inVehicle or ragdollCombatInUse or ent == ply) and not isUseHeld
@@ -2022,8 +2022,8 @@ function SWEP:SetHandPos(noset)
 		self.lhandik = false
 	end
 
-	if (ent ~= ply and ent ~= ply.OldRagdoll and !hg.RagdollCombatInUse(ply)) then
-		self.lhandik = self.lhandik and !((hg.KeyDown(ply, IN_FORWARD + IN_BACK) or ent:GetManipulateBoneAngles(ent:LookupBone("ValveBiped.Bip01_L_Finger11"))[2] < 0) and !self.reload and !ply:InVehicle())
+	if (ent ~= ply and ent ~= ply.OldRagdoll and !zc.RagdollCombatInUse(ply)) then
+		self.lhandik = self.lhandik and !((zc.KeyDown(ply, IN_FORWARD + IN_BACK) or ent:GetManipulateBoneAngles(ent:LookupBone("ValveBiped.Bip01_L_Finger11"))[2] < 0) and !self.reload and !ply:InVehicle())
 	end
 
 	--ply:SetIK(false)
@@ -2049,7 +2049,7 @@ function SWEP:SetHandPos(noset)
 
 	if not rhmat or not lhmat then return end
 
-	local atk = hg.KeyDown(ply, IN_ATTACK)
+	local atk = zc.KeyDown(ply, IN_ATTACK)
 	self.anglefinger[2] = LerpFT(atk and 1 or 0.1, self.anglefinger[2], self:CanUse() and !(self:KeyDown(IN_USE) and !IsValid(ply.FakeRagdoll)) and atk and 30 or 0)
 	self.anglefinger[1] = self.anglefinger[2] * 0.3
 	if !should then
@@ -2073,13 +2073,13 @@ function SWEP:SetHandPos(noset)
 		end
 
 		if not ply.holdingWeapon or ply.holdingWeapon ~= self then
-			hg.bone_apply_matrix(ent, rh, rhmat)
+			zc.bone_apply_matrix(ent, rh, rhmat)
 			--ent:SetBoneMatrix(rh, rhmat)
 
-			hg.set_holdrh(ent, self.hold_type or (self:IsPistolHoldType() and "pistol_hold2" or "ak_hold"))
+			zc.set_holdrh(ent, self.hold_type or (self:IsPistolHoldType() and "pistol_hold2" or "ak_hold"))
 		end
 
-		if (( hg.CanUseLeftHand(ply) and self.lhandik )) and self.attachments and vec2 and addvec2 and ang2 then
+		if (( zc.CanUseLeftHand(ply) and self.lhandik )) and self.attachments and vec2 and addvec2 and ang2 then
 			lhmat:SetTranslation(vec2 + addvec2)
 			lhmat:SetAngles(ang2)
 
@@ -2091,25 +2091,25 @@ function SWEP:SetHandPos(noset)
 				--lhmat = self:GetWM():GetBoneMatrix(self:GetWM():LookupBone("ValveBiped.Bip01_L_Hand"))
 			--end
 
-			hg.bone_apply_matrix(ent, lh, lhmat)
+			zc.bone_apply_matrix(ent, lh, lhmat)
 
 			--ent:SetBoneMatrix(lh, lhmat)
 
 			local hold = self.hold_type or (self:IsPistolHoldType() and "pistol_hold2" or "ak_hold")
-			hold = self.attachments.grip and #self.attachments.grip ~= 0 and hg.attachments.grip[self.attachments.grip[1]].hold or hold
+			hold = self.attachments.grip and #self.attachments.grip ~= 0 and zc.attachments.grip[self.attachments.grip[1]].hold or hold
 
-			hg.set_hold(ent, hold)
+			zc.set_hold(ent, hold)
 		end
 	else
 		local wpn = self
 		local mdl = self:GetWM()
 
-		local TPIKBonesRHDict = hg.TPIKBonesRHDict
-		local TPIKBonesLHDict = hg.TPIKBonesLHDict
-		local TPIKBonesRHDictTranslate = hg.TPIKBonesRHDictTranslate
-		local TPIKBonesLHDictTranslate = hg.TPIKBonesLHDictTranslate
-		local canuseright = hg.CanUseRightHand(ply) and wpn.rhandik
-		local canuseleft = hg.CanUseLeftHand(ply) and wpn.lhandik
+		local TPIKBonesRHDict = zc.TPIKBonesRHDict
+		local TPIKBonesLHDict = zc.TPIKBonesLHDict
+		local TPIKBonesRHDictTranslate = zc.TPIKBonesRHDictTranslate
+		local TPIKBonesLHDictTranslate = zc.TPIKBonesLHDictTranslate
+		local canuseright = zc.CanUseRightHand(ply) and wpn.rhandik
+		local canuseleft = zc.CanUseLeftHand(ply) and wpn.lhandik
 
 		local addvec_fem = (ThatPlyIsFemale(ply) and ply:GetAimVector():Angle():Right() * 0.2 or ply:GetAimVector():Angle():Right() * 0)
 		if self.stupidgun then
@@ -2159,7 +2159,7 @@ function SWEP:SetHandPos(noset)
 		//rhmat = self:GetWM():GetBoneMatrix(self:GetWM():LookupBone("ValveBiped.Bip01_R_Hand"))
 	end
 
-	if self:HasAttachment("grip") and hg.CanUseLeftHand(ply) and self.lhandik then
+	if self:HasAttachment("grip") and zc.CanUseLeftHand(ply) and self.lhandik then
 		local huy = (not self.reload or self.reload - 1 < CurTime()) and not ply.suiciding
 
 		local model = self:GetAttachmentModel("grip")
@@ -2178,13 +2178,13 @@ function SWEP:SetHandPos(noset)
 			lhmat:SetTranslation(LerpVector(self.lerphand, (vec2 or vector_origin) + (addvec2 or vector_origin), (oldpos or vector_origin)))
 			lhmat:SetAngles(LerpAngle(self.lerphand, (ang2 or angle_zero), (oldang or angle_zero)))
 
-			hg.bone_apply_matrix(ent, lh, lhmat)
+			zc.bone_apply_matrix(ent, lh, lhmat)
 
 			if self.lerphand < 0.1  then
 				local hold = self.hold_type or (self:IsPistolHoldType() and "pistol_hold2" or "ak_hold")
-				hold = self.attachments.grip and #self.attachments.grip ~= 0 and hg.attachments.grip[self.attachments.grip[1]].hold or hold
+				hold = self.attachments.grip and #self.attachments.grip ~= 0 and zc.attachments.grip[self.attachments.grip[1]].hold or hold
 
-				hg.set_hold(ent, hold)
+				zc.set_hold(ent, hold)
 			end
 		end
 	end
@@ -2381,7 +2381,7 @@ hook.Add("PreRegisterSWEP", "ZC_PrecacheWeaponModels", function(self, class)
 		if self.WorldModel then util.PrecacheModel( self.WorldModel ) end
 		if self.WorldModelFake then util.PrecacheModel( self.WorldModelFake ) end
 
-		hg.PrecacheSoundsSWEP(self)
+		zc.PrecacheSoundsSWEP(self)
 	end
 end)
 
@@ -2404,7 +2404,7 @@ function SWEP:CanRest()
     local vec = vector_up--ang:Up()
     tr.start = pos + vec * 10
     tr.endpos = pos + vec * -30
-    tr.filter = {self, self:GetOwner(), hg.GetCurrentCharacter(self:GetOwner())}
+    tr.filter = {self, self:GetOwner(), zc.GetCurrentCharacter(self:GetOwner())}
 
 	if self:GetOwner():IsSuperAdmin() then
     	debugoverlay.Line(tr.start, tr.endpos, 1, color_white)

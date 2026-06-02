@@ -83,7 +83,7 @@ concommand.Add("hg_create_pipebomb", function(ply)
 				continue
 			end
 
-			local tbl = hg.ammotypeshuy[name]
+			local tbl = zc.ammotypeshuy[name]
 			if tbl.BulletSettings and tbl.BulletSettings.Mass * amt > 50 then
 				have_ammo = {name, amt}
 			end
@@ -92,7 +92,7 @@ concommand.Add("hg_create_pipebomb", function(ply)
 		local have_pipe = ply:HasWeapon("weapon_leadpipe")
 		if have_ammo and have_pipe and have_nails then
 			ply:SetAmmo(ply:GetAmmoCount("Nails") - 3, "Nails")
-			ply:SetAmmo(math.Round((hg.ammotypeshuy[have_ammo[1]].BulletSettings.Mass * have_ammo[2] - 50) / hg.ammotypeshuy[have_ammo[1]].BulletSettings.Mass), have_ammo[1])
+			ply:SetAmmo(math.Round((zc.ammotypeshuy[have_ammo[1]].BulletSettings.Mass * have_ammo[2] - 50) / zc.ammotypeshuy[have_ammo[1]].BulletSettings.Mass), have_ammo[1])
 			ply:StripWeapon("weapon_leadpipe")
 
 			ply:Give("weapon_hg_pipebomb_tpik")--crafted!
@@ -107,7 +107,7 @@ concommand.Add("hg_create_molotov", function(ply)
 		local have_bottle = ply:HasWeapon("weapon_hg_bottle")
 
 		for _, ent in ipairs(ents.FindInSphere(ply:GetPos(), 64)) do
-			if hg.gas_models[ent:GetModel()] and !ent:GetNWBool("EmptyBarrel", false) then
+			if zc.gas_models[ent:GetModel()] and !ent:GetNWBool("EmptyBarrel", false) then
 				have_barrel_nearby = true
 				break
 			end

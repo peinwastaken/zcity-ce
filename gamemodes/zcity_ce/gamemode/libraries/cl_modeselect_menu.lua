@@ -1,22 +1,22 @@
 if CLIENT then
     local uiColors = zc.colors.ui
     local isMenuOpen = nil
-    zb.availableModes = zb.availableModes or {}
+    zc.availableModes = zc.availableModes or {}
 
-    zb.RoundList = zb.RoundList or {}
-    zb.nextround = zb.nextround or nil
+    zc.RoundList = zc.RoundList or {}
+    zc.nextround = zc.nextround or nil
     local queuePanelInstance = nil
     local selectedModes = {}
 
     net.Receive("ZC_ModesInfoSend", function()
-        zb.availableModes = net.ReadTable()
+        zc.availableModes = net.ReadTable()
     end)
 
     net.Receive("ZC_RoundListSend", function()
-        zb.RoundList = net.ReadTable()
-        zb.nextround = net.ReadString()
-        table.insert(zb.RoundList, 1, zb.nextround)
-        zb.nextround = nil
+        zc.RoundList = net.ReadTable()
+        zc.nextround = net.ReadString()
+        table.insert(zc.RoundList, 1, zc.nextround)
+        zc.nextround = nil
         if IsValid(queuePanelInstance) then
             queuePanelInstance:QueueUpdate()
         end
@@ -25,7 +25,7 @@ if CLIENT then
     net.Receive("ZC_RoundListChangeNotice", function()
         local playerName = net.ReadString()
 
-        chat.AddText(uiColors.menuChatName, playerName, uiColors.white, zb.locale.GetLocalized("admin/modes/queue_modified"))
+        chat.AddText(uiColors.menuChatName, playerName, uiColors.white, zc.locale.GetLocalized("admin/modes/queue_modified"))
 
         net.Start("ZC_RoundListRequest")
         net.SendToServer()
@@ -86,12 +86,12 @@ if CLIENT then
             upBtn:SetText("▲")
             upBtn.DoClick = function()
                 if index > 1 then
-                    local item = table.remove(zb.RoundList, index)
-                    table.insert(zb.RoundList, index - 1, item)
+                    local item = table.remove(zc.RoundList, index)
+                    table.insert(zc.RoundList, index - 1, item)
                     queue:QueueUpdate()
 
                     /*net.Start("ZC_RoundListUpdate")
-                        net.WriteTable(zb.RoundList)
+                        net.WriteTable(zc.RoundList)
                         net.WriteBool(false)
                     net.SendToServer()*/
                 end
@@ -103,13 +103,13 @@ if CLIENT then
             downBtn:DockMargin(2, 8, 2, 8)
             downBtn:SetText("▼")
             downBtn.DoClick = function()
-                if index < #zb.RoundList then
-                    local item = table.remove(zb.RoundList, index)
-                    table.insert(zb.RoundList, index + 1, item)
+                if index < #zc.RoundList then
+                    local item = table.remove(zc.RoundList, index)
+                    table.insert(zc.RoundList, index + 1, item)
                     queue:QueueUpdate()
 
                     /*net.Start("ZC_RoundListUpdate")
-                        net.WriteTable(zb.RoundList)
+                        net.WriteTable(zc.RoundList)
                         net.WriteBool(false)
                     net.SendToServer()*/
                 end
@@ -121,11 +121,11 @@ if CLIENT then
             removeBtn:DockMargin(2, 8, 2, 8)
             removeBtn:SetText("✕")
             removeBtn.DoClick = function()
-                table.remove(zb.RoundList, index)
+                table.remove(zc.RoundList, index)
                 queue:QueueUpdate()
 
                 /*net.Start("ZC_RoundListUpdate")
-                    net.WriteTable(zb.RoundList)
+                    net.WriteTable(zc.RoundList)
                     net.WriteBool(false)
                 net.SendToServer()*/
             end
@@ -156,7 +156,7 @@ if CLIENT then
         queuePanelInstance = queuePanel
 
         local titleLabel = vgui.Create("DLabel", queuePanel)
-        titleLabel:SetText(zb.locale.GetLocalized("admin/modes/queue"))
+        titleLabel:SetText(zc.locale.GetLocalized("admin/modes/queue"))
         titleLabel:SetFont("DermaLarge")
         titleLabel:SetTextColor(uiColors.titleText)
         titleLabel:Dock(TOP)
@@ -168,31 +168,31 @@ if CLIENT then
         queueScroll:DockMargin(5, 5, 5, 5)
 
         local saveBtn = vgui.Create("DButton", queuePanel)
-        saveBtn:SetText(zb.locale.GetLocalized("admin/modes/apply_queue"))
+        saveBtn:SetText(zc.locale.GetLocalized("admin/modes/apply_queue"))
         saveBtn:Dock(BOTTOM)
         saveBtn:DockMargin(5, 5, 5, 5)
         saveBtn:SetTall(30)
         saveBtn.DoClick = function()
-            //if #zb.RoundList > 0 then
-                local tbl = table.Copy(zb.RoundList)
-                //table.insert(tbl, 1, zb.nextround)
+            //if #zc.RoundList > 0 then
+                local tbl = table.Copy(zc.RoundList)
+                //table.insert(tbl, 1, zc.nextround)
                 net.Start("ZC_RoundListUpdate")
                     net.WriteTable(tbl)
                 net.SendToServer()
 
-                chat.AddText(uiColors.successBright, zb.locale.GetLocalized("admin/modes/queue_set"))
+                chat.AddText(uiColors.successBright, zc.locale.GetLocalized("admin/modes/queue_set"))
             //else
                 //chat.AddText(uiColors.errorBright, "Game mode queue is empty!")
             //end
         end
 
         local clearBtn = vgui.Create("DButton", queuePanel)
-        clearBtn:SetText(zb.locale.GetLocalized("admin/modes/clear_queue"))
+        clearBtn:SetText(zc.locale.GetLocalized("admin/modes/clear_queue"))
         clearBtn:Dock(BOTTOM)
         clearBtn:DockMargin(5, 5, 5, 5)
         clearBtn:SetTall(30)
         clearBtn.DoClick = function()
-            zb.RoundList = {}
+            zc.RoundList = {}
             queuePanel:QueueUpdate()
 
             /*net.Start("ZC_RoundListUpdate")
@@ -200,15 +200,15 @@ if CLIENT then
                 net.WriteBool(false)
             net.SendToServer()*/
 
-            chat.AddText(uiColors.warningOrange, zb.locale.GetLocalized("admin/modes/queue_cleared"))
+            chat.AddText(uiColors.warningOrange, zc.locale.GetLocalized("admin/modes/queue_cleared"))
         end
 
         function queuePanel:QueueUpdate()
             queueScroll:Clear()
 
-            if zb.nextround and zb.nextround ~= "" then
+            if zc.nextround and zc.nextround ~= "" then
                 local nextRoundLabel = vgui.Create("DLabel", queueScroll)
-                nextRoundLabel:SetText(zb.locale.GetLocalized("admin/modes/next_mode", zb.nextround))
+                nextRoundLabel:SetText(zc.locale.GetLocalized("admin/modes/next_mode", zc.nextround))
                 nextRoundLabel:SetFont("DermaDefaultBold")
                 nextRoundLabel:SetTextColor(uiColors.successText)
                 nextRoundLabel:Dock(TOP)
@@ -216,10 +216,10 @@ if CLIENT then
                 nextRoundLabel:SizeToContents()
             end
 
-            for idx, modeKey in ipairs(zb.RoundList) do
+            for idx, modeKey in ipairs(zc.RoundList) do
                 local mode = nil
 
-                for _, availableMode in ipairs(zb.availableModes) do
+                for _, availableMode in ipairs(zc.availableModes) do
                     if availableMode.key == modeKey then
                         mode = availableMode
                         break
@@ -242,7 +242,7 @@ if CLIENT then
         local frame = vgui.Create("ZFrame")
         frame:SetSize(700, 500)
         frame:Center()
-        frame:SetTitle(zb.locale.GetLocalized("admin/modes/manager"))
+        frame:SetTitle(zc.locale.GetLocalized("admin/modes/manager"))
         frame:MakePopup()
 
         selectedModes = {}
@@ -256,7 +256,7 @@ if CLIENT then
         StyleElement(leftPanel, uiColors.menuPanelBackground)
 
         local titleLabel = vgui.Create("DLabel", leftPanel)
-        titleLabel:SetText(zb.locale.GetLocalized("admin/modes/available"))
+        titleLabel:SetText(zc.locale.GetLocalized("admin/modes/available"))
         titleLabel:SetFont("DermaLarge")
         titleLabel:SetTextColor(uiColors.titleText)
         titleLabel:Dock(TOP)
@@ -264,7 +264,7 @@ if CLIENT then
         titleLabel:SetContentAlignment(5)
 
         local searchBar = vgui.Create("DTextEntry", leftPanel)
-        searchBar:SetPlaceholderText(zb.locale.GetLocalized("admin/modes/search"))
+        searchBar:SetPlaceholderText(zc.locale.GetLocalized("admin/modes/search"))
         searchBar:Dock(TOP)
         searchBar:DockMargin(5, 5, 5, 5)
         searchBar:SetTall(25)
@@ -300,17 +300,17 @@ if CLIENT then
             ["criresp"] = true,
         }
 
-        for i, mode in SortedPairsByMemberValue(zb.availableModes,"canlaunch",true) do
+        for i, mode in SortedPairsByMemberValue(zc.availableModes,"canlaunch",true) do
             if !LocalPlayer():IsSuperAdmin() and !allowedModes[mode.key] then continue end
 
             local modeBtn = CreateModeItem(dscroll, mode)
             table.insert(modeItems, modeBtn)
 
             modeBtn:SetCursor("hand")
-            modeBtn:SetTooltip(zb.locale.GetLocalized("admin/modes/select_tooltip"))
+            modeBtn:SetTooltip(zc.locale.GetLocalized("admin/modes/select_tooltip"))
 
             local inQueue = false
-            for _, queuedModeKey in ipairs(zb.RoundList) do
+            for _, queuedModeKey in ipairs(zc.RoundList) do
                 if queuedModeKey == mode.key then
                     inQueue = true
                     break
@@ -327,17 +327,17 @@ if CLIENT then
 
             if mode.canlaunch == 1 then
                 indicator.IndiColor = uiColors.successBright
-                indicator:SetTooltip(zb.locale.GetLocalized("admin/modes/can_launch"))
+                indicator:SetTooltip(zc.locale.GetLocalized("admin/modes/can_launch"))
             end
 
             if inQueue then
                 indicator.IndiColor = uiColors.warningOrange
-                indicator:SetTooltip(zb.locale.GetLocalized("admin/modes/already_in_queue"))
+                indicator:SetTooltip(zc.locale.GetLocalized("admin/modes/already_in_queue"))
             end
 
             if mode.canlaunch == 0 then
                 indicator.IndiColor = uiColors.errorBright
-                indicator:SetTooltip(zb.locale.GetLocalized("admin/modes/cant_launch"))
+                indicator:SetTooltip(zc.locale.GetLocalized("admin/modes/cant_launch"))
             end
 
             if command == "setmode" or command == "setforcemode" then
@@ -345,7 +345,7 @@ if CLIENT then
                 selectBtn:SetSize(80, 26)
                 selectBtn:Dock(RIGHT)
                 selectBtn:DockMargin(5, 7, 5, 7)
-                selectBtn:SetText(zb.locale.GetLocalized("common/select"))
+                selectBtn:SetText(zc.locale.GetLocalized("common/select"))
                 selectBtn.DoClick = function()
                     net.Start("ZC_AdminSetGameMode")
                     net.WriteString(command)
@@ -365,7 +365,7 @@ if CLIENT then
         StyleElement(batchPanel, uiColors.menuBatchBackground)
 
         local batchTitle = vgui.Create("DLabel", batchPanel)
-        batchTitle:SetText(zb.locale.GetLocalized("admin/modes/batch_operations"))
+        batchTitle:SetText(zc.locale.GetLocalized("admin/modes/batch_operations"))
         batchTitle:SetFont("DermaDefaultBold")
         batchTitle:SetTextColor(uiColors.white)
         batchTitle:Dock(TOP)
@@ -373,7 +373,7 @@ if CLIENT then
         batchTitle:SetContentAlignment(5)
 
         local addToQueueBtn = vgui.Create("DButton", batchPanel)
-        addToQueueBtn:SetText(zb.locale.GetLocalized("admin/modes/add_selected_beginning"))
+        addToQueueBtn:SetText(zc.locale.GetLocalized("admin/modes/add_selected_beginning"))
         addToQueueBtn:Dock(TOP)
         addToQueueBtn:DockMargin(5, 0, 5, 5)
         addToQueueBtn:SetTall(26)
@@ -389,25 +389,25 @@ if CLIENT then
             end
 
             for i = 1, #selectedKeys do
-                table.insert(zb.RoundList, 1, selectedKeys[i])
+                table.insert(zc.RoundList, 1, selectedKeys[i])
             end
 
             if selectedCount > 0 then
                 queuePanel:QueueUpdate()
 
                 /*net.Start("ZC_RoundListUpdate")
-                    net.WriteTable(zb.RoundList)
+                    net.WriteTable(zc.RoundList)
                     net.WriteBool(false)
                 net.SendToServer()*/
 
-                chat.AddText(uiColors.successBright, zb.locale.GetLocalized("admin/modes/added_beginning", selectedCount))
+                chat.AddText(uiColors.successBright, zc.locale.GetLocalized("admin/modes/added_beginning", selectedCount))
             else
-                chat.AddText(uiColors.errorBright, zb.locale.GetLocalized("admin/modes/none_selected"))
+                chat.AddText(uiColors.errorBright, zc.locale.GetLocalized("admin/modes/none_selected"))
             end
         end
 
         local addToEndBtn = vgui.Create("DButton", batchPanel)
-        addToEndBtn:SetText(zb.locale.GetLocalized("admin/modes/add_selected_end"))
+        addToEndBtn:SetText(zc.locale.GetLocalized("admin/modes/add_selected_end"))
         addToEndBtn:Dock(TOP)
         addToEndBtn:DockMargin(5, 0, 5, 0)
         addToEndBtn:SetTall(26)
@@ -416,7 +416,7 @@ if CLIENT then
 
             for key, selected in pairs(selectedModes) do
                 if selected then
-                    table.insert(zb.RoundList, key)
+                    table.insert(zc.RoundList, key)
                     selectedCount = selectedCount + 1
                 end
             end
@@ -425,18 +425,18 @@ if CLIENT then
                 queuePanel:QueueUpdate()
 
                 /*net.Start("ZC_RoundListUpdate")
-                    net.WriteTable(zb.RoundList)
+                    net.WriteTable(zc.RoundList)
                     net.WriteBool(false)
                 net.SendToServer()*/
 
-                chat.AddText(uiColors.successBright, zb.locale.GetLocalized("admin/modes/added_end", selectedCount))
+                chat.AddText(uiColors.successBright, zc.locale.GetLocalized("admin/modes/added_end", selectedCount))
             else
-                chat.AddText(uiColors.errorBright, zb.locale.GetLocalized("admin/modes/none_selected"))
+                chat.AddText(uiColors.errorBright, zc.locale.GetLocalized("admin/modes/none_selected"))
             end
         end
 
         local clearSelectBtn = vgui.Create("DButton", batchPanel)
-        clearSelectBtn:SetText(zb.locale.GetLocalized("admin/modes/clear_selected"))
+        clearSelectBtn:SetText(zc.locale.GetLocalized("admin/modes/clear_selected"))
         clearSelectBtn:Dock(TOP)
         clearSelectBtn:DockMargin(5, 5, 5, 5)
         clearSelectBtn:SetTall(26)
@@ -452,7 +452,7 @@ if CLIENT then
             end
 
             for i = 1, #selectedKeys do
-                table.insert(zb.RoundList, 1, selectedKeys[i])
+                table.insert(zc.RoundList, 1, selectedKeys[i])
             end
 
             if selectedCount > 0 then
@@ -461,14 +461,14 @@ if CLIENT then
                     item.Selected = false
                 end
 
-                chat.AddText(uiColors.successBright, zb.locale.GetLocalized("admin/modes/selected_cleared"))
+                chat.AddText(uiColors.successBright, zc.locale.GetLocalized("admin/modes/selected_cleared"))
             else
-                chat.AddText(uiColors.errorBright, zb.locale.GetLocalized("admin/modes/none_selected"))
+                chat.AddText(uiColors.errorBright, zc.locale.GetLocalized("admin/modes/none_selected"))
             end
         end
 
         local refreshBtn = vgui.Create("DButton", leftPanel)
-        refreshBtn:SetText(zb.locale.GetLocalized("admin/modes/refresh_data"))
+        refreshBtn:SetText(zc.locale.GetLocalized("admin/modes/refresh_data"))
         refreshBtn:Dock(BOTTOM)
         refreshBtn:DockMargin(5, 5, 5, 5)
         refreshBtn:SetTall(30)
@@ -506,11 +506,11 @@ if CLIENT then
         local frame = isMenuOpen
         frame:SetSize(300, 210)
         frame:Center()
-        frame:SetTitle(zb.locale.GetLocalized("admin/panel"))
+        frame:SetTitle(zc.locale.GetLocalized("admin/panel"))
         frame:MakePopup()
 
         local setModeBtn = vgui.Create("DButton", frame)
-        setModeBtn:SetText(zb.locale.GetLocalized("admin/set_next_mode"))
+        setModeBtn:SetText(zc.locale.GetLocalized("admin/set_next_mode"))
         setModeBtn:Dock(TOP)
         setModeBtn:DockMargin(5, 10, 5, 2)
         setModeBtn:SetSize(300, 40)
@@ -520,7 +520,7 @@ if CLIENT then
         end
 
         local setForceModeBtn = vgui.Create("DButton", frame)
-        setForceModeBtn:SetText(zb.locale.GetLocalized("admin/set_auto_next_mode"))
+        setForceModeBtn:SetText(zc.locale.GetLocalized("admin/set_auto_next_mode"))
         setForceModeBtn:Dock(TOP)
         setForceModeBtn:DockMargin(5, 2, 5, 2)
         setForceModeBtn:SetSize(300, 40)
@@ -530,7 +530,7 @@ if CLIENT then
         end
 
         local queueModeBtn = vgui.Create("DButton", frame)
-        queueModeBtn:SetText(zb.locale.GetLocalized("admin/manage_mode_queue"))
+        queueModeBtn:SetText(zc.locale.GetLocalized("admin/manage_mode_queue"))
         queueModeBtn:Dock(TOP)
         queueModeBtn:DockMargin(5, 2, 5, 2)
         queueModeBtn:SetSize(300, 40)
@@ -540,7 +540,7 @@ if CLIENT then
         end
 
         local endRoundBtn = vgui.Create("DButton", frame)
-        endRoundBtn:SetText(zb.locale.GetLocalized("admin/end_round"))
+        endRoundBtn:SetText(zc.locale.GetLocalized("admin/end_round"))
         endRoundBtn:Dock(TOP)
         endRoundBtn:DockMargin(5, 2, 5, 2)
         endRoundBtn:SetSize(300, 40)

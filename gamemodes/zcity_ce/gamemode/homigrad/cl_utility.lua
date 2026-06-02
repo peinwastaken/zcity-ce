@@ -1,17 +1,17 @@
 local plymeta = FindMetaTable("Player")
-hg.ConVars = hg.ConVars or {}
+zc.ConVars = zc.ConVars or {}
 --\\ AimVector fix
-	hg.GetAimVector = hg.GetAimVector or plymeta.GetAimVector
+	zc.GetAimVector = zc.GetAimVector or plymeta.GetAimVector
 
 	function plymeta:GetAimVector()
 		if self == LocalPlayer() then
-			return hg.GetAimVector(self)
+			return zc.GetAimVector(self)
 		elseif self:InVehicle() then
 			local ang = self:EyeAngles()
 			--ang:Add(-self:GetVehicle():GetAngles())
 			return ang:Forward()
 		end
-		return hg.GetAimVector(self)
+		return zc.GetAimVector(self)
 	end
 --//
 
@@ -85,7 +85,7 @@ hg.ConVars = hg.ConVars or {}
 					wep:Think()
 				end
 
-				if hg.KeyDown(ply, IN_ATTACK) and wep:CanPrimaryAttack() and not wep.HomicideSWEP then
+				if zc.KeyDown(ply, IN_ATTACK) and wep:CanPrimaryAttack() and not wep.HomicideSWEP then
 					if not wep.Primary.Automatic then
 						if not ply.keypress1 then
 							wep:PrimaryAttack()
@@ -98,7 +98,7 @@ hg.ConVars = hg.ConVars or {}
 					ply.keypress1 = false
 				end
 
-				if hg.KeyDown(ply, IN_ATTACK2) and wep:CanSecondaryAttack() and not wep.HomicideSWEP then
+				if zc.KeyDown(ply, IN_ATTACK2) and wep:CanSecondaryAttack() and not wep.HomicideSWEP then
 					if not wep.Primary.Automatic then
 						if not ply.keypress2 then
 							wep:SecondaryAttack()
@@ -116,32 +116,32 @@ hg.ConVars = hg.ConVars or {}
 --//
 
 --\\ Remove cl models on cleanup
-	hg.oldClientsideModel = hg.oldClientsideModel or ClientsideModel
-	hg.ClientsideModels = hg.ClientsideModels or {}
+	zc.oldClientsideModel = zc.oldClientsideModel or ClientsideModel
+	zc.ClientsideModels = zc.ClientsideModels or {}
 
 	function ClientsideModel(...)
-		local model = hg.oldClientsideModel(...)
-		table.insert(hg.ClientsideModels,model)
+		local model = zc.oldClientsideModel(...)
+		table.insert(zc.ClientsideModels,model)
 		--print(model)
 		return model
 	end
 
-	function hg.PrintModels()
-		for _,mdl in ipairs(hg.ClientsideModels) do
+	function zc.PrintModels()
+		for _,mdl in ipairs(zc.ClientsideModels) do
 			if not IsValid(mdl) then continue end
 			print(mdl,mdl:GetModel())
 		end
 	end
 
-	function hg.ClearClientsideModels()
-		for _,mdl in pairs(hg.ClientsideModels) do
+	function zc.ClearClientsideModels()
+		for _,mdl in pairs(zc.ClientsideModels) do
 			if not IsValid(mdl) then continue end
 			mdl:Remove()
 		end
-		hg.ClientsideModels = {}
+		zc.ClientsideModels = {}
 	end
 
-	hook.Add("PostCleanupMap","ZC_ClearClientsideModels",hg.ClearClientsideModels)
+	hook.Add("PostCleanupMap","ZC_ClearClientsideModels",zc.ClearClientsideModels)
 	hook.Add("PostCleanupMap","ZC_ClearClientsideRagdolls",function()
 		for _,v in ipairs(ents.FindByClass('class C_ClientRagdoll')) do v:Remove() end
 	end)
@@ -173,7 +173,7 @@ hg.ConVars = hg.ConVars or {}
 		local rnd = CurrentRound()
 		if !rnd then return end
 		if rnd.name != "fear" then return end
-		local alive = zb:CheckAlive()
+		local alive = zc:CheckAlive()
 		if (#alive != 1) or (alive[1] != ply) then return end
 		for v, val in pairs(status) do
 			if input.IsKeyDown(v) then
@@ -222,9 +222,9 @@ players : 1 humans, 0 bots (20 max)
 --\\ Network created ragdolls
 	hook.Add("NetworkEntityCreated", "ZC_NetworkRagdollCreated", function(ent)
 		local index = ent:EntIndex()
-		if IsValid(ent) and zb.net and zb.net[index] and zb.net[index].waiting then
-			zb.net[index].waiting = nil
-			for key,var in pairs(zb.net[index]) do
+		if IsValid(ent) and zc.net and zc.net[index] and zc.net[index].waiting then
+			zc.net[index].waiting = nil
+			for key,var in pairs(zc.net[index]) do
 				hook.Run("ZC_OnNetVarSet", index, key, var)
 			end
 		end
@@ -264,8 +264,8 @@ players : 1 humans, 0 bots (20 max)
 			if not IsValid(lply) or not lply:IsPlayer() then return end
 			if !lply:Alive() or !lply.organism or lply.organism.unconscious then return end
 			local CustomAmmoType = false
-			if hg.ammotypeshuy[bullet.AmmoType] then
-				CustomAmmoType = hg.ammotypeshuy[bullet.AmmoType]
+			if zc.ammotypeshuy[bullet.AmmoType] then
+				CustomAmmoType = zc.ammotypeshuy[bullet.AmmoType]
 			end
 			local subsonic = !(CustomAmmoType and CustomAmmoType.BulletSettings and CustomAmmoType.BulletSettings.Speed and CustomAmmoType.BulletSettings.Speed > 340)
 
@@ -280,7 +280,7 @@ players : 1 humans, 0 bots (20 max)
 			end
 
 			local self = ent
-			if tr.Entity == hg.GetCurrentCharacter(lply) then
+			if tr.Entity == zc.GetCurrentCharacter(lply) then
 
 				Suppress( 10 )
 				return
@@ -292,7 +292,7 @@ players : 1 humans, 0 bots (20 max)
 			local isVisible = not util.TraceLine({
 				start = pos,
 				endpos = eyePos,
-				filter = {self, lply, lply:GetViewEntity(), self:GetOwner(), hg.GetCurrentCharacter(lply)},
+				filter = {self, lply, lply:GetViewEntity(), self:GetOwner(), zc.GetCurrentCharacter(lply)},
 				mask = MASK_SHOT
 			}).Hit
 
@@ -364,7 +364,7 @@ players : 1 humans, 0 bots (20 max)
 
 		local zc_potatopc = GetConVar("zc_potatopc") or CreateClientConVar("zc_potatopc", "0", true, false, "Toggle potato (low-end pc) mode", 0, 1)
 
-		hg.ConVars.potatopc = zc_potatopc
+		zc.ConVars.potatopc = zc_potatopc
 
 		local vignetteMat = Material( "effects/shaders/zb_vignette" )
 		hook.Add("RenderScreenspaceEffects","ZC_SuppressionBlur",function()
@@ -410,10 +410,10 @@ players : 1 humans, 0 bots (20 max)
 
 	lastcall = SysTime() - 0.01
 
-	hg.ragdolls = hg.ragdolls or {}
+	zc.ragdolls = zc.ragdolls or {}
 
 	hook.Add("EntityRemoved", "ZC_RemoveCachedRagdollOnEntityRemoved", function(ent)
-		table.RemoveByValue(hg.ragdolls, ent)
+		table.RemoveByValue(zc.ragdolls, ent)
 	end)
 
 	hook.Add("Think", "ZC_PlayerThinkDispatcher", function()
@@ -423,7 +423,7 @@ players : 1 humans, 0 bots (20 max)
 
 		if CLIENT then
 			lply = IsValid(lply) and lply or LocalPlayer()
-			local entities = hg.seenents
+			local entities = zc.seenents
 
 			for i = 1, #entities do
 				ent = entities[i]
@@ -464,13 +464,13 @@ players : 1 humans, 0 bots (20 max)
 		local sndBool = false
 		if IsValid(lply) then
 			local Ears = lply:GetNetVar("Armor",{})["ears"]
-			sndparms = hg.armor.ears[Ears] or false
+			sndparms = zc.armor.ears[Ears] or false
 			sndBool = sndparms and true or false
 		end
 		oldEmitSound(soundName, position, entity, channel, sndBool and volume > sndparms.NormalizeSnd[1] and sndparms.NormalizeSnd[2] or volume + (sndBool and sndparms.VolumeAdd or 0) , soundLevel + (sndBool and sndparms.SoundlevelAdd or 0), soundFlags, pitch, dsp, filter)
 	end
 
-	hg.EmitSound = EmitSound
+	zc.EmitSound = EmitSound
 
 	oldEntEmitSound = oldEntEmitSound or entMeta.EmitSound
 
@@ -488,7 +488,7 @@ players : 1 humans, 0 bots (20 max)
 		local sndparms
 		if IsValid(lply) then
 			local Ears = lply:GetNetVar("Armor",{})["ears"]
-			sndparms = hg.armor.ears[Ears] or false
+			sndparms = zc.armor.ears[Ears] or false
 			sndBool = sndparms and true or false
 		end
 		oldEntEmitSound(self, soundName, soundLevel + (sndBool and sndparms.SoundlevelAdd or 0), pitch, sndparms and volume > sndparms.NormalizeSnd[1] and sndparms.NormalizeSnd[2] or volume + (sndBool and sndparms.VolumeAdd or 0), channel, soundFlags, dsp, filter)
@@ -537,7 +537,7 @@ players : 1 humans, 0 bots (20 max)
 --\\ flashlighs move to CL util
 	local flashlightPos,flashlightAng = Vector(3, -2, -1),Angle(0, 0, 0)
 
-	function hg.FlashlightTransform(ply)
+	function zc.FlashlightTransform(ply)
 		local lh = ply:LookupBone("ValveBiped.Bip01_L_Hand")
 		local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
 		local lhmat = ent:GetBoneMatrix(lh)
@@ -566,8 +566,8 @@ players : 1 humans, 0 bots (20 max)
 	local player_GetAll = player.GetAll
 	local render_GetViewSetup = render.GetViewSetup
 	LocalPlayerSeen = true
-	hg.seenents = {}
-	hg.seenents2 = {}
+	zc.seenents = {}
+	zc.seenents2 = {}
 	local zc_fov = GetConVar("zc_fov")
 	local math_cos = math.cos
 	local math_rad = math.rad
@@ -580,14 +580,14 @@ players : 1 humans, 0 bots (20 max)
 		local entities = ents_FindByClass("prop_ragdoll")
 		table_Add(entities, player_GetAll())
 
-		for ent in pairs(hg.organism_ents) do
-			if !IsValid(ent) then hg.organism_ents[ent] = nil continue end
+		for ent in pairs(zc.organism_ents) do
+			if !IsValid(ent) then zc.organism_ents[ent] = nil continue end
 
 			table.insert(entities, ent)
 		end
 
-		hg.seenents = {}
-		hg.seenents2 = {}
+		zc.seenents = {}
+		zc.seenents2 = {}
 
 		if g_VR and g_VR.active then return end
 
@@ -598,14 +598,14 @@ players : 1 humans, 0 bots (20 max)
 		for i = 1, #entities do
 			v = entities[i]
 			if v.shouldTransmit then
-				hg.seenents2[#hg.seenents2 + 1] = v
+				zc.seenents2[#zc.seenents2 + 1] = v
 			end
 
 			local nochange = (v == lply.FakeRagdoll) or (lply:Alive() and v == lply) or (not lply:Alive() and v == lply:GetNWEntity("spect"))
 
 			if nochange then
 				v.NotSeen = false
-				hg.seenents[#hg.seenents + 1] = v
+				zc.seenents[#zc.seenents + 1] = v
 				continue
 			end
 
@@ -622,7 +622,7 @@ players : 1 humans, 0 bots (20 max)
 			else
 				if not nochange then v.NotSeen = false end
 				if v == lply then LocalPlayerSeen = true end
-				hg.seenents[#hg.seenents + 1] = v
+				zc.seenents[#zc.seenents + 1] = v
 			end
 		end
 	end)
@@ -671,7 +671,7 @@ players : 1 humans, 0 bots (20 max)
 			ply.IsSpeak = false
 		end)
 
-		hg.playerInfo = hg.playerInfo or {}
+		zc.playerInfo = zc.playerInfo or {}
 
 		local function UpdateVoiceDSP(listener, talker)
 			if not talker:IsSpeaking() then return end
@@ -685,13 +685,13 @@ players : 1 humans, 0 bots (20 max)
 
 			local volume = (talker:WaterLevel() == 3) and 0.25 or (trace.Hit and 0.5 or 1)
 
-			talker:SetVoiceVolumeScale(!hg.muteall and math.min(hg.playerInfo[talker:SteamID()] and hg.playerInfo[talker:SteamID()][2] or 1, volume) or 0)
+			talker:SetVoiceVolumeScale(!zc.muteall and math.min(zc.playerInfo[talker:SteamID()] and zc.playerInfo[talker:SteamID()][2] or 1, volume) or 0)
 		end
 
 		local cachedLerp = Lerp
 
 		local function mouthmove(ply)
-			ply:SetVoiceVolumeScale(!hg.muteall and (!hg.mutespect or ply:Alive()) and (hg.playerInfo[ply:SteamID()] and hg.playerInfo[ply:SteamID()][2] or 1) or 0)
+			ply:SetVoiceVolumeScale(!zc.muteall and (!zc.mutespect or ply:Alive()) and (zc.playerInfo[ply:SteamID()] and zc.playerInfo[ply:SteamID()][2] or 1) or 0)
 
 			if not ply:Alive() then return end
 
@@ -761,7 +761,7 @@ players : 1 humans, 0 bots (20 max)
 
 		hook.Add("ZC_PlayerThink", "ZC_UpdateFakeRagdollMouth", function(ply) if IsValid(ply.FakeRagdoll) then mouthmove(ply) end end)
 
-		hg.mouthmove = mouthmove
+		zc.mouthmove = mouthmove
 --//
 
 --\\ Falling effects like in mirror's edge
@@ -820,7 +820,7 @@ players : 1 humans, 0 bots (20 max)
 			return
 		end
 
-		local ent = hg.GetCurrentCharacter(ply)
+		local ent = zc.GetCurrentCharacter(ply)
 		if not IsValid(ent) then
 			if fallsnd then
 				fallsnd = false
@@ -843,7 +843,7 @@ players : 1 humans, 0 bots (20 max)
 
 			Suppress(0.05)
 
-			if hg.GetCurrentCharacter(ply):IsRagdoll() then
+			if zc.GetCurrentCharacter(ply):IsRagdoll() then
 				ang.r = 0
 				ply:SetEyeAngles(ply:EyeAngles() + ang)
 			else
@@ -962,18 +962,18 @@ players : 1 humans, 0 bots (20 max)
 		end)
 	end)
 
-	hg.flashes = {}
+	zc.flashes = {}
 	local tab = {}
 
 
-	function hg.AddFlash(eyepos, dot, pos, time, size)
+	function zc.AddFlash(eyepos, dot, pos, time, size)
 		time = time or 20
 		size = size or 1000--pixels
 		size = size / math.max(pos:Distance(eyepos) / 64,0.01) * (dot^2)
 		local taint = math.max(200 - size,0) / 200 * time * 0.9
 		local scr = pos:ToScreen()
 
-		table.insert(hg.flashes,{x = scr.x, y = scr.y, time = CurTime() + time - taint, lentime = time, size = size})
+		table.insert(zc.flashes,{x = scr.x, y = scr.y, time = CurTime() + time - taint, lentime = time, size = size})
 	end
 
 	local flash
@@ -985,33 +985,33 @@ players : 1 humans, 0 bots (20 max)
 
 	hook.Add("ZC_PlayerDeath","ZC_ClearDeadPlayerState",function(ply)
 		if ply == LocalPlayer() then
-			hg.flashes = {}
+			zc.flashes = {}
 			amtflashed = 0
 			amtflashed2 = 0
 		end
 	end)
 
 	hook.Add("PreCleanupMap", "ZC_ClearFlashEffectsBeforeCleanup", function()
-		hg.flashes = {}
+		zc.flashes = {}
 		amtflashed = 0
 		amtflashed2 = 0
 	end)
 
 	hook.Add("ZC_AfterPostProcessingDraw","ZC_DrawFlashEffects",function()
 		if !lply:Alive() then
-			if !next(hg.flashes) then
-				hg.flashes = {}
+			if !next(zc.flashes) then
+				zc.flashes = {}
 			end
 
 			amtflashed = 0
 			amtflashed2 = 0
 		end
-		if (#hg.flashes <= 0) and (amtflashed2 <= 0) then return end
+		if (#zc.flashes <= 0) and (amtflashed2 <= 0) then return end
 		amtflashed = 0
-		for i = 1,#hg.flashes do
-			flash = hg.flashes[i]
+		for i = 1,#zc.flashes do
+			flash = zc.flashes[i]
 
-			if (flash.time or 0) < CurTime() then table.remove(hg.flashes[i]) continue end
+			if (flash.time or 0) < CurTime() then table.remove(zc.flashes[i]) continue end
 
 			local animpos = (flash.time - CurTime()) / flash.lentime
 			local size = flash.size
@@ -1031,15 +1031,15 @@ players : 1 humans, 0 bots (20 max)
 
 		//amtflashed = math.max(amtflashed - math.ease.InOutCubic(math.max(0, math.sin(CurTime() * 1) - 0.6) / 0.4),0)
 
-		for i = 1, #hg.flashes do
-			flash = hg.flashes[i]
+		for i = 1, #zc.flashes do
+			flash = zc.flashes[i]
 
 			local animpos = flash.animpos
 			local size = flash.size
 
 			local huy = (1 - animpos) * -100
 			surface.SetMaterial(mat)
-			surface.SetDrawColor(255, 255, 255, (animpos * 255 + math.Rand(-10,10) * animpos) * (0.5 / #hg.flashes) * (amtflashed < 0.8 and 1.5 or 1))
+			surface.SetDrawColor(255, 255, 255, (animpos * 255 + math.Rand(-10,10) * animpos) * (0.5 / #zc.flashes) * (amtflashed < 0.8 and 1.5 or 1))
 			surface.DrawTexturedRect(flash.x - size / 2 + huy, flash.y - size / 2 + huy, size, size)
 			surface.SetMaterial(mat2)
 			surface.DrawTexturedRect(flash.x - size / 2 + huy, flash.y - size / 2 + huy, size, size)

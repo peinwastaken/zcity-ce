@@ -1,6 +1,6 @@
-hg.medicine = hg.medicine or {}
+zc.medicine = zc.medicine or {}
 
-function hg.medicine.HasBandageTarget(org)
+function zc.medicine.HasBandageTarget(org)
 	return #org.wounds > 0
 		or org.lleg == 1
 		or org.rleg == 1

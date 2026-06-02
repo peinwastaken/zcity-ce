@@ -1,7 +1,7 @@
 local _, max, _, halfValue2 = math.min, math.max, math.Round, util.halfValue2
---local Organism = hg.organism
-hg.organism.module.pulse = {}
-local module = hg.organism.module.pulse
+--local Organism = zc.organism
+zc.organism.module.pulse = {}
+local module = zc.organism.module.pulse
 module[1] = function(org)
 	org.heart = 0
 	org.heartstop = false
@@ -13,7 +13,7 @@ module[1] = function(org)
 	org.needed_temp = 36.7
 end
 
-function hg.organism.should_gain_fear(org)
+function zc.organism.should_gain_fear(org)
 	return ((org.pain > 30) or (org.blood < 3000) or (org.bleed > 1))// + (org.just_damaged_bone and ((org.just_damaged_bone + 10 - CurTime()) >= 10) and 10 or 0)
 end
 
@@ -70,7 +70,7 @@ module[2] = function(owner, org, timeValue)
 	org.fear = math.Approach(org.fear, (org.unconscious and 0 or (org.fearadd > 0 and 1 or -1)), org.unconscious and timeValue * 0.5 or (org.fearadd > 0 and (org.fear < 0 and timeValue * 5 * org.fearadd or timeValue / 5 * org.fearadd) or (org.fear <= 0 and timeValue / 240 or timeValue / 50)))
 	-- less time to start fearing, more time to become calm again
 	-- if no fear, in 3 minutes become slightly talkative, so would say random phrases to calm themselves in a current situation
-	local gainfear = hg.organism.should_gain_fear(org)
+	local gainfear = zc.organism.should_gain_fear(org)
 	org.fearadd = math.Approach(org.fearadd, 0, gainfear and timeValue or timeValue / 4.9) -- 15 seconds to stop fearing something and start to calm down
 	org.fearadd = math.Approach(org.fearadd, 1, gainfear and timeValue / 5 or 0)
 
@@ -129,7 +129,7 @@ end
 
 --if org.heartstop then org.needunconscious = true end --not quite...
 util.AddNetworkString("ZC_Pulse")
-function hg.organism.Pulse(owner, org, timeValue)
+function zc.organism.Pulse(owner, org, timeValue)
 	if org.o2[1] > 1 and org.alive and org.heart < 1 and org.brain < 0.6 then
 		--org.brain = max(org.brain - timeValue / 30, 0) --regen
 	end--brain damage is usually permanent

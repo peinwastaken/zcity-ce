@@ -1,6 +1,6 @@
-hg = hg or {}
-hg.PlayerBots = hg.PlayerBots or {}
-local _ENV = hg.PlayerBots
+zc = zc or {}
+zc.PlayerBots = zc.PlayerBots or {}
+local _ENV = zc.PlayerBots
 setmetatable(_ENV, {__index = _G})
 setfenv(1, _ENV)
 
@@ -8,14 +8,14 @@ function IsDeathmatchSafeTime(round)
 	if not IsDeathmatchRoundActive(round) then return false end
 	if round.IsSpawnProtectionActive then return round:IsSpawnProtectionActive() end
 
-	return (zb.ROUND_START or 0) + (round.SpawnProtectionTime or 7.5) > CurTime()
+	return (zc.ROUND_START or 0) + (round.SpawnProtectionTime or 7.5) > CurTime()
 end
 
 function IsRoundFadeInTime(round)
-	if not zb then return false end
+	if not zc then return false end
 
 	local duration = BOT_ROUND_FADEIN_TIME
-	return (zb.ROUND_START or 0) + duration > CurTime()
+	return (zc.ROUND_START or 0) + duration > CurTime()
 end
 
 function IsDeathmatchZoneDisabled()
@@ -40,7 +40,7 @@ function GetDeathmatchZoneShrinkProgress(round)
 	local shrinkTime = round.ZoneTimeToShrink
 	if not isnumber(shrinkTime) or shrinkTime <= 0 then return 1 end
 
-	return math_Clamp((CurTime() - (zb.ROUND_START or CurTime())) / shrinkTime, 0, 1)
+	return math_Clamp((CurTime() - (zc.ROUND_START or CurTime())) / shrinkTime, 0, 1)
 end
 
 function ShouldSeekDeathmatchZoneCenter(round)
@@ -193,7 +193,7 @@ end
 
 function MoveToDeathmatchZoneCenter(bot, cmd, round, ignoreTimeLimit, reachDistance)
 	if not IsDeathmatchRoundActive(round) then return false end
-	if not ignoreTimeLimit and CurTime() > (zb.ROUND_START or 0) + BOT_ZONE_CENTER_TIME then return false end
+	if not ignoreTimeLimit and CurTime() > (zc.ROUND_START or 0) + BOT_ZONE_CENTER_TIME then return false end
 	if not ShouldMoveTowardDeathmatchZoneCenter(bot, round) then return false end
 
 	local center = GetDeathmatchZoneInfo(round)

@@ -20,10 +20,10 @@ if SERVER then
         self.Stuck = 0
 
         if IsValid(self.Victim) then
-            local ent = hg.GetCurrentCharacter(self.Victim)
-            local owner = hg.RagdollOwner(ent) or ent
+            local ent = zc.GetCurrentCharacter(self.Victim)
+            local owner = zc.RagdollOwner(ent) or ent
 
-            hg.StunPlayer(owner)
+            zc.StunPlayer(owner)
 
             self:SetPos(ent:GetPos() + vector_up * 32)
         end
@@ -37,12 +37,12 @@ if SERVER then
     end
 
     local function not_visible_to_players(vec, excluded_ent)
-        local alive = zb:CheckAlive() -- I really gotta make that function cache values later.
+        local alive = zc:CheckAlive() -- I really gotta make that function cache values later.
 
         for _, ply in ipairs(alive) do
             if (ply == excluded_ent) or (ply.FakeRagdoll == excluded_ent) then continue end
 
-            if hg.isVisible(ply:EyePos(), vec, {ply, excluded_ent}, MASK_SOLID_BRUSHONLY) then
+            if zc.isVisible(ply:EyePos(), vec, {ply, excluded_ent}, MASK_SOLID_BRUSHONLY) then
                 return false
             end
         end
@@ -51,7 +51,7 @@ if SERVER then
     end
 
     function ENT:FindGeneralDirection()
-        local alive = zb:CheckAlive()
+        local alive = zc:CheckAlive()
 
         local pos = self:GetPos()
         for _, ply in ipairs(alive) do
@@ -87,7 +87,7 @@ if SERVER then
         self.StartMoveTime = CurTime()
         --[[tr.filter[1] = self
         tr.filter[2] = self.Victim
-        tr.filter[3] = hg.GetCurrentCharacter(self.Victim)--]]
+        tr.filter[3] = zc.GetCurrentCharacter(self.Victim)--]]
         tr.filter = ents.GetAll()
         tr.filter[1] = self.Victim
         local general_direction = self:FindGeneralDirection()
@@ -139,7 +139,7 @@ if SERVER then
         -- simplify path
         self.Path = {}
         for i = 1, #path do
-            if !hg.isVisible(self.Path[#self.Path], path[i + 1], {self.Victim}, MASK_SOLID_BRUSHONLY) then
+            if !zc.isVisible(self.Path[#self.Path], path[i + 1], {self.Victim}, MASK_SOLID_BRUSHONLY) then
                 self.Path[#self.Path + 1] = path[i]
             end
         end
@@ -241,9 +241,9 @@ if SERVER then
         end
 
         if IsValid(self.Victim) then
-            local ent = hg.GetCurrentCharacter(self.Victim)
-            local owner = hg.RagdollOwner(ent) or ent
-            hg.LightStunPlayer(owner, 3)
+            local ent = zc.GetCurrentCharacter(self.Victim)
+            local owner = zc.RagdollOwner(ent) or ent
+            zc.LightStunPlayer(owner, 3)
 
             if (self.NextTryKill or 0) < CurTime() then
                 self.NextTryKill = CurTime() + 1
@@ -293,13 +293,13 @@ if SERVER then
                     fastUseDoor(door, self.Victim)
                 end
 
-                hg.ShadowControl(ent, 13, 0.01, Angle(0, 0, 0), 0, 0, pos, 150000, 150)
-                hg.ShadowControl(ent, 12, 0.01, Angle(0, 0, 0), 0, 0, pos, 150000, 150)
-                --hg.ShadowControl(ent, 14, 0.01, Angle(0, 0, 0), 0, 0, pos, 150000, 150)
-                --hg.ShadowControl(ent, 9, 0.01, Angle(0, 0, 0), 0, 0, pos, 150000, 150)
+                zc.ShadowControl(ent, 13, 0.01, Angle(0, 0, 0), 0, 0, pos, 150000, 150)
+                zc.ShadowControl(ent, 12, 0.01, Angle(0, 0, 0), 0, 0, pos, 150000, 150)
+                --zc.ShadowControl(ent, 14, 0.01, Angle(0, 0, 0), 0, 0, pos, 150000, 150)
+                --zc.ShadowControl(ent, 9, 0.01, Angle(0, 0, 0), 0, 0, pos, 150000, 150)
 
-                --hg.ShadowControl(ent, 1, 0.01, Angle(0, 0, 0), 0, 0, ent:GetPhysicsObjectNum(0):GetPos() + vector_up * 1, 150, 150)
-                --hg.ShadowControl(ent, 0, 0.01, Angle(0, 0, 0), 0, 0, ent:GetPhysicsObjectNum(0):GetPos() + vector_up * 1, 150, 150)
+                --zc.ShadowControl(ent, 1, 0.01, Angle(0, 0, 0), 0, 0, ent:GetPhysicsObjectNum(0):GetPos() + vector_up * 1, 150, 150)
+                --zc.ShadowControl(ent, 0, 0.01, Angle(0, 0, 0), 0, 0, ent:GetPhysicsObjectNum(0):GetPos() + vector_up * 1, 150, 150)
             end
         end
 

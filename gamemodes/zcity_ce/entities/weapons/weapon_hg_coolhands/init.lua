@@ -15,7 +15,7 @@ local math_random, math_Clamp, CurTime, _ = math.random, math.Clamp, CurTime, Co
 local function WhomILookinAt(ply, cone, dist)
 	local CreatureTr, ObjTr, OtherTr
 	for _ = 1, 150 * cone do
-		local Tr = hg.eyeTrace(ply,dist)
+		local Tr = zc.eyeTrace(ply,dist)
 		if Tr.Hit and not Tr.HitSky and Tr.Entity then
 			local Ent, Class = Tr.Entity, Tr.Entity:GetClass()
 			if Ent:IsPlayer() or Ent:IsNPC() then
@@ -67,7 +67,7 @@ function SWEP:SecondaryAttack()
 	if self:GetOwner():GetNetVar("handcuffed",false) then return end
 	if SERVER then
 		self:SetCarrying()
-		local pos = hg.eye(self:GetOwner())
+		local pos = zc.eye(self:GetOwner())
 		local tr = util.QuickTrace(pos, self:GetOwner():GetAimVector() * self.ReachDistance, {self:GetOwner()})
 
 		--if (IsValid(tr.Entity) or game.GetWorld() == tr.Entity) and self:CanPickup(tr.Entity) and not tr.Entity:IsPlayer() then
@@ -87,9 +87,9 @@ function SWEP:SecondaryAttack()
 				tr.Entity:SetVelocity((self:GetOwner():KeyDown(IN_SPEED) and 1 or -1) * self:GetOwner():GetAimVector() * 50)
 				self:SetNextSecondaryFire(CurTime() + .25)
 				if self:GetOwner().PlayerClassName == "sc_infiltrator" or self:GetOwner():IsBerserk() then
-					hg.LightStunPlayer(tr.Entity, 3)
+					zc.LightStunPlayer(tr.Entity, 3)
 					timer.Simple(0,function()
-						local rag = hg.GetCurrentCharacter(tr.Entity)
+						local rag = zc.GetCurrentCharacter(tr.Entity)
 						if IsValid(rag) and rag ~= tr.Entity then
 							self:SetCarrying(rag, tr.PhysicsBone, tr.HitPos, Dist)
 						end
@@ -118,7 +118,7 @@ SWEP.Checking = 0
 
 function SWEP:ApplyForce()
 	local ply = self:GetOwner()
-	local target = self:GetOwner():GetAimVector() * self.CarryDist + hg.eye(ply)
+	local target = self:GetOwner():GetAimVector() * self.CarryDist + zc.eye(ply)
 	if not IsValid(self.CarryEnt) then return end
 	local phys = self.CarryEnt:GetPhysicsObjectNum(self.CarryBone)
 
@@ -141,7 +141,7 @@ function SWEP:ApplyForce()
 		if self.CarryEnt.organism and ((ply.sendTimeOrg or 0) < CurTime()) then
 			ply.sendTimeOrg = CurTime() + 0.5
 
-			//hg.send_organism(self.CarryEnt.organism, ply)
+			//zc.send_organism(self.CarryEnt.organism, ply)
 		end
 
 		if self.CarryPos then
@@ -201,32 +201,32 @@ function SWEP:ApplyForce()
 				if not ply2.noHead and ply2.organism then
 
 					if ply2.organism.CantCheckPulse then
-						ply:ChatPrint(zb.locale.GetLocalized("body/armor_too_thick_pulse"))
+						ply:ChatPrint(zc.locale.GetLocalized("body/armor_too_thick_pulse"))
 					elseif ((bone == "ValveBiped.Bip01_L_Hand") or (bone == "ValveBiped.Bip01_R_Hand") or (bone == "ValveBiped.Bip01_Head1")) then
 						local org = ply2.organism
 
 						if org.heartstop then
-							ply:ChatPrint(zb.locale.GetLocalized("body/no_pulse"))
+							ply:ChatPrint(zc.locale.GetLocalized("body/no_pulse"))
 						else
-							ply:ChatPrint(zb.locale.GetLocalized(org.pulse < 20 and "body/pulse/barely" or (org.pulse <= 50 and "body/pulse/low") or (org.pulse <= 90 and "body/pulse/normal") or "body/pulse/high"))
+							ply:ChatPrint(zc.locale.GetLocalized(org.pulse < 20 and "body/pulse/barely" or (org.pulse <= 50 and "body/pulse/low") or (org.pulse <= 90 and "body/pulse/normal") or "body/pulse/high"))
 						end
 
 						if (org.last_heartbeat + 60) > CurTime() then
-							ply:ChatPrint(zb.locale.GetLocalized("body/still_warm"))
+							ply:ChatPrint(zc.locale.GetLocalized("body/still_warm"))
 						else
-							ply:ChatPrint(zb.locale.GetLocalized((org.last_heartbeat + 180) < CurTime() and "body/here_awhile" or "body/slightly_warm"))
+							ply:ChatPrint(zc.locale.GetLocalized((org.last_heartbeat + 180) < CurTime() and "body/here_awhile" or "body/slightly_warm"))
 						end
 
 						if org.blood < 3500 then
 							//if org.blood < 1000 then
 								//ply:ChatPrint("The skin looks almost white.")
 							//else
-								ply:ChatPrint(zb.locale.GetLocalized("body/skin_pale"))
+								ply:ChatPrint(zc.locale.GetLocalized("body/skin_pale"))
 							//end
 						end
 
 						if org.bleed > 0 then
-							ply:ChatPrint(zb.locale.GetLocalized("body/bleeding", zb.locale.GetLocalized((org.bleed > 10 and "body/bleeding/profusely") or (org.bleed > 5 and "body/bleeding/moderately") or "body/bleeding/slightly")))
+							ply:ChatPrint(zc.locale.GetLocalized("body/bleeding", zc.locale.GetLocalized((org.bleed > 10 and "body/bleeding/profusely") or (org.bleed > 5 and "body/bleeding/moderately") or "body/bleeding/slightly")))
 						end
 
 						//org.bulletwounds = 0
@@ -237,40 +237,40 @@ function SWEP:ApplyForce()
 						//org.explosionwounds = 0
 
 						if org.bulletwounds > 0 then
-							ply:ChatPrint(zb.locale.GetLocalized("body/bullet_wounds", org.bulletwounds))
+							ply:ChatPrint(zc.locale.GetLocalized("body/bullet_wounds", org.bulletwounds))
 						end
 
 						if org.stabwounds > 0 then
-							ply:ChatPrint(zb.locale.GetLocalized("body/stab_wounds", org.stabwounds))//28 STAB WOUNDS. YOU WOULDNT LEAVE HIM A CHANCE, HUH?
+							ply:ChatPrint(zc.locale.GetLocalized("body/stab_wounds", org.stabwounds))//28 STAB WOUNDS. YOU WOULDNT LEAVE HIM A CHANCE, HUH?
 						end
 
 						if org.slashwounds > 0 then
-							ply:ChatPrint(zb.locale.GetLocalized("body/slash_wounds", org.slashwounds))
+							ply:ChatPrint(zc.locale.GetLocalized("body/slash_wounds", org.slashwounds))
 						end
 
 						if org.bruises > 0 then
-							ply:ChatPrint(zb.locale.GetLocalized("body/bruises", org.bruises))
+							ply:ChatPrint(zc.locale.GetLocalized("body/bruises", org.bruises))
 						end
 
 						if org.burns > 0 then
-							ply:ChatPrint(zb.locale.GetLocalized("body/burned"))
+							ply:ChatPrint(zc.locale.GetLocalized("body/burned"))
 						end
 
 						if org.explosionwounds > 0 then
-							ply:ChatPrint(zb.locale.GetLocalized("body/blast_trauma"))
+							ply:ChatPrint(zc.locale.GetLocalized("body/blast_trauma"))
 						end
 
 						if (bone == "ValveBiped.Bip01_Head1") then
 							if (org.o2[1] < 10 or not org.alive) then
-								ply:ChatPrint(zb.locale.GetLocalized("body/not_breathing"))
+								ply:ChatPrint(zc.locale.GetLocalized("body/not_breathing"))
 							else
-								ply:ChatPrint(zb.locale.GetLocalized("body/breathing"))
+								ply:ChatPrint(zc.locale.GetLocalized("body/breathing"))
 							end
 
-							ply:ChatPrint(zb.locale.GetLocalized(org.unconscious and "body/no_reaction" or "body/reaction_present"))
+							ply:ChatPrint(zc.locale.GetLocalized(org.unconscious and "body/no_reaction" or "body/reaction_present"))
 
 							if org.isPly and not org.unconscious then
-								org.owner:ChatPrint(zb.locale.GetLocalized("body/checked_for_reaction"))
+								org.owner:ChatPrint(zc.locale.GetLocalized("body/checked_for_reaction"))
 							end
 						end
 					end
@@ -302,7 +302,7 @@ function SWEP:ApplyForce()
 				if org and bone == "ValveBiped.Bip01_Spine2" and trace.Hit then
 					if self.firstTimePrint then
 						if not ply2.noHead then
-							ply:ChatPrint(zb.locale.GetLocalized("body/begin_cpr"))
+							ply:ChatPrint(zc.locale.GetLocalized("body/begin_cpr"))
 						else
 							ply:Notify("I dont think CPR would help here...", 10)
 						end
@@ -312,7 +312,7 @@ function SWEP:ApplyForce()
 					if (self.CPRThink or 0) < CurTime() then
 						self.CPRThink = CurTime() + (1 / 120) * 60
 						if org.alive then
-							//org.o2[1] = math.min(org.o2[1] + hg.organism.OxygenateBlood(org) * 2 * (ply.Profession == "doctor" and 2 or 1), org.o2.range)
+							//org.o2[1] = math.min(org.o2[1] + zc.organism.OxygenateBlood(org) * 2 * (ply.Profession == "doctor" and 2 or 1), org.o2.range)
 							org.pulse = math.min(org.pulse + 5 * (ply.Profession == "doctor" and 2 or 1),70)
 							org.CO = math.Approach(org.CO, 0, (ply.Profession == "doctor" and 2 or 1))
 							org.COregen = math.Approach(org.COregen, 0, (ply.Profession == "doctor" and 2 or 1))
@@ -325,7 +325,7 @@ function SWEP:ApplyForce()
 								local dmginfo = DamageInfo()
 								dmginfo:SetDamageType(DMG_CRUSH)
 								dmginfo:SetInflictor(self)
-								hg.organism.input_list.chest(org, 1, 5, dmginfo)
+								zc.organism.input_list.chest(org, 1, 5, dmginfo)
 							end
 
 							if org.pulse > 15 then org.heartstop = false end
@@ -354,7 +354,7 @@ function SWEP:ApplyForce()
 		end
 
 		--[[if IsValid(self.CarryEnt) and self.CarryBone then
-			hg.ShadowControl(self.CarryEnt, self.CarryBone, 0.1, angle_zero, 0, 0, target, 60, 40)
+			zc.ShadowControl(self.CarryEnt, self.CarryBone, 0.1, angle_zero, 0, 0, target, 60, 40)
 		end]]
 
 		if ply:KeyDown(IN_USE) then
@@ -404,11 +404,11 @@ function SWEP:SetCarrying(ent, bone, pos, dist)
 		end
 
 		if not self.CarryEnt:GetCustomCollisionCheck() then
-			hg.QueueCollisionRulesChanged(self.CarryEnt, owner, true)
+			zc.QueueCollisionRulesChanged(self.CarryEnt, owner, true)
 
 			self.CarryEnt:CallOnRemove("removenarsla",function()
 				if not IsValid(owner) then return end
-				hg.QueueCollisionRulesChanged(owner)
+				zc.QueueCollisionRulesChanged(owner)
 				owner:SetNetVar("carryent",nil)
 				owner:SetNetVar("carrybone",nil)
 				owner:SetNetVar("carrymass",nil)
@@ -419,7 +419,7 @@ function SWEP:SetCarrying(ent, bone, pos, dist)
 		end
 	else
 		if IsValid(self.CarryEnt) and self.CarryEnt:GetCustomCollisionCheck() then
-			hg.QueueCollisionRulesChanged(self.CarryEnt, owner)
+			zc.QueueCollisionRulesChanged(self.CarryEnt, owner)
 			//self.CarryEnt:SetCustomCollisionCheck(false)
 		end
 
@@ -440,12 +440,12 @@ end
 SWEP.DamagePrimary = 10
 
 function SWEP:BlockingLogic(ent, mul, attacktype, trace)
-    ent = hg.RagdollOwner(ent) or ent
+    ent = zc.RagdollOwner(ent) or ent
 
     if ent:IsPlayer() then
         local wep = ent:GetActiveWeapon()
         local owner = self:GetOwner()
-        local pos, aimvec = hg.eye(ent)
+        local pos, aimvec = zc.eye(ent)
         local dist = util.DistanceToLine(pos + aimvec * 100, pos, trace.HitPos)
         local dmg = wep.DamagePrimary
         local selfdmg = self.DamagePrimary * 0.2
@@ -648,7 +648,7 @@ function SWEP:AttackFront(special_attack, rand)
 			//Ent:EmitSound("physics/glass/glass_sheet_impact_hard"..math_random(3)..".wav")
 
 			//if math_random(1,8) == 8 and Ent:Health() < 250 then
-				hg.organism.AddWoundManual(owner, math.Rand(50,75) * 1, vector_origin, AngleRand(), owner:LookupBone("ValveBiped.Bip01_"..(rand and "R" or "L").."_Hand"), CurTime())
+				zc.organism.AddWoundManual(owner, math.Rand(50,75) * 1, vector_origin, AngleRand(), owner:LookupBone("ValveBiped.Bip01_"..(rand and "R" or "L").."_Hand"), CurTime())
 				//Ent:Fire("Break")
 				//Ent.Broken = true
 			//end
@@ -678,7 +678,7 @@ function SWEP:AttackFront(special_attack, rand)
 		else
 			if not havekastet and not owner:IsBerserk() and math.random(special_attack and 2 or 1, special_attack and 6 or 4) > 3 then
 				owner.organism.painadd = owner.organism.painadd + (math.random(3, 6) * (special_attack and 2.5 or 1.5))
-				hg.organism.AddWoundManual(owner, math_random(6, 8) * (special_attack and 2 or 1), vector_origin, AngleRand(), owner:LookupBone("ValveBiped.Bip01_"..(rand and "R" or "L").."_Hand"), CurTime())
+				zc.organism.AddWoundManual(owner, math_random(6, 8) * (special_attack and 2 or 1), vector_origin, AngleRand(), owner:LookupBone("ValveBiped.Bip01_"..(rand and "R" or "L").."_Hand"), CurTime())
 			end
 			sound.Play("weapons/melee/blunt_light"..math_random(8)..".wav", HitPos, 65, math_random(90, 110))
 			if owner:IsBerserk() then
@@ -763,9 +763,9 @@ function SWEP:Reload()
 
 			if ((bone ~= "ValveBiped.Bip01_L_Hand") and (bone  ~= "ValveBiped.Bip01_R_Hand") and (bone ~= "ValveBiped.Bip01_Head1")) then
 				if not heldents[ent:EntIndex()] then
-					hg.SetCarryEnt2(owner, ent, bon, phys:GetMass(), self.CarryPos, owner:GetAimVector() * (self.CarryDist or 50) + owner:GetShootPos())
+					zc.SetCarryEnt2(owner, ent, bon, phys:GetMass(), self.CarryPos, owner:GetAimVector() * (self.CarryDist or 50) + owner:GetShootPos())
 				else
-					--hg.SetCarryEnt2(owner)
+					--zc.SetCarryEnt2(owner)
 				end
 			end
 

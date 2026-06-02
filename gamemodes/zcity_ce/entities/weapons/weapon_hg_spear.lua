@@ -100,7 +100,7 @@ if SERVER then
 
         local ply = self:GetOwner()
 
-        ent:SetPos(hg.eye(ply,60,hg.GetCurrentCharacter(ply)) - ply:GetAimVector() * 2)
+        ent:SetPos(zc.eye(ply,60,zc.GetCurrentCharacter(ply)) - ply:GetAimVector() * 2)
         ent:SetAngles(ply:EyeAngles())
         ent:SetOwner(self:GetOwner())
         ent:Spawn()
@@ -178,6 +178,6 @@ hook.Add("ZC_RadialOptions","ZC_Spear",function()
 
     if not organism.unconscious and ply:HasWeapon("weapon_hg_spear") and ply:HasWeapon("weapon_ducttape") and ply:HasWeapon("weapon_pocketknife") then
         local tbl = {tape, "Tape a knife to a spear"}
-        hg.radialOptions[#hg.radialOptions + 1] = tbl
+        zc.radialOptions[#zc.radialOptions + 1] = tbl
     end
 end)

@@ -40,7 +40,7 @@ end
 
 function SWEP:BoneSet(lookup_name, vec, ang)
 	if IsValid(self:GetOwner()) and !self:GetOwner():IsPlayer() then return end
-	hg.bone.Set(self:GetOwner(), lookup_name, vec, ang)
+	zc.bone.Set(self:GetOwner(), lookup_name, vec, ang)
 end
 
 function SWEP:Animation()

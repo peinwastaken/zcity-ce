@@ -8,7 +8,7 @@ util.AddNetworkString("ZC_DeathmatchStart")
 util.AddNetworkString("ZC_DeathmatchEnd")
 
 function MODE:CanLaunch()
-    return true//(zb.GetWorldSize() >= ZBATTLE_BIGMAP)
+    return true//(zc.GetWorldSize() >= ZBATTLE_BIGMAP)
 end
 
 function MODE:Intermission()
@@ -60,7 +60,7 @@ function MODE:CheckAlivePlayers()
 end
 
 function MODE:ShouldRoundEnd()
-	return (#zb:CheckAlive(true) <= 1)
+	return (#zc:CheckAlive(true) <= 1)
 end
 
 local loadouts = {
@@ -157,7 +157,7 @@ function MODE:RoundStart()
 		local gun = ply:Give(loadout.primary)
 		if IsValid(gun) then
 			ply:GiveAmmo(gun:GetMaxClip1() * loadout.ammo, gun:GetPrimaryAmmoType(), true)
-			hg.AddAttachmentForce(ply, gun, selectedAttachments)
+			zc.AddAttachmentForce(ply, gun, selectedAttachments)
 		end
 
 		if loadout.secondary then
@@ -167,7 +167,7 @@ function MODE:RoundStart()
 			end
 		end
 
-		hg.AddArmor(ply, loadout.armor)
+		zc.AddArmor(ply, loadout.armor)
 		ply:Give(loadout.melee or randomMelees[math.random(#randomMelees)])
 
 		if not loadout.noGrenade then
@@ -203,7 +203,7 @@ function MODE:RoundStart()
 
 		timer.Simple(0.1, function() ply.noSound = false end)
 		ply:SetSuppressPickupNotices(false)
-		zb.GiveRole(ply, "Fighter", Color(190,15,15))
+		zc.GiveRole(ply, "Fighter", Color(190,15,15))
 	end
 end
 
@@ -211,7 +211,7 @@ local cooldown = CurTime()
 hook.Add("Think","ZC_DmModeThink",function(ply)
 	local rnd = CurrentRound()
 	if not rnd or rnd.name != "dm" then return end
-	if (zb.ROUND_START or CurTime()) + 20 > CurTime() then return end
+	if (zc.ROUND_START or CurTime()) + 20 > CurTime() then return end
 	if cooldown > CurTime() then return end
 	if zc_deathmatch_nozone:GetBool() then return end
 	cooldown = CurTime() + 0.5
@@ -223,7 +223,7 @@ hook.Add("Think","ZC_DmModeThink",function(ply)
 	for _, ent in ents.Iterator() do
 		if pos:DistToSqr(ent:GetPos()) > radiussqr then
 			if ent:IsPlayer() then
-				hg.LightStunPlayer(ent)
+				zc.LightStunPlayer(ent)
 
 				continue
 			end
@@ -236,7 +236,7 @@ hook.Add("Think","ZC_DmModeThink",function(ply)
 				continue
 			end
 
-			if string.find(ent:GetClass(), "prop_") and !hg.expItems[ent:GetModel()] then
+			if string.find(ent:GetClass(), "prop_") and !zc.expItems[ent:GetModel()] then
 				MakeDissolver(ent, ent:GetPos(), 0)
 			end
 		end
@@ -253,7 +253,7 @@ function MODE:RoundThink()
 end
 
 function MODE:PlayerDeath(ply)
-	if zb.ROUND_STATE == 1 then
+	if zc.ROUND_STATE == 1 then
 		ply:GiveSkill(-0.1)
 	end
 end
@@ -263,7 +263,7 @@ end
 
 function MODE:EndRound()
 	local playersharm = {}
-	for _, tbl in pairs(zb.HarmDone) do
+	for _, tbl in pairs(zc.HarmDone) do
 		for attacker, harm in pairs(tbl) do
 			playersharm[attacker] = (playersharm[attacker] or 0) + harm
 		end
@@ -280,7 +280,7 @@ function MODE:EndRound()
 
 	timer.Simple(2,function()
 		net.Start("ZC_DeathmatchEnd")
-		local ent = zb:CheckAlive(true)[1]
+		local ent = zc:CheckAlive(true)[1]
 
 		if IsValid(ent) then
 			ent:GiveExp(math.random(150,200))

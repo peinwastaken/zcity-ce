@@ -11,32 +11,32 @@ function MODE:ChanceFunction(info)
         end
     end
 
-    return zb.ModesChances["cstrike"] or self.Chance
+    return zc.ModesChances["cstrike"] or self.Chance
 end
 
 util.AddNetworkString("ZC_CStrikeRoundIntermission")
 
 function MODE:DontKillPlayer(ply)
-    return zb.RoundsLeft and (zb.RoundsLeft != self.Rounds)
+    return zc.RoundsLeft and (zc.RoundsLeft != self.Rounds)
 end
 
 function MODE:CanLaunch()
-	local points = zb.GetMapPoints( "HMCD_TDM_T" )
-	local points2 = zb.GetMapPoints( "HMCD_TDM_CT" )
-	local points3 = zb.GetMapPoints( "BOMB_ZONE_A" )
-	local points4 = zb.GetMapPoints( "BOMB_ZONE_B" )
+	local points = zc.GetMapPoints( "HMCD_TDM_T" )
+	local points2 = zc.GetMapPoints( "HMCD_TDM_CT" )
+	local points3 = zc.GetMapPoints( "BOMB_ZONE_A" )
+	local points4 = zc.GetMapPoints( "BOMB_ZONE_B" )
 
-    local points5 = zb.GetMapPoints( "HOSTAGE_DELIVERY_ZONE" )
+    local points5 = zc.GetMapPoints( "HOSTAGE_DELIVERY_ZONE" )
 
     return (#points > 0) and (#points2 > 0) and (((#points3 > 1) or (#points4 > 1)) or (#points5 > 1))
 end
 
 function MODE:OverrideBalance()--return true to keep alive players
-    return zb.RoundsLeft and (zb.RoundsLeft != self.Rounds)
+    return zc.RoundsLeft and (zc.RoundsLeft != self.Rounds)
 end
 
 function MODE:RoundStartPost()
-    if zb.RoundsLeft and zb.RoundsLeft > 1 then
+    if zc.RoundsLeft and zc.RoundsLeft > 1 then
         NextRound(self.name)
     end
 end
@@ -46,39 +46,39 @@ end
 function MODE:Intermission()
 	game.CleanUpMap()
 
-    zb.RoundsLeft = zb.RoundsLeft or self.Rounds
-    zb.Winners = zb.Winners or {}
+    zc.RoundsLeft = zc.RoundsLeft or self.Rounds
+    zc.Winners = zc.Winners or {}
 
-    self.GameStarted = zb.RoundsLeft == self.Rounds
-    zb.rtype = zb.rtype or "bomb"
+    self.GameStarted = zc.RoundsLeft == self.Rounds
+    zc.rtype = zc.rtype or "bomb"
 
-    zb.hostagepoints = zb.GetMapPoints( "HOSTAGE_DELIVERY_ZONE" )
+    zc.hostagepoints = zc.GetMapPoints( "HOSTAGE_DELIVERY_ZONE" )
 
     if self.GameStarted then
-        zb.Winners = {}
-        zb.bombexploded = nil
-        zb.bomb = nil
-        --zb.rtype = zb.nextcsround or (math.random(2) == 1 and "bomb" or "hostage")
-        zb.rtype = (
-            (#zb.GetMapPoints( "BOMB_ZONE_A" ) > 0 or #zb.GetMapPoints( "BOMB_ZONE_B" ) > 0) and  "bomb") or
-            (zb.hostagepoints and #zb.hostagepoints > 0 and "hostage")
-        zb.nextcsround = nil
+        zc.Winners = {}
+        zc.bombexploded = nil
+        zc.bomb = nil
+        --zc.rtype = zc.nextcsround or (math.random(2) == 1 and "bomb" or "hostage")
+        zc.rtype = (
+            (#zc.GetMapPoints( "BOMB_ZONE_A" ) > 0 or #zc.GetMapPoints( "BOMB_ZONE_B" ) > 0) and  "bomb") or
+            (zc.hostagepoints and #zc.hostagepoints > 0 and "hostage")
+        zc.nextcsround = nil
     end
 
-    if !zb.rtype then
-        zb.rtype = (
-            (#zb.GetMapPoints( "BOMB_ZONE_A" ) > 0 or #zb.GetMapPoints( "BOMB_ZONE_B" ) > 0) and  "bomb") or
-            (zb.hostagepoints and #zb.hostagepoints > 0 and "hostage")
+    if !zc.rtype then
+        zc.rtype = (
+            (#zc.GetMapPoints( "BOMB_ZONE_A" ) > 0 or #zc.GetMapPoints( "BOMB_ZONE_B" ) > 0) and  "bomb") or
+            (zc.hostagepoints and #zc.hostagepoints > 0 and "hostage")
     end
 
-    zb.SendSpecificPointsToPly(nil, "BOMB_ZONE_A", false)
-    zb.SendSpecificPointsToPly(nil, "BOMB_ZONE_B", false)
-    zb.SendSpecificPointsToPly(nil, "HOSTAGE_DELIVERY_ZONE", false)
+    zc.SendSpecificPointsToPly(nil, "BOMB_ZONE_A", false)
+    zc.SendSpecificPointsToPly(nil, "BOMB_ZONE_B", false)
+    zc.SendSpecificPointsToPly(nil, "HOSTAGE_DELIVERY_ZONE", false)
 
 	self.CTPoints = {}
 	self.TPoints = {}
-	table.CopyFromTo( zb.GetMapPoints( "HMCD_TDM_T" ), self.TPoints)
-	table.CopyFromTo( zb.GetMapPoints( "HMCD_TDM_CT" ), self.CTPoints)
+	table.CopyFromTo( zc.GetMapPoints( "HMCD_TDM_T" ), self.TPoints)
+	table.CopyFromTo( zc.GetMapPoints( "HMCD_TDM_CT" ), self.CTPoints)
 
 	for _, ply in player.Iterator() do
 		ply:SetupTeam(ply:Team())
@@ -88,11 +88,11 @@ function MODE:Intermission()
         end
         net.Start("ZC_CStrikeRoundIntermission")
         net.WriteBool(ply:Team() == 0)
-        net.WriteInt(MODE.Rounds - zb.RoundsLeft or 0,6)
+        net.WriteInt(MODE.Rounds - zc.RoundsLeft or 0,6)
         net.Send(ply)
     end
 
-    if zb.rtype == "bomb" then
+    if zc.rtype == "bomb" then
         timer.Simple(3,function()
             local team_t = team.GetPlayers(0)
             local ply = team_t[math.random(#team_t)]
@@ -101,10 +101,10 @@ function MODE:Intermission()
             ent:SetPos(ply:EyePos())
             ent:Spawn()
 
-            zb.bomb = ent
+            zc.bomb = ent
             ent.tbl = self
         end)
-    elseif zb.rtype == "hostage" then
+    elseif zc.rtype == "hostage" then
         timer.Simple(3,function()
             local ent = ents.Create("prop_ragdoll")
             local team_t = team.GetPlayers(0)
@@ -114,22 +114,22 @@ function MODE:Intermission()
             ent:SetPos(ply:GetPos())
             ent:Spawn()
             ent:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-            hg.organism.Add(ent)
-            hg.organism.Clear(ent.organism)
+            zc.organism.Add(ent)
+            zc.organism.Clear(ent.organism)
             ent.organism.fakePlayer = true
 
-            zb.hostage = ent
+            zc.hostage = ent
 
             timer.Simple(1, function()
-                hg.handcuff(ent)
+                zc.handcuff(ent)
             end)
         end)
     end
 
-    PrintMessage(HUD_PRINTTALK, zb.locale.GetLocalized("cstrike/round_out_of", self.Rounds - zb.RoundsLeft, self.Rounds))
+    PrintMessage(HUD_PRINTTALK, zc.locale.GetLocalized("cstrike/round_out_of", self.Rounds - zc.RoundsLeft, self.Rounds))
 
 	net.Start("ZC_TeamDeathmatchStart")
-        net.WriteString(zb.rtype or "bomb")
+        net.WriteString(zc.rtype or "bomb")
         net.Broadcast()
 
     self.GameStarted = nil
@@ -139,24 +139,24 @@ concommand.Add("tdm_setrounds", function(ply, cmd, args)
     if not ply:IsAdmin() then return end--idiot
 	if not args[1] then return end
 	local oldRounds = MODE.Rounds
-    local oldLeft = zb.RoundsLeft or oldRounds
+    local oldLeft = zc.RoundsLeft or oldRounds
     local played = oldRounds - oldLeft
     MODE.Rounds = math.max(tonumber(args[1]) or oldRounds, 1)
-    zb.RoundsLeft = math.max(MODE.Rounds - played, 0)
-    PrintMessage(HUD_PRINTTALK, zb.locale.GetLocalized("cstrike/tdm_rounds_set", MODE.Rounds, zb.RoundsLeft))
+    zc.RoundsLeft = math.max(MODE.Rounds - played, 0)
+    PrintMessage(HUD_PRINTTALK, zc.locale.GetLocalized("cstrike/tdm_rounds_set", MODE.Rounds, zc.RoundsLeft))
 end)
 
 COMMANDS.nextcsround = {
 	function(ply, args)
-		if not ply:IsAdmin() then ply:ChatPrint(zb.locale.GetLocalized("common/no_access")) return end
+		if not ply:IsAdmin() then ply:ChatPrint(zc.locale.GetLocalized("common/no_access")) return end
 		if string.lower(args[1]) == "bomb" then
-            zb.nextcsround = "bomb"
-            PrintMessage(HUD_PRINTTALK, zb.locale.GetLocalized("cstrike/chosen_bomb"))
+            zc.nextcsround = "bomb"
+            PrintMessage(HUD_PRINTTALK, zc.locale.GetLocalized("cstrike/chosen_bomb"))
         end
 
         if string.lower(args[1]) == "hostage" then
-            zb.nextcsround = "hostage"
-            PrintMessage(HUD_PRINTTALK, zb.locale.GetLocalized("cstrike/chosen_hostage"))
+            zc.nextcsround = "hostage"
+            PrintMessage(HUD_PRINTTALK, zc.locale.GetLocalized("cstrike/chosen_hostage"))
         end
 	end,
 	0
@@ -164,8 +164,8 @@ COMMANDS.nextcsround = {
 
 
 function MODE:EndRound()
-    zb.RoundsLeft = zb.RoundsLeft or self.Rounds
-    zb.Winners = zb.Winners or {}
+    zc.RoundsLeft = zc.RoundsLeft or self.Rounds
+    zc.Winners = zc.Winners or {}
 
 	timer.Simple(2,function()
 		net.Start("ZC_TeamDeathmatchRoundEnd")
@@ -174,48 +174,48 @@ function MODE:EndRound()
 
     local winner = 3
 
-	local tbl = zb:CheckAliveTeams(true)
+	local tbl = zc:CheckAliveTeams(true)
 
-    if zb.rtype == "bomb" then
-        if not IsValid(zb.bomb) then
+    if zc.rtype == "bomb" then
+        if not IsValid(zc.bomb) then
             winner = 1
         end
 
-        if zb.bombexploded then
+        if zc.bombexploded then
             winner = 0
-            zb.bombexploded = nil
+            zc.bombexploded = nil
         else
             winner = 1
         end
 
-        if IsValid(zb.bomb) and #tbl[0] == 0 and not zb.bomb.active then
+        if IsValid(zc.bomb) and #tbl[0] == 0 and not zc.bomb.active then
             winner = 1
         end
 
-        if IsValid(zb.bomb) and #tbl[1] == 0 and #tbl[0] > 0 then
+        if IsValid(zc.bomb) and #tbl[1] == 0 and #tbl[0] > 0 then
             winner = 0
         end
 
-        if IsValid(zb.bomb) and #tbl[1] == 0 and #tbl[0] == 0 and zb.bomb.active then
+        if IsValid(zc.bomb) and #tbl[1] == 0 and #tbl[0] == 0 and zc.bomb.active then
             winner = 0
         end
 
-        if IsValid(zb.bomb) and #tbl[0] == 0 and #tbl[1] == 0 and not zb.bomb.active then
+        if IsValid(zc.bomb) and #tbl[0] == 0 and #tbl[1] == 0 and not zc.bomb.active then
             winner = 1
         end
-    elseif zb.rtype == "hostage" then
-        if not IsValid(zb.hostage) then
+    elseif zc.rtype == "hostage" then
+        if not IsValid(zc.hostage) then
             winner = 3
 
-            if IsValid(zb.hostageLastTouched) then
-                winner = zb.hostageLastTouched:Team() == 0 and 1 or 0
+            if IsValid(zc.hostageLastTouched) then
+                winner = zc.hostageLastTouched:Team() == 0 and 1 or 0
             end
         end
 
-        if IsValid(zb.hostage) and not zb.hostage.organism.alive then
+        if IsValid(zc.hostage) and not zc.hostage.organism.alive then
             local max, maxTeam = 0
-            if zb.HarmDoneDetailed[zb.hostage:EntIndex()] then
-                for _, tbl in pairs(zb.HarmDoneDetailed[zb.hostage:EntIndex()]) do
+            if zc.HarmDoneDetailed[zc.hostage:EntIndex()] then
+                for _, tbl in pairs(zc.HarmDoneDetailed[zc.hostage:EntIndex()]) do
                     if tbl.harm > max then
                         max = tbl.harm
                         maxTeam = tbl.teamAttacker
@@ -223,13 +223,13 @@ function MODE:EndRound()
                 end
 
                 winner = maxTeam == 0 and 1 or 0
-                PrintMessage(HUD_PRINTTALK, zb.locale.GetLocalized("cstrike/hostage_killed", zb.locale.GetLocalized(maxTeam == 0 and "tdm/team/terrorists" or "tdm/team/counter_terrorists")))
+                PrintMessage(HUD_PRINTTALK, zc.locale.GetLocalized("cstrike/hostage_killed", zc.locale.GetLocalized(maxTeam == 0 and "tdm/team/terrorists" or "tdm/team/counter_terrorists")))
             else
                 winner = 3
             end
         end
 
-        if IsValid(zb.hostage) and zb.hostage.organism.alive then
+        if IsValid(zc.hostage) and zc.hostage.organism.alive then
             winner = 0
 
             if #tbl[0] == 0 then
@@ -237,15 +237,15 @@ function MODE:EndRound()
             end
         end
 
-        if IsValid(zb.hostage) and zb.hostage.organism.alive and HostageInZone(zb.hostage:GetPos()) then
-            zb.hostage:Remove()
+        if IsValid(zc.hostage) and zc.hostage.organism.alive and HostageInZone(zc.hostage:GetPos()) then
+            zc.hostage:Remove()
             winner = 1
         end
     end
 
-    local winnerprt = zb.locale.GetLocalized((winner == 1 and "tdm/team/counter_terrorists") or (winner == 0 and "tdm/team/terrorists") or "common/nobody")
+    local winnerprt = zc.locale.GetLocalized((winner == 1 and "tdm/team/counter_terrorists") or (winner == 0 and "tdm/team/terrorists") or "common/nobody")
 
-    PrintMessage(HUD_PRINTTALK, zb.locale.GetLocalized("cstrike/won_round", winnerprt))
+    PrintMessage(HUD_PRINTTALK, zc.locale.GetLocalized("cstrike/won_round", winnerprt))
 
 	for _, ply in player.Iterator() do
 		if ply:Team() == winner then
@@ -260,40 +260,40 @@ function MODE:EndRound()
 		end
 	end
 
-	local winsTeam0 = zb.Winners[0] or 0
-	local winsTeam1 = zb.Winners[1] or 0
+	local winsTeam0 = zc.Winners[0] or 0
+	local winsTeam1 = zc.Winners[1] or 0
 	if winsTeam0 > winsTeam1 then
 		for _, ply in ipairs(team.GetPlayers(1)) do
 			ply:SetNWInt("TDM_Money", math.max(ply:GetNWInt("TDM_Money") + 1000, 0))
-			ply:ChatPrint(zb.locale.GetLocalized("cstrike/losing_compensation"))
+			ply:ChatPrint(zc.locale.GetLocalized("cstrike/losing_compensation"))
 		end
 	elseif winsTeam1 > winsTeam0 then
 		for _, ply in ipairs(team.GetPlayers(0)) do
 			ply:SetNWInt("TDM_Money", math.max(ply:GetNWInt("TDM_Money") + 1000, 0))
-			ply:ChatPrint(zb.locale.GetLocalized("cstrike/losing_compensation"))
+			ply:ChatPrint(zc.locale.GetLocalized("cstrike/losing_compensation"))
 		end
 	end
 
 
-    if zb.nextround != self.name then
-        zb.Winners = {}
-        zb.bombexploded = nil
-        zb.bomb = nil
-        zb.rtype = nil
-        zb.nextcsround = nil
-        zb.RoundsLeft = nil
+    if zc.nextround != self.name then
+        zc.Winners = {}
+        zc.bombexploded = nil
+        zc.bomb = nil
+        zc.rtype = nil
+        zc.nextcsround = nil
+        zc.RoundsLeft = nil
 
         return
     end
 
-    if zb.RoundsLeft > 0 then
-        zb.RoundsLeft = zb.RoundsLeft - 1
+    if zc.RoundsLeft > 0 then
+        zc.RoundsLeft = zc.RoundsLeft - 1
 
-        zb.Winners[winner] = (zb.Winners[winner] or 0) + 1
+        zc.Winners[winner] = (zc.Winners[winner] or 0) + 1
     else
         local winner
         local min = 0
-        for team_, roundswon in pairs(zb.Winners) do
+        for team_, roundswon in pairs(zc.Winners) do
             if roundswon > min then
                 winner = team_
                 min = roundswon
@@ -301,17 +301,17 @@ function MODE:EndRound()
         end
 
         if winner then
-            local winnerprt = zb.locale.GetLocalized((winner == 1 and "tdm/team/counter_terrorists") or (winner == 0 and "tdm/team/terrorists") or "common/nobody")
+            local winnerprt = zc.locale.GetLocalized((winner == 1 and "tdm/team/counter_terrorists") or (winner == 0 and "tdm/team/terrorists") or "common/nobody")
 
-            PrintMessage(HUD_PRINTTALK, zb.locale.GetLocalized("cstrike/won_game", winnerprt))
+            PrintMessage(HUD_PRINTTALK, zc.locale.GetLocalized("cstrike/won_game", winnerprt))
         end
 
-        zb.RoundsLeft = nil
+        zc.RoundsLeft = nil
     end
 end
 
 function HostageInZone(pos)
-	local pts = zb.hostagepoints
+	local pts = zc.hostagepoints
 
 	local vec1
 	local vec2
@@ -336,20 +336,20 @@ function HostageInZone(pos)
 end
 
 function MODE:ShouldRoundEnd()
-    if zb.ROUND_START + 5 > CurTime() then return false end
+    if zc.ROUND_START + 5 > CurTime() then return false end
 
-	local tbl = zb:CheckAliveTeams(true)
+	local tbl = zc:CheckAliveTeams(true)
 
-    if zb.rtype == "bomb" then
-        if zb.bombexploded then
+    if zc.rtype == "bomb" then
+        if zc.bombexploded then
             return true
         end
 
-        if not IsValid(zb.bomb) then
+        if not IsValid(zc.bomb) then
             return true
         end
 
-        if #tbl[0] == 0 and not zb.bomb.active then
+        if #tbl[0] == 0 and not zc.bomb.active then
             return true
         end
 
@@ -357,23 +357,23 @@ function MODE:ShouldRoundEnd()
             return true
         end
 
-        if #tbl[1] == 0 and #tbl[0] == 0 and zb.bomb.active then
+        if #tbl[1] == 0 and #tbl[0] == 0 and zc.bomb.active then
             return true
         end
 
-        if #tbl[0] == 0 and #tbl[1] == 0 and not zb.bomb.active then
+        if #tbl[0] == 0 and #tbl[1] == 0 and not zc.bomb.active then
             return true
         end
-    elseif zb.rtype == "hostage" then
-        if not IsValid(zb.hostage) then
-            return true
-        end
-
-        if #tbl[0] == 0 or #tbl[1] == 0 or not zb.hostage.organism.alive then
+    elseif zc.rtype == "hostage" then
+        if not IsValid(zc.hostage) then
             return true
         end
 
-        if zb.hostage.organism.alive and HostageInZone(zb.hostage:GetPos()) then
+        if #tbl[0] == 0 or #tbl[1] == 0 or not zc.hostage.organism.alive then
+            return true
+        end
+
+        if zc.hostage.organism.alive and HostageInZone(zc.hostage:GetPos()) then
             return true
         end
     end

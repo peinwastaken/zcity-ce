@@ -36,7 +36,7 @@ hook.Add("ZC_OrganismThink", "ZC_Headcrab",function(owner, org, timeValue)
     if not owner:IsPlayer() or not owner:Alive() then return end
 
     if org.headcrabon and (org.headcrabon + 30) < CurTime() and org.brain != 1 and owner.organism.spine3 != 1 then
-		local ent = hg.GetCurrentCharacter(owner) or owner
+		local ent = zc.GetCurrentCharacter(owner) or owner
 		local mul = ((org.headcrabon + 60) - CurTime()) / 60
 		if mul > 0 then
 			ent:GetPhysicsObjectNum(math.random(ent:GetPhysicsObjectCount()) - 1):ApplyForceCenter(VectorRand(-750 * mul,750 * mul))
@@ -61,9 +61,9 @@ hook.Add("ZC_OrganismThink", "ZC_Headcrab",function(owner, org, timeValue)
 				owner:SetPlayerClass("headcrabzombie")
 				org.painadd = org.painadd + 5
 
-				hg.StunPlayer(owner, 5)
-				if zb and zb.GiveRole then
-					zb.GiveRole(owner, "Zombie", clr_red)
+				zc.StunPlayer(owner, 5)
+				if zc and zc.GiveRole then
+					zc.GiveRole(owner, "Zombie", clr_red)
 				end
 
 				org.headcrabevent = true
@@ -71,7 +71,7 @@ hook.Add("ZC_OrganismThink", "ZC_Headcrab",function(owner, org, timeValue)
 				org.headcrabevent = false
 				org.noHead = false
 
-				hg.FakeUp(owner, true)
+				zc.FakeUp(owner, true)
 				owner:SetNetVar("headcrab", false)
 			end
 		end
@@ -80,7 +80,7 @@ hook.Add("ZC_OrganismThink", "ZC_Headcrab",function(owner, org, timeValue)
 			if (org.headcrabon + 30) > CurTime() then
 				owner:EmitSound("npc/zombie/zombie_pain"..math.random(6)..".wav", 80, math.random(80, 90))
 				org.painadd = org.painadd + 15
-				hg.StunPlayer(owner, 5)
+				zc.StunPlayer(owner, 5)
 			end
 		end
 

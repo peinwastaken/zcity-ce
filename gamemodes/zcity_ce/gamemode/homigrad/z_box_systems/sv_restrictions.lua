@@ -1,8 +1,8 @@
 -- Spawn restrictions for items and other unnecessary shit.
-ZBox = ZBox or {}
-ZBox.Plugins = ZBox.Plugins or {}
-ZBox.Plugins["Restrictions"] = ZBox.Plugins["Restrictions"] or {}
-local PLUGIN = ZBox.Plugins["Restrictions"]
+zc = zc or {}
+zc.Plugins = zc.Plugins or {}
+zc.Plugins["Restrictions"] = zc.Plugins["Restrictions"] or {}
+local PLUGIN = zc.Plugins["Restrictions"]
 
 PLUGIN.Name = "Restrictions"
 
@@ -38,7 +38,7 @@ function Hook.PlayerSpawnProp(ply, model)
     --ply.Props = ply.Props or 0
     --if ply.PropCD < CurTime() then
     --    ply.PropCD = CurTime() + 1 + math.min(ply.Props / 15, 5)
-    --    local pos = hg.eyeTrace(ply).HitPos
+    --    local pos = zc.eyeTrace(ply).HitPos
     --    local tr = util.TraceLine({
     --        start = pos,
     --        endpos = pos + vector_up * 9999,
@@ -76,7 +76,7 @@ function Hook.PlayerSpawnSWEP(ply, class)
     --ply.WeaponCD = ply.WeaponCD or 0
     --if ply.WeaponCD < CurTime() then
     --    ply.WeaponCD = CurTime() + 5
-    --    local pos = hg.eyeTrace(ply).HitPos
+    --    local pos = zc.eyeTrace(ply).HitPos
     --    local tr = util.TraceLine({
     --        start = pos,
     --        endpos = pos + vector_up * 9999,
@@ -112,7 +112,7 @@ function Hook.PlayerGiveSWEP(ply,class)
     --ply.WeaponCD = ply.WeaponCD or 0
     --if ply.WeaponCD < CurTime() then
     --    ply.WeaponCD = CurTime() + 5
-    --    local pos = hg.eyeTrace(ply).HitPos
+    --    local pos = zc.eyeTrace(ply).HitPos
     --    local tr = util.TraceLine({
     --        start = pos,
     --        endpos = pos + vector_up * 9999,
@@ -145,7 +145,7 @@ function Hook.PlayerSpawnSENT(ply,class)
     --ply.ThingCD = ply.ThingCD or 0
     --if ply.ThingCD < CurTime() then
     --    ply.ThingCD = CurTime() + 5
-    --    local pos = hg.eyeTrace(ply).HitPos
+    --    local pos = zc.eyeTrace(ply).HitPos
     --    local tr = util.TraceLine({
     --        start = pos,
     --        endpos = pos + vector_up * 9999,

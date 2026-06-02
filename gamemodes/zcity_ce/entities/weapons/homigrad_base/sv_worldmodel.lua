@@ -2,7 +2,7 @@
 util.AddNetworkString("ZC_AddPredictable")
 function SWEP:CreateWorldModel()
 	local model = ents.Create("prop_physics")--ents.Create("homigrad_gun")
-	model:SetNoDraw(not hg.show_weapons)
+	model:SetNoDraw(not zc.show_weapons)
 	model:SetModel(self.WorldModel)
 	model:SetMaterial("models/wireframe")
 	model:Spawn()
@@ -102,13 +102,13 @@ function SWEP:WorldModel_Transform(bNoApply, bNoAdditional)
 	end
 end
 
-local weaponsList = hg.weapons
+local weaponsList = zc.weapons
 concommand.Add("hg_show_weapons", function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsAdmin() then return end
-	hg.show_weapons = tonumber(args[1]) > 0
+	zc.show_weapons = tonumber(args[1]) > 0
 	for _, wep in ipairs(weaponsList) do
 		if not IsValid(wep.worldModel) then continue end
-		wep.worldModel:SetNoDraw(not hg.show_weapons)
+		wep.worldModel:SetNoDraw(not zc.show_weapons)
 	end
 end)
 

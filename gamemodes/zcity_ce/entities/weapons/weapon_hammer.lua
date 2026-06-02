@@ -74,7 +74,7 @@ function hgCheckBindObjects(ent1)
 end
 
 function SWEP:CanPrimaryAttack()
-	return not hg.KeyDown(self:GetOwner(), IN_RELOAD)
+	return not zc.KeyDown(self:GetOwner(), IN_RELOAD)
 end
 
 SWEP.DamageType = DMG_CLUB
@@ -113,7 +113,7 @@ function SWEP:ThinkAdd()
 
 	if CLIENT then return end
 	if IsValid(ply) then
-		if hg.KeyDown(ply, IN_ATTACK) and hg.KeyDown(ply, IN_RELOAD) then
+		if zc.KeyDown(ply, IN_ATTACK) and zc.KeyDown(ply, IN_RELOAD) then
 			if not self.setmode then
 				local int = self:GetNetVar("AttackMode", 1)
 				self:SetNetVar("AttackMode", int >= 2 and 1 or (int + 1))
@@ -262,7 +262,7 @@ function SWEP:SecondaryAttack()
 	if CLIENT then return end
 	if self:GetLastAttack() + 3 > CurTime() then return end
 	local Owner = self:GetOwner()
-	local Tr = hg.eyeTrace(Owner)
+	local Tr = zc.eyeTrace(Owner)
 	if self:GetNetVar("AttackMode", 1) == 2 then
 		if self:CutDuct() then return end
 		if ((Tr.Entity.Nails and Tr.Entity.Nails[Tr.PhysicsBone]) or Tr.Entity.LockedDoorNail) and not self.pulling then
@@ -301,7 +301,7 @@ function SWEP:SecondaryAttack()
 		if Owner:KeyDown(IN_SPEED) then return end
 		if Owner:GetAmmoCount(self.Ammo) <= 0 then return end
 		local AimVec = Owner:GetAimVector()
-		local Tr = hg.eyeTrace(Owner)
+		local Tr = zc.eyeTrace(Owner)
 		if self:CanNail(Tr) then
 			local NewTr, NewEnt = util.QuickTrace(Tr.HitPos, AimVec * 10, {Owner, Tr.Entity}), nil
 			if self:CanNail(NewTr) then
@@ -321,13 +321,13 @@ function SWEP:SecondaryAttack()
 							Owner:SetAmmo(Owner:GetAmmoCount(self.Ammo) - (Owner.Profession and Owner.Profession == "builder" and 2 or 3), self.Ammo)
 							sound.Play("snd_jack_hmcd_hammerhit.wav", Tr.HitPos, 65, math.random(90, 110))
 							self:SprayDecals()
-							Owner:PrintMessage(HUD_PRINTCENTER, zb.locale.GetLocalized("door/sealed"))
+							Owner:PrintMessage(HUD_PRINTCENTER, zc.locale.GetLocalized("door/sealed"))
 							Owner:ViewPunch(vpang)
 							Owner:SetAnimation(PLAYER_ATTACK1)
 							self:SetNextSecondaryFire(CurTime() + 2.5)
 							self:SetNextPrimaryFire(CurTime() + 2.5)
 						else
-							Owner:PrintMessage(HUD_PRINTCENTER, zb.locale.GetLocalized("door/need_nails", tostring((Owner.Profession and Owner.Profession == "builder") and 2 or 3)))
+							Owner:PrintMessage(HUD_PRINTCENTER, zc.locale.GetLocalized("door/need_nails", tostring((Owner.Profession and Owner.Profession == "builder") and 2 or 3)))
 						end
 					else
 						if Tr.Entity:IsRagdoll() then
@@ -361,7 +361,7 @@ function SWEP:SecondaryAttack()
 						if Weld or Weld == nil then Owner:SetAmmo(Owner:GetAmmoCount(self.Ammo) - 1, self.Ammo) end
 						sound.Play("snd_jack_hmcd_hammerhit.wav", Tr.HitPos, 65, math.random(90, 110))
 						util.Decal("hmcd_jackanail", Tr.HitPos + Tr.HitNormal, Tr.HitPos - Tr.HitNormal)
-						Owner:ChatPrint(zb.locale.GetLocalized("door/bond_strength", tostring(Strength)))
+						Owner:ChatPrint(zc.locale.GetLocalized("door/bond_strength", tostring(Strength)))
 						Owner:ViewPunch(vpang)
 						self:PlayAnim("attack", 0.6, false, nil, false, true)
 

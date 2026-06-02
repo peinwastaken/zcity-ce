@@ -1,20 +1,20 @@
 --\\ CL Bones
 	if CLIENT then
-		hg.cached_children = hg.cached_children or {}
+		zc.cached_children = zc.cached_children or {}
 		CurTime()
 		hook.Add("PostCleanupMap", "ZC_ClearCachedBoneChildren", function()
-			hg.cached_children = {}
+			zc.cached_children = {}
 			huytimer = CurTime()
 		end)
 
 		local entmeta = FindMetaTable("Entity")
 
-		hg.SetModel = hg.SetModel or entmeta.SetModel
+		zc.SetModel = zc.SetModel or entmeta.SetModel
 
 		function entmeta:SetModel(mdl)
 			self.setmodeltimer = CurTime()
 
-			return hg.SetModel(self, mdl)
+			return zc.SetModel(self, mdl)
 		end
 
 		local function recursive_get_children(ent, bone, bones, endbone)
@@ -36,12 +36,12 @@
 			end
 		end
 
-		hg.recursive_get_children = recursive_get_children
+		zc.recursive_get_children = recursive_get_children
 
-		local cached_children = hg.cached_children
+		local cached_children = zc.cached_children
 		local mdl
 
-		function hg.get_children(ent, bone, endbone)
+		function zc.get_children(ent, bone, endbone)
 			bone = isstring(bone) and ent:LookupBone(bone) or bone
 
 			if not bone or isstring(bone) or bone == -1 then return end
@@ -58,7 +58,7 @@
 			return bones
 		end
 
-		function hg.bone_apply_matrix(ent, bone, new_matrix, endbone)
+		function zc.bone_apply_matrix(ent, bone, new_matrix, endbone)
 			bone = isstring(bone) and ent:LookupBone(bone) or bone
 
 			if not bone or isstring(bone) or bone == -1 then return end
@@ -68,7 +68,7 @@
 			local inv_matrix = matrix:GetInverse()
 			if not inv_matrix then return end -- this is shit...
 
-			local children = hg.get_children(ent, bone, endbone)
+			local children = zc.get_children(ent, bone, endbone)
 
 			local translate = new_matrix * inv_matrix
 
@@ -691,7 +691,7 @@
 			},
 		}
 
-		function hg.set_hold(ent, hold, copyent)
+		function zc.set_hold(ent, hold, copyent)
 			local lhmat = ent:GetBoneMatrix(ent:LookupBone("ValveBiped.Bip01_L_Hand"))
 			ent.hold = hold
 			for bone, invmat in pairs(hand_poses[hold]) do
@@ -712,7 +712,7 @@
 			end
 		end
 
-		function hg.set_holdrh(ent, hold, copyent)
+		function zc.set_holdrh(ent, hold, copyent)
 			local lhmat = ent:GetBoneMatrix(ent:LookupBone("ValveBiped.Bip01_R_Hand"))
 			ent.holdrh = hold
 			for bone,invmat in pairs(hand_posesrh[hold]) do
@@ -733,22 +733,22 @@
 			end
 		end
 
-		function hg.copy_hold(ply)
+		function zc.copy_hold(ply)
 			local lh = ply:LookupBone("ValveBiped.Bip01_L_Hand")
 			local lhmat = ply:GetBoneMatrix(lh)
 			print("\n")
-			for _,bone in pairs(hg.get_children(ply,lh)) do
+			for _,bone in pairs(zc.get_children(ply,lh)) do
 				local bon = ply:GetBoneName(bone)
 				print("['"..bon.."'] = Matrix({\n"..string.Replace(string.Replace(tostring(lhmat:GetInverse() * ply:GetBoneMatrix(bone)),"[","{"),"]","},").."\n}),")
 			end
 			print("\n")
 		end
 
-		function hg.copy_holdrh(ply)
+		function zc.copy_holdrh(ply)
 			local lh = ply:LookupBone("ValveBiped.Bip01_R_Hand")
 			local lhmat = ply:GetBoneMatrix(lh)
 			print("\n")
-			for _,bone in pairs(hg.get_children(ply,lh)) do
+			for _,bone in pairs(zc.get_children(ply,lh)) do
 				local bon = ply:GetBoneName(bone)
 				print("['"..bon.."'] = Matrix({\n"..string.Replace(string.Replace(tostring(lhmat:GetInverse() * ply:GetBoneMatrix(bone)),"[","{"),"]","},").."\n}),")
 			end
@@ -757,7 +757,7 @@
 
 		local zc_tpik_distance = ConVarExists("zc_tpik_distance") and GetConVar("zc_tpik_distance") or CreateClientConVar("zc_tpik_distance",1024,true,false,"The distance (in hammer units) at which the third person inverse kinematics enables, 0 = inf",0,2048)
 
-		function hg.ShouldTPIK(ply)
+		function zc.ShouldTPIK(ply)
 			local time = CurTime()
 			if (ply.cachedtpik or 0) > time then return ply.cachedval end
 			ply.cachedtpik = time + 0.1
@@ -780,6 +780,6 @@
 
 		--copy hold when you need to copy the left-hand fingers
 		--set hold when you want the fingers to be positioned exactly like the copy (and do not move)
-		--hg.copy_hold(Entity(1))
+		--zc.copy_hold(Entity(1))
 	end
 --//

@@ -1,11 +1,11 @@
---local Organism = hg.organism
-hg.organism.module = hg.organism.module or {}
-local module = hg.organism.module
-hg.organism.lastindex = hg.organism.lastindex or 1000000
+--local Organism = zc.organism
+zc.organism.module = zc.organism.module or {}
+local module = zc.organism.module
+zc.organism.lastindex = zc.organism.lastindex or 1000000
 hook.Add("ZC_OrganismClear", "ZC_ResetOrganismState", function(org)
 	org.alive = true
 	org.unconscious = false
-	org.entindex = IsValid(org.owner) and org.owner:EntIndex() or hg.organism.lastindex + 1
+	org.entindex = IsValid(org.owner) and org.owner:EntIndex() or zc.organism.lastindex + 1
 	module.pulse[1](org)
 	module.blood[1](org)
 	module.pain[1](org)
@@ -95,7 +95,7 @@ end)
 
 hook.Add("ZC_ShouldRestorePlayerFromFake", "ZC_Organism", function(ply)
 	local org = ply.organism
-	local spineTooDamaged = org.spine1 >= hg.organism.fake_spine1 or org.spine2 >= hg.organism.fake_spine2 or org.spine3 >= hg.organism.fake_spine3
+	local spineTooDamaged = org.spine1 >= zc.organism.fake_spine1 or org.spine2 >= zc.organism.fake_spine2 or org.spine3 >= zc.organism.fake_spine3
 	local bothLegsDisabled = org.lleg == 1 and org.rleg == 1
 	local legsCannotSupportBody = bothLegsDisabled and org.berserk <= 0.3
 	local bloodTooLow = org.blood < 2900
@@ -172,7 +172,7 @@ local function send_organism(org, ply)
 	sendtable.noradrenalineActive = org.noradrenalineActive
 
 	net.Start("ZC_OrganismSync", zc_unreliable_nets:GetBool())
-	net.WriteTable(not zb.dev.IsDeveloper() and sendtable or org)
+	net.WriteTable(not zc.dev.IsDeveloper() and sendtable or org)
 	net.WriteBool(org.owner.fullsend)
 	net.WriteBool(false)
 	net.WriteBool(true)
@@ -227,7 +227,7 @@ local function send_bareinfo(org)
 	if org.owner:IsPlayer() then rf:RemovePlayer(org.owner) end
 
 	net.Start("ZC_OrganismSync", zc_unreliable_nets:GetBool())
-	net.WriteTable(not zb.dev.IsDeveloper() and sendtable or org)
+	net.WriteTable(not zc.dev.IsDeveloper() and sendtable or org)
 	net.WriteBool(org.owner.fullsend)
 	net.WriteBool(true)
 	net.WriteBool(false)
@@ -235,8 +235,8 @@ local function send_bareinfo(org)
 	net.Send(rf)
 end
 
-hg.send_organism = send_organism
-hg.send_bareinfo = send_bareinfo
+zc.send_organism = send_organism
+zc.send_bareinfo = send_bareinfo
 
 local META = FindMetaTable("Player")
 function META:IsBerserk()
@@ -310,7 +310,7 @@ end)
 
 hook.Add("ZC_OrganismThink", "ZC_UpdateOrganismState", function(owner, org, timeValue)
 	if not IsValid(owner) then
-		hg.organism.list[owner] = nil
+		zc.organism.list[owner] = nil
 		return
 	end
 
@@ -432,8 +432,8 @@ hook.Add("ZC_OrganismThink", "ZC_UpdateOrganismState", function(owner, org, time
 	if isPly and just_went_uncon then hook.Run("ZC_OnPlayerUnconscious", owner); hook.Run("ZC_PlayerDropWeapon", owner) end
 	if isPly and just_woke_up then hook.Run("ZC_OnPlayerWakeFromUnconscious", owner) end
 
-	org.canmove = (org.spine2 < hg.organism.fake_spine2 and org.spine3 < hg.organism.fake_spine3) and not org.unconscious
-	org.canmovehead = (org.spine3 < hg.organism.fake_spine3) and not org.unconscious
+	org.canmove = (org.spine2 < zc.organism.fake_spine2 and org.spine3 < zc.organism.fake_spine3) and not org.unconscious
+	org.canmovehead = (org.spine3 < zc.organism.fake_spine3) and not org.unconscious
 
 	if not (org.canmove and org.canmovehead and (org.stun - CurTime()) < 0) then org.needfake = true end
 	if (org.blood < 2700) then org.needfake = true end
@@ -441,7 +441,7 @@ hook.Add("ZC_OrganismThink", "ZC_UpdateOrganismState", function(owner, org, time
 	local just_went_uncon = not org.unconscious and org.needunconscious
 
 	if org.posturing then //-- the decerebrate one
-		local ent = hg.GetCurrentCharacter(org.owner)
+		local ent = zc.GetCurrentCharacter(org.owner)
 
 		local rleg = ent:GetPhysicsObjectNum(ent:TranslateBoneToPhysBone(ent:LookupBone("ValveBiped.Bip01_R_Foot")))
 		local lleg = ent:GetPhysicsObjectNum(ent:TranslateBoneToPhysBone(ent:LookupBone("ValveBiped.Bip01_L_Foot")))
@@ -511,24 +511,24 @@ hook.Add("ZC_OrganismThink", "ZC_UpdateOrganismState", function(owner, org, time
 	local rag = owner:IsPlayer() and owner.FakeRagdoll or owner
 	if IsValid(rag) and rag:IsRagdoll() and (not owner.lastFake or owner.lastFake == 0) then rag:SetCollisionGroup((rag:GetVelocity():LengthSqr() > (200*200)) and COLLISION_GROUP_NONE or COLLISION_GROUP_WEAPON) end
 	if isPly then
-		if org.unconscious or org.fake then hg.Fake(owner,nil,true) end
+		if org.unconscious or org.fake then zc.Fake(owner,nil,true) end
 		if not org.alive and owner:Alive() then owner:Kill() end
 	end
 
 	if not org.unconscious and isPly then
-		local mul = hg.likely_to_phrase(owner)
+		local mul = zc.likely_to_phrase(owner)
 
 		if not org.likely_phrase then org.likely_phrase = 0 end
 
 		org.likely_phrase = math.max(org.likely_phrase + math.Rand(0, mul) / 100, 0)
 		//print(org.likely_phrase)
-		if org.likely_phrase >= 1 and !hg.GetCurrentCharacter(owner):IsOnFire() then
+		if org.likely_phrase >= 1 and !zc.GetCurrentCharacter(owner):IsOnFire() then
 			org.likely_phrase = 0
 
-			local str = hg.get_status_message(owner)
+			local str = zc.get_status_message(owner)
 			//print(str)
 			-- (msg, delay, msgKey, showTime, func, clr)
-			owner:Notify(str, 1, "phrase", 1, nil, Color(255, math.Clamp(1 / hg.likely_to_phrase(owner) * 255, 0, 255), math.Clamp(1 / hg.likely_to_phrase(owner) * 255, 0, 255), 255))
+			owner:Notify(str, 1, "phrase", 1, nil, Color(255, math.Clamp(1 / zc.likely_to_phrase(owner) * 255, 0, 255), math.Clamp(1 / zc.likely_to_phrase(owner) * 255, 0, 255), 255))
 		end
 	end
 
@@ -677,12 +677,12 @@ concommand.Add("hg_organism_clear", function(ply, cmd, args)
 	if not ply:IsAdmin() then return end
 
 	if not args[1] then
-		hg.organism.Clear(ply.organism)
+		zc.organism.Clear(ply.organism)
 	end
 
 	if args[1] then
 		for _,pl in pairs(player.GetListByName(args[1])) do
-			hg.organism.Clear(pl.organism)
+			zc.organism.Clear(pl.organism)
 		end
 	end
 end)
@@ -701,13 +701,13 @@ end)
 
 hook.Add("ZC_OnPlayerWakeFromUnconscious", "ZC_AfterUnconscious", function( owner )
 	owner.organism.after_unconscious = true
-	local str = hg.get_status_message(owner)
+	local str = zc.get_status_message(owner)
 	owner.organism.after_unconscious = nil
 	//print(str)
 	-- (msg, delay, msgKey, showTime, func, clr)
 	timer.Simple(0.1,function()
 		if not IsValid(owner) then return end
-		owner:Notify(str, 1, "wake", 1, nil, Color(255, math.Clamp(1 / hg.likely_to_phrase(owner) * 255, 0, 255), math.Clamp(1 / hg.likely_to_phrase(owner) * 255, 0, 255)) )
+		owner:Notify(str, 1, "wake", 1, nil, Color(255, math.Clamp(1 / zc.likely_to_phrase(owner) * 255, 0, 255), math.Clamp(1 / zc.likely_to_phrase(owner) * 255, 0, 255)) )
 	end)
 
 	owner.organism.fearadd = owner.organism.fearadd + 5
@@ -716,7 +716,7 @@ hook.Add("ZC_OnPlayerWakeFromUnconscious", "ZC_AfterUnconscious", function( owne
 end)
 
 hook.Add("ZC_OnPlayerUnconscious", "ZC_Fearful", function( plya )// WHAT
-	local ent = hg.GetCurrentCharacter(plya)
+	local ent = zc.GetCurrentCharacter(plya)
 	for _,ply in ipairs(ents.FindInSphere(ent:GetPos(),256)) do
 		if not ply:IsPlayer() or not ply.organism or plya == ply then continue end
 
@@ -780,7 +780,7 @@ local function fixlimb(org, key, fixer)
 			local dmgInfo = DamageInfo()
 			dmgInfo:SetDamage(50)
 			dmgInfo:SetDamageType(DMG_CLUB)
-			hg.organism.input_list[key.."down"](org.owner.organism, 1, 6, dmgInfo, 0, vector_up)
+			zc.organism.input_list[key.."down"](org.owner.organism, 1, 6, dmgInfo, 0, vector_up)
 		end
 
 		if fixer == org.owner and fixer.tries > 3 and math.random(3) == 1 then
@@ -793,7 +793,7 @@ concommand.Add("hg_fixdislocation", function(ply, cmd, args)
 	local fixer = ply
 
 	if math.Round(tonumber(args[2])) == 1 then
-		ply = hg.eyeTrace(fixer).Entity
+		ply = zc.eyeTrace(fixer).Entity
 	end
 
 	if !IsValid(ply) or !ply.organism then return end

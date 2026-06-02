@@ -130,8 +130,8 @@ do return end
 --         Models = {"models/props_wasteland/controlroom_filecabinet002a.mdl", "models/props_wasteland/controlroom_storagecloset001a.mdl"}
 --     },
 -- }
--- hg = hg or {}
--- hg.Boxes = Boxes
+-- zc = zc or {}
+-- zc.Boxes = Boxes
 -- function TOOL.BuildCPanel( CPanel )
 
 -- 	CPanel:AddControl( "Header", { Description = "hurray, convenient tool; I am shocked!!" } )
@@ -141,7 +141,7 @@ do return end
 -- 	dlist:SetTall(ScreenScale(100))
 -- 	dlist:AddColumn("Point Name")
 
--- 	for k, v in pairs(hg.Boxes) do
+-- 	for k, v in pairs(zc.Boxes) do
 -- 		dlist:AddLine(k)
 -- 	end
 

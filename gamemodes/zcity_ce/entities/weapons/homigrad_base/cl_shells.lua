@@ -95,7 +95,7 @@ function SWEP:MakeShell(shell, pos, ang, vel)
 	phys:SetVelocity(vel + (((IsValid(self) and IsValid(self:GetOwner())) and self:GetOwner():GetVelocity()/1.1) or vector_origin))
     phys:SetAngleVelocity(VectorRand() * 100 - ang:Forward() * math.random(1500,3500))
 
-	zc_potatopc = zc_potatopc or hg.ConVars.potatopc
+	zc_potatopc = zc_potatopc or zc.ConVars.potatopc
 
 	if not zc_potatopc:GetBool() then
 		if #hg_trails < zc_maxsmoketrails:GetInt() then
@@ -133,7 +133,7 @@ function SWEP:MakeShell(shell, pos, ang, vel)
         end
     end)
 
-	if not zc_shouldnt_autoremove:GetBool() and (zb.CROUND and zb.CROUND ~= "hmcd" or gamemod == "sandbox") then
+	if not zc_shouldnt_autoremove:GetBool() and (zc.CROUND and zc.CROUND ~= "hmcd" or gamemod == "sandbox") then
 		ent:DrawShadow(false)
 		ent:SetModelScale(0, 10)
 		SafeRemoveEntityDelayed(ent, 10)
@@ -143,7 +143,7 @@ end
 local vec = Vector(1.3,0.2,4.5)
 local lpos, lang = Vector(-5,0,0), Angle(0,0,0)
 local lpos2, lang2 = Vector(0,5,0), Angle(0,0,0)
-function hg.CreateMag( self, vel, bodygroups, bDontChangePhys )
+function zc.CreateMag( self, vel, bodygroups, bDontChangePhys )
 	if not IsValid(self) then return end
 	if not IsValid(self:GetWM()) then return end
 	local owner = self:GetOwner()
@@ -227,7 +227,7 @@ function hg.CreateMag( self, vel, bodygroups, bDontChangePhys )
 		end
 	end)
 
-	if not zc_shouldnt_autoremove:GetBool() and (zb.CROUND and zb.CROUND ~= "hmcd" or gamemod == "sandbox") then
+	if not zc_shouldnt_autoremove:GetBool() and (zc.CROUND and zc.CROUND ~= "hmcd" or gamemod == "sandbox") then
 		ent:DrawShadow(false)
 		ent:SetModelScale(0, 10)
 		SafeRemoveEntityDelayed(ent, 10)
@@ -236,7 +236,7 @@ function hg.CreateMag( self, vel, bodygroups, bDontChangePhys )
 	return ent
 end
 
-function hg.addBulletHoleEffect(pos)
+function zc.addBulletHoleEffect(pos)
 	if not zc_potatopc:GetBool() then
 		if math.random(3) == 1 and #hg_trails < zc_maxsmoketrails:GetInt() then
 			local eff = CreateParticleSystemNoEntity( "smoke_trail_wild", pos )

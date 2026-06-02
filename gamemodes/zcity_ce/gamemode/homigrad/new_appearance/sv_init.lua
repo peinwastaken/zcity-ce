@@ -1,16 +1,16 @@
 --
 util.AddNetworkString("ZC_AppearanceGet")
 util.AddNetworkString("ZC_AppearanceFetchOnly")
-hg.Appearance = hg.Appearance or {}
-local APmodule = hg.Appearance
+zc.Appearance = zc.Appearance or {}
+local APmodule = zc.Appearance
 
-hg.PointShop = hg.PointShop or {}
-local PSmodule = hg.PointShop
+zc.PointShop = zc.PointShop or {}
+local PSmodule = zc.PointShop
 
 local function CheckAttachments(ply,tbl)
     if !IsValid(ply) or !ply:IsPlayer() then return end
     --print(ply:PS_HasItem(uid))
-    if hg.Appearance.GetAccessToAll(ply) then return tbl end
+    if zc.Appearance.GetAccessToAll(ply) then return tbl end
     for i = 1, #tbl.AAttachments do
         local uid = tbl.AAttachments[i]
         if PSmodule.Items[uid] and (!ply:PS_HasItem(uid) and ply:IsPlayer()) then
@@ -18,7 +18,7 @@ local function CheckAttachments(ply,tbl)
             ply:ChatPrint(uid .. " - not bought, removed")
         end
 
-        if hg.Accessories[uid] and hg.Accessories[uid].disallowinappearance then
+        if zc.Accessories[uid] and zc.Accessories[uid].disallowinappearance then
             tbl.AAttachments[i] = ""
             if ply.ChatPrint then ply:ChatPrint(uid .. " - is disallowed in default appearance, removed") end
         end
@@ -27,9 +27,9 @@ local function CheckAttachments(ply,tbl)
     local tMdl = APmodule.PlayerModels[1][tbl.AModel] or APmodule.PlayerModels[2][tbl.AModel] or tbl.AModel
     tbl.ABodygroups = tbl.ABodygroups or {}
     for k,v in pairs(tbl.ABodygroups) do
-        if not hg.Appearance.Bodygroups[k] then continue end
-        if not hg.Appearance.Bodygroups[k][tMdl.sex and 2 or 1] then continue end
-        local bodygroup = hg.Appearance.Bodygroups[k][tMdl.sex and 2 or 1][v]
+        if not zc.Appearance.Bodygroups[k] then continue end
+        if not zc.Appearance.Bodygroups[k][tMdl.sex and 2 or 1] then continue end
+        local bodygroup = zc.Appearance.Bodygroups[k][tMdl.sex and 2 or 1][v]
 
         if not bodygroup then continue end
 
@@ -69,14 +69,14 @@ local function ForceApplyAppearance(ply, tbl, noModelChange)
                 --print(mats[i], v,mats[i] == v, i)
                 if mats[i] == v then slot = i-1 break end
             end
-            ply:SetSubMaterial(slot, hg.Appearance.Clothes[tMdl.sex and 2 or 1][tbl.AClothes[k]] or hg.Appearance.Clothes[tMdl.sex and 2 or 1]["normal"] )
+            ply:SetSubMaterial(slot, zc.Appearance.Clothes[tMdl.sex and 2 or 1][tbl.AClothes[k]] or zc.Appearance.Clothes[tMdl.sex and 2 or 1]["normal"] )
             ply:SetNWString("Colthes" .. k,tbl.AClothes[k] or "normal")
             --print("true")
         end
     end
     for i = 1, #mats do
-        if hg.Appearance.FacemapsSlots[mats[i]] and hg.Appearance.FacemapsSlots[mats[i]][tbl.AFacemap] then
-            ply:SetSubMaterial(i - 1, hg.Appearance.FacemapsSlots[mats[i]][tbl.AFacemap])
+        if zc.Appearance.FacemapsSlots[mats[i]] and zc.Appearance.FacemapsSlots[mats[i]][tbl.AFacemap] then
+            ply:SetSubMaterial(i - 1, zc.Appearance.FacemapsSlots[mats[i]][tbl.AFacemap])
         end
     end
 
@@ -94,12 +94,12 @@ local function ForceApplyAppearance(ply, tbl, noModelChange)
     for k, v in ipairs(bodygroups) do
         if !v.name then continue end
         if !tbl.ABodygroups[v.name] then continue end
-        if !hg.Appearance.Bodygroups[v.name] then continue end
-        --PrintTable(hg.Appearance.Bodygroups[v.name][tMdl.sex and 2 or 1])
+        if !zc.Appearance.Bodygroups[v.name] then continue end
+        --PrintTable(zc.Appearance.Bodygroups[v.name][tMdl.sex and 2 or 1])
         for i = 0, #v.submodels do
             local b = v.submodels[i]
-            if !hg.Appearance.Bodygroups[v.name][tMdl.sex and 2 or 1][tbl.ABodygroups[v.name]] then continue end
-            if hg.Appearance.Bodygroups[v.name][tMdl.sex and 2 or 1][tbl.ABodygroups[v.name]][1] != b then continue end
+            if !zc.Appearance.Bodygroups[v.name][tMdl.sex and 2 or 1][tbl.ABodygroups[v.name]] then continue end
+            if zc.Appearance.Bodygroups[v.name][tMdl.sex and 2 or 1][tbl.ABodygroups[v.name]][1] != b then continue end
             ply:SetBodygroup(k-1,i)
         end
     end

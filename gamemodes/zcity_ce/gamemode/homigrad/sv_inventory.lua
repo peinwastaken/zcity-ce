@@ -12,7 +12,7 @@ META.inventory = {
 }
 META.armors = {}
 
-function hg.CreateInv(ply)
+function zc.CreateInv(ply)
     ply.inventory = {}
     local inv = ply.inventory
     inv.Weapons = {}
@@ -27,7 +27,7 @@ function hg.CreateInv(ply)
     ply:SetNetVar("Inventory", inv)
 end
 
-function hg.RenewInv(ply, isDead)
+function zc.RenewInv(ply, isDead)
     ply.inventory = ply.inventory or {}
     local inv = ply.inventory
     inv.Weapons = inv.Weapons or {}
@@ -74,7 +74,7 @@ function hg.RenewInv(ply, isDead)
 end
 
 hook.Add("ZC_PlayerSpawn", "ZC_SyncInventoryState", function(ply)
-    hg.CreateInv(ply)
+    zc.CreateInv(ply)
     ply.armors = {}
     ply.armors_health = {}
     ply:SyncArmor()
@@ -140,7 +140,7 @@ hook.Add("ZC_PlayerDropWeapon", "ZC_SyncInventoryState", function(ply)
     if not IsValid(wep) or wep.NoDrop then return end
     local eyeAngles = ply:EyeAngles()
     eyeAngles.x = 0
-    local ent = hg.GetCurrentCharacter(ply)
+    local ent = zc.GetCurrentCharacter(ply)
 
     if wep.RemoveFake then wep:RemoveFake() end
     wep:SetCollisionGroup(COLLISION_GROUP_WORLD)
@@ -211,7 +211,7 @@ hook.Add("DoPlayerDeath", "ZC_SyncInventoryState", function(ply)
     hook.Run("ZC_PlayerDropWeapon", ply)
 end)
 
-function hg.TransferItems(ply,ragdoll)
+function zc.TransferItems(ply,ragdoll)
 	if IsValid(ragdoll) then
 		local inv = ply:GetNetVar("Inventory",{})
 		--if inv["Weapons"] then
@@ -226,7 +226,7 @@ function hg.TransferItems(ply,ragdoll)
 		ragdoll:SetNetVar("Inventory",ragdoll.inventory)
 		-- ragdoll:SetNetVar("zb_Scrappers_RaidMoney",ply:GetNetVar("zb_Scrappers_RaidMoney"))
 
-		hg.CreateInv(ply)
+		zc.CreateInv(ply)
 		ply:SetNetVar("Inventory",{})
 		ply.inventory = ply:GetNetVar("Inventory",{})
 
@@ -239,14 +239,14 @@ function hg.TransferItems(ply,ragdoll)
 		ply:SetNetVar("Armor",{})
 		ply.armors = ply:GetNetVar("Armor",{})
 
-		hg.SyncWeapons()
+		zc.SyncWeapons()
 	end
 end
 
 hook.Add("PostPlayerDeath", "ZC_SyncInventoryState", function(ply)
     local ragdoll = ply:GetNWEntity("RagdollDeath")
-    hg.RenewInv(ply, true)
-    hg.TransferItems(ply, ragdoll)
+    zc.RenewInv(ply, true)
+    zc.TransferItems(ply, ragdoll)
     ply:SetNetVar("Inventory", ply.inventory)
     ragdoll:SetNetVar("Inventory", ragdoll.inventory)
 
@@ -284,7 +284,7 @@ local functions = {
             weapon.DontEquipInstantly = (not weapon.NoHolster) and (weapon.weaponInvCategory != 1)
 
             weapon:SetParent( NULL )
-            weapon:SetPos(hg.eyeTrace(ply, 60).HitPos)
+            weapon:SetPos(zc.eyeTrace(ply, 60).HitPos)
             weapon:SetAngles( ent:GetAngles() )
             weapon:SetNoDraw( false )
             weapon:DrawShadow( true )
@@ -302,7 +302,7 @@ local functions = {
         if ent:IsPlayer() then
             if weaponIsEnt then
                 ent:DropWeapon(weapon)
-                weapon:SetPos(hg.eyeTrace(ply, 60).HitPos)
+                weapon:SetPos(zc.eyeTrace(ply, 60).HitPos)
             else
                 ent:StripWeapon(wep)
             end
@@ -341,9 +341,9 @@ local functions = {
         end
     end,
     ["Armor"] = function(ply, ent, placement, armor)
-        if hg.armor[placement][armor].nodrop then return end
+        if zc.armor[placement][armor].nodrop then return end
         if (not ent.armors[placement]) or (ent.armors[placement] ~= armor) or ply.armors[placement] then return end
-        if !hg.AddArmor(ply, armor) then return end
+        if !zc.AddArmor(ply, armor) then return end
         ent.armors[placement] = nil
 
         if placement == "face" and ent:GetNetVar("zableval_masku", false) and armor != "nightvision1" then
@@ -394,8 +394,8 @@ function playerMeta:OpenInventory(ent)
     hook.Run("ZC_OnInventoryOpened",self,ent)
     if not IsValid(ent) then return end
     if ent:IsPlayer() and not IsValid(ent.FakeRagdoll) then return end
-    if ent:IsPlayer() then hg.RenewInv(ent) end
-    if self:IsPlayer() then hg.RenewInv(self) end
+    if ent:IsPlayer() then zc.RenewInv(ent) end
+    if self:IsPlayer() then zc.RenewInv(self) end
     self.cooldown_takeitem = CurTime() + 0.5
     net.Start("ZC_InventoryShouldOpen")
     net.WriteEntity(ent)
@@ -428,11 +428,11 @@ hook.Add("ZC_PlayerThink", "ZC_UpdateLootFellows",function(ply)
     local use = (inFakeRagdoll and ragdollLootInput) or (not inFakeRagdoll and standingLootInput)
 
     if use then
-        local trace = hg.eyeTrace(ply, 60)
+        local trace = zc.eyeTrace(ply, 60)
 
         if not trace then return end
         local ent = trace.Entity
-        ent = IsValid(hg.RagdollOwner(ent)) and hg.RagdollOwner(ent) or ent
+        ent = IsValid(zc.RagdollOwner(ent)) and zc.RagdollOwner(ent) or ent
 		local _, _, canloot = hook.Run("ZC_CanLootInventory", ply, ent, nil)
 		if canloot ~= nil and canloot == false then
 			ply.keypressed = true
@@ -461,7 +461,7 @@ end)
 	ent.inventory = {}
 	local wep = "weapon_ar15"
 	local weapon = weapons.Get(wep)
-	ent.inventory.Weapons = {[wep] = {30,hg.ClearAttachments(wep)}}
-	hg.SetAttachment(ent.inventory.Weapons[wep][2],"supressor2",wep)
+	ent.inventory.Weapons = {[wep] = {30,zc.ClearAttachments(wep)}}
+	zc.SetAttachment(ent.inventory.Weapons[wep][2],"supressor2",wep)
 	ent:SetNetVar("Inventory",ent.inventory)
 ]]

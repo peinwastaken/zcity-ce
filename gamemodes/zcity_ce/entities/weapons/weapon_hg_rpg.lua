@@ -116,7 +116,7 @@ function SWEP:Shoot(override)
 		end
 		for _, ent in pairs(ents.FindInCone(pos, -ang:Forward(), 128, 0.8)) do
 			if not ent:IsPlayer() then continue end
-			if ent == hg.GetCurrentCharacter(owner) then return end
+			if ent == zc.GetCurrentCharacter(owner) then return end
 			local d = DamageInfo()
 			d:SetDamage( 4000 )
 			d:SetAttacker(owner)

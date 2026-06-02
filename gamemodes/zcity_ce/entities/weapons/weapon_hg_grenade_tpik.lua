@@ -286,11 +286,11 @@ function SWEP:Throw(mul, time, nosound, throwPosAdjust, throwAngAdjust)
 		if playerClass == "terrorist" or playerClass == "nationalguard" or
 		   playerClass == "commanderforces" or playerClass == "swat" then
 			timer.Simple(0.1, function()
-				if IsValid(owner) and hg and hg.GetPlayerClassPhrases then
-					local classPhrases = hg.GetPlayerClassPhrases(owner, "grenade_throw")
+				if IsValid(owner) and zc and zc.GetPlayerClassPhrases then
+					local classPhrases = zc.GetPlayerClassPhrases(owner, "grenade_throw")
 					if classPhrases and #classPhrases > 0 then
 						local randomPhrase = classPhrases[math.random(#classPhrases)]
-						local ent_char = hg.GetCurrentCharacter(owner)
+						local ent_char = zc.GetCurrentCharacter(owner)
 						local muffed = owner.armors and owner.armors["face"] == "mask2"
 
 						if IsValid(ent_char) then
@@ -325,7 +325,7 @@ function SWEP:Throw(mul, time, nosound, throwPosAdjust, throwAngAdjust)
 	ent:SetAngles(angThrow)
 	local phys = ent:GetPhysicsObject()
 	if phys then
-		local real_ent = hasOwner and hg.GetCurrentCharacter(owner)
+		local real_ent = hasOwner and zc.GetCurrentCharacter(owner)
 		phys:SetVelocity(IsValid(real_ent) and (owner:GetAimVector() * mul/1.5) + real_ent:GetVelocity() or Vector(0,0,0))
 	end
 	if hasOwner and owner:IsOnGround() then
@@ -349,7 +349,7 @@ end
 SWEP.traceLen = 5
 
 function SWEP:GetEyeTrace()
-	return hg.eyeTrace( self:GetOwner())
+	return zc.eyeTrace( self:GetOwner())
 end
 
 function SWEP:KeyDown(key_enum)
@@ -364,12 +364,12 @@ if CLIENT then
 	function SWEP:DrawHUD()
 		if GetViewEntity() ~= lply then return end
 		if lply:InVehicle() then return end
-		if hg.GetCurrentCharacter(lply):IsRagdoll() then return end
+		if zc.GetCurrentCharacter(lply):IsRagdoll() then return end
 
 		local tr = self:GetEyeTrace()
 		local toScreen = tr.HitPos:ToScreen()
 
-		lerpthing = Lerp(0.1, lerpthing, (hg.eyeTrace(lply).Hit and not lply:IsSprinting() and not self.NoTrap) and 1 or 0)
+		lerpthing = Lerp(0.1, lerpthing, (zc.eyeTrace(lply).Hit and not lply:IsSprinting() and not self.NoTrap) and 1 or 0)
 		colWhite.a = 255 * lerpthing
 		surface.SetDrawColor(colWhite)
 		surface.DrawRect(toScreen.x-2.5, toScreen.y-2.5, 5, 5)
@@ -380,7 +380,7 @@ function SWEP:SecondaryAttack()
 	if self.ReadyToThrow or self.CoolDown > CurTime() or self:GetNWBool("PlacedTrap", false) then return end
 
 	local owner = self:GetOwner()
-	if not hg.CanUseLeftHand(owner) or not hg.CanUseRightHand(owner) then return end
+	if not zc.CanUseLeftHand(owner) or not zc.CanUseRightHand(owner) then return end
 
 	self.CoolDown = CurTime() + 2
 	self:PlayAnim("pullbacklow")
@@ -524,7 +524,7 @@ function SWEP:CreateSpoon(entownr)
 			end
 		end
 
-		hg.EmitAISound(spoonPos, 96, 5, 8)
+		zc.EmitAISound(spoonPos, 96, 5, 8)
 	else
 		entasd = ents.Create("ent_hg_spoon")
 		entasd:SetModel(self.spoon)
@@ -551,7 +551,7 @@ function SWEP:CreateSpoon(entownr)
 			end
 		end
 
-		hg.EmitAISound(self:GetPos(), 96, 5, 8)
+		zc.EmitAISound(self:GetPos(), 96, 5, 8)
 	end
 
 	return entasd
@@ -563,7 +563,7 @@ function SWEP:PrimaryAttack()
 	if self.ReadyToThrow or self.CoolDown > CurTime() or self:GetNWBool("PlacedTrap", false) then return end
 
 	local owner = self:GetOwner()
-	if not hg.CanUseLeftHand(owner) or not hg.CanUseRightHand(owner) then return end
+	if not zc.CanUseLeftHand(owner) or not zc.CanUseRightHand(owner) then return end
 
 	self.CoolDown = CurTime() + 2
 	self:PlayAnim("pullbackhigh")
@@ -607,23 +607,23 @@ function SWEP:PlaceTrap()
 	if CLIENT then return end
 
 	local ply = self:GetOwner()
-	if hg.GetCurrentCharacter(ply):IsRagdoll() then return end
+	if zc.GetCurrentCharacter(ply):IsRagdoll() then return end
 
 	local entownr
 	if IsValid(ply) then
-		entownr = hg.GetCurrentCharacter(ply)
+		entownr = zc.GetCurrentCharacter(ply)
 	end
 
 	if ply:IsSprinting() then
 		self:ResetTrap()
 	return end
 
-	if not hg.eyeTrace(ply).Hit then
+	if not zc.eyeTrace(ply).Hit then
 		self:ResetTrap()
 	return end
 
 	if not self.startedattack and entownr == ply and not self:GetNWBool("PlacedTrap", false) then
-		local tr = hg.eyeTrace(ply)
+		local tr = zc.eyeTrace(ply)
 		local ent = ents.Create(self.ENT)
 		local pos,ang = LocalToWorld(self.lpos, self.lang, tr.HitPos, tr.HitNormal:Angle())
 		ent:SetPos(pos)
@@ -639,7 +639,7 @@ function SWEP:PlaceTrap()
 
 		self:SetNWBool("PlacedTrap", true)
 	elseif IsValid(self.Trap) then
-		local tr = hg.eyeTrace(ply)
+		local tr = zc.eyeTrace(ply)
 
 		local tr2 = {}
 		tr2.start = self.Trap:GetPos()
@@ -750,10 +750,10 @@ function SWEP:Reload()
 	if self.NoTrap or (self.TrappingRN or false) then return end
 
 	local ply = self:GetOwner()
-	if hg.GetCurrentCharacter(ply):IsRagdoll() then return end
+	if zc.GetCurrentCharacter(ply):IsRagdoll() then return end
 
 	if ply:IsSprinting() then return end
-	if not hg.eyeTrace(ply).Hit then return end
+	if not zc.eyeTrace(ply).Hit then return end
 
 	if self:GetNWBool("PlacedTrap", false) then
 		self.ReloadCD = CurTime() + 1

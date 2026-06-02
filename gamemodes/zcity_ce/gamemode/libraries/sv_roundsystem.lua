@@ -1,19 +1,19 @@
 local player_GetAll = player.GetAll
-zb.modes = zb.modes or {}
+zc.modes = zc.modes or {}
 
 util.AddNetworkString("ZC_FadeScreen")
 
-function zb.AddFade()
+function zc.AddFade()
 	net.Start("ZC_FadeScreen")
 	net.Broadcast()
 end
 
 local forcemodeconvar = CreateConVar("zc_forcemode", "random", nil, "Set force mode (set to 'random' to disable)")
 forcemodeconvar:SetString("random")
-function zb:GetMode(round)
-	if zb.modes[round] then return round end
+function zc:GetMode(round)
+	if zc.modes[round] then return round end
 
-	for name, mode in pairs(zb.modes) do
+	for name, mode in pairs(zc.modes) do
 		if mode.Types and mode.Types[round] then
 			return name
 		end
@@ -22,84 +22,84 @@ end
 
 function CurrentRound()
 	if IsValid(ents.FindByClass( "trigger_changelevel" )[1]) then
-		zb.nextround = "coop"
-		zb.CROUND = zb.CROUND or "coop"
-		return zb.modes["coop"]
+		zc.nextround = "coop"
+		zc.CROUND = zc.CROUND or "coop"
+		return zc.modes["coop"]
 	end
 
-	zb.CROUND = zb.CROUND or "hmcd"
-	if not zb.CROUND_MAIN or (zb.LASTCROUND != zb.CROUND) then
-		zb.CROUND_MAIN = zb:GetMode(zb.CROUND)
-		zb.LASTCROUND = zb.CROUND
+	zc.CROUND = zc.CROUND or "hmcd"
+	if not zc.CROUND_MAIN or (zc.LASTCROUND != zc.CROUND) then
+		zc.CROUND_MAIN = zc:GetMode(zc.CROUND)
+		zc.LASTCROUND = zc.CROUND
 	end
 
-	local round = zb.CROUND_MAIN
+	local round = zc.CROUND_MAIN
 
-	return zb.modes[round], zb.CROUND
+	return zc.modes[round], zc.CROUND
 end
 
 function NextRound(round)
 	if IsValid(ents.FindByClass( "trigger_changelevel" )[1]) then
-		zb.nextround = "coop"
+		zc.nextround = "coop"
 	else
-		zb.nextround = round
+		zc.nextround = round
 	end
 end
 
-function zb:PreRound()
-	local roundCountReachedMapVote = (zb.Roundscount or 0) > 15 and not GetConVar("zc_dev"):GetBool()
+function zc:PreRound()
+	local roundCountReachedMapVote = (zc.Roundscount or 0) > 15 and not GetConVar("zc_dev"):GetBool()
 	local playersCanVote = false
 
 	if not roundCountReachedMapVote then
-		playersCanVote = player.GetCount() > 1 and zb.ROUND_STATE == 0 and zb.CheckRTVVotes()
+		playersCanVote = player.GetCount() > 1 and zc.ROUND_STATE == 0 and zc.CheckRTVVotes()
 	end
 
-	local cstrikeRoundLimitActive = zb.RoundsLeft and zb.CROUND == "cstrike"
+	local cstrikeRoundLimitActive = zc.RoundsLeft and zc.CROUND == "cstrike"
 
 	if (roundCountReachedMapVote or playersCanVote) and not cstrikeRoundLimitActive then
-		zb.StartRTV(20)
-		zb.ROUND_STATE = 0
+		zc.StartRTV(20)
+		zc.ROUND_STATE = 0
 		return
 	end
 
-	if zb.ROUND_STATE == 0 and #player_GetAll() > 1 then
-		zb.END_TIME = nil
+	if zc.ROUND_STATE == 0 and #player_GetAll() > 1 then
+		zc.END_TIME = nil
 
-		zb.START_TIME = zb.START_TIME or CurTime() + (CurrentRound().start_time or 5)
-		if zb.START_TIME < CurTime() then zb:RoundStart() end
+		zc.START_TIME = zc.START_TIME or CurTime() + (CurrentRound().start_time or 5)
+		if zc.START_TIME < CurTime() then zc:RoundStart() end
 	end
 end
 
-function zb:RoundThink()
-	if zb.ROUND_STATE == 1 then
+function zc:RoundThink()
+	if zc.ROUND_STATE == 1 then
 		if CurrentRound().RoundThink then CurrentRound():RoundThink(CurrentRound()) end
 	end
 end
 
 hook.Add("ZC_CanReceiveCommunication","ZC_RoundStartChat",function(output, input, isChat, teamonly, text)
-	if zb.ROUND_STATE == 0 or zb.ROUND_STATE == 3 then return true, false end
+	if zc.ROUND_STATE == 0 or zc.ROUND_STATE == 3 then return true, false end
 end)
 
-function zb:EndRound()
-	zb.ROUND_STATE = 3
-	zb.Roundscount = (zb.Roundscount or 0) + 1
+function zc:EndRound()
+	zc.ROUND_STATE = 3
+	zc.Roundscount = (zc.Roundscount or 0) + 1
 
 	local mode, _ = CurrentRound()
 
 	net.Start("ZC_RoundInfo")
 		net.WriteString(mode.name or "hmcd")
-		net.WriteInt(zb.ROUND_STATE, 4)
+		net.WriteInt(zc.ROUND_STATE, 4)
 	net.Broadcast()
 
 	--PrintMessage(HUD_PRINTTALK, "Round ended.")
 	CurrentRound():EndRound()
 	hook.Run("ZC_EndRound")
-	zb.AddFade()
+	zc.AddFade()
 
-	hg.achievements.SavePlayerAchievements()
+	zc.achievements.SavePlayerAchievements()
 end
 
-function zb:CheckWinner(tbl)
+function zc:CheckWinner(tbl)
 	local playerTable = table.Copy(tbl)
 	for i, players in pairs(playerTable) do
 		if table.Count(players) == 0 then
@@ -115,15 +115,15 @@ function zb:CheckWinner(tbl)
 	return shouldendround, winner
 end
 
-zb.ROUND_TIME = zb.ROUND_TIME or 300
-zb.DEFAULT_RESPAWN_TIMER = zb.DEFAULT_RESPAWN_TIMER or 10
+zc.ROUND_TIME = zc.ROUND_TIME or 300
+zc.DEFAULT_RESPAWN_TIMER = zc.DEFAULT_RESPAWN_TIMER or 10
 
-function zb:ShouldRoundEnd()
-	local time = zb.ROUND_TIME
+function zc:ShouldRoundEnd()
+	local time = zc.ROUND_TIME
 	local mode = CurrentRound()
 	local shouldroundend = mode:ShouldRoundEnd()
 	if shouldroundend ~= false then
-		local boringround = not mode.DisableRoundTimer and (zb.ROUND_START + time) < CurTime()
+		local boringround = not mode.DisableRoundTimer and (zc.ROUND_START + time) < CurTime()
 
 		if boringround and mode.BoringRoundFunction then
 			PrintMessage(HUD_PRINTTALK, "Stopping round because it was TOO boring.")
@@ -137,48 +137,48 @@ function zb:ShouldRoundEnd()
 	end
 end
 
-function zb:EndRoundThink()
-	if zb.ROUND_STATE == 1 and zb:ShouldRoundEnd() then zb:EndRound() end
-	if zb.ROUND_STATE == 3 then
-		if !zb.END_TIME then
-			zb.END_TIME = (CurTime() + (CurrentRound().end_time or 5))
-			if zb.nextround == "coop" and GetGlobalVar("coop_first_round_timer", 0) == 0 then
+function zc:EndRoundThink()
+	if zc.ROUND_STATE == 1 and zc:ShouldRoundEnd() then zc:EndRound() end
+	if zc.ROUND_STATE == 3 then
+		if !zc.END_TIME then
+			zc.END_TIME = (CurTime() + (CurrentRound().end_time or 5))
+			if zc.nextround == "coop" and GetGlobalVar("coop_first_round_timer", 0) == 0 then
 
-				zb.END_TIME = (CurTime() + (GetConVar("zc_dev") and 5 or 60))
-				SetGlobalVar("coop_first_round_timer", zb.END_TIME)
+				zc.END_TIME = (CurTime() + (GetConVar("zc_dev") and 5 or 60))
+				SetGlobalVar("coop_first_round_timer", zc.END_TIME)
 			end
 		end
 
-		zb.SHOULD_FADE = zb.SHOULD_FADE != nil and zb.SHOULD_FADE or true
+		zc.SHOULD_FADE = zc.SHOULD_FADE != nil and zc.SHOULD_FADE or true
 
-		if zb.SHOULD_FADE and (zb.END_TIME < CurTime() + 1.5) then
-			zb.SHOULD_FADE = false
+		if zc.SHOULD_FADE and (zc.END_TIME < CurTime() + 1.5) then
+			zc.SHOULD_FADE = false
 
 			for _, ply in player.Iterator() do
 				ply:ScreenFade(SCREENFADE.OUT, Color(0, 0, 0), 1, 7)
 			end
 		end
 
-		if zb.END_TIME < CurTime() then
-			zb.ROUND_STATE = 0
+		if zc.END_TIME < CurTime() then
+			zc.ROUND_STATE = 0
 
-			zb.SHOULD_FADE = true
+			zc.SHOULD_FADE = true
 
 			hook.Run("ZC_PreRoundStart")
 			hook.Run("TTTPrepareRound") -- stormfox2 random_round_weather
 
-			zb.CROUND = zb.nextround or "hmcd"
-			if CurrentRound().shouldfreeze then zb:Freeze() end
+			zc.CROUND = zc.nextround or "hmcd"
+			if CurrentRound().shouldfreeze then zc:Freeze() end
 
 			--PrintMessage(HUD_PRINTTALK, "Gamemode: " .. CurrentRound().PrintName or "None")
 
 			local mode, _ = CurrentRound()
 			net.Start("ZC_RoundInfo")
 				net.WriteString(mode.name or "hmcd")
-				net.WriteInt(zb.ROUND_STATE, 4)
+				net.WriteInt(zc.ROUND_STATE, 4)
 			net.Broadcast()
 
-			hg.UpdateRoundTime(CurrentRound().ROUND_TIME, CurTime(), CurTime() + (CurrentRound().start_time or 5))
+			zc.UpdateRoundTime(CurrentRound().ROUND_TIME, CurTime(), CurTime() + (CurrentRound().start_time or 5))
 
 			self:KillPlayers()
 			self:AutoBalance()
@@ -192,11 +192,11 @@ function zb:EndRoundThink()
 end
 
 hook.Add("PlayerInitialSpawn", "ZC_SendRoundInfo", function(ply)
-	if zb.CROUND then
+	if zc.CROUND then
 		local mode,_ = CurrentRound()
 		net.Start("ZC_RoundInfo")
 			net.WriteString(mode.name or "hmcd")
-			net.WriteInt(zb.ROUND_STATE, 4)
+			net.WriteInt(zc.ROUND_STATE, 4)
 		net.Send(ply)
 	end
 
@@ -204,15 +204,15 @@ hook.Add("PlayerInitialSpawn", "ZC_SendRoundInfo", function(ply)
 end)
 
 util.AddNetworkString("ZC_RoundInfo")
-function zb:Think(time)
-	if (zb.thinkTime or CurTime()) > time then return end
-	zb.thinkTime = time + 1
-	zb:PreRound()
-	zb:RoundThink()
-	zb:EndRoundThink()
+function zc:Think(time)
+	if (zc.thinkTime or CurTime()) > time then return end
+	zc.thinkTime = time + 1
+	zc:PreRound()
+	zc:RoundThink()
+	zc:EndRoundThink()
 end
 
-hook.Add("Think", "ZC_RoundSystemThink", function() zb:Think(CurTime()) end)
+hook.Add("Think", "ZC_RoundSystemThink", function() zc:Think(CurTime()) end)
 
 hook.Add("PlayerDeath", "ZC_ModeRespawnTimer", function(ply)
 	local mode = CurrentRound()
@@ -220,12 +220,12 @@ hook.Add("PlayerDeath", "ZC_ModeRespawnTimer", function(ply)
 	if ply:Team() == TEAM_SPECTATOR then return end
 
 	local modeName = mode.name
-	local delay = tonumber(mode.RespawnTimer) or zb.DEFAULT_RESPAWN_TIMER
+	local delay = tonumber(mode.RespawnTimer) or zc.DEFAULT_RESPAWN_TIMER
 	local timerName = "ZC_ModeRespawnTimer" .. ply:EntIndex()
 
 	timer.Create(timerName, math.max(delay, 0), 1, function()
 		if not IsValid(ply) or ply:Alive() or ply:Team() == TEAM_SPECTATOR then return end
-		if zb.ROUND_STATE ~= 1 then return end
+		if zc.ROUND_STATE ~= 1 then return end
 
 		local currentMode = CurrentRound()
 		if not currentMode or currentMode.name ~= modeName or not currentMode.AllowRespawn then return end
@@ -239,7 +239,7 @@ hook.Add("PlayerDeath", "ZC_ModeRespawnTimer", function(ply)
 	end)
 end)
 
-function zb:KillPlayers()
+function zc:KillPlayers()
 	local mode = CurrentRound()
 	for _, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
@@ -247,8 +247,8 @@ function zb:KillPlayers()
 		ply:GiveExp(math.random(4,15))
 
 		if ply:Alive() and mode.DontKillPlayer and mode:DontKillPlayer(ply) then
-			hg.organism.Clear(ply.organism)
-			hg.FakeUp(ply,true,true)
+			zc.organism.Clear(ply.organism)
+			zc.FakeUp(ply,true,true)
 
 			continue
 		end
@@ -261,13 +261,13 @@ function zb:KillPlayers()
 	end
 end
 
-zb.forcemode = zb.forcemode or "random"
+zc.forcemode = zc.forcemode or "random"
 
-local forcemode = zb.forcemode
+local forcemode = zc.forcemode
 
-function zb.GetModes()
+function zc.GetModes()
 	local newtbl = {}
-	for name,_ in pairs(zb.modes) do
+	for name,_ in pairs(zc.modes) do
 		table.insert(newtbl,name)
 	end
 	return newtbl
@@ -292,7 +292,7 @@ COMMANDS.bigmap = {
 		if not ply:IsAdmin() then ply:ChatPrint("You don't have access") return end
 		ZBATTLE_BIGMAP = tonumber(args[1])
 		ply:ChatPrint("Distance for big map: " .. ZBATTLE_BIGMAP)
-		zb.RerollChances()
+		zc.RerollChances()
 
 		file.CreateDir("zbattle")
 
@@ -308,24 +308,24 @@ COMMANDS.bigmap = {
 }
 
 
-zb.BigMaps = {
+zc.BigMaps = {
 	["mu_smallotown_v2_snow"] = true,
 	["mu_smallotown_v2_13"] = true,
 	["mu_smallotown_v2_13_night"] = true,
 }
 
-function zb.GetAvailableModes()
-	zb.tdm_checkpoints()
+function zc.GetAvailableModes()
+	zc.tdm_checkpoints()
 
 	local newtbl = {}
 
-	for _, name in pairs(zb.GetModes()) do
+	for _, name in pairs(zc.GetModes()) do
 
-		local tbl = zb.modes[name]
+		local tbl = zc.modes[name]
 		if (tbl.CanLaunch and tbl:CanLaunch()) and
 		(
 			( not tbl.ForBigMaps ) or
-			( zb.GetWorldSize() > ZBATTLE_BIGMAP )
+			( zc.GetWorldSize() > ZBATTLE_BIGMAP )
 		) then
 			if tbl.SubModes then
 				for _, name2 in pairs(tbl:SubModes()) do
@@ -340,15 +340,15 @@ function zb.GetAvailableModes()
 	return newtbl
 end
 
-zb.ModesPlaytime = zb.ModesPlaytime or {}
+zc.ModesPlaytime = zc.ModesPlaytime or {}
 
-function zb.GetModesPlaytime()
-	local tbl = zb.GetAvailableModes()
+function zc.GetModesPlaytime()
+	local tbl = zc.GetAvailableModes()
 	local newtbl = {}
 	local count = 0
 
 	for _, name in ipairs(tbl) do
-		local amt = zb.ModesPlaytime[name] or 0
+		local amt = zc.ModesPlaytime[name] or 0
 		newtbl[name] = amt
 		count = count + amt
 	end
@@ -356,19 +356,19 @@ function zb.GetModesPlaytime()
 	return newtbl, count
 end
 
-function zb.GetModePlaytime(name)
-	return zb.ModesPlaytime[name] or 0
+function zc.GetModePlaytime(name)
+	return zc.ModesPlaytime[name] or 0
 end
 
-function zb.SetModePlaytime(name, set)
-	zb.ModesPlaytime[name] = set
+function zc.SetModePlaytime(name, set)
+	zc.ModesPlaytime[name] = set
 end
 
-function zb.AddModePlaytime(name, add)
-	zb.ModesPlaytime[name] = (zb.ModesPlaytime[name] or 0) + add
+function zc.AddModePlaytime(name, add)
+	zc.ModesPlaytime[name] = (zc.ModesPlaytime[name] or 0) + add
 end
 
-function zb.AddCurrentModePlayed()
+function zc.AddCurrentModePlayed()
 	if not CurrentRound() then return end
 	local mode = CurrentRound()
 	local name = mode.name
@@ -377,35 +377,35 @@ function zb.AddCurrentModePlayed()
 		name = mode.Type or "hmcd"
 	end
 
-	zb.AddModePlaytime(name, 1)
+	zc.AddModePlaytime(name, 1)
 end
 
-function zb.GetChance(name, addtbl)
-	local mode = zb:GetMode(name)
-	local tbl = zb.modes[mode]
+function zc.GetChance(name, addtbl)
+	local mode = zc:GetMode(name)
+	local tbl = zc.modes[mode]
 
 	local newtbl = tbl.Types and tbl.Types[name] or tbl
 
-	return newtbl.ChanceFunction and newtbl:ChanceFunction(addtbl or {}) or zb.ModesChances[name] or newtbl.Chance or 0.1
+	return newtbl.ChanceFunction and newtbl:ChanceFunction(addtbl or {}) or zc.ModesChances[name] or newtbl.Chance or 0.1
 end
 
-function zb.GetModesChances()
-	local tbl = zb.GetAvailableModes()
+function zc.GetModesChances()
+	local tbl = zc.GetAvailableModes()
 	local newtbl = {}
 
 	for _, name in pairs(tbl) do
-		newtbl[name] = zb.GetChance(name)
+		newtbl[name] = zc.GetChance(name)
 	end
 
 	return newtbl
 end
 
-function zb.WeightedChanceMode(modes_chances)
+function zc.WeightedChanceMode(modes_chances)
 	local weight = 0
 
 	local newchancestbl = {}
 	for name, chance in pairs(modes_chances) do
-		local newchance = zb.GetChance(name, {rounds = zb.RoundList}) or chance
+		local newchance = zc.GetChance(name, {rounds = zc.RoundList}) or chance
 		newchancestbl[name] = newchance
 		weight = weight + newchance * 100
 	end
@@ -424,18 +424,18 @@ function zb.WeightedChanceMode(modes_chances)
 	return "hmcd"
 end
 
-function zb.GetWorldSize()
+function zc.GetWorldSize()
 	/*
 	local world = game.GetWorld()
 	local worldMin = world:GetInternalVariable("m_WorldMins")
 	local worldMax = world:GetInternalVariable("m_WorldMaxs")
 	local size = worldMin:Distance(worldMax)
 
-	return size + (zb.BigMaps[ game.GetMap() ] and 5000 or 0)
+	return size + (zc.BigMaps[ game.GetMap() ] and 5000 or 0)
 	*/
 
 	local dist = 0
-	local pts = zb.GetMapPoints( "RandomSpawns" )
+	local pts = zc.GetMapPoints( "RandomSpawns" )
 
 	for _, pnt in pairs(pts) do
 		for _, pnt2 in pairs(pts) do
@@ -446,53 +446,53 @@ function zb.GetWorldSize()
 	return math.sqrt(dist)
 end
 
-function zb.GetRoundName(name)
-	local mode = zb:GetMode(name)
-	if not mode or not zb.modes[mode] then return end
-	return zb.modes[mode].PrintName
+function zc.GetRoundName(name)
+	local mode = zc:GetMode(name)
+	if not mode or not zc.modes[mode] then return end
+	return zc.modes[mode].PrintName
 end
 
-zb.RoundList = zb.RoundList or {}
-zb.QueuedModes = zb.QueuedModes or {}
+zc.RoundList = zc.RoundList or {}
+zc.QueuedModes = zc.QueuedModes or {}
 
-function zb.CheckChances()
-	if #zb.RoundList == 0 then
-		zb.RerollChances()
+function zc.CheckChances()
+	if #zc.RoundList == 0 then
+		zc.RerollChances()
 	end
 
-	local nextrnd = zb.nextround or zb.RoundList[1]
-	print("Next round is: "..zb.GetRoundName(nextrnd).." ("..nextrnd..")")
+	local nextrnd = zc.nextround or zc.RoundList[1]
+	print("Next round is: "..zc.GetRoundName(nextrnd).." ("..nextrnd..")")
 
-	if #zb.QueuedModes > 0 then
+	if #zc.QueuedModes > 0 then
 		print("Queued game modes:")
-		for i=1, #zb.QueuedModes do
-			print("  "..i..": "..zb.GetRoundName(zb.QueuedModes[i]).." ("..zb.QueuedModes[i]..")")
+		for i=1, #zc.QueuedModes do
+			print("  "..i..": "..zc.GetRoundName(zc.QueuedModes[i]).." ("..zc.QueuedModes[i]..")")
 		end
 	else
-		for i=1,#zb.RoundList do
-			print("Round "..(i+1).." will be "..zb.GetRoundName(zb.RoundList[i]).." ("..zb.RoundList[i]..")")
+		for i=1,#zc.RoundList do
+			print("Round "..(i+1).." will be "..zc.GetRoundName(zc.RoundList[i]).." ("..zc.RoundList[i]..")")
 		end
 	end
 end
 
-function zb.RerollChances()
-	zb.RoundList = {}
+function zc.RerollChances()
+	zc.RoundList = {}
 
-	local chances = zb.GetModesChances()
+	local chances = zc.GetModesChances()
 
 	for i = 1, 20 do
-		local round = zb.WeightedChanceMode(chances)
+		local round = zc.WeightedChanceMode(chances)
 
-		zb.RoundList[i] = round
+		zc.RoundList[i] = round
 	end
 
-	zb.nextround = table.remove(zb.RoundList, 1)
+	zc.nextround = table.remove(zc.RoundList, 1)
 end
 
-function zb.GetModesInfo()
+function zc.GetModesInfo()
 	local modesInfo = {}
 
-	for name, mode in pairs(zb.modes) do
+	for name, mode in pairs(zc.modes) do
 		if mode.Types then
 			for name2 in pairs(mode.Types) do
 				table.insert(modesInfo, {
@@ -518,15 +518,15 @@ function zb.GetModesInfo()
 end
 
 
-function zb.SetRoundList(newList)
+function zc.SetRoundList(newList)
 	local newLista = table.Copy(newList)
 	if #newLista > 0 then
-		zb.nextround = table.remove(newLista, 1)
-		zb.RoundList = newLista
+		zc.nextround = table.remove(newLista, 1)
+		zc.RoundList = newLista
 	else
-		zb.RerollChances()
+		zc.RerollChances()
 
-		zb.nextround = table.remove(zb.RoundList, 1)
+		zc.nextround = table.remove(zc.RoundList, 1)
 	end
 end
 
@@ -538,17 +538,17 @@ util.AddNetworkString("ZC_RoundListUpdate")
 util.AddNetworkString("ZC_RoundListChangeNotice")
 
 
-function zb.SendModesInfoToClient(ply)
+function zc.SendModesInfoToClient(ply)
 	net.Start("ZC_ModesInfoSend")
-		net.WriteTable(zb.GetModesInfo())
+		net.WriteTable(zc.GetModesInfo())
 	net.Send(ply)
 end
 
 
-function zb.SendRoundListToClient(ply)
+function zc.SendRoundListToClient(ply)
 	net.Start("ZC_RoundListSend")
-		net.WriteTable(zb.RoundList)
-		net.WriteString(zb.nextround or "")
+		net.WriteTable(zc.RoundList)
+		net.WriteString(zc.nextround or "")
 	net.Send(ply)
 end
 
@@ -557,8 +557,8 @@ hook.Add("PlayerInitialSpawn", "ZC_SendModesOnSpawn", function(ply)
 	if ply:IsAdmin() then
 		timer.Simple(1, function()
 			if IsValid(ply) then
-				zb.SendModesInfoToClient(ply)
-				zb.SendRoundListToClient(ply)
+				zc.SendModesInfoToClient(ply)
+				zc.SendRoundListToClient(ply)
 			end
 		end)
 	end
@@ -567,8 +567,8 @@ end)
 
 net.Receive("ZC_RoundListRequest", function(len, ply)
 	if IsValid(ply) and ply:IsAdmin() then
-		zb.SendModesInfoToClient(ply)
-		zb.SendRoundListToClient(ply)
+		zc.SendModesInfoToClient(ply)
+		zc.SendRoundListToClient(ply)
 	end
 end)
 
@@ -577,50 +577,50 @@ net.Receive("ZC_RoundListUpdate", function(len, ply)
 
 	local newList = net.ReadTable()
 
-	zb.SetRoundList(newList)
+	zc.SetRoundList(newList)
 
 	net.Start("ZC_RoundListChangeNotice")
 		net.WriteString(ply:Nick())
-	net.Send(zb.GetAllAdmins())
+	net.Send(zc.GetAllAdmins())
 
-	for _, admin in ipairs(zb.GetAllAdmins()) do
-		zb.SendRoundListToClient(admin)
+	for _, admin in ipairs(zc.GetAllAdmins()) do
+		zc.SendRoundListToClient(admin)
 	end
 end)
 
-function zb:RoundStart()
-	if CurrentRound().shouldfreeze then zb:Unfreeze() end
+function zc:RoundStart()
+	if CurrentRound().shouldfreeze then zc:Unfreeze() end
 
-	zb.ROUND_STATE = 1
-	zb.START_TIME = nil
+	zc.ROUND_STATE = 1
+	zc.START_TIME = nil
 
 	local mode, round = CurrentRound()
 
 	VFIRE_DISABLED = (mode.name == "coop")
 
-	zb.ROUND_BEGIN = CurTime()
-	hg.UpdateRoundTime()
+	zc.ROUND_BEGIN = CurTime()
+	zc.UpdateRoundTime()
 
 	net.Start("ZC_RoundInfo")
 		net.WriteString(mode.name or "hmcd")
-		net.WriteInt(zb.ROUND_STATE, 4)
+		net.WriteInt(zc.ROUND_STATE, 4)
 	net.Broadcast()
 
 	if forcemodeconvar:GetString() != "" then
 		forcemode = forcemodeconvar:GetString()
 	end
 
-	zb.AddCurrentModePlayed()
+	zc.AddCurrentModePlayed()
 
 	CurrentRound():RoundStart()
 
 	local nextMode
 
-	if #zb.RoundList == 0 then
-		zb.RerollChances()
+	if #zc.RoundList == 0 then
+		zc.RerollChances()
 	end
 
-	nextMode = table.remove(zb.RoundList, 1)
+	nextMode = table.remove(zc.RoundList, 1)
 
 
 	print("Next game mode is " .. nextMode)
@@ -633,25 +633,25 @@ function zb:RoundStart()
 
 	hook.Run("ZC_StartRound")
 
-	//zb.GetAllPoints(true)
+	//zc.GetAllPoints(true)
 
-	for _, admin in ipairs(zb.GetAllAdmins()) do
-		zb.SendRoundListToClient(admin)
+	for _, admin in ipairs(zc.GetAllAdmins()) do
+		zc.SendRoundListToClient(admin)
 	end
 end
 
-concommand.Add("zb_checkchances",function(ply) if ply:IsAdmin() then zb.CheckChances() end end)
-concommand.Add("zb_rerollchances",function(ply) if ply:IsAdmin() then zb.RerollChances() zb.CheckChances() end end)
+concommand.Add("zb_checkchances",function(ply) if ply:IsAdmin() then zc.CheckChances() end end)
+concommand.Add("zb_rerollchances",function(ply) if ply:IsAdmin() then zc.RerollChances() zc.CheckChances() end end)
 
-function zb.NotifyQueueEmptied()
+function zc.NotifyQueueEmptied()
 	net.Start("ZC_QueueEmptiedNotice")
-	net.Send(zb.GetAllAdmins())
+	net.Send(zc.GetAllAdmins())
 end
 
 hook.Add("PlayerInitialSpawn", "ZC_SendGameModesToClient", function(ply)
 	if ply:IsAdmin() then
 		local modesToSend = {}
-		for key, mode in pairs(zb.modes) do
+		for key, mode in pairs(zc.modes) do
 			table.insert(modesToSend, {key = key, name = mode.PrintName or mode.name})
 		end
 
@@ -673,10 +673,10 @@ net.Receive("ZC_AdminSetGameMode", function(len, ply)
 		ply:ChatPrint("Game mode set to: " .. modeKey)
 
 		if addToQueue then
-			table.insert(zb.QueuedModes, modeKey)
-			zb.NotifyQueueModified(ply, "added " .. modeKey .. " to")
+			table.insert(zc.QueuedModes, modeKey)
+			zc.NotifyQueueModified(ply, "added " .. modeKey .. " to")
 
-			zb.SyncQueueToAdmins()
+			zc.SyncQueueToAdmins()
 		end
 	elseif command == "setforcemode" then
 		forcemode = modeKey
@@ -684,10 +684,10 @@ net.Receive("ZC_AdminSetGameMode", function(len, ply)
 		ply:ChatPrint("Force mode set to: " .. modeKey)
 
 		if addToQueue then
-			table.insert(zb.QueuedModes, modeKey)
-			zb.NotifyQueueModified(ply, "added " .. modeKey .. " to")
+			table.insert(zc.QueuedModes, modeKey)
+			zc.NotifyQueueModified(ply, "added " .. modeKey .. " to")
 
-			zb.SyncQueueToAdmins()
+			zc.SyncQueueToAdmins()
 		end
 	end
 end)
@@ -696,14 +696,14 @@ net.Receive("ZC_AdminEndRound", function(len, ply)
 	if not ply:IsAdmin() then return end
 
 	ply:ChatPrint("Round ended!")
-	zb:EndRound()
+	zc:EndRound()
 end)
 
-function zb.SyncQueueToAdmins()
+function zc.SyncQueueToAdmins()
 	timer.Simple(0.1, function()
 		net.Start("ZC_GameQueueSend")
-		net.WriteTable(zb.QueuedModes)
-		net.Send(zb.GetAllAdmins())
+		net.WriteTable(zc.QueuedModes)
+		net.Send(zc.GetAllAdmins())
 	end)
 end
 
@@ -711,27 +711,27 @@ net.Receive("ZC_AdminSetGameQueue", function(len, ply)
 	if not ply:IsAdmin() then return end
 
 	local modeQueue = net.ReadTable()
-	zb.QueuedModes = modeQueue
+	zc.QueuedModes = modeQueue
 
 	if #modeQueue == 0 then
 		ply:ChatPrint("Game mode queue has been cleared")
-		zb.NotifyQueueModified(ply, "cleared")
+		zc.NotifyQueueModified(ply, "cleared")
 
 
 		timer.Simple(0.2, function()
 			net.Start("ZC_QueueEmptiedNotice")
-			net.Send(zb.GetAllAdmins())
+			net.Send(zc.GetAllAdmins())
 		end)
 	else
 		ply:ChatPrint("Game mode queue set with " .. #modeQueue .. " modes")
-		zb.NotifyQueueModified(ply, "updated")
+		zc.NotifyQueueModified(ply, "updated")
 	end
 
-	zb.SyncQueueToAdmins()
+	zc.SyncQueueToAdmins()
 end)
 
-function zb.NotifyQueueModified(ply, action)
-	local admins = zb.GetAllAdmins()
+function zc.NotifyQueueModified(ply, action)
+	local admins = zc.GetAllAdmins()
 
 	local recipients = {}
 	for _, admin in ipairs(admins) do
@@ -749,20 +749,20 @@ function zb.NotifyQueueModified(ply, action)
 	end
 end
 
-function zb:Unfreeze()
+function zc:Unfreeze()
 	for _, ply in player.Iterator() do
 		if ply:Alive() then ply:Freeze(false) end
 	end
 end
 
 
-function zb:Freeze()
+function zc:Freeze()
 	for i, ply in player.Iterator() do
 		if ply:Alive() then ply:Freeze(true) end
 	end
 end
 
-function zb.GetAllAdmins()
+function zc.GetAllAdmins()
 	local admins = {}
 	for _, ply in player.Iterator() do
 		if ply:IsAdmin() then
@@ -775,7 +775,7 @@ end
 COMMANDS.setmode = {
 	function(ply, args)
 		if not ply:IsAdmin() then ply:ChatPrint("You don't have access") return end
-		if not args[1] or (not zb:GetMode(args[1]) and args[1]~="random") then return end
+		if not args[1] or (not zc:GetMode(args[1]) and args[1]~="random") then return end
 		ply:ChatPrint(args[1])
 		NextRound(args[1])
 	end,
@@ -785,7 +785,7 @@ COMMANDS.setmode = {
 COMMANDS.setforcemode = {
 	function(ply, args)
 		if not ply:IsAdmin() then ply:ChatPrint("You don't have access") return end
-		if not args[1] or (not zb:GetMode(args[1]) and args[1]~="random") then return end
+		if not args[1] or (not zc:GetMode(args[1]) and args[1]~="random") then return end
 		ply:ChatPrint(args[1])
 		forcemode = args[1]
 		if args[1] ~= "random" then
@@ -800,7 +800,7 @@ COMMANDS.endround = {
 			ply:ChatPrint("You don't have access")
 			return
 		end
-	 	zb:EndRound()
+	 	zc:EndRound()
 	end, 0
 }
 
@@ -817,7 +817,7 @@ if SERVER then
 	hook.Add("PlayerInitialSpawn", "ZC_SendGameModesToClient", function(ply)
 		if ply:IsAdmin() then
 			local modesToSend = {}
-			for key, mode in pairs(zb.modes) do
+			for key, mode in pairs(zc.modes) do
 				table.insert(modesToSend, {key = key, name = mode.PrintName or mode.name})
 			end
 
@@ -834,7 +834,7 @@ if SERVER then
 		local modeKey = net.ReadString()
 		local addToQueue = net.ReadBool() or false
 
-		if !(ply:IsSuperAdmin() or ply:IsAdmin()) and not zb.modes[modeKey]:CanLaunch() then
+		if !(ply:IsSuperAdmin() or ply:IsAdmin()) and not zc.modes[modeKey]:CanLaunch() then
 			ply:ChatPrint("This mode can't launch (No points or Is blocked): " .. modeKey)
 			return
 		end
@@ -844,10 +844,10 @@ if SERVER then
 			ply:ChatPrint("Game mode set to: " .. modeKey)
 
 			if addToQueue then
-				table.insert(zb.QueuedModes, modeKey)
-				zb.NotifyQueueModified(ply, "added " .. modeKey .. " to")
+				table.insert(zc.QueuedModes, modeKey)
+				zc.NotifyQueueModified(ply, "added " .. modeKey .. " to")
 
-				zb.SyncQueueToAdmins()
+				zc.SyncQueueToAdmins()
 			end
 		elseif command == "setforcemode" then
 			forcemode = modeKey
@@ -855,19 +855,19 @@ if SERVER then
 			ply:ChatPrint("Force mode set to: " .. modeKey)
 
 			if addToQueue then
-				table.insert(zb.QueuedModes, modeKey)
-				zb.NotifyQueueModified(ply, "added " .. modeKey .. " to")
+				table.insert(zc.QueuedModes, modeKey)
+				zc.NotifyQueueModified(ply, "added " .. modeKey .. " to")
 
-				zb.SyncQueueToAdmins()
+				zc.SyncQueueToAdmins()
 			end
 		end
 	end)
 
-	function zb.SyncQueueToAdmins()
+	function zc.SyncQueueToAdmins()
 		timer.Simple(0.1, function()
 			net.Start("ZC_GameQueueSend")
-			net.WriteTable(zb.QueuedModes)
-			net.Send(zb.GetAllAdmins())
+			net.WriteTable(zc.QueuedModes)
+			net.Send(zc.GetAllAdmins())
 		end)
 	end
 
@@ -875,23 +875,23 @@ if SERVER then
 		if not ply:IsAdmin() then return end
 
 		local modeQueue = net.ReadTable()
-		zb.QueuedModes = modeQueue
+		zc.QueuedModes = modeQueue
 
 		if #modeQueue == 0 then
 			ply:ChatPrint("Game mode queue has been cleared")
-			zb.NotifyQueueModified(ply, "cleared")
+			zc.NotifyQueueModified(ply, "cleared")
 
 
 			timer.Simple(0.2, function()
 				net.Start("ZC_QueueEmptiedNotice")
-				net.Send(zb.GetAllAdmins())
+				net.Send(zc.GetAllAdmins())
 			end)
 		else
 			ply:ChatPrint("Game mode queue set with " .. #modeQueue .. " modes")
-			zb.NotifyQueueModified(ply, "updated")
+			zc.NotifyQueueModified(ply, "updated")
 		end
 
-		zb.SyncQueueToAdmins()
+		zc.SyncQueueToAdmins()
 	end)
 
 end

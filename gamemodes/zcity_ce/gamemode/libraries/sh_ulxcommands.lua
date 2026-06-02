@@ -21,7 +21,7 @@ local function voteModeDone(t)
     if not winner then
         str = "Vote results: No mode won because no one voted!"
     else
-        local mode = zb.modes[t.options[winner]]
+        local mode = zc.modes[t.options[winner]]
         if mode and mode.CanLaunch and mode:CanLaunch() then
             str = "Vote results: Mode '" .. t.options[winner] .. "' won. (" .. winnernum .. "/" .. t.voters .. ")"
             NextRound(t.options[winner])
@@ -56,7 +56,7 @@ function ulx.votemode(calling_ply, ...)
     end
 
     for _, modeName in ipairs(argv) do
-        local mode = zb.modes[modeName]
+        local mode = zc.modes[modeName]
         if not (mode and mode.CanLaunch and mode:CanLaunch()) then
             ULib.tsayError(calling_ply, "Mode '" .. modeName .. "' cannot be launched.")
             return

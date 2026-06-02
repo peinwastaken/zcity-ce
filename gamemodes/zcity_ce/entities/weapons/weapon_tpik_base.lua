@@ -123,7 +123,7 @@ if CLIENT then
 
         local ent = IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or owner
 
-        if (IsValid(owner)) and (ent == owner or hg.KeyDown(owner,IN_USE) or (owner:GetNetVar("lastFake",0) > CurTime())) then
+        if (IsValid(owner)) and (ent == owner or zc.KeyDown(owner,IN_USE) or (owner:GetNetVar("lastFake",0) > CurTime())) then
             local timing = 0
             if not self.cycling then
                 timing = (1 - math.Clamp((self.animtime - CurTime()) / self.animspeed,0,1))
@@ -142,7 +142,7 @@ if CLIENT then
 
             self.sprintanim = qerp(0.02 * FrameTime() / engine.TickInterval(),self.sprintanim or 0,(owner.IsSprinting and owner:IsSprinting()) and 1 or 0)
 
-			local tr = hg.eyeTrace(owner,60)
+			local tr = zc.eyeTrace(owner,60)
 			local ang = owner:EyeAngles()
             if not tr then return end
 
@@ -169,7 +169,7 @@ if CLIENT then
 			WorldModel:SetRenderAngles(self:GetAngles())
 		end
 
-        if IsValid(owner) and not (ent == owner or hg.KeyDown(owner,IN_USE) or (owner:GetNetVar("lastFake",0) > CurTime())) then
+        if IsValid(owner) and not (ent == owner or zc.KeyDown(owner,IN_USE) or (owner:GetNetVar("lastFake",0) > CurTime())) then
             local bon = ent:LookupBone("ValveBiped.Bip01_R_Hand")
             if not bon then return end
             local mat = ent:GetBoneMatrix(bon)
@@ -249,7 +249,7 @@ if CLIENT then
 end
 SWEP.isTPIKBase = true
 --hook.Add("ZC_PostDrawPlayerRagdoll","ZC_RenderTpikWeaponOnRagdoll",function(ent,ply)
-function hg.RenderTPIKBase(ent, ply, wep)
+function zc.RenderTPIKBase(ent, ply, wep)
     if wep.DrawWorldModel2 then
         wep:DrawWorldModel2()
     else
@@ -266,7 +266,7 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen)
 
     local owner = self:GetOwner()
 
-	self.walkinglerp = Lerp(hg.lerpFrameTime2(0.1),self.walkinglerp or 0,((self.DisableWalkBob or owner:InVehicle()) and 0) or hg.GetCurrentCharacter(owner):GetVelocity():LengthSqr())
+	self.walkinglerp = Lerp(zc.lerpFrameTime2(0.1),self.walkinglerp or 0,((self.DisableWalkBob or owner:InVehicle()) and 0) or zc.GetCurrentCharacter(owner):GetVelocity():LengthSqr())
 	self.huytime = self.huytime or 0
 	local walk = math.Clamp(self.walkinglerp / 10000,0,1)
 
@@ -300,9 +300,9 @@ function SWEP:SetHandPos(noset)
     if not IsValid(ply) or not IsValid(self.worldModel) then return end
     if not ply.shouldTransmit or ply.NotSeen then return end
 
-    local ent = hg.GetCurrentCharacter(ply)
+    local ent = zc.GetCurrentCharacter(ply)
 
-	local bones = hg.TPIKBonesLH
+	local bones = zc.TPIKBonesLH
 
     local ply_spine_index = ent:LookupBone("ValveBiped.Bip01_Spine4")
     if !ply_spine_index then return end
@@ -322,7 +322,7 @@ function SWEP:SetHandPos(noset)
 	ply.rhold = rhmat
 	ply.lhold = lhmat
 
-	if self.lhandik and (ent == ply or hg.KeyDown(ply,IN_USE) or (ply:GetNetVar("lastFake",0) > CurTime())) and hg.CanUseLeftHand(ply) then
+	if self.lhandik and (ent == ply or zc.KeyDown(ply,IN_USE) or (ply:GetNetVar("lastFake",0) > CurTime())) and zc.CanUseLeftHand(ply) then
 		for _, bone in ipairs(bones) do
 			local wm_boneindex = wm:LookupBone(bone)
 			if !wm_boneindex then continue end
@@ -350,9 +350,9 @@ function SWEP:SetHandPos(noset)
 		end
 	end
 
-	local bones = hg.TPIKBonesRH
+	local bones = zc.TPIKBonesRH
 
-	if self.rhandik and (ent == ply or hg.KeyDown(ply,IN_USE) or (ply:GetNetVar("lastFake",0) > CurTime())) then
+	if self.rhandik and (ent == ply or zc.KeyDown(ply,IN_USE) or (ply:GetNetVar("lastFake",0) > CurTime())) then
 		for _, bone in ipairs(bones) do
 			local wm_boneindex = wm:LookupBone(bone)
 			if !wm_boneindex then continue end
@@ -421,7 +421,7 @@ function SWEP:Holster(wep)
 end
 
 function SWEP:IsEntSoft(ent)
-	return ent:IsNPC() or ent:IsPlayer() or hg.RagdollOwner(ent) or ent:IsRagdoll()
+	return ent:IsNPC() or ent:IsPlayer() or zc.RagdollOwner(ent) or ent:IsRagdoll()
 end
 
 function SWEP:ThinkAdd()

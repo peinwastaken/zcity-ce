@@ -1,5 +1,5 @@
-hg.Abnormalties = hg.Abnormalties or {}
-local PLUGIN = hg.Abnormalties
+zc.Abnormalties = zc.Abnormalties or {}
+local PLUGIN = zc.Abnormalties
 
 -- (LIE) Balance is influenced by the amount of phrases said by you in the zone, that is creating and growing new zones after each ritual grants the most instabillity.
 

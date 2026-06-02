@@ -63,13 +63,13 @@ local afflictions = {
 	[13]	=	{"pain",				pain,				color_red,	    	true},
 }
 
-hg.afflictions = {}
+zc.afflictions = {}
 for i = 1, #afflictions do
-	hg.afflictions[afflictions[i][1]] = i
+	zc.afflictions[afflictions[i][1]] = i
 end
 
-function hg.DrawAffliction(x, y, w, h, amt, index_or_name, alpha, text)
-	local index = isnumber(index_or_name) and index_or_name or hg.afflictions[index_or_name]
+function zc.DrawAffliction(x, y, w, h, amt, index_or_name, alpha, text)
+	local index = isnumber(index_or_name) and index_or_name or zc.afflictions[index_or_name]
 	local affliction = afflictions[index]
 
 	if not affliction then return end

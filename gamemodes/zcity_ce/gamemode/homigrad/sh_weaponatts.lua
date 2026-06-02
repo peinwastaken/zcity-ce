@@ -1,5 +1,5 @@
-hg.attachments = {}
-hg.attachments.sight = {
+zc.attachments = {}
+zc.attachments.sight = {
 	["empty"] = {"sight", "", Angle(0, 0, 0), {}},
 	["holo0"] = {
 		"sight", -- integrated
@@ -543,7 +543,7 @@ hg.attachments.sight = {
 		drawFunction = function(self,model) -- in swep:drawattachment
 			if not IsValid(self) then return end
 
-			self.modelAtt["addholo"] = IsValid(self.modelAtt["addholo"]) and self.modelAtt["addholo"] or ClientsideModel(hg.attachments.sight["optic8"].holomodel)
+			self.modelAtt["addholo"] = IsValid(self.modelAtt["addholo"]) and self.modelAtt["addholo"] or ClientsideModel(zc.attachments.sight["optic8"].holomodel)
 			local addholo = self.modelAtt["addholo"]
 
 			addholo:DrawModel()
@@ -551,7 +551,7 @@ hg.attachments.sight = {
 
 			local model2 = addholo.model
 			if not IsValid(model2) then
-				model2 = ClientsideModel(hg.attachments.sight["optic8"].holomodel)
+				model2 = ClientsideModel(zc.attachments.sight["optic8"].holomodel)
 				addholo.model = model2
 
 				self.holomodels = self.holomodels or {}
@@ -612,9 +612,9 @@ hg.attachments.sight = {
 
 		transformFunction = function(self,model,pos,ang) -- in transformfunction
 			if not IsValid(self) then return end
-			self.modelAtt["addholo"] = self.modelAtt["addholo"] or ClientsideModel(hg.attachments.sight["optic8"].holomodel)
+			self.modelAtt["addholo"] = self.modelAtt["addholo"] or ClientsideModel(zc.attachments.sight["optic8"].holomodel)
 			local addholo = self.modelAtt["addholo"]
-			local inf = hg.attachments.sight["optic8"]
+			local inf = zc.attachments.sight["optic8"]
 			local pos,ang = LocalToWorld(inf.addholovec,inf.addholoang,pos,ang)
 			if not IsValid(addholo) then return end
 			addholo:SetRenderOrigin(pos)
@@ -869,7 +869,7 @@ hg.attachments.sight = {
 	},
 }
 
-function hg.attachmentFunc(self, attachmentData, placement, attachmentName)
+function zc.attachmentFunc(self, attachmentData, placement, attachmentName)
 	self.size = attachmentData.size or self.size
 	self.holo_pos = attachmentData.holo_pos or self.holo_pos
 	self.scale = attachmentData.scale or self.scale
@@ -902,7 +902,7 @@ function hg.attachmentFunc(self, attachmentData, placement, attachmentName)
 	self.sizeperekrestie = attachmentData.sizeperekrestie or self.sizeperekrestie
 end
 
-hg.attachments.mount = {
+zc.attachments.mount = {
 	["empty"] = {"mount", "", Angle(0, 0, 0), {}},
 	["mount1"] = {
 		"mount",
@@ -917,7 +917,7 @@ hg.attachments.mount = {
 	["mount4"] = {"mount", "models/weapons/arc9/darsu_eft/mods/tac_pistol_um3.mdl", Angle(0, 0, 90), {}}
 }
 
-hg.attachments.barrel = {
+zc.attachments.barrel = {
 	["empty"] = {"barrel", "", Angle(0, 0, 0), {}},
 	["supressor0"] = { -- with 0 key attachment can't be seen in menus, removed, etc.
 		"barrel", -- integrated
@@ -955,7 +955,7 @@ hg.attachments.barrel = {
 	}
 }
 
-hg.attachments.grip = {
+zc.attachments.grip = {
 	["grip1"] = {
 		"grip",
 		"models/weapons/arc9/darsu_eft/mods/fg_rk2.mdl",
@@ -1102,7 +1102,7 @@ hg.attachments.grip = {
 	},
 }
 
-hg.attachments.underbarrel = {
+zc.attachments.underbarrel = {
 	["lasertaser0"] = { -- with 0 key attachment can't be seen in menus, removed, etc.
 		"underbarrel", -- integrated
 		(CLIENT and "models/hunter/plates/plate.mdl") or "",
@@ -1261,7 +1261,7 @@ hg.attachments.underbarrel = {
 		shouldalwaysdraw = true,
 	},
 }
-hg.attachments.magwell = {
+zc.attachments.magwell = {
 	["mag1"] = {
 		"magwell",
 		"models/weapons/arc9/darsu_eft/mods/mag_glock_drum_50.mdl",
@@ -1272,7 +1272,7 @@ hg.attachments.magwell = {
 		ammotype = "9x19 mm Parabellum",
 	},
 }
-hg.attachments.agsmag = {
+zc.attachments.agsmag = {
 	["agsmag0"] = {
 		"agsmag",
 		"models/escape from tarkov/static/weapons/magazine.mdl",
@@ -1284,12 +1284,12 @@ hg.attachments.agsmag = {
 	}
 }
 
-hg.validattachments = {}
-for placement, tbl in pairs(hg.attachments) do
+zc.validattachments = {}
+for placement, tbl in pairs(zc.attachments) do
 	for att, attTbl in pairs(tbl) do
 		if attTbl.valid then
-			hg.validattachments[placement] = hg.validattachments[placement] or {}
-			hg.validattachments[placement][att] = attTbl
+			zc.validattachments[placement] = zc.validattachments[placement] or {}
+			zc.validattachments[placement][att] = attTbl
 		end
 	end
 end
@@ -1403,10 +1403,10 @@ local attCategoryNames = {
 	["mount"] = "Mounts",
 	["grip"] = "Grips"
 }
-hg.attachmentslaunguage = attNames
-hg.attachmentsIcons = attachmentsIcons
+zc.attachmentslaunguage = attNames
+zc.attachmentsIcons = attachmentsIcons
 local function initAttachments()
-	for possibleAtt, attachments in pairs(hg.attachments) do
+	for possibleAtt, attachments in pairs(zc.attachments) do
 		for attachment, attData in pairs(attachments) do
 			if CLIENT then language.Add(attachment, attNames[attachment] or attachment) end
 			local att = {}
@@ -1428,10 +1428,10 @@ local function initAttachments()
 	end
 end
 
-function hg.GetAttachmentTab(att)
+function zc.GetAttachmentTab(att)
 	local found
 
-	for ia,attPos in pairs(hg.attachments) do
+	for ia,attPos in pairs(zc.attachments) do
 		for i in pairs(attPos) do
 			if i == att then found = ia end
 		end
@@ -1440,7 +1440,7 @@ function hg.GetAttachmentTab(att)
 	return found
 end
 
-function hg.GiveAttachment(ply,att)
+function zc.GiveAttachment(ply,att)
 	local att = string.Replace(att,"ent_att_","")
 	local inv = ply:GetNetVar("Inventory",{})
 
@@ -1453,14 +1453,14 @@ function hg.GiveAttachment(ply,att)
 	--end
 end
 
-function hg.NotValidAtt(att)
+function zc.NotValidAtt(att)
 	local att = isstring(att) and att or istable(att) and isstring(att[1]) and att[1]
 
 	if att then
 		local att = string.Replace(att,"ent_att_","")
 
 		local valid = false
-		for _, tbl in pairs(hg.validattachments) do
+		for _, tbl in pairs(zc.validattachments) do
 			if tbl[att] and tbl[att].valid then
 				valid = true
 			end
@@ -1472,8 +1472,8 @@ function hg.NotValidAtt(att)
 	return true
 end
 
-function hg.IsValidAtt(att)
-	return not hg.NotValidAtt(att)
+function zc.IsValidAtt(att)
+	return not zc.NotValidAtt(att)
 end
 
 initAttachments()

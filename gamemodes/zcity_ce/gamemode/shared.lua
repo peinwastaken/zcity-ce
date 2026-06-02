@@ -1,5 +1,5 @@
-hg = hg or {}
-hg.ConVars = hg.ConVars or {}
+zc = zc or {}
+zc.ConVars = zc.ConVars or {}
 
 GM.Name = "ZCity"
 GM.Author = "uzelezz, sadsalat, Mr. Point, Zac90, Deka, Mannytko"
@@ -14,10 +14,10 @@ DeriveGamemode("sandbox")
 
 local blur = Material("pp/blurscreen")
 local zc_potatopc -- NEED TO REWRITE THIS SHIT PROPERLY, AND ALL MENUS SHOULD BE THE SAME TOO!!!
-function hg.DrawBlur(panel, amount, passes, alpha)
+function zc.DrawBlur(panel, amount, passes, alpha)
 	if is3d2d then return end
 	amount = amount or 5
-	zc_potatopc = zc_potatopc or hg.ConVars.potatopc
+	zc_potatopc = zc_potatopc or zc.ConVars.potatopc
 
 	if(zc_potatopc:GetBool())then
 		surface.SetDrawColor(0, 0, 0, alpha or (amount * 20))
@@ -86,7 +86,7 @@ end
 
 local team_GetAllTeams = team.GetAllTeams
 
-function zb:CheckTeams()
+function zc:CheckTeams()
 	local tbl = {}
 	for i, _ in pairs(team_GetAllTeams()) do
 		tbl[i] = {}
@@ -98,7 +98,7 @@ function zb:CheckTeams()
 	return tbl
 end
 
-function zb:CheckAliveTeams(incapacitatedcheck)
+function zc:CheckAliveTeams(incapacitatedcheck)
 	local tbl = {}
 
 	for i, _ in pairs(team_GetAllTeams()) do
@@ -117,7 +117,7 @@ function zb:CheckAliveTeams(incapacitatedcheck)
 	return tbl
 end
 
-function zb:CheckAlive(incapacitatedcheck)
+function zc:CheckAlive(incapacitatedcheck)
 	local tbl = {}
 	for _, ply in player.Iterator() do
 		if not ply:Alive() then continue end
@@ -127,7 +127,7 @@ function zb:CheckAlive(incapacitatedcheck)
 	return tbl
 end
 
-function zb:CheckPlaying()
+function zc:CheckPlaying()
 	local tbl = {}
 	for _, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
@@ -151,5 +151,5 @@ function GM:HandlePlayerLanding( ply, velocity, WasOnGround )
 end
 
 function GM:GrabEarAnimation(ply)
-	hg.earanim(ply)
+	zc.earanim(ply)
 end

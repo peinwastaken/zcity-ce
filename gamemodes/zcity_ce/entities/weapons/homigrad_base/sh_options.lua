@@ -14,7 +14,7 @@ if CLIENT then
 	    local wep = ply:GetActiveWeapon()
 	    local type_ = math.Round(args[1])
 	    if wep and ishgweapon(wep) and (wep:Clip1() == 0 or wep.AllwaysChangeAmmo) and wep:CanUse() and wep.AmmoTypes and wep.AmmoTypes[type_] then
-	        ply:ChatPrint(zb.locale.GetLocalized("weapon/changed_ammotype", wep.AmmoTypes[type_][1]))
+	        ply:ChatPrint(zc.locale.GetLocalized("weapon/changed_ammotype", wep.AmmoTypes[type_][1]))
 	        net.Start("ZC_AmmoTypeChange")
 	        net.WriteEntity(wep)
 	        net.WriteInt(type_, 4)
@@ -50,7 +50,7 @@ else
 			net.Start("ZC_AmmoUnload")
 			net.WriteEntity(wep)
 			net.Broadcast()
-			hg.GetCurrentCharacter(ply):EmitSound("snd_jack_hmcd_ammotake.wav")
+			zc.GetCurrentCharacter(ply):EmitSound("snd_jack_hmcd_ammotake.wav")
 		end
 	end)
 
@@ -67,7 +67,7 @@ else
 	end)
 end
 
-hg.postures = {
+zc.postures = {
 	[0] = "Regular hold",
 	[1] = "Hipfire",
 	[2] = "Left shoulder",
@@ -130,7 +130,7 @@ else
 			end
 		else
 			ply.posture = ply.posture or 0
-			ply.posture = (ply.posture + 1) > #hg.postures and 0 or ply.posture + 1
+			ply.posture = (ply.posture + 1) > #zc.postures and 0 or ply.posture + 1
 		end
 		net.Start("ZC_WeaponPostureChange")
 		net.WriteEntity(ply)
@@ -177,8 +177,8 @@ if CLIENT then
 		}
 
         if !IsValid(wep) or !ishgweapon(wep) then
-			if #hg.GetAttachmentsInv() > 0 then
-				hg.radialOptions[#hg.radialOptions + 1] = attmenu
+			if #zc.GetAttachmentsInv() > 0 then
+				zc.radialOptions[#zc.radialOptions + 1] = attmenu
 			end
 
 			return
@@ -192,7 +192,7 @@ if CLIENT then
                     else
                         local tbl2 = {}
 
-                        for i, str in pairs(hg.postures) do -- DO. NOT. CHANGE. TO. IPAIRS. kthxbye
+                        for i, str in pairs(zc.postures) do -- DO. NOT. CHANGE. TO. IPAIRS. kthxbye
 							if istable(str) then
 								if str.isPistolOnly and !wep:IsPistolHoldType() then continue end
 							end
@@ -205,7 +205,7 @@ if CLIENT then
                             }
                         end
 
-                        hg.CreateRadialMenu(tbl2)
+                        zc.CreateRadialMenu(tbl2)
                     end
 
                     return -1
@@ -290,9 +290,9 @@ if CLIENT then
             }
 		end
 
-        hg.radialOptions[#hg.radialOptions + 1] = {
+        zc.radialOptions[#zc.radialOptions + 1] = {
             [1] = function(mouseClick)
-                hg.CreateRadialMenu(tbl)
+                zc.CreateRadialMenu(tbl)
 
                 return -1
             end,

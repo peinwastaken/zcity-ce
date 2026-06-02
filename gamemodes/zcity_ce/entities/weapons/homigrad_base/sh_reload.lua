@@ -207,7 +207,7 @@ SWEP.angvel = Angle(0,0,0)
 function SWEP:ClearAnims()
 	if not self.reload and not self.inspect then
 		local deltatime = FrameTime()
-		local lerp = hg.lerpFrameTime2(0.1,deltatime)
+		local lerp = zc.lerpFrameTime2(0.1,deltatime)
 
 		if not self.LHPosOffset:IsEqualTol(vecZero, 0.1) then self.LHPosOffset = Lerp(lerp,self.LHPosOffset,vecZero) end
 		if not self.LHAngOffset:IsEqualTol(angZero, 0.1) then self.LHAngOffset = Lerp(lerp,self.LHAngOffset,angZero) end

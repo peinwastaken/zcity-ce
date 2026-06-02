@@ -1,9 +1,9 @@
 -- Cars, spawn spots. One car respawns every 30 minutes if the previous one was destroyed.
---ZBox = ZBox or {}
+--zc = zc or {}
 
---ZBox.Plugins = ZBox.Plugins or {}
---ZBox.Plugins["LootSystem"] = ZBox.Plugins["LootSystem"] or {}
---local PLUGIN = ZBox.Plugins["LootSystem"]
+--zc.Plugins = zc.Plugins or {}
+--zc.Plugins["LootSystem"] = zc.Plugins["LootSystem"] or {}
+--local PLUGIN = zc.Plugins["LootSystem"]
 --
 --PLUGIN.Name = "LootSystem"
 --
@@ -188,8 +188,8 @@
 --        Models = {"models/props_wasteland/controlroom_filecabinet002a.mdl", "models/props_wasteland/controlroom_storagecloset001a.mdl"}
 --    },
 --}
---hg = hg or {}
---hg.Boxes = Boxes
+--zc = zc or {}
+--zc.Boxes = Boxes
 --
 --function Hook.InitPostEntity()
 --    if not spots[game.GetMap()] then return end

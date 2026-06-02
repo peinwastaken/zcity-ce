@@ -1,4 +1,4 @@
-function hg.GetCurrentArmor(ply)
+function zc.GetCurrentArmor(ply)
 	return ply:GetNetVar("Armor",{})
 end
 
@@ -81,7 +81,7 @@ if CLIENT then
 
 		local wep = ply:IsPlayer() and ply:GetActiveWeapon()
 
-		islply = ((ply:IsRagdoll() and hg.RagdollOwner(ply)) or ply) == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer())) and GetViewEntity() == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer()))
+		islply = ((ply:IsRagdoll() and zc.RagdollOwner(ply)) or ply) == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer())) and GetViewEntity() == (LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect",LocalPlayer()))
 
 		if islply and IsValid(wep) and whitelist[wep:GetClass()] then
 			if not ent.modelArmor then return end
@@ -114,11 +114,11 @@ if CLIENT then
 		if not IsValid(ply) or not armors then return end
 		if blmodels[ply:GetModel()] then return end
 		local lply = LocalPlayer():Alive() and LocalPlayer() or LocalPlayer():GetNWEntity("spect")
-		islply = ((ply:IsRagdoll() and hg.RagdollOwner(ply)) or ply) == lply and (LocalPlayer():Alive() and (GetViewEntity() == lply) or (viewmode == 1))
+		islply = ((ply:IsRagdoll() and zc.RagdollOwner(ply)) or ply) == lply and (LocalPlayer():Alive() and (GetViewEntity() == lply) or (viewmode == 1))
 
 		for placement, armor in pairs(armors) do
 			if placement == "torso" and blVestmodels[ply:GetModel()] then continue end
-			local armorData = hg.armor[placement][armor]
+			local armorData = zc.armor[placement][armor]
 
 			if armorData["model"] == "" then continue end
 
@@ -158,7 +158,7 @@ if CLIENT then
 				end)
 			end
 
-			local ent = hg.GetCurrentCharacter(ply)
+			local ent = zc.GetCurrentCharacter(ply)
 
 			if not IsValid(ent) then return end
 
@@ -245,7 +245,7 @@ if CLIENT then
 			--if cd > CurTime() then return end
 			--cd = CurTime() + 1
 			local armors = LocalPlayer().armors
-			if armors and armors["face"] and hg.armor.face[armors["face"]].NVGRender then
+			if armors and armors["face"] and zc.armor.face[armors["face"]].NVGRender then
 				BlurAfterNVG = 5
 				NVGEnabled = lply:GetNWBool("NVG_Enabled", false)
 			end
@@ -260,7 +260,7 @@ if CLIENT then
 		//cam.Start2D()
 		local armors = lply.armors
 
-		if lply.soundhuy and not (armors["face"] and hg.armor.face[armors["face"]].loopsound) then
+		if lply.soundhuy and not (armors["face"] and zc.armor.face[armors["face"]].loopsound) then
 			lply:StopSound(lply.soundhuy)
 			lply.soundhuy = nil
 		end
@@ -273,8 +273,8 @@ if CLIENT then
 
 		if armors and armors["face"] then
 
-			if hg.armor.face[armors["face"]].NVGRender and NVGEnabled then
-				hg.armor.face[armors["face"]].NVGRender()
+			if zc.armor.face[armors["face"]].NVGRender and NVGEnabled then
+				zc.armor.face[armors["face"]].NVGRender()
 
 				if BlurAfterNVG > 0.01 then
 					BlurScreen(BlurAfterNVG,BlurAfterNVG*125)
@@ -284,17 +284,17 @@ if CLIENT then
 					BlurAfterNVG = Lerp(0.5*FrameTime(),BlurAfterNVG,0)
 				end
 			end
-			if hg.armor.face[armors["face"]].CustomSnd and not CustomSndPlayed and NVGEnabled then
+			if zc.armor.face[armors["face"]].CustomSnd and not CustomSndPlayed and NVGEnabled then
 				surface.PlaySound("snds_jack_gmod/equip2.wav")
 				timer.Simple(0.6,function()
-					surface.PlaySound(hg.armor.face[armors["face"]].CustomSnd)
+					surface.PlaySound(zc.armor.face[armors["face"]].CustomSnd)
 					ViewPunch2(Angle(1,1,-2))
 				end)
 				CustomSndPlayed = true
 			end
 
-			if hg.armor.face[armors["face"]].viewmaterial and !zc_gopro:GetBool() then
-				local custommat = hg.armor.face[armors["face"]].viewmaterial
+			if zc.armor.face[armors["face"]].viewmaterial and !zc_gopro:GetBool() then
+				local custommat = zc.armor.face[armors["face"]].viewmaterial
 
 				surface.SetDrawColor(255,255,255,255)
 				surface.SetMaterial(custommat or mat)
@@ -310,23 +310,23 @@ if CLIENT then
 				end
 			end
 
-			if hg.armor.face[armors["face"]].loopsound and (lply.organism and lply.organism.pulse <= 85) then
+			if zc.armor.face[armors["face"]].loopsound and (lply.organism and lply.organism.pulse <= 85) then
 				if not lply.soundhuy then
-					//lply.soundhuy = lply.organism and lply.organism.pulse > 80 and "scp cb/breath1gas.wav" or hg.armor.face[armors["face"]].loopsound
-					lply.soundhuy = hg.armor.face[armors["face"]].loopsound
+					//lply.soundhuy = lply.organism and lply.organism.pulse > 80 and "scp cb/breath1gas.wav" or zc.armor.face[armors["face"]].loopsound
+					lply.soundhuy = zc.armor.face[armors["face"]].loopsound
 					lply:StartLoopingSound(lply.soundhuy)
 				end
 			end
 		end
 
-		//local shouldplaysnd = lply.organism and lply.organism.pulse > 80 and "scp cb/breath1gas.wav" or hg.armor.face[armors["face"]].loopsound
-		if lply.soundhuy and ((not (armors["face"] and hg.armor.face[armors["face"]].loopsound)) or (lply.organism and lply.organism.pulse > 85)) then// or shouldplaysnd != lply.soundhuy) then
+		//local shouldplaysnd = lply.organism and lply.organism.pulse > 80 and "scp cb/breath1gas.wav" or zc.armor.face[armors["face"]].loopsound
+		if lply.soundhuy and ((not (armors["face"] and zc.armor.face[armors["face"]].loopsound)) or (lply.organism and lply.organism.pulse > 85)) then// or shouldplaysnd != lply.soundhuy) then
 			lply:StopSound(lply.soundhuy)
 			lply.soundhuy = nil
 		end
 
 		if armors and armors["head"] then
-			local custommat = hg.armor.head[armors["head"]].viewmaterial
+			local custommat = zc.armor.head[armors["head"]].viewmaterial
 
 			if custommat != false then
 				surface.SetDrawColor(255,255,255,255)
@@ -334,7 +334,7 @@ if CLIENT then
 				surface.DrawTexturedRect(-1, -1, ScrW()+1, ScrH()+1)
 			end
 
-			local customviewfunc = armors["head"] and hg.armor.head[armors["head"]].customviewrender
+			local customviewfunc = armors["head"] and zc.armor.head[armors["head"]].customviewrender
 			if customviewfunc then
 				customviewfunc(lply)
 			end
@@ -396,9 +396,9 @@ if CLIENT then
 		end
 
 		if not organism.unconscious and table.Count(tbl) > 0 and lply:KeyDown(IN_WALK) then
-			hg.radialOptions = hg.radialOptions or {}
+			zc.radialOptions = zc.radialOptions or {}
 			local newEntry = {equipmentMenu, "Drop Equipment"}
-			hg.radialOptions[#hg.radialOptions + 1] = newEntry
+			zc.radialOptions[#zc.radialOptions + 1] = newEntry
 		end
 	end)
 
@@ -423,7 +423,7 @@ if CLIENT then
 	end
 
 
-	BlurBackground = BlurBackground or hg.DrawBlur
+	BlurBackground = BlurBackground or zc.DrawBlur
 
 	local function refreshtbl()
 		local tblcpy = {}
@@ -454,9 +454,9 @@ if CLIENT then
 	end
 
 	hook.Add("ZC_OnNetVarSet", "ZC_EquipmentPanelRefresh", function(index, key, var)
-		if IsValid(hg.armorMenuPanel) and (key == "Armor" or key == "Inventory") then
-			if hg.armorMenuPanel.RefreshTbl and Entity(index) == lply then
-				hg.armorMenuPanel:RefreshTbl()
+		if IsValid(zc.armorMenuPanel) and (key == "Armor" or key == "Inventory") then
+			if zc.armorMenuPanel.RefreshTbl and Entity(index) == lply then
+				zc.armorMenuPanel:RefreshTbl()
 			end
 		end
 	end)
@@ -464,15 +464,15 @@ if CLIENT then
 	local mat = Material("homigrad/vgui/gradient_left.png")
 
 	CreateMenu = function()
-		if IsValid(hg.armorMenuPanel) then
-			hg.armorMenuPanel:Remove()
-			hg.armorMenuPanel = nil
+		if IsValid(zc.armorMenuPanel) then
+			zc.armorMenuPanel:Remove()
+			zc.armorMenuPanel = nil
 		end
 
 		local tblcpy = refreshtbl()
 
 		local frame = vgui.Create( "ZFrame" )
-		hg.armorMenuPanel = frame
+		zc.armorMenuPanel = frame
 		frame:SetTitle("")
 		frame:SetSize( ScrW() / 3, ScrH() / 2 )
 		frame:SetPos( ScrW() * 0.5 - frame:GetWide() * 0.5,ScrH() + 500 )
@@ -526,15 +526,15 @@ if CLIENT then
 			frame.scroll = scroll
 
 			for k, v in pairs(tblcpy) do
-				if !hg.armorNames[v] and isnumber(k) then continue end
-				//if hg.armor[v][k].nodrop then continue end
+				if !zc.armorNames[v] and isnumber(k) then continue end
+				//if zc.armor[v][k].nodrop then continue end
 				local but = vgui.Create("DButton")
 				local prefix = string.find(k, "_")
 				if prefix then
 					k = string.sub(k, prefix + 1)
 				end
 
-				but:SetText( hg.armorNames[v] or string.NiceName(k) )
+				but:SetText( zc.armorNames[v] or string.NiceName(k) )
 				but:SetFont("ZCity_Tiny")
 				but:Dock( TOP )
 				but:DockMargin( 0, 0, 0, 5 )
@@ -550,7 +550,7 @@ if CLIENT then
 				img:SetSize(ScreenScaleH(20), ScreenScaleH(20))
 				img:Dock(LEFT)
 				img:DockMargin( 5, 0, 0, 0 )
-				if hg.armorIcons[v] then img:SetImage( hg.armorIcons[v] ) end
+				if zc.armorIcons[v] then img:SetImage( zc.armorIcons[v] ) end
 
 				but.DoClick = function()
 					dropArmor(isnumber(k) and v or k)
@@ -573,12 +573,12 @@ if CLIENT then
 		local ply = LocalPlayer()
 		local organism = ply.organism or {}
 		local armors = ply.armors
-		if !armors or !armors["face"] or !hg.armor.face[armors["face"]].NVGRender then return end
+		if !armors or !armors["face"] or !zc.armor.face[armors["face"]].NVGRender then return end
 		if ply:Alive() and not organism.unconscious then
 			local tbl = {function(mouseClick)
 				RunConsoleCommand("hg_enable_nvg")
 			end, ply:GetNWBool("NVG_Enabled", false) and "Disable NVG" or "Enable NVG"}
-			hg.radialOptions[#hg.radialOptions + 1] = tbl
+			zc.radialOptions[#zc.radialOptions + 1] = tbl
 		end
 	end)
 end
@@ -587,10 +587,10 @@ if SERVER then
 	concommand.Add("hg_enable_nvg", function( ply, cmd, args )
 		if ply.NVG_CD and ply.NVG_CD > CurTime() then return end
 		local armors = ply.armors
-		if !armors or !armors["face"] or !hg.armor.face[armors["face"]].NVGRender then return end
+		if !armors or !armors["face"] or !zc.armor.face[armors["face"]].NVGRender then return end
 
 		ply.NVG_CD = CurTime() + 1
-		hg.RunZManipAnim( ply, "visordown", ply:GetNWBool("NVG_Enabled", false), ply:GetNWBool("NVG_Enabled", false) and 1 or 1.5 )
+		zc.RunZManipAnim( ply, "visordown", ply:GetNWBool("NVG_Enabled", false), ply:GetNWBool("NVG_Enabled", false) and 1 or 1.5 )
 		timer.Simple(0.5,function()
 			if not IsValid(ply) then return end
 			ply:SetNWBool("NVG_Enabled", !ply:GetNWBool("NVG_Enabled", false))

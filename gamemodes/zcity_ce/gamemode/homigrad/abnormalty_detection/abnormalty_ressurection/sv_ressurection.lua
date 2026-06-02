@@ -1,6 +1,6 @@
 --\\Translate plugin things into your things
-hg.Abnormalties = hg.Abnormalties or {}
-local PLUGIN = hg.Abnormalties
+zc.Abnormalties = zc.Abnormalties or {}
+local PLUGIN = zc.Abnormalties
 --//
 
 --\\
@@ -110,7 +110,7 @@ hook.Add("Think", "ZC_AbnormalitiesResurrection", function()
 			if(!IsValid(owner) or owner:Alive() or !IsValid(body))then
 				PLUGIN.ShowMessageToAll("Ritual was interrupted by divine intervention.\nCorruption spreads")
 			else
-				hg.RespawnIntoBody(owner,body)
+				zc.RespawnIntoBody(owner,body)
 				owner:SetHealth(20)
 				
 				owner.organism.pain = 40
@@ -123,8 +123,8 @@ hook.Add("Think", "ZC_AbnormalitiesResurrection", function()
 					owner.organism.pulse = 15
 				end
 				
-				-- hg.Fake(owner, body)
-				-- hg.LightStunPlayer(owner)
+				-- zc.Fake(owner, body)
+				-- zc.LightStunPlayer(owner)
 				
 				if(math.random(1, 10) <= 7)then
 					owner.Swm = true	--; Spiders

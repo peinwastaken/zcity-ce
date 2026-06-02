@@ -1,4 +1,4 @@
-hg.bloodparticles1 = hg.bloodparticles1 or {}
+zc.bloodparticles1 = zc.bloodparticles1 or {}
 bloodparticles_hook = bloodparticles_hook or {}
 
 local tr = {
@@ -21,9 +21,9 @@ if not ConVarExists("zc_blood_sprites") then
 end
 
 hook.Add("PostCleanupMap","ZC_RemoveBloodDroplets",function()
-	hg.bloodparticles1 = {}
-	hg.bloodpositions = {}
-	hg.bloodcount = 0
+	zc.bloodparticles1 = {}
+	zc.bloodpositions = {}
+	zc.bloodcount = 0
 end)
 
 local mat_huy = Material("effects/blood_core")
@@ -36,12 +36,12 @@ bloodparticles_hook[1] = function(anim_pos, mul)
 	local dstsqr = int * int
 	local lplypos = LocalPlayer():EyePos()
 	local lplyang = LocalPlayer():EyeAngles():Forward()
-	for i = 1, #hg.bloodparticles1 do
-		local part = hg.bloodparticles1[i]
+	for i = 1, #zc.bloodparticles1 do
+		local part = zc.bloodparticles1[i]
 		if not part then continue end
 		if (pos - lplypos):Dot(lplyang) < 0 then continue end
 		if (part[2] - pos):LengthSqr() > dstsqr then continue end
-		--if !hg.isVisible(part[1],LocalPlayer():GetShootPos(),LocalPlayer(),MASK_VISIBLE) then continue end
+		--if !zc.isVisible(part[1],LocalPlayer():GetShootPos(),LocalPlayer(),MASK_VISIBLE) then continue end
 		--render_SetMaterial(part[4])
 		local pos = LerpVector(anim_pos, part[2], part[1])
 
@@ -78,16 +78,16 @@ end
 
 local zc_old_blood = ConVarExists("zc_old_blood") and GetConVar("zc_old_blood") or CreateClientConVar("zc_old_blood", 0, true, false, "new decals, or old", 0, 1)
 
-hg.bloodpositions = hg.bloodpositions or {}
-hg.bloodcount = hg.bloodcount or 0
+zc.bloodpositions = zc.bloodpositions or {}
+zc.bloodcount = zc.bloodcount or 0
 local function decalBlood(pos, normal, tr, artery, owner)
 	local vec = tostring(math.Round(pos[1]))..tostring(math.Round(pos[2]))..tostring(math.Round(pos[3]))
 
-	hg.bloodcount = hg.bloodcount + 1
+	zc.bloodcount = zc.bloodcount + 1
 
-	if hg.bloodcount > 10000 then
-		hg.bloodpositions = {}
-		hg.bloodcount = 0
+	if zc.bloodcount > 10000 then
+		zc.bloodpositions = {}
+		zc.bloodcount = 0
 	end
 
 	-- I do not know how big these tables can be... hopefully this will not turn out too bad
@@ -96,9 +96,9 @@ local function decalBlood(pos, normal, tr, artery, owner)
 		if !zc_old_blood:GetBool() then
 
 			//timer.Simple(0.1, function()
-				hg.bloodpositions[vec] = (hg.bloodpositions[vec] or 0) + 1
-				if hg.bloodpositions[vec] < 6 then
-					util.Decal("Arterial.Blood2"..math.Clamp(hg.bloodpositions[vec], 1, 5), pos + normal, pos - normal, owner)
+				zc.bloodpositions[vec] = (zc.bloodpositions[vec] or 0) + 1
+				if zc.bloodpositions[vec] < 6 then
+					util.Decal("Arterial.Blood2"..math.Clamp(zc.bloodpositions[vec], 1, 5), pos + normal, pos - normal, owner)
 				end
 				sound.Play("homigrad/blooddrip" .. math_random(1, 4) .. ".wav", pos, math.random(10, 60), tr.MatType == MAT_METAL and math.random(100, 120) or math.random(80, 120))
 				if tr.MatType == MAT_METAL then
@@ -116,18 +116,18 @@ local function decalBlood(pos, normal, tr, artery, owner)
 		if !zc_old_blood:GetBool() then
 
 			//timer.Simple(0.1, function()
-				hg.bloodpositions[vec] = (hg.bloodpositions[vec] or 0) + 1
+				zc.bloodpositions[vec] = (zc.bloodpositions[vec] or 0) + 1
 
 				sound.Play("homigrad/blooddrip" .. math_random(1, 4) .. ".wav", pos, math.random(10, 60), tr.MatType == MAT_METAL and math.random(100, 120) or math.random(80, 120))
 				if tr.MatType == MAT_METAL then
 					sound.Play("zbattle/blood_drop_metal.mp3", pos, math.random(10, 40), tr.MatType == MAT_METAL and math.random(100, 120) or math.random(80, 120))
 				end
 
-				if hg.bloodpositions[vec] < 6 then
-					util.Decal("Normal.Blood2"..math.Clamp((hg.bloodpositions[vec] or 0) + math.random(0, 2), 1, 5), pos + normal, pos - normal, owner)
+				if zc.bloodpositions[vec] < 6 then
+					util.Decal("Normal.Blood2"..math.Clamp((zc.bloodpositions[vec] or 0) + math.random(0, 2), 1, 5), pos + normal, pos - normal, owner)
 				end
 
-				if hg.bloodpositions[vec] == 50 then
+				if zc.bloodpositions[vec] == 50 then
 					util.Decal("Blood", pos + normal, pos - normal, owner)
 				end
 
@@ -157,7 +157,7 @@ local radius = 20000
 local radiusSqr = radius * radius
 
 hook.Add("InitPostEntity", "ZC_GetScreenSize", function()
-	radius = hg.GetWorldSize()
+	radius = zc.GetWorldSize()
     radiusSqr = radius * radius
 end)
 
@@ -165,9 +165,9 @@ bloodparticles_hook[2] = function(mul)
 	local grav = gravity:GetInt() / 10
     local time = CurTime()
 	local gravvec = vecDown * mul * (math.max(0.0, grav))
-	for i = #hg.bloodparticles1, 1, -1 do
-		local part = hg.bloodparticles1[i]
-		if not part then table_remove(hg.bloodparticles1, i) continue end
+	for i = #zc.bloodparticles1, 1, -1 do
+		local part = zc.bloodparticles1[i]
+		if not part then table_remove(zc.bloodparticles1, i) continue end
 
 		local pos = part[1]
 		local posSet = part[2]
@@ -179,23 +179,23 @@ bloodparticles_hook[2] = function(mul)
 		result = util_TraceLine(tr)
 		local hitPos = result.HitPos
 
-		if radiusSqr < hitPos:LengthSqr() then table_remove(hg.bloodparticles1, i) continue end
+		if radiusSqr < hitPos:LengthSqr() then table_remove(zc.bloodparticles1, i) continue end
 
         if bit.band(util.PointContents(hitPos), CONTENTS_WATER) == CONTENTS_WATER then
-			hg.addBloodPart2(hitPos, part[3] / 20 + VectorRand(-1, 1), nil, nil, nil, nil, true)
+			zc.addBloodPart2(hitPos, part[3] / 20 + VectorRand(-1, 1), nil, nil, nil, nil, true)
 
-			table_remove(hg.bloodparticles1, i)
+			table_remove(zc.bloodparticles1, i)
 			continue
 		end
 
 		if time - part[7] >= 30 then
-			table_remove(hg.bloodparticles1, i)
+			table_remove(zc.bloodparticles1, i)
 
 			continue
 		end
 
 		if result.Hit and result.Entity:IsWorld() then
-			table_remove(hg.bloodparticles1, i)
+			table_remove(zc.bloodparticles1, i)
 			local dir = result.HitNormal
 			decalBlood(result.HitPos, dir, result, part.artery, part.owner)
 
@@ -212,7 +212,7 @@ bloodparticles_hook[2] = function(mul)
 				ph = ph != -1 and ph or 0
 				local nam = result.Entity:GetBoneName(ph)
 
-				shouldhit = !(result.Entity.organism and hg.amputatedlimbs2[nam] and result.Entity.organism[hg.amputatedlimbs2[nam].."amputated"])
+				shouldhit = !(result.Entity.organism and zc.amputatedlimbs2[nam] and result.Entity.organism[zc.amputatedlimbs2[nam].."amputated"])
 			end
 
 			result.Hit = result.Hit and shouldhit
@@ -231,7 +231,7 @@ bloodparticles_hook[2] = function(mul)
 				local insolid = result.StartSolid and IsValid(result.Entity)
 				if insolid then
 					if result.Entity:IsVehicle() then
-						table_remove(hg.bloodparticles1, i)
+						table_remove(zc.bloodparticles1, i)
 
 						continue
 					end
@@ -252,7 +252,7 @@ bloodparticles_hook[2] = function(mul)
 				if part.lerpedmove:LengthSqr() < 0.1 * mul then
 					decalBlood(result.HitPos, result.HitNormal, result, part.artery, part.owner)
 
-					table_remove(hg.bloodparticles1, i)
+					table_remove(zc.bloodparticles1, i)
 
 					continue
 				end

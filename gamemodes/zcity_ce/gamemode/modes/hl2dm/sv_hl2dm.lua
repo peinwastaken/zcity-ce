@@ -23,11 +23,11 @@ function MODE:Intermission()
 end
 
 function MODE:CheckAlivePlayers()
-	return zb:CheckAliveTeams(true)
+	return zc:CheckAliveTeams(true)
 end
 
 function MODE:ShouldRoundEnd()
-	local endround, _ = zb:CheckWinner(self:CheckAlivePlayers())
+	local endround, _ = zc:CheckWinner(self:CheckAlivePlayers())
 	--print("ShouldRoundEnd", endround, winner)
 	return endround
 end
@@ -47,7 +47,7 @@ function MODE:GiveEquipment()
 		local snipersC = 1
 		local snipersR = 1
 
-		local players_alive = zb:CheckPlaying()
+		local players_alive = zc:CheckPlaying()
 		local leader = false
 		for _, ply in RandomPairs(players_alive) do
 			ply:SetSuppressPickupNotices(true)
@@ -76,7 +76,7 @@ function MODE:GiveEquipment()
 				if snipersC > 0 and (#players_alive > 6) and not ply.subClass then
 					snipersC = snipersC - 1
 					ply.subClass = "sniper"
-					local points = zb.GetMapPoints( "HL2DM_SNIPERSPAWN" )
+					local points = zc.GetMapPoints( "HL2DM_SNIPERSPAWN" )
 					if #points > 0 then
 						ply:SetPos(points[math.random(#points)].pos)
 					end
@@ -95,7 +95,7 @@ function MODE:GiveEquipment()
 				if snipersR > 0 and (#players_alive > 6) and not ply.subClass then
 					snipersR = snipersR - 1
 					ply.subClass = "sniper"
-					local points = zb.GetMapPoints( "HL2DM_CROSSBOWSPAWN" )
+					local points = zc.GetMapPoints( "HL2DM_CROSSBOWSPAWN" )
 					if #points > 0 then
 						ply:SetPos(points[math.random(#points)].pos)
 					end
@@ -121,7 +121,7 @@ function MODE:RoundThink()
 end
 
 function MODE:GetTeamSpawn()
-	return zb.TranslatePointsToVectors(zb.GetMapPoints( "HMCD_TDM_T" )), zb.TranslatePointsToVectors(zb.GetMapPoints( "HMCD_TDM_CT" ))
+	return zc.TranslatePointsToVectors(zc.GetMapPoints( "HMCD_TDM_T" )), zc.TranslatePointsToVectors(zc.GetMapPoints( "HMCD_TDM_CT" ))
 end
 
 function MODE:CanSpawn()
@@ -141,8 +141,8 @@ end
 
 function MODE:CanLaunch()
 	return true
-    --[[local TPoints = zb.GetMapPoints("HMCD_TDM_T")
-    local CTPoints = zb.GetMapPoints("HMCD_TDM_CT")
+    --[[local TPoints = zc.GetMapPoints("HMCD_TDM_T")
+    local CTPoints = zc.GetMapPoints("HMCD_TDM_CT")
     if TPoints and #TPoints > 0 and CTPoints and #CTPoints > 0 then
         return true
     end

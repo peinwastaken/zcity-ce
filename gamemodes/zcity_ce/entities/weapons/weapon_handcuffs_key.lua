@@ -84,7 +84,7 @@ end
 
 function SWEP:BoneSet(lookup_name, vec, ang)
 	if IsValid(self:GetOwner()) and !self:GetOwner():IsPlayer() then return end
-	hg.bone.Set(self:GetOwner(), lookup_name, vec, ang)
+	zc.bone.Set(self:GetOwner(), lookup_name, vec, ang)
 end
 
 local lang1, lang2 = Angle(0, -10, 0), Angle(0, 10, 0)
@@ -106,14 +106,14 @@ end
 
 function SWEP:SetHandPos()
 	if self:GetOwner():GetNetVar("handcuffed") then
-		hg.handcuffedhands(self:GetOwner())
+		zc.handcuffedhands(self:GetOwner())
 	end
 end
 
 SWEP.traceLen = 5
 
 function SWEP:GetEyeTrace()
-	return hg.eyeTrace(self:GetOwner())
+	return zc.eyeTrace(self:GetOwner())
 end
 
 if CLIENT then
@@ -152,7 +152,7 @@ function SWEP:UnTie(ent)
 
 			ent:EmitSound("weapons/357/357_reload1.wav")
 
-			local ply = hg.RagdollOwner(ent)
+			local ply = zc.RagdollOwner(ent)
 			local org = ent.organism
 			org.handcuffed = false
 			ent:SetNetVar("handcuffed",false)

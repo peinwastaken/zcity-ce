@@ -1,7 +1,7 @@
 local min, max = math.min, math.max
 local zc_organism_stamina_sprint_mul = CreateConVar("zc_organism_stamina_sprint_mul","1",{FCVAR_ARCHIVE,FCVAR_NOTIFY,FCVAR_NEVER_AS_STRING},"Multiply stamina drain when sprinting",0,10)
-hg.organism.module.stamina = {}
-local module = hg.organism.module.stamina
+zc.organism.module.stamina = {}
+local module = zc.organism.module.stamina
 module[1] = function(org)
 	org.adrenaline = 0
 	org.adrenalineAdd = 0
@@ -53,7 +53,7 @@ module[2] = function(owner, org, timeValue)
 	end
 
 	stamina.subadd = 0
-	stamina.weight = owner:IsPlayer() and math.Clamp((1 / hg.CalculateWeight(owner,250)) - 1,0,1) or 0
+	stamina.weight = owner:IsPlayer() and math.Clamp((1 / zc.CalculateWeight(owner,250)) - 1,0,1) or 0
 	local muffed = owner.armors and owner.armors["face"] == "mask2"
 	stamina.sub = stamina.sub + stamina.sub * stamina.weight * (muffed and 2 or 1)
 	org.hungry = org.hungry or 0
@@ -72,7 +72,7 @@ module[2] = function(owner, org, timeValue)
 	end
 end
 
-function hg.organism.AddNaturalAdrenaline(org, fAmount)
+function zc.organism.AddNaturalAdrenaline(org, fAmount)
 	if org.adrenalineStorage == 0 then return end
 	if fAmount < 0 then return end
 
@@ -89,7 +89,7 @@ function entMeta:AddNaturalAdrenaline(fAmount)
 
 	if !org then return end
 
-	hg.organism.AddNaturalAdrenaline(org, fAmount)
+	zc.organism.AddNaturalAdrenaline(org, fAmount)
 end
 
 local vecZero = Vector(0, 0, 0)

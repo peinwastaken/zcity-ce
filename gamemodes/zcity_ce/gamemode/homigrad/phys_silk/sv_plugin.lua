@@ -1,1 +1,1 @@
-hg.PhysSilk = hg.PhysSilk or {}
+zc.PhysSilk = zc.PhysSilk or {}

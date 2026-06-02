@@ -5,8 +5,8 @@
 --//
 
 --\\Translate plugin things into your things
-	hg.Synthesizer = hg.Synthesizer or {}
-	local PLUGIN = hg.Synthesizer
+	zc.Synthesizer = zc.Synthesizer or {}
+	local PLUGIN = zc.Synthesizer
 --//
 
 PLUGIN.Name = "Synthesizer"

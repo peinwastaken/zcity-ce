@@ -6,7 +6,7 @@ local coltransparent = Color(0, 0, 0, 0)
 
 local timershit = 0
 
-hg.ConVars = hg.ConVars or {}
+zc.ConVars = zc.ConVars or {}
 
 local zc_bulletholesfps = CreateConVar("zc_bulletholesfps", "0", FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED, "How much fps should the view inside bullet holes be (0 = max)", 0, 300)
 local zc_bulletholes = CreateConVar("zc_bulletholes", "0", FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED, "Enable R6S bulletholes feature", 0, 1)

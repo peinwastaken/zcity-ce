@@ -85,7 +85,7 @@ function SWEP:CustomAttack2()
 
     local ply = self:GetOwner()
 
-    ent:SetPos(hg.eye(ply,60,hg.GetCurrentCharacter(ply)) - ply:GetAimVector() * 2)
+    ent:SetPos(zc.eye(ply,60,zc.GetCurrentCharacter(ply)) - ply:GetAimVector() * 2)
     ent:SetAngles(ply:EyeAngles())
     ent:SetOwner(self:GetOwner())
     ent:Spawn()
@@ -137,7 +137,7 @@ function SWEP:PrimaryAttackAdd(ent, trace)
 		local dmg = self.DamagePrimary
 		local owner = self:GetOwner()
 
-		hg.organism.AddWoundManual(owner, dmg * 2, vector_origin, angle_zero,"ValveBiped.Bip01_R_Hand", CurTime() + (dmg * 220))
+		zc.organism.AddWoundManual(owner, dmg * 2, vector_origin, angle_zero,"ValveBiped.Bip01_R_Hand", CurTime() + (dmg * 220))
         owner:Notify("This glass shard is cutting through my hand!..", 30)
 
 		if ent and math.random(1, self:IsEntSoft(ent) and 10 or 5) == 1 then
@@ -194,6 +194,6 @@ hook.Add("ZC_RadialOptions","ZC_TapeShard",function()
 
 	if have_tape and have_shard then
 		local tbl = {tapeShard, "Tape glass shard"}
-		hg.radialOptions[#hg.radialOptions + 1] = tbl
+		zc.radialOptions[#zc.radialOptions + 1] = tbl
 	end
 end)

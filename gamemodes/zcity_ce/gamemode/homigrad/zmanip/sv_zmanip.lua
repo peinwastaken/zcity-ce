@@ -1,6 +1,6 @@
 util.AddNetworkString("ZC_ZManipRunAnimation")
 
-function hg.RunZManipAnim(ply, anim, revers, timeOveride, additionalTbl)
+function zc.RunZManipAnim(ply, anim, revers, timeOveride, additionalTbl)
 	net.Start("ZC_ZManipRunAnimation")
 		net.WritePlayer(ply)
 		net.WriteString(anim or "")
@@ -17,10 +17,10 @@ hook.Add("PlayerUse", "ZC_ZManipUseAnim", function(ply, ent)
 		ply.ZManipInteractCD = CurTime() + 0.95
 		ply.ZManipOldUse = ply:KeyDown(IN_USE)
 		local anim = (ent:IsWeapon() or ent.IsZPickup) and "interact" or "use"
-		--if ent:IsWeapon() then hg.RunZManipAnim(ply, anim) return end
+		--if ent:IsWeapon() then zc.RunZManipAnim(ply, anim) return end
 		timer.Simple(0,function()
 			--print(anim)w
-			hg.RunZManipAnim(ply, anim, nil, nil, {ent})
+			zc.RunZManipAnim(ply, anim, nil, nil, {ent})
 		end)
 	end
 end)
@@ -34,9 +34,9 @@ hook.Add("ZC_PlayerThink", "ZC_ZManipSwimAnim", function(ply, time, dtime)
 		end
 		if IsValid(ply:GetActiveWeapon()) and ishgweapon(ply:GetActiveWeapon()) then
 			if ply:KeyDown(IN_FORWARD) or ply:KeyDown(IN_MOVERIGHT) then
-				hg.RunZManipAnim(ply, "swimforward")
+				zc.RunZManipAnim(ply, "swimforward")
 			else
-				hg.RunZManipAnim(ply, "swimleft")
+				zc.RunZManipAnim(ply, "swimleft")
 			end
 		end
 	end
@@ -57,10 +57,10 @@ concommand.Add("hg_hand_gesture",function( ply, cmd, args )
 	if ply.handGestureCD > CurTime() then return end
 
 	if args[1] and gestures[args[1]] then
-		hg.RunZManipAnim( ply, gestures[args[1]][1], gestures[args[1]][2] )
+		zc.RunZManipAnim( ply, gestures[args[1]][1], gestures[args[1]][2] )
 	elseif not args[1] then
 		local gestur = table.Random(gestures)
-		hg.RunZManipAnim( ply, gestur[1], gestur[2] )
+		zc.RunZManipAnim( ply, gestur[1], gestur[2] )
 	end
 
 	ply.handGestureCD = CurTime() + 2

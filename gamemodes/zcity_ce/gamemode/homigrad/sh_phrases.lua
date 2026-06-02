@@ -310,7 +310,7 @@ if CLIENT then
 		local organism = lply.organism or {}
 
 		if lply:Alive() and not organism.unconscious and lply.PlayerClassName ~= "Gordon" then
-			hg.radialOptions[#hg.radialOptions + 1] = {
+			zc.radialOptions[#zc.radialOptions + 1] = {
 				[1] = function(mouseClick)
 					if mouseClick == 1 or organism.pain > 60 then
 						randomPhrase()
@@ -328,7 +328,7 @@ if CLIENT then
 								[2] = context
 							}
 						end
-						hg.CreateRadialMenu(tbl)
+						zc.CreateRadialMenu(tbl)
 					end
 				end,
 				[2] = organism.pain > 60 and (organism.pain <= 100 and "Yell in pain" or "Moan in pain") or "Do Phrase\nRMB - Menu"

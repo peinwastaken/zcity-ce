@@ -33,7 +33,7 @@ end
 local PANEL = {}
 
 function PANEL:Construct()
-	self:SetSkin(hg.GetMainSkin())
+	self:SetSkin(zc.GetMainSkin())
 
 	self.Title = self.Title or "No title"
 	local _, height = self:GetSize()
@@ -44,7 +44,7 @@ function PANEL:Construct()
 	local label_name_height = 50--height / 5
 	height = height - label_name_height - dock_bottom
 	label_name:SetText("")
-	label_name:SetSkin(hg.GetMainSkin())
+	label_name:SetSkin(zc.GetMainSkin())
 	label_name:DockMargin(0, 0, 0, dock_bottom)
 	label_name:Dock(TOP)
 	label_name:SetHeight(label_name_height)
@@ -71,7 +71,7 @@ function PANEL:Construct()
 	local text_description = vgui.Create("RichText", self)
 	text_description.ZRolePanel = self
 	text_description:SetText(self.Description)
-	text_description:SetSkin(hg.GetMainSkin())
+	text_description:SetSkin(zc.GetMainSkin())
 	text_description:Dock(FILL)
 	text_description.PerformLayout = function(sel)
 		if(sel:GetFont() != "ZB_InterfaceSmall")then
@@ -145,7 +145,7 @@ derma.DefineControl("HMCD_RolePanel", "", PANEL, "DPanel")
 local PANEL = {}
 
 function PANEL:Construct()
-	self:SetSkin(hg.GetMainSkin())
+	self:SetSkin(zc.GetMainSkin())
 
 	self.RolesIDsList = self.RolesIDsList or MODE.RoleChooseRoundTypes["standard"].Traitor
 	local _, height = self:GetSize()
@@ -155,7 +155,7 @@ function PANEL:Construct()
 	local hscroll_height = height - 50
 	height = height - hscroll_height
 	hscroll:SetHeight(hscroll_height)
-	hscroll:SetSkin(hg.GetMainSkin())
+	hscroll:SetSkin(zc.GetMainSkin())
 	hscroll:DockMargin(0, 0, 0, dock_bottom)
 	hscroll:Dock(TOP)
 	hscroll:SetOverlap(-10)
@@ -181,7 +181,7 @@ function PANEL:Construct()
 
 	local button_ready = vgui.Create("DButton", self)
 	button_ready:Dock(FILL)
-	button_ready:SetSkin(hg.GetMainSkin())
+	button_ready:SetSkin(zc.GetMainSkin())
 	button_ready:SetText("APPLY")
 	button_ready.DoClick = function(sel)
 		//if(sel.Clicked)then

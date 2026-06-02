@@ -8,12 +8,12 @@ local Angle, Vector, _, VectorRand, math, hook, util, game = Angle, Vector, Angl
 local ENTITY = FindMetaTable("Entity")
 local PLAYER = FindMetaTable("Player")
 
-hg.ConVars = hg.ConVars or {}
+zc.ConVars = zc.ConVars or {}
 
 --\\ Is Changed
 	local ChangedTable = {}
 
-	function hg.IsChanged(val, id, meta)
+	function zc.IsChanged(val, id, meta)
 		if(meta == nil)then
 			meta = ChangedTable
 		end
@@ -37,7 +37,7 @@ hg.ConVars = hg.ConVars or {}
 	end
 --//
 --\\ isVisible
-	function hg.isVisible(pos1, pos2, filter, mask)
+	function zc.isVisible(pos1, pos2, filter, mask)
 		return not util.TraceLine({
 			start = pos1,
 			endpos = pos2,
@@ -47,7 +47,7 @@ hg.ConVars = hg.ConVars or {}
 	end
 --//
 --\\ world size
-	function hg.GetWorldSize()
+	function zc.GetWorldSize()
 		local world = game.GetWorld()
 
 		local worldMin, worldMax = world:GetModelBounds()
@@ -57,7 +57,7 @@ hg.ConVars = hg.ConVars or {}
 	end
 --//
 --\\ Is valid Player
-	function hg.IsValidPlayer(ply)
+	function zc.IsValidPlayer(ply)
 		return IsValid(ply) and ply:IsPlayer() and ply:Alive() and ply.organism
 	end
 --//
@@ -84,8 +84,8 @@ hg.ConVars = hg.ConVars or {}
 		return table.concat(characters2)
 	end
 
-	hg.replace_by_index = replace_by_index
-	hg.utf8_reverse = utf8_reverse
+	zc.replace_by_index = replace_by_index
+	zc.utf8_reverse = utf8_reverse
 --//
 --\\ custom KeyDown
 	if CLIENT then
@@ -100,7 +100,7 @@ hg.ConVars = hg.ConVars or {}
 		end)
 	end
 
-	function hg.KeyDown(owner,key)
+	function zc.KeyDown(owner,key)
 		if not IsValid(owner) then return false end
 		owner.keydown = owner.keydown or {}
 		local localKey
@@ -138,7 +138,7 @@ hg.ConVars = hg.ConVars or {}
 
 		--self:ManipulateBonePosition(bone, vec)
 		--self:ManipulateBoneAngles(bone, lmat:GetAngles())
-		hg.bone.Set(self, bone, vector_origin, lmat:GetAngles(), "huy1")
+		zc.bone.Set(self, bone, vector_origin, lmat:GetAngles(), "huy1")
 	end
 
 	function PLAYER:SetBoneMatrix2(boneID, matrix)
@@ -151,7 +151,7 @@ hg.ConVars = hg.ConVars or {}
 --//
 
 --\\ Weighted Random Select
-	function hg.WeightedRandomSelect(tab, mul)
+	function zc.WeightedRandomSelect(tab, mul)
 		if not tab or not istable(tab) then return end
 		mul = mul or 1
 		local total_weight = 0
@@ -195,12 +195,12 @@ hg.ConVars = hg.ConVars or {}
 		ftlerped = Lerp(0.5,ftlerped,math_Clamp(ft,0.001,0.1))
 	end)
 
-	function hg.FrameTimeClamped(ft)
+	function zc.FrameTimeClamped(ft)
 		--do return math.Clamp(ft or ftlerped,0.001,0.1) end
 		return math_Clamp(1 - math.exp(-0.5 * (ft or ftlerped) * host_timescale()), 0.000, 0.02)
 	end
 
-	local FrameTimeClamped_ = hg.FrameTimeClamped
+	local FrameTimeClamped_ = zc.FrameTimeClamped
 
 	local function lerpFrameTime(lerp, frameTime)
 		return math_Clamp(1 - lerp ^ (frameTime or ftlerped), 0, 1) -- * ( host_timescale() )
@@ -213,8 +213,8 @@ hg.ConVars = hg.ConVars or {}
 		return math_Clamp(lerp * FrameTimeClamped_(frameTime or ftlerped) * 150, 0, 1) -- * ( host_timescale() )
 	end
 
-	hg.lerpFrameTime2 = lerpFrameTime2
-	hg.lerpFrameTime = lerpFrameTime
+	zc.lerpFrameTime2 = lerpFrameTime2
+	zc.lerpFrameTime = lerpFrameTime
 
 	function LerpFT(lerp, source, set)
 		return Lerp(lerpFrameTime2(lerp), source, set)
@@ -263,7 +263,7 @@ hg.ConVars = hg.ConVars or {}
 	end
 --//
 --\\ spiralGrid
-	function hg.spiralGrid(rings)
+	function zc.spiralGrid(rings)
 		local grid = {}
 		local col, row
 
@@ -303,12 +303,12 @@ hg.ConVars = hg.ConVars or {}
 	local Pos32 = Vector(0, 0, 32)
 
 	local gridsize = 24
-	local tpGrid = hg.spiralGrid(gridsize)
+	local tpGrid = zc.spiralGrid(gridsize)
 	local cell_size = 50
 
-	function hg.tpPlayer(pos, ply, i, yaw, forced)
+	function zc.tpPlayer(pos, ply, i, yaw, forced)
 		if !tpGrid[i] then
-			return hg.tpPlayer(pos, ply, math.random(gridsize), yaw, true)
+			return zc.tpPlayer(pos, ply, math.random(gridsize), yaw, true)
 		end
 
 		local c = tpGrid[i][1]
@@ -341,16 +341,16 @@ hg.ConVars = hg.ConVars or {}
 
 			return tr.HitPos
 		else
-			return hg.tpPlayer(pos, ply, i + 1, yaw)
+			return zc.tpPlayer(pos, ply, i + 1, yaw)
 		end
 	end
 --//
 //for i, ply in ipairs(player.GetAll()) do
-//	hg.tpPlayer(Vector(44.917309, 1.110850, -82.409622), ply, i, 0)
+//	zc.tpPlayer(Vector(44.917309, 1.110850, -82.409622), ply, i, 0)
 //end
 
 --\\ Vector/Angle clamp function
-	function hg.clamp(vecOrAng, val)
+	function zc.clamp(vecOrAng, val)
 		vecOrAng[1] = math.Clamp(vecOrAng[1], -val, val)
 		vecOrAng[2] = math.Clamp(vecOrAng[2], -val, val)
 		vecOrAng[3] = math.Clamp(vecOrAng[3], -val, val)
@@ -358,7 +358,7 @@ hg.ConVars = hg.ConVars or {}
 	end
 --//
 --\\ IsOnGround
-	function hg.IsOnGround(ent)
+	function zc.IsOnGround(ent)
 		local tr = {}
 		tr.start = ent:GetPos()
 		tr.endpos = ent:GetPos() - vector_up * 10
@@ -489,12 +489,12 @@ hg.ConVars = hg.ConVars or {}
 			local ent = self.FakeRagdoll
 			if IsValid(ent) then return end
 
-			hg.renderOverride(self, ent, flags)
+			zc.renderOverride(self, ent, flags)
 		end
 
 		hook.Run("ZC_PlayerGetUp", ply)
 
-		local override = (CLIENT and hg.override[ply]) or (SERVER and OverrideSpawn)
+		local override = (CLIENT and zc.override[ply]) or (SERVER and OverrideSpawn)
 
 		if eightbit and eightbit.EnableEffect and ply.UserID then
 			eightbit.EnableEffect(ply:UserID(), 0)
@@ -504,12 +504,12 @@ hg.ConVars = hg.ConVars or {}
 			hook.Run("ZC_PlayerSpawn", ply)
 
 			if CLIENT and not ply:IsLocal() and gamemod == "sandbox" then
-				if hg.DynaMusic then
+				if zc.DynaMusic then
 					if zc_sandboxmusic:GetBool() then
-						hg.DynaMusic:Stop()
-						hg.DynaMusic:Start(music_packs[math.random(#music_packs)])
+						zc.DynaMusic:Stop()
+						zc.DynaMusic:Start(music_packs[math.random(#music_packs)])
 					else
-						hg.DynaMusic:Stop()
+						zc.DynaMusic:Stop()
 					end
 				end
 			end
@@ -527,7 +527,7 @@ hg.ConVars = hg.ConVars or {}
 			ply.posture = 0
 		end
 
-		--hg.addbonecallback(ply)
+		--zc.addbonecallback(ply)
 
 		if IsValid(ply) and ply:Alive() and not IsValid(ply.bull) and SERVER then
 			timer.Simple(1, function()
@@ -561,16 +561,16 @@ hg.ConVars = hg.ConVars or {}
 	end)
 --//
 --\\ addbonecallback
-	function hg.addbonecallback(ent)
+	function zc.addbonecallback(ent)
 		for i in pairs(ent:GetCallbacks("BuildBonePositions")) do
 			ent:RemoveCallback("BuildBonePositions", i)
 		end
 
-		ent:AddCallback("BuildBonePositions", hg.build_bone_positions)
+		ent:AddCallback("BuildBonePositions", zc.build_bone_positions)
 	end
 --//
 --\\ RotateAroundPoints
-	function hg.RotateAroundPoint(pos, ang, point, offset, offset_ang)
+	function zc.RotateAroundPoint(pos, ang, point, offset, offset_ang)
 		local v = Vector(0, 0, 0)
 		v = v + (point.x * ang:Right())
 		v = v + (point.y * ang:Forward())
@@ -598,7 +598,7 @@ hg.ConVars = hg.ConVars or {}
 		return pos, newang
 	end
 
-	function hg.RotateAroundPoint2(pos, ang, point, offset, offset_ang)
+	function zc.RotateAroundPoint2(pos, ang, point, offset, offset_ang)
 
 		local mat = Matrix()
 		mat:SetTranslation(pos)
@@ -622,13 +622,13 @@ hg.ConVars = hg.ConVars or {}
 local hook_Run = hook.Run
 local IsValid = IsValid
 --\\ Is Local
-	function hg.IsLocal(ent)
+	function zc.IsLocal(ent)
 		if SERVER then return true end
 		return lply:Alive() and (lply == ent) or (lply:GetNWEntity("spect") == ent)
 	end
 --//
 --\\ custom build_bone_positions
-	function hg.build_bone_positions(self, count)
+	function zc.build_bone_positions(self, count)
 		local ply, ent
 
 		if self:IsRagdoll() then
@@ -645,7 +645,7 @@ local IsValid = IsValid
 	end
 --//
 --\\ Render Override
-	hg.renderOverride = function(self, ent, flags)
+	zc.renderOverride = function(self, ent, flags)
 		if bit.band(flags, STUDIO_RENDER) != STUDIO_RENDER then return end
 		--if self == lply and !selfdraw then return end
 		--debug.Trace()
@@ -661,7 +661,7 @@ local IsValid = IsValid
 		DrawPlayerRagdoll(ent, self)
 		RenderAccessoriesCool(ent, self)
 		hook_Run("ZC_PostDrawAppearancePreview", ent, self)
-		//hg.HomigradBones(self, CurTime(), FrameTime())
+		//zc.HomigradBones(self, CurTime(), FrameTime())
 
 		if IsValid(self.OldRagdoll) then DrawAppearance(ent, self, true) end
 		ent:DrawModel()
@@ -689,7 +689,7 @@ local IsValid = IsValid
 			time = SysTime()
 
 			local lean = (ply.lean or 0)
-			lean_lerp = LerpFT(hg.lerpFrameTime2(1,dtime), lean_lerp, lean)
+			lean_lerp = LerpFT(zc.lerpFrameTime2(1,dtime), lean_lerp, lean)
 		end)
 	end
 --//
@@ -740,7 +740,7 @@ local IsValid = IsValid
 
 	local util_TraceHull = util.TraceHull
 
-	function hg.hullCheck(startpos, endpos, ply)
+	function zc.hullCheck(startpos, endpos, ply)
 		//if ply.lasthulltrace == CurTime() and ply.cachedhulltrace then return ply.cachedhulltrace end
 		//ply.lasthulltrace = CurTime()
 		if ply:InVehicle() then return {HitPos = endpos} end
@@ -758,7 +758,7 @@ local IsValid = IsValid
 	local lpos = Vector(6, 2, 1)--Vector(5,0,7)
 	local lang = Angle(0, 0, 0)
 
-	function hg.torsoTrace(ply, dist, ent, aim_vector)
+	function zc.torsoTrace(ply, dist, ent, aim_vector)
 		local ent = (IsValid(ent) and ent) or (IsValid(ply.FakeRagdoll) and ply.FakeRagdoll) or ply
 		local bon = ent:LookupBone("ValveBiped.Bip01_Spine4")
 		if not bon then return end
@@ -769,10 +769,10 @@ local IsValid = IsValid
 
 		local pos, _ = LocalToWorld(lpos, lang, mat:GetTranslation(), mat:GetAngles())// aim_vector:Angle())
 
-		return hg.eyeTrace(ply, dist, ent, aim_vector, pos)
+		return zc.eyeTrace(ply, dist, ent, aim_vector, pos)
 	end
 
-	function hg.eye(ply, dist, ent, aimvec, startpos)
+	function zc.eye(ply, dist, ent, aimvec, startpos)
 		if !ply:IsPlayer() then return false end
 		local fakeCam = false//IsValid(ent) and ent != ply
 		local ent = (IsValid(ent) and ent) or (IsValid(ply.FakeRagdoll) and ply.FakeRagdoll) or ply
@@ -818,7 +818,7 @@ local IsValid = IsValid
 		//local pos = startpos or headm:GetTranslation() + (fakeCam and (headm:GetAngles():Forward() * 5 + headm:GetAngles():Up() * 0 + headm:GetAngles():Right() * 6) or (eyeAng:Up() * 1 + eyeang2:Forward() * 4))
 		local pos = startpos or headm:GetTranslation() + (fakeCam and (headm:GetAngles():Forward() * 2 + headm:GetAngles():Up() * -2 + headm:GetAngles():Right() * 3) or (eyeAng:Up() * 2 + headm:GetAngles():Right() * 4 + headm:GetAngles():Up() * 0  + headm:GetAngles():Forward() * (4 + (ply.PlayerClassName == "Combine" and 4 or 0))))
 
-		local trace = hg.hullCheck(ply:EyePos() - vector_up * 10, pos, ply)
+		local trace = zc.hullCheck(ply:EyePos() - vector_up * 10, pos, ply)
 
 		--[[if CLIENT then
 			cam.Start3D()
@@ -834,8 +834,8 @@ local IsValid = IsValid
 		return trace.HitPos, aim_vector * (dist or 60), {ply, ent, ply.OldRagdoll}, trace, headm//util.TraceLine(tr), trace, headm
 	end
 
-	function hg.eyeTrace(ply, dist, ent, aim_vector, startpos, fFilter)
-		local start, aim, filter, trace, headm = hg.eye(ply, dist, ent, aim_vector, startpos)
+	function zc.eyeTrace(ply, dist, ent, aim_vector, startpos, fFilter)
+		local start, aim, filter, trace, headm = zc.eye(ply, dist, ent, aim_vector, startpos)
 		if not start then return end
 		--if ply.lasteyetrace == RealTime() and ply.cachedeyetrace and (ply.lasteyetracedist == dist) then return ply.cachedeyetrace, trace, headm end
 		--ply.lasteyetrace = RealTime()
@@ -857,7 +857,7 @@ local IsValid = IsValid
 		["prop_vehicle_prisoner_pod"] = true,
 	}
 
-	function hg.isdriveablevehicle(veh)
+	function zc.isdriveablevehicle(veh)
 		if not IsValid(veh) then return false end
 
 		if chairclasses[veh:GetClass()] then return false end
@@ -873,14 +873,14 @@ local IsValid = IsValid
 		end)
 	end
 
-	function hg.CanSuicide(ply)
+	function zc.CanSuicide(ply)
 		if not IsValid(ply) or not ply.GetActiveWeapon then return false end
 		local wep = ply:GetActiveWeapon()
 		return ishgweapon(wep) and wep.CanSuicide and not wep.reload
 	end
 --//
 --\\ Calculate Weight
-	function hg.CalculateWeight(ply,maxweight)
+	function zc.CalculateWeight(ply,maxweight)
 		local weight = 0
 
 		local weps = ply:GetWeapons()
@@ -898,7 +898,7 @@ local IsValid = IsValid
 
 		ply.armors = ply:GetNetVar("Armor",{})
 		for plc,arm in pairs(ply.armors) do
-			weight = weight + (hg.armor[plc][arm].mass or 1)
+			weight = weight + (zc.armor[plc][arm].mass or 1)
 		end
 
 		local weightmul = (1 / (weight / maxweight + 1))
@@ -906,7 +906,7 @@ local IsValid = IsValid
 	end
 --//
 --\\ Shared custom ragdoll mass
-	hg.IdealMassPlayer = {
+	zc.IdealMassPlayer = {
 		["ValveBiped.Bip01_Pelvis"] = 12.775918006897,
 		["ValveBiped.Bip01_Spine1"] = 24.36336517334,
 		["ValveBiped.Bip01_Spine2"] = 24.36336517334,
@@ -1025,9 +1025,9 @@ local IsValid = IsValid
 	-- 		local wep = ply:GetActiveWeapon()
 	-- 		if IsValid(wep) and wep:GetClass() == "weapon_hands_sh" and not wep:GetFists() and not organism.unconscious then
 	-- 			local tbl = {changePosture, "Change Stand Posture"}
-	-- 			hg.radialOptions[#hg.radialOptions + 1] = tbl
+	-- 			zc.radialOptions[#zc.radialOptions + 1] = tbl
 	-- 			--local tbl = {resetPosture, "Reset Stand Posture"}
-	-- 			--hg.radialOptions[#hg.radialOptions + 1] = tbl
+	-- 			--zc.radialOptions[#zc.radialOptions + 1] = tbl
 	-- 		end
 	-- 	end)
 
@@ -1073,7 +1073,7 @@ local IsValid = IsValid
 	-- end
 --//
 --\\ AddForceRag
-	function hg.AddForceRag(ply, physbone, force, time)
+	function zc.AddForceRag(ply, physbone, force, time)
 		if !IsValid(ply) or !ply:IsPlayer() then return end
 		if ply:IsRagdoll() then
 			local phys = ply:GetPhysicsObjectNum(physbone)
@@ -1095,7 +1095,7 @@ local IsValid = IsValid
 	end
 --//
 --\\ Precache Sounds
-	function hg.PrecacheSoundsSWEP(self)
+	function zc.PrecacheSoundsSWEP(self)
 		if self.HolsterSnd and self.HolsterSnd[1] then util.PrecacheSound(self.HolsterSnd[1]) end
 		if self.DeploySnd and self.DeploySnd[1] then util.PrecacheSound(self.DeploySnd[1]) end
 		if self.Primary.Sound and self.Primary.Sound[1] then util.PrecacheSound(self.Primary.Sound[1]) end
@@ -1160,7 +1160,7 @@ local IsValid = IsValid
 			local attachmentData
 			if (laser and not table.IsEmpty(laser)) or wep.laser then
 				if laser and not table.IsEmpty(laser) then
-					attachmentData = hg.attachments.underbarrel[laser[1]]
+					attachmentData = zc.attachments.underbarrel[laser[1]]
 				else
 					attachmentData = wep.laserData
 				end
@@ -1173,10 +1173,10 @@ local IsValid = IsValid
 			if IsValid(wep) and (wep.IsPistolHoldType and not wep:IsPistolHoldType() and ply.PlayerClassName ~= "Gordon") then return end
 
 			local inv = ply:GetNetVar("Inventory",{})
-			if inv and inv["Weapons"] and inv["Weapons"]["hg_flashlight"] and enabled and hg.CanUseLeftHand(ply) then
+			if inv and inv["Weapons"] and inv["Weapons"]["hg_flashlight"] and enabled and zc.CanUseLeftHand(ply) then
 				local flashvar = ply:GetNetVar("flashlight")
 
-				hg.GetCurrentCharacter(ply):EmitSound("items/flashlight1.wav", 65, flashvar and 110 or 130)
+				zc.GetCurrentCharacter(ply):EmitSound("items/flashlight1.wav", 65, flashvar and 110 or 130)
 				ply:SetNetVar("flashlight",not flashvar)
 				--return true
 				if IsValid(ply.flashlight) then ply.flashlight:Remove() end
@@ -1293,7 +1293,7 @@ local IsValid = IsValid
 		}
 	}
 
-	function hg.GetCarSteering(Car)
+	function zc.GetCarSteering(Car)
 		if not Car.steer then
 			for k,v in pairs(adjust) do
 				local steer = Car:LookupBone(k)
@@ -1310,7 +1310,7 @@ local IsValid = IsValid
 	end
 --//
 --\\ Can use hands
-	function hg.CanUseLeftHand(ply)
+	function zc.CanUseLeftHand(ply)
 		local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
 
 		if ent.organism and ent.organism.larmamputated then
@@ -1320,8 +1320,8 @@ local IsValid = IsValid
 		local wep = IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon()
 		local Car = (ply.GetSimfphys and IsValid(ply:GetSimfphys()) and ply:GetSimfphys()) or ( ply.GlideGetVehicle and IsValid(ply:GlideGetVehicle()) and ply:GlideGetVehicle()) or ply:GetVehicle()
 
-		if (IsValid(Car) and hg.GetCarSteering(Car)) then
-			holdingwheel = hg.GetCarSteering(Car) > 0
+		if (IsValid(Car) and zc.GetCarSteering(Car)) then
+			holdingwheel = zc.GetCarSteering(Car) > 0
 		end
 
 		local deploying = wep and (wep.deploy and (wep.deploy - CurTime()) > (wep.CooldownDeploy / 2) or wep.holster and (wep.holster - CurTime()) < (wep.CooldownHolster / 2))
@@ -1331,10 +1331,10 @@ local IsValid = IsValid
 			IsValid(ply.flashlight)) and !ply:GetNetVar("handcuffed") and (wep and not wep.reload)) or
 			(deploying) or
 			(ent != ply and math.abs(ent:GetManipulateBoneAngles(ent:LookupBone("ValveBiped.Bip01_L_Finger11"))[2]) > 5 and !ply:InVehicle()) or
-			( ply:InVehicle() and (wep and not IsValid(wep)) and not wep.reload) and hg.isdriveablevehicle(ply:GetVehicle()) )) or ply.zmanipstart
+			( ply:InVehicle() and (wep and not IsValid(wep)) and not wep.reload) and zc.isdriveablevehicle(ply:GetVehicle()) )) or ply.zmanipstart
 	end
 
-	function hg.CanUseRightHand(ply)
+	function zc.CanUseRightHand(ply)
 		local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
 
 		if ent.organism and ent.organism.rarmamputated then
@@ -1345,7 +1345,7 @@ local IsValid = IsValid
 	end
 --//
 --\\ custom eargrab anim
-	function hg.earanim(ply)
+	function zc.earanim(ply)
 		local plyTable = ply:GetTable()
 
 		plyTable.ChatGestureWeight = plyTable.ChatGestureWeight || 0
@@ -1388,9 +1388,9 @@ local IsValid = IsValid
 			end
 			bullet.AmmoType = tbl.AmmoType or bullet.AmmoType
 			if bullet.AmmoType then
-				bullet.Damage = (hg.ammotypeshuy[bullet.AmmoType] and hg.ammotypeshuy[bullet.AmmoType].BulletSettings.Damage or game.GetAmmoPlayerDamage(game.GetAmmoID(bullet.AmmoType)))// * npcs[ent:GetClass()].multi
-				bullet.Force = (hg.ammotypeshuy[bullet.AmmoType] and hg.ammotypeshuy[bullet.AmmoType].BulletSettings.Force or game.GetAmmoPlayerDamage(game.GetAmmoID(bullet.AmmoType))) * (npcs[ent:GetClass()].force or 1)
-				bullet.Penetration = (hg.ammotypeshuy[bullet.AmmoType] and hg.ammotypeshuy[bullet.AmmoType].BulletSettings.Penetration or game.GetAmmoPlayerDamage(game.GetAmmoID(bullet.AmmoType))) * (npcs[ent:GetClass()].PenetrationMul or 1)
+				bullet.Damage = (zc.ammotypeshuy[bullet.AmmoType] and zc.ammotypeshuy[bullet.AmmoType].BulletSettings.Damage or game.GetAmmoPlayerDamage(game.GetAmmoID(bullet.AmmoType)))// * npcs[ent:GetClass()].multi
+				bullet.Force = (zc.ammotypeshuy[bullet.AmmoType] and zc.ammotypeshuy[bullet.AmmoType].BulletSettings.Force or game.GetAmmoPlayerDamage(game.GetAmmoID(bullet.AmmoType))) * (npcs[ent:GetClass()].force or 1)
+				bullet.Penetration = (zc.ammotypeshuy[bullet.AmmoType] and zc.ammotypeshuy[bullet.AmmoType].BulletSettings.Penetration or game.GetAmmoPlayerDamage(game.GetAmmoID(bullet.AmmoType))) * (npcs[ent:GetClass()].PenetrationMul or 1)
 			end
 			bullet.Filter = { ent }
 			bullet.Attacker = ent
@@ -1406,7 +1406,7 @@ local IsValid = IsValid
 			if(!GetGlobalBool("PhysBullets_ReplaceDefault", false)) and not bullet.NpcShoot then
 				local oldcallback = bullet.Callback
 				function bullet.Callback(i1,i2,i3)
-					hg.bulletHit(i1,i2,i3,bullet,ent)
+					zc.bulletHit(i1,i2,i3,bullet,ent)
 
 				end
 
@@ -1494,7 +1494,7 @@ local IsValid = IsValid
 		if IsValid(heldent) and heldent:GetClass() == "button" then return heldent end
 
 		if not ply:KeyDown(IN_USE) then return false end
-		local eyetr = hg.eyeTrace(ply,100,nil,nil,nil,checkUse)
+		local eyetr = zc.eyeTrace(ply,100,nil,nil,nil,checkUse)
 
 		local ent = eyetr.Entity
 
@@ -1621,7 +1621,7 @@ duplicator.Allow( "homigrad_base" )
 --//
 
 --\\ Explosion Trace
-	function hg.ExplosionTrace(start,endpos,filter)
+	function zc.ExplosionTrace(start,endpos,filter)
 		local filter1 = {}
 		filter = filter or {}
 		for _,ent in ipairs(filter) do
@@ -1644,8 +1644,8 @@ duplicator.Allow( "homigrad_base" )
 --//
 
 --\\ Just shared freelook limits
-	hg.MaxLookX,hg.MinLookX = 55,-55
-	hg.MaxLookY,hg.MinLookY = 45,-45
+	zc.MaxLookX,zc.MinLookX = 55,-55
+	zc.MaxLookY,zc.MinLookY = 45,-45
 --//
 
 --\\ Screen Capture
@@ -1664,25 +1664,25 @@ duplicator.Allow( "homigrad_base" )
 			["$translucent"] = 1,
 		})
 
-		function hg.GetCaptureTex()
+		function zc.GetCaptureTex()
 			return tex
 		end
 
-		function hg.GetCaptureMat()
+		function zc.GetCaptureMat()
 			return myMat
 		end
 
-		function hg.StartCaptureRender()
+		function zc.StartCaptureRender()
 			render.PushRenderTarget(tex, 0, 0, ScrW(), ScrH())
 			render.Clear(0, 0, 0, 0, false, false)
 			render.SetWriteDepthToDestAlpha( false )
 		end
 
-		function hg.EndCaptureRender()
+		function zc.EndCaptureRender()
 			render.PopRenderTarget()
 		end
 
-		function hg.DrawCaptured()
+		function zc.DrawCaptured()
 			render.SetMaterial(myMat)
 			render.DrawScreenQuad()
 		end
@@ -1690,7 +1690,7 @@ duplicator.Allow( "homigrad_base" )
 --//
 
 --\\ Custom table.IsEmpty
-	hg.isempty = hg.isempty or table.IsEmpty
+	zc.isempty = zc.isempty or table.IsEmpty
 	function table.IsEmpty( tab )
 		return next( tab ) == nil
 	end
@@ -1701,7 +1701,7 @@ if SERVER then
 	util.AddNetworkString("ZC_ScreenShake")
 end
 
-hg.OldScreenShake = hg.OldScreenShake or util.ScreenShake
+zc.OldScreenShake = zc.OldScreenShake or util.ScreenShake
 
 local ScreenShakers = {}
 --[[
@@ -1750,7 +1750,7 @@ function util.ScreenShake(vPos, nAmplitude, nFrequency, nDuration, nRadius, bAir
 			bAirshake = bAirshake,
 			tCreated = CurTime()
 		}
-		hg.OldScreenShake(vPos, nAmplitude, nFrequency, nDuration, nRadius, bAirshake, crfFilter)
+		zc.OldScreenShake(vPos, nAmplitude, nFrequency, nDuration, nRadius, bAirshake, crfFilter)
 	end
 end
 

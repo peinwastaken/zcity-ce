@@ -32,8 +32,8 @@ local teams = {
 }
 
 function MODE:RenderScreenspaceEffects()
-	zb.RemoveFade()
-	if zb.ROUND_START + 85 < CurTime() then
+	zc.RemoveFade()
+	if zc.ROUND_START + 85 < CurTime() then
 
 		if songfade <= 0.01 and IsValid( song ) then
 			song:Stop()
@@ -43,26 +43,26 @@ function MODE:RenderScreenspaceEffects()
 			song:SetVolume(songfade)
 		end
 	end
-	if zb.ROUND_START + 7.5 < CurTime() then return end
-	local fade = math.Clamp(zb.ROUND_START + 7.5 - CurTime(), 0, 1)
+	if zc.ROUND_START + 7.5 < CurTime() then return end
+	local fade = math.Clamp(zc.ROUND_START + 7.5 - CurTime(), 0, 1)
 	surface.SetDrawColor(0, 0, 0, 255 * fade)
 	surface.DrawRect(-1, -1, ScrW() + 1, ScrH() + 1)
 end
 local posadd = 0
 function MODE:HUDPaint()
-	if zb.ROUND_START + 90 > CurTime() then
-		posadd = Lerp(FrameTime() * 5,posadd or 0, zb.ROUND_START + 7.3 < CurTime() and 0 or -sw * 0.4)
+	if zc.ROUND_START + 90 > CurTime() then
+		posadd = Lerp(FrameTime() * 5,posadd or 0, zc.ROUND_START + 7.3 < CurTime() and 0 or -sw * 0.4)
 		local color = Color(255*-math.sin(CurTime()*3),25,255*math.sin(CurTime()*3))
-		draw.SimpleText( "SWAT will arrive in: "..string.FormattedTime(zb.ROUND_START + 90 - CurTime(), "%02i:%02i"	), "ZB_HomicideMedium", sw * 0.02 + posadd, sh * 0.95, Color(0,0,0), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-		draw.SimpleText( "SWAT will arrive in: "..string.FormattedTime(zb.ROUND_START + 90 - CurTime(), "%02i:%02i"	), "ZB_HomicideMedium", (sw * 0.02) - 2 + posadd, (sh * 0.95) - 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-		local fade = math.Clamp(zb.ROUND_START + 7.5 - CurTime(), 0, 1)
+		draw.SimpleText( "SWAT will arrive in: "..string.FormattedTime(zc.ROUND_START + 90 - CurTime(), "%02i:%02i"	), "ZB_HomicideMedium", sw * 0.02 + posadd, sh * 0.95, Color(0,0,0), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText( "SWAT will arrive in: "..string.FormattedTime(zc.ROUND_START + 90 - CurTime(), "%02i:%02i"	), "ZB_HomicideMedium", (sw * 0.02) - 2 + posadd, (sh * 0.95) - 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		local fade = math.Clamp(zc.ROUND_START + 7.5 - CurTime(), 0, 1)
 		surface.SetDrawColor(0, 0, 0, 255 * fade)
 		surface.DrawRect(-1, -1, ScrW() + 1, ScrH() + 1)
 	end
 
-	if zb.ROUND_START + 8.5 > CurTime() then
+	if zc.ROUND_START + 8.5 > CurTime() then
 		if not lply:Alive() and not lply:Team() == 0 then return end
-		local fade = math.Clamp(zb.ROUND_START + 8 - CurTime(), 0, 1)
+		local fade = math.Clamp(zc.ROUND_START + 8 - CurTime(), 0, 1)
 		local team_ = lply:Team()
 		draw.SimpleText("Crisis Response", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0, 162, 255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		local Rolename = teams[team_].name
@@ -85,7 +85,7 @@ local colRedUp = Color(160, 30, 30)
 local col = Color(255, 255, 255, 255)
 local colSpect1 = Color(75, 75, 75, 255)
 local colSpect2 = Color(255, 255, 255)
-BlurBackground = BlurBackground or hg.DrawBlur
+BlurBackground = BlurBackground or zc.DrawBlur
 
 if IsValid(hmcdEndMenu) then
 	hmcdEndMenu:Remove()

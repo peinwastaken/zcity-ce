@@ -37,7 +37,7 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 		end
 
 
-		hg.approach_vector = approach_vector
+		zc.approach_vector = approach_vector
 	--//
 
 	local zc_movement_stamina_debuff = CreateConVar("zc_movement_stamina_debuff", "0.3", {FCVAR_REPLICATED,FCVAR_ARCHIVE,FCVAR_NOTIFY}, "Multiply movement debuff when having low stamina", 0, 1)
@@ -66,7 +66,7 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 			return
 		end
 
-		if !hg.RagdollCombatInUse(ply) and (IsValid(ply.FakeRagdoll) or IsValid(ply:GetNWEntity("FakeRagdollOld"))) then
+		if !zc.RagdollCombatInUse(ply) and (IsValid(ply.FakeRagdoll) or IsValid(ply:GetNWEntity("FakeRagdollOld"))) then
 			if IsValid(ply.FakeRagdoll) then
 				cmd:SetForwardMove(0)
 				cmd:SetSideMove(0)
@@ -123,8 +123,8 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 		local walk_speed = ply:GetWalkSpeed()
 		local slow_walk_speed = ply:GetSlowWalkSpeed()
 		local crouch_walk_speed = ply:GetCrouchedWalkSpeed()
-		local weightmul = hg.CalculateWeight(ply, 140)
-		local rag = hg.GetCurrentCharacter(ply)
+		local weightmul = zc.CalculateWeight(ply, 140)
+		local rag = zc.GetCurrentCharacter(ply)
 		ply.weightmul = weightmul
 		weightmul = math.max(weightmul > 0.9 and 1 or weightmul / 0.9, 0.1)
 
@@ -346,7 +346,7 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 			-- local new_inertia = LerpVector(0.5^(delta_time * ply.InertiaBlend), ply.MovementInertia, inertia_to)
 			-- local new_inertia = LerpVector(1 - 0.5^(delta_time * ply.InertiaBlend), ply.MovementInertia, inertia_to)
 			//local new_inertia = approach_vector(ply.MovementInertia, inertia_to, 1000)//SERVER and delta_time * ply.InertiaBlend * ply:Ping() / 100 or delta_time * ply.InertiaBlend)
-			//local new_inertia = approach_vector_smooth(ply.MovementInertia, inertia_to, hg.lerpFrameTime2(0.075, delta_time))
+			//local new_inertia = approach_vector_smooth(ply.MovementInertia, inertia_to, zc.lerpFrameTime2(0.075, delta_time))
 			if !ply:OnGround() then
 				ply.MovementInertia = ply.LastVelocity
 			end
@@ -435,7 +435,7 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 				end
 			end
 
-			local eyetr = hg.eyeTrace(ply)
+			local eyetr = zc.eyeTrace(ply)
 			local dist = pos:DistToSqr(eyetr.StartPos)
 			local reachdist = weapons.GetStored("weapon_hands_sh").ReachDistance + 30
 			if dist > reachdist*reachdist then
@@ -462,21 +462,21 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 
 				if tr.SurfaceProps and util.GetSurfaceData(tr.SurfaceProps) and util.GetSurfaceData(tr.SurfaceProps).friction < 0.2 then
 					local b1 = ply:TranslateBoneToPhysBone(ply:LookupBone("ValveBiped.Bip01_L_Calf"))
-					local phys1 = hg.IdealMassPlayer["ValveBiped.Bip01_L_Calf"]
+					local phys1 = zc.IdealMassPlayer["ValveBiped.Bip01_L_Calf"]
 
 					local b2 = ply:TranslateBoneToPhysBone(ply:LookupBone("ValveBiped.Bip01_R_Calf"))
-					local phys2 = hg.IdealMassPlayer["ValveBiped.Bip01_R_Calf"]
+					local phys2 = zc.IdealMassPlayer["ValveBiped.Bip01_R_Calf"]
 
 					local torso = ply:TranslateBoneToPhysBone(ply:LookupBone("ValveBiped.Bip01_Spine2"))
-					local phystorso = hg.IdealMassPlayer["ValveBiped.Bip01_Spine2"]
+					local phystorso = zc.IdealMassPlayer["ValveBiped.Bip01_Spine2"]
 					local force = vel:GetNormalized() * 150
 
-					hg.AddForceRag(ply, torso, -force * 5 * phystorso, 0.5)
-					hg.AddForceRag(ply, b1, (force * 5 - vector_up * 2) * phys1, 0.5)
-					hg.AddForceRag(ply, b2, (force * 5 - vector_up * 2) * phys2, 0.5)
+					zc.AddForceRag(ply, torso, -force * 5 * phystorso, 0.5)
+					zc.AddForceRag(ply, b1, (force * 5 - vector_up * 2) * phys1, 0.5)
+					zc.AddForceRag(ply, b2, (force * 5 - vector_up * 2) * phys2, 0.5)
 
 					timer.Simple(0,function()
-						hg.StunPlayer(ply)
+						zc.StunPlayer(ply)
 					end)
 				end
 			end
@@ -490,9 +490,9 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 				local force = ply:GetAimVector() * 400
 				force[3] = 0
 				local torso = ply:TranslateBoneToPhysBone(ply:LookupBone("ValveBiped.Bip01_Spine2"))
-				local phystorso = hg.IdealMassPlayer["ValveBiped.Bip01_Spine2"]
-				hg.AddForceRag(ply, torso, force * phystorso, 0.5)
-				if hg.QueueFakeVelocity then
+				local phystorso = zc.IdealMassPlayer["ValveBiped.Bip01_Spine2"]
+				zc.AddForceRag(ply, torso, force * phystorso, 0.5)
+				if zc.QueueFakeVelocity then
 					local fakeVelocity = mv:GetVelocity()
 					fakeVelocity = Vector(fakeVelocity.x, fakeVelocity.y, fakeVelocity.z)
 					if ply:OnGround() then
@@ -500,9 +500,9 @@ local Angle, Vector, math, hook, util = Angle, Vector, math, hook, util
 						fakeVelocity.z = math.max(fakeVelocity.z, jumpPower)
 					end
 
-					hg.QueueFakeVelocity(ply, fakeVelocity, 0.2)
+					zc.QueueFakeVelocity(ply, fakeVelocity, 0.2)
 				end
-				hg.Fake(ply)
+				zc.Fake(ply)
 			end
 		end
 

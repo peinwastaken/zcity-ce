@@ -34,7 +34,7 @@ function ENT:AddThink()
 	
 	if not self.Exploded then
 		self:EmitSound("weapons/grenade/tick1.wav",65)
-		hg.EmitAISound(self:GetPos(), 256, 2, 8)
+		zc.EmitAISound(self:GetPos(), 256, 2, 8)
 	end
 
 	if time < 0 and not self.Exploded then

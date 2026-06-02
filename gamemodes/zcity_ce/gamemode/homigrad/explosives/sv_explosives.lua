@@ -1,12 +1,12 @@
 --
 util.AddNetworkString("ZC_ExplosionEffect")
-hg = hg or {}
+zc = zc or {}
 
-function hg.FindOtherExplosive(inflictor,pos,radius)
+function zc.FindOtherExplosive(inflictor,pos,radius)
 
 end
 
-function hg.MakeCombinedExplosion()
+function zc.MakeCombinedExplosion()
 
 end
 
@@ -22,7 +22,7 @@ local DebrisSounds = {
     "explosion_debris/interior/explosion_debris_sprinkle_interior_wave09.wav"
 }
 
-local hg, util, _, IsValid, timer, coroutine, Vector = hg, util, ParticleEffect, IsValid, timer, coroutine, Vector
+local zc, util, _, IsValid, timer, coroutine, Vector = zc, util, ParticleEffect, IsValid, timer, coroutine, Vector
 
 local vecCone = Vector(5, 5, 0)
 local ExpTypes = {
@@ -35,7 +35,7 @@ local ExpTypes = {
 		--hgWreckBuildings(Ent, SelfPos, Force / 50)
 		hgBlastDoors(Ent, SelfPos, Force / 50, Force / 15)
 		--ParticleEffect("pcf_jack_incendiary_ground_sm2",SelfPos + vector_up * 1,vector_up:Angle())
-		hg.ExplosionEffect(SelfPos, Force / 0.2, 80)
+		zc.ExplosionEffect(SelfPos, Force / 0.2, 80)
 
         net.Start("ZC_ExplosionEffect")
             net.WriteVector(SelfPos)
@@ -60,7 +60,7 @@ local ExpTypes = {
 		local entsCount = 0
 		for _, enta in ipairs(ents.FindInSphere(SelfPos, dis)) do
 			local tracePos = enta:IsPlayer() and (enta:GetPos() + enta:OBBCenter()) or enta:GetPos()
-			local tr = hg.ExplosionTrace(SelfPos, tracePos, {Ent})
+			local tr = zc.ExplosionTrace(SelfPos, tracePos, {Ent})
 			local phys = enta:GetPhysicsObject()
 			if IsValid(phys) then
 				entsCount = entsCount + 1
@@ -76,18 +76,18 @@ local ExpTypes = {
 			if enta.organism then
 				local behindwall = tr.Entity != enta and tr.MatType != MAT_GLASS
 				if IsValid(enta.organism.owner) and enta.organism.owner:IsPlayer() then
-					hg.ExplosionDisorientation(enta, 5 * frac / (behindwall and 3 or 1), 6 * frac / (behindwall and 3 or 1))
-					hg.RunZManipAnim(enta.organism.owner, "shieldexplosion")
+					zc.ExplosionDisorientation(enta, 5 * frac / (behindwall and 3 or 1), 6 * frac / (behindwall and 3 or 1))
+					zc.RunZManipAnim(enta.organism.owner, "shieldexplosion")
 				end
 			end
 
 			if tr.Entity != enta then forceadd = forceadd / 5 continue end
 
 			if enta:IsPlayer() then
-				hg.AddForceRag(enta, 0, forceadd * 0.5, 0.5)
-				hg.AddForceRag(enta, 1, forceadd * 0.5, 0.5)
+				zc.AddForceRag(enta, 0, forceadd * 0.5, 0.5)
+				zc.AddForceRag(enta, 1, forceadd * 0.5, 0.5)
 
-				timer.Simple(0, function() hg.LightStunPlayer(enta) end)
+				timer.Simple(0, function() zc.LightStunPlayer(enta) end)
 			end
 
 			if not IsValid(phys) then continue end
@@ -110,7 +110,7 @@ local ExpTypes = {
 		bullet.Distance = 15000
 		bullet.DisableLagComp = true
 		bullet.Filter = {Ent}
-		table.Add(bullet.Filter, hg.drums2)
+		table.Add(bullet.Filter, zc.drums2)
 		local multi = math.min(Mass/5,20)
 
 		co = coroutine.create(function()
@@ -156,7 +156,7 @@ local ExpTypes = {
 		hgBlastDoors(Ent, SelfPos, Force / 50)
 
         --ParticleEffect("pcf_jack_groundsplode_medium",SelfPos + vector_up * 1,vector_up:Angle())
-		hg.ExplosionEffect(SelfPos, Force / 0.2, 80)
+		zc.ExplosionEffect(SelfPos, Force / 0.2, 80)
 
         net.Start("ZC_ExplosionEffect")
             net.WriteVector(SelfPos)
@@ -167,7 +167,7 @@ local ExpTypes = {
 		local entsCount = 0
 		for _, enta in ipairs(ents.FindInSphere(SelfPos, dis)) do
 			local tracePos = enta:IsPlayer() and (enta:GetPos() + enta:OBBCenter()) or enta:GetPos()
-			local tr = hg.ExplosionTrace(SelfPos, tracePos, {Ent})
+			local tr = zc.ExplosionTrace(SelfPos, tracePos, {Ent})
 			local phys = enta:GetPhysicsObject()
 			if IsValid(phys) then
 				entsCount = entsCount + 1
@@ -183,8 +183,8 @@ local ExpTypes = {
 			if enta.organism then
 				local behindwall = tr.Entity != enta and tr.MatType != MAT_GLASS
 				if IsValid(enta.organism.owner) and enta.organism.owner:IsPlayer() and not behindwall then
-					hg.ExplosionDisorientation(enta, 5 * frac, 6 * frac)
-					hg.RunZManipAnim(enta.organism.owner, "shieldexplosion")
+					zc.ExplosionDisorientation(enta, 5 * frac, 6 * frac)
+					zc.RunZManipAnim(enta.organism.owner, "shieldexplosion")
 				end
 			end
 
@@ -192,10 +192,10 @@ local ExpTypes = {
 
 
 			if enta:IsPlayer() then
-				hg.AddForceRag(enta, 0, forceadd * 0.5, 0.5)
-				hg.AddForceRag(enta, 1, forceadd * 0.5, 0.5)
+				zc.AddForceRag(enta, 0, forceadd * 0.5, 0.5)
+				zc.AddForceRag(enta, 1, forceadd * 0.5, 0.5)
 
-				timer.Simple(0, function() hg.LightStunPlayer(enta) end)
+				timer.Simple(0, function() zc.LightStunPlayer(enta) end)
 			end
 
 			if not IsValid(phys) then continue end
@@ -218,7 +218,7 @@ local ExpTypes = {
 		bullet.Distance = 15000
 		bullet.DisableLagComp = true
 		bullet.Filter = {Ent}
-		table.Add(bullet.Filter, hg.drums2)
+		table.Add(bullet.Filter, zc.drums2)
 		local multi = math.min(Mass/5,20)
 
 		co = coroutine.create(function()
@@ -263,7 +263,7 @@ local ExpTypes = {
 		hgBlastDoors(Ent, SelfPos, Force / 50)
 
         --ParticleEffect("pcf_jack_groundsplode_small",SelfPos + vector_up * 1,vector_up:Angle())
-		hg.ExplosionEffect(SelfPos, Force / 0.2, 80)
+		zc.ExplosionEffect(SelfPos, Force / 0.2, 80)
 
         net.Start("ZC_ExplosionEffect")
             net.WriteVector(SelfPos)
@@ -274,7 +274,7 @@ local ExpTypes = {
 		local entsCount = 0
 		for _, enta in ipairs(ents.FindInSphere(SelfPos, dis)) do
 			local tracePos = enta:IsPlayer() and (enta:GetPos() + enta:OBBCenter()) or enta:GetPos()
-			local tr = hg.ExplosionTrace(SelfPos, tracePos, {Ent})
+			local tr = zc.ExplosionTrace(SelfPos, tracePos, {Ent})
 			local phys = enta:GetPhysicsObject()
 			if IsValid(phys) then
 				entsCount = entsCount + 1
@@ -290,8 +290,8 @@ local ExpTypes = {
 			if enta.organism then
 				local behindwall = tr.Entity != enta and tr.MatType != MAT_GLASS
 				if IsValid(enta.organism.owner) and enta.organism.owner:IsPlayer() and not behindwall then
-					hg.ExplosionDisorientation(enta, 5 * frac, 6 * frac)
-					hg.RunZManipAnim(enta.organism.owner, "shieldexplosion")
+					zc.ExplosionDisorientation(enta, 5 * frac, 6 * frac)
+					zc.RunZManipAnim(enta.organism.owner, "shieldexplosion")
 				end
 			end
 
@@ -299,10 +299,10 @@ local ExpTypes = {
 
 
 			if enta:IsPlayer() then
-				hg.AddForceRag(enta, 0, forceadd * 0.5, 0.5)
-				hg.AddForceRag(enta, 1, forceadd * 0.5, 0.5)
+				zc.AddForceRag(enta, 0, forceadd * 0.5, 0.5)
+				zc.AddForceRag(enta, 1, forceadd * 0.5, 0.5)
 
-				timer.Simple(0, function() hg.LightStunPlayer(enta) end)
+				timer.Simple(0, function() zc.LightStunPlayer(enta) end)
 			end
 
 			if not IsValid(phys) then continue end
@@ -321,7 +321,7 @@ local ExpTypes = {
     end,
 }
 
-function hg.PropExplosion(Ent, ExpType, Force, Mass)
+function zc.PropExplosion(Ent, ExpType, Force, Mass)
 	if Ent.HasExploded then return end
 	Ent.HasExploded = true
 
@@ -339,7 +339,7 @@ local expItems = {
     ["models/props_c17/canister_propane01a.mdl"] = {ExpType = "Fire", Force = 50}
 }
 
-hg.expItems = expItems
+zc.expItems = expItems
 
 hook.Add("EntityTakeDamage", "ZC_ExplosiveDamage", function( target, dmginfo )
 	if IsValid(target) and expItems[target:GetModel()] then
@@ -353,7 +353,7 @@ hook.Add("EntityTakeDamage", "ZC_ExplosiveDamage", function( target, dmginfo )
 				local tbl = expItems[target:GetModel()]
 				target.babahnut = true
 
-				hg.PropExplosion( target, tbl.ExpType, (target.Volume or tbl.Force) * 2, target:GetPhysicsObject():GetMass() )
+				zc.PropExplosion( target, tbl.ExpType, (target.Volume or tbl.Force) * 2, target:GetPhysicsObject():GetMass() )
 			end
 		end
 

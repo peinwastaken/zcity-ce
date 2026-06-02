@@ -59,7 +59,7 @@ SWEP.FakeReloadEvents = {
 
 	[0.3] = function( self, timeMul )
 		if CLIENT and self:Clip1() < 1 then
-			hg.CreateMag( self, Vector(0,55,-55) )
+			zc.CreateMag( self, Vector(0,55,-55) )
 			self:GetWM():ManipulateBoneScale(13, vector_origin)
 			self:GetWM():ManipulateBoneScale(13, vector_origin)
 			self:GetOwner():PullLHTowards("ValveBiped.Bip01_L_Thigh", 1.2 * timeMul,nil,nil,function()

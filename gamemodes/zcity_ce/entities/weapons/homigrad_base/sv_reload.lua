@@ -40,7 +40,7 @@ local randomgovno = {
 }
 
 -- probably a bit of shitcode, but it works fine
-local IsValid, hg, pairs, isnumber, math, AngleRand, timer = IsValid, hg, pairs, isnumber, math, AngleRand, timer
+local IsValid, zc, pairs, isnumber, math, AngleRand, timer = IsValid, zc, pairs, isnumber, math, AngleRand, timer
 
 local function FailSafe(ply)
 	if not IsValid(ply) then return end
@@ -69,7 +69,7 @@ concommand.Add("hg_reloadfloorweapon", function(ply, cmd, args)
 	local org = ply.organism
 	if org.rarmamputated and org.larmamputated then return end
 
-	local ent = (IsValid(hg.eyeTrace(ply).Entity) and hg.eyeTrace(ply).Entity) or (IsValid(ply:GetNetVar("carryent")) and ply:GetNetVar("carryent"))
+	local ent = (IsValid(zc.eyeTrace(ply).Entity) and zc.eyeTrace(ply).Entity) or (IsValid(ply:GetNetVar("carryent")) and ply:GetNetVar("carryent"))
 	if not IsValid(ent) or not ishgweapon(ent) or ent:GetPos():DistToSqr(ply:GetPos()) > 6000 then return end
 
 	local isshotgun = ent.IsHomigradShotgunBase or ent.Base == "homigrad_base_shotgun" or ent:GetClass() == "weapon_m4super"
@@ -84,7 +84,7 @@ concommand.Add("hg_reloadfloorweapon", function(ply, cmd, args)
 		local dist = ent:GetPos():DistToSqr(ply:GetPos()) > 6000
 		local phys = ent:GetPhysicsObject()
 
-		hg.SetCarryEnt2(ply, ent, 0, phys:GetMass(), vector_origin, ply:GetAimVector() * 10 + ply:GetUp() * -25 + ply:GetShootPos(), ply:EyeAngles())
+		zc.SetCarryEnt2(ply, ent, 0, phys:GetMass(), vector_origin, ply:GetAimVector() * 10 + ply:GetUp() * -25 + ply:GetShootPos(), ply:EyeAngles())
 		ply:EmitSound("physics/body/body_medium_impact_soft"..mRandom(7)..".wav", 55)
 		ply:ViewPunch(AngleRand(-2, 2))
 		ply:SetNW2Bool("FloorReloading", true) -- failsafe starts here..

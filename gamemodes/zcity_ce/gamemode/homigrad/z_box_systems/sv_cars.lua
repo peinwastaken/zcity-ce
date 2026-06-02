@@ -1,9 +1,9 @@
 -- Cars, spawn spots. One car respawns every 30 minutes if the previous one was destroyed.
-ZBox = ZBox or {}
+zc = zc or {}
 
-ZBox.Plugins = ZBox.Plugins or {}
-ZBox.Plugins["Cars"] = ZBox.Plugins["Cars"] or {}
-local PLUGIN = ZBox.Plugins["Cars"]
+zc.Plugins = zc.Plugins or {}
+zc.Plugins["Cars"] = zc.Plugins["Cars"] or {}
+local PLUGIN = zc.Plugins["Cars"]
 
 PLUGIN.Name = "Cars"
 

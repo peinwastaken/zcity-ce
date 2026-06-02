@@ -144,15 +144,15 @@ function SWEP:SetHandPos(noset)
 		--self:AnimHands()
 	--end
 
-    hg.set_hold(ent, self.HoldLH)
-    hg.set_holdrh(ent, self.HoldRH)
+    zc.set_hold(ent, self.HoldLH)
+    zc.set_holdrh(ent, self.HoldRH)
 	
 	--self:AnimationRender()
 	--self:AnimHoldPost(self:GetWeaponEntity())
 
-	hg.bone_apply_matrix(ent, rh, rhmat)
-	if ( hg.CanUseLeftHand(ply) and self.lhandik ) then
-		hg.bone_apply_matrix(ent, lh, lhmat)
+	zc.bone_apply_matrix(ent, rh, rhmat)
+	if ( zc.CanUseLeftHand(ply) and self.lhandik ) then
+		zc.bone_apply_matrix(ent, lh, lhmat)
 	end
 
 	self.rhmat = rhmat

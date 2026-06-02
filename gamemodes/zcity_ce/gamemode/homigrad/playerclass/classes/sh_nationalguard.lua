@@ -33,7 +33,7 @@ local clr = Color(5, 65, 0):ToVector()
 function CLASS.On(self)
     if CLIENT then return end
     ApplyAppearance(self,nil,nil,nil,true)
-    local Appearance = self.CurAppearance or hg.Appearance.GetRandomAppearance()
+    local Appearance = self.CurAppearance or zc.Appearance.GetRandomAppearance()
     Appearance.AAttachments = ""
     Appearance.AColthes = ""
 
@@ -67,7 +67,7 @@ function CLASS.Guilt(self, Victim)
     end
 
     if CurrentRound().name == "hmcd" then
-        return zb.ForcesAttackedInnocent(self, Victim)
+        return zc.ForcesAttackedInnocent(self, Victim)
     end
 
     return 1
@@ -75,7 +75,7 @@ end
 
 hook.Add("ZC_PlayerFootstep", "ZC_NationalguardFootsteps", function(ply, pos, foot, sound, volume, rf)
 	if ply:Alive() and ply.PlayerClassName == "nationalguard" then
-		local ent = hg.GetCurrentCharacter(ply)
+		local ent = zc.GetCurrentCharacter(ply)
 
 		if not (ply:IsWalking() or ply:Crouching()) and ent == ply then
 			local snd = "zcitysnd/" .. string.Replace(sound, "player/footsteps", "player/footsteps_military/")

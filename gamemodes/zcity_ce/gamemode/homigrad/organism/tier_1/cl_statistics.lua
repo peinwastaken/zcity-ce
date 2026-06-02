@@ -1,4 +1,4 @@
-hg.organism_ents = hg.organism_ents or {}
+zc.organism_ents = zc.organism_ents or {}
 
 net.Receive("ZC_OrganismSync", function()
 	local org = net.ReadTable()
@@ -9,7 +9,7 @@ net.Receive("ZC_OrganismSync", function()
 	local ply = org.owner
 
 	if ply:IsNPC() then
-		hg.organism_ents[ply] = true
+		zc.organism_ents[ply] = true
 	end
 
 	if add and org.owner.organism and org.owner.new_organism then
@@ -261,7 +261,7 @@ local function LerpVariables(lerp,org_source,org_target)
 	end
 end
 
-hg.LerpVariables = LerpVariables
+zc.LerpVariables = LerpVariables
 
 local littleblack = Color(75, 75, 75, 255)
 local trahalgmod = Color(0, 0, 0, 75)
@@ -274,7 +274,7 @@ hook.Add("HUDPaint", "ZC_DrawOrganismDebugHud", function()
 
 	--LerpVariables(FrameTime(),organism,new_organism)
 	if !organism then return end
-	if not zb.dev.IsDeveloper() then return end
+	if not zc.dev.IsDeveloper() then return end
 	if not LocalPlayer():IsAdmin() then return end
 	if !zc_stats:GetBool() then return end
 	local textList = getTextTable(organism)
@@ -304,8 +304,8 @@ hook.Add("HUDPaint", "ZC_DrawOrganismDebugHud", function()
 		draw.SimpleText(text[2], "DefaultFixedDropShadow", x + weight, y, white, TEXT_ALIGN_RIGHT)
 	end
 
-	local tr = hg.eyeTrace(LocalPlayer(), 10000)
-	if not hg.eyeTrace or not IsValid(LocalPlayer()) or !tr then return end
+	local tr = zc.eyeTrace(LocalPlayer(), 10000)
+	if not zc.eyeTrace or not IsValid(LocalPlayer()) or !tr then return end
 
 	local trent = tr.Entity
 	local organism_otherply = trent.organism or {}
@@ -376,31 +376,31 @@ if not ConVarExists("zc_max_hitshow") then
 	CreateClientConVar("zc_max_hitshow", 40, true, false, "how many hits to track on your local pc (very bad idea to put this to more than 60)", 0, 150)
 end
 --mb make userinfo?
-hg.hits = hg.hits or {}
+zc.hits = zc.hits or {}
 local iter = 1
 local inf
 local attacker
 local function startPlayingHit(i)
 	local i = iter
-	tracePoses = hg.hits[i].tracePoses
-	ent = hg.hits[i].ent
-	hitBoxs = hg.hits[i].hitBoxs
-	dmg = hg.hits[i].dmg
-	size = hg.hits[i].size
+	tracePoses = zc.hits[i].tracePoses
+	ent = zc.hits[i].ent
+	hitBoxs = zc.hits[i].hitBoxs
+	dmg = zc.hits[i].dmg
+	size = zc.hits[i].size
 
-	traveltime = hg.hits[i].traveltime
-	attacker = hg.hits[i].att
-	model = hg.hits[i].model
-	bone0 = hg.hits[i].bone0
-	bones = hg.hits[i].bones
-	ricochets = hg.hits[i].ricochets
-	inf = hg.hits[i].inf
+	traveltime = zc.hits[i].traveltime
+	attacker = zc.hits[i].att
+	model = zc.hits[i].model
+	bone0 = zc.hits[i].bone0
+	bones = zc.hits[i].bones
+	ricochets = zc.hits[i].ricochets
+	inf = zc.hits[i].inf
 	csmodel:SetPos(bone0:GetTranslation())
 	csmodel:SetModel(model)
-	csmodel.armors = hg.hits[i].armors or {}
-	organs = hg.organism.GetHitBoxOrgans(model, csmodel)
+	csmodel.armors = zc.hits[i].armors or {}
+	organs = zc.organism.GetHitBoxOrgans(model, csmodel)
 
-	boxs,pos,sphere = hg.organism.ShootMatrix(csmodel, organs)
+	boxs,pos,sphere = zc.organism.ShootMatrix(csmodel, organs)
 	if boxs == nil then return end
 
 	hitorgans = {}
@@ -427,9 +427,9 @@ local function startPlayingHit(i)
 end
 
 hook.Add("ZC_PlayerDeath","ZC_PlayQueuedHitEffectsOnDeath",function(ply)
-	if ply != LocalPlayer() or #hg.hits == 0 then return end
+	if ply != LocalPlayer() or #zc.hits == 0 then return end
 
-	iter = #hg.hits
+	iter = #zc.hits
 	if iter > 0 then
 		startPlayingHit(iter)
 	end
@@ -438,7 +438,7 @@ end)
 
 hook.Add("ZC_PlayerSpawn","ZC_RemoveStatusScreens",function(ply)
 	if ply != LocalPlayer() then return end
-	hg.hits = {}
+	zc.hits = {}
 end)
 
 /*net.Receive("ZC_TracePosesSend", function()
@@ -459,7 +459,7 @@ end)
 	local att = net.ReadString()
 
 	--timer.Simple(0.1,function()
-		local ent = hg.GetCurrentCharacter(ent) or ent
+		local ent = zc.GetCurrentCharacter(ent) or ent
 		local basebone = ent:GetBoneMatrix(bone)
 		if not basebone then return end
 
@@ -498,11 +498,11 @@ end)
 			ricoshits[tbl[2]] = tbl[1]
 		end
 
-		if #hg.hits >= zc_max_hitshow:GetInt() then table.remove(hg.hits,1) end
+		if #zc.hits >= zc_max_hitshow:GetInt() then table.remove(zc.hits,1) end
 
-		local armors = table.Copy((hg.RagdollOwner(ent) or ent):GetNetVar("Armor"))
+		local armors = table.Copy((zc.RagdollOwner(ent) or ent):GetNetVar("Armor"))
 
-		table.insert(hg.hits,{
+		table.insert(zc.hits,{
 			tracePoses = tracePoses,
 			ent = ent,
 			hitBoxs = hitBoxs,
@@ -546,8 +546,8 @@ end
 
 
 
-function hg.DeathCamAvailable(ply)
-	return timeHuy and ((timeHuy + traveltime) > CurTime()) and #hg.hits > 0
+function zc.DeathCamAvailable(ply)
+	return timeHuy and ((timeHuy + traveltime) > CurTime()) and #zc.hits > 0
 end
 
 local delta = 0
@@ -556,12 +556,12 @@ hook.Add("CreateMove","ZC_DeltaCountingHg",function(cmd)
 end)
 
 local len = 50
-function hg.DeathCam(ply,origin,angles,fov,znear,zfar)
+function zc.DeathCam(ply,origin,angles,fov,znear,zfar)
 
 	if not lply:Alive() then
 		len = math.Clamp(len - delta * 10,10,50)
 		if timeHuy == 0 then timeHuy = CurTime() end
-		if lply:KeyDown(IN_RELOAD) then timeHuy = nil hg.hits = {} end
+		if lply:KeyDown(IN_RELOAD) then timeHuy = nil zc.hits = {} end
 		if timeHuy and ((timeHuy + traveltime) > CurTime()) then
 			local tbl = tracePoses
 
@@ -608,12 +608,12 @@ hook.Add("HUDPaint","ZC_DrawWoundDebugHud",function()
 	if not lply:Alive() then
 		if timeHuy == 0 then timeHuy = CurTime() end
 
-		if lply:KeyDown(IN_RELOAD) then timeHuy = nil hg.hits = {} end
+		if lply:KeyDown(IN_RELOAD) then timeHuy = nil zc.hits = {} end
 
-		if (lply:KeyDown(IN_ATTACK2) or lply:KeyDown(IN_MOVERIGHT)) and timeHuy and #hg.hits != 0 then
+		if (lply:KeyDown(IN_ATTACK2) or lply:KeyDown(IN_MOVERIGHT)) and timeHuy and #zc.hits != 0 then
 			if not attpressed then
 				local next_ = iter + 1
-				iter = next_ > #hg.hits and 1 or next_
+				iter = next_ > #zc.hits and 1 or next_
 				startPlayingHit(i)
 				attpressed = true
 			end
@@ -621,10 +621,10 @@ hook.Add("HUDPaint","ZC_DrawWoundDebugHud",function()
 			attpressed = nil
 		end
 
-		if (lply:KeyDown(IN_ATTACK) or lply:KeyDown(IN_MOVELEFT)) and timeHuy and #hg.hits != 0 then
+		if (lply:KeyDown(IN_ATTACK) or lply:KeyDown(IN_MOVELEFT)) and timeHuy and #zc.hits != 0 then
 			if not attpressed2 then
 				local next_ = iter - 1
-				iter = next_ < 1 and #hg.hits or next_
+				iter = next_ < 1 and #zc.hits or next_
 				startPlayingHit(i)
 				attpressed2 = true
 			end
@@ -706,10 +706,10 @@ hook.Add("HUDPaint","ZC_DrawWoundDebugHud",function()
 					surface.DrawTexturedRect(0,0,ScrW(),ScrH(),0)
 				cam.End2D()
 
-				organs = hg.organism.GetHitBoxOrgans(model, csmodel)
-				boxs,pos,sphere = hg.organism.ShootMatrix(csmodel, organs)
+				organs = zc.organism.GetHitBoxOrgans(model, csmodel)
+				boxs,pos,sphere = zc.organism.ShootMatrix(csmodel, organs)
 
-				--local endPos, hitBoxs2, inputHole, outputHole = hg.organism.Trace(point1, point2 - point1, boxs, pos, sphere, organs, nil, hg.organism.Trace_Bullet, organs)
+				--local endPos, hitBoxs2, inputHole, outputHole = zc.organism.Trace(point1, point2 - point1, boxs, pos, sphere, organs, nil, zc.organism.Trace_Bullet, organs)
 
 				for i = 1,#boxs do
 					local box = boxs[i]
@@ -730,7 +730,7 @@ hook.Add("HUDPaint","ZC_DrawWoundDebugHud",function()
 
 					--if organ and hitorgans[i] then
 					--	cam.Start2D()
-					--		draw.SimpleText(hg.organism.translationTbl[organ[1]] or organ[1], "HomigradFontSmall", box[1]:ToScreen().x + math.sin(CurTime()%(i))^3 * (5%i),box[1]:ToScreen().y + math.cos(CurTime()%(i)) * (5%i), organ and organ[6])
+					--		draw.SimpleText(zc.organism.translationTbl[organ[1]] or organ[1], "HomigradFontSmall", box[1]:ToScreen().x + math.sin(CurTime()%(i))^3 * (5%i),box[1]:ToScreen().y + math.cos(CurTime()%(i)) * (5%i), organ and organ[6])
 					--	cam.End2D()
 					--end
 
@@ -757,7 +757,7 @@ hook.Add("HUDPaint","ZC_DrawWoundDebugHud",function()
 			cam.End3D()
 
 			draw.SimpleText("R to skip.", "HomigradFontBig", ScrW() / 3 * 2, ScrH() / 7, color_white)
-			draw.SimpleText("Hit "..tostring(iter).." of "..tostring(#hg.hits).." by "..inf.." from "..attacker, "HomigradFontBig", ScrW() / 3 * 2, ScrH() / 10, color_white)
+			draw.SimpleText("Hit "..tostring(iter).." of "..tostring(#zc.hits).." by "..inf.." from "..attacker, "HomigradFontBig", ScrW() / 3 * 2, ScrH() / 10, color_white)
 
 
 			--for i, text in pairs(hitorgans) do
@@ -765,7 +765,7 @@ hook.Add("HUDPaint","ZC_DrawWoundDebugHud",function()
 			--	countedorgans[text] = true
 			--
 			--	if ricochets[i] then
-			--		table.insert(organs2,ricochets[i]..tostring(hg.organism.translationTbl[hitorgans[i]] or hitorgans[i]))
+			--		table.insert(organs2,ricochets[i]..tostring(zc.organism.translationTbl[hitorgans[i]] or hitorgans[i]))
 			--	else
 			--		table.insert(organs2,"Penetrated "..text)
 			--	end
@@ -776,7 +776,7 @@ hook.Add("HUDPaint","ZC_DrawWoundDebugHud",function()
 			--	draw.RoundedBox(0, ScreenScale(10), y, weight * 1.5, ScreenScale(16), littleblack)
 	--
 			--	draw.RoundedBox(1, ScreenScale(11), y, weight * 1.5 - 5, ScreenScale(16), color_black)
-			--	draw.SimpleText((hg.organism.translationTbl[text] or text), "HomigradFont", ScreenScale(12), y, white)
+			--	draw.SimpleText((zc.organism.translationTbl[text] or text), "HomigradFont", ScreenScale(12), y, white)
 			--end
 
 			--colred.a = 255 * alpha

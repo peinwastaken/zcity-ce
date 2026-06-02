@@ -83,7 +83,7 @@ function SWEP:UpdateNextIdle(t)
 end
 
 function SWEP:IsEntSoft(ent)
-	return ent:IsNPC() or ent:IsPlayer() or hg.RagdollOwner(ent) or ent:IsRagdoll()
+	return ent:IsNPC() or ent:IsPlayer() or zc.RagdollOwner(ent) or ent:IsRagdoll()
 end
 
 function SWEP:Holster( wep )

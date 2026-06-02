@@ -8,7 +8,7 @@ MODE.Chance = 0.02
 MODE.OverideSpawnPos = true
 MODE.LootSpawn = false
 
-zb = zb or {}
+zc = zc or {}
 
 MODE.Config = {
     ["id"] = MODE.name or "gwars",
@@ -48,12 +48,12 @@ MODE.Config = {
         }
     }
 }
---[[zb.Points = zb.Points or {}
+--[[zc.Points = zc.Points or {}
 
-zb.Points.HMCD_TDM_CT = zb.Points.HMCD_TDM_CT or {}
-zb.Points.HMCD_TDM_CT.Color = Color(0,0,150)
-zb.Points.HMCD_TDM_CT.Name = "HMCD_TDM_CT"
+zc.Points.HMCD_TDM_CT = zc.Points.HMCD_TDM_CT or {}
+zc.Points.HMCD_TDM_CT.Color = Color(0,0,150)
+zc.Points.HMCD_TDM_CT.Name = "HMCD_TDM_CT"
 
-zb.Points.HMCD_TDM_T = zb.Points.HMCD_TDM_T or {}
-zb.Points.HMCD_TDM_T.Color = Color(150,95,0)
-zb.Points.HMCD_TDM_T.Name = "HMCD_TDM_T"]]
+zc.Points.HMCD_TDM_T = zc.Points.HMCD_TDM_T or {}
+zc.Points.HMCD_TDM_T.Color = Color(150,95,0)
+zc.Points.HMCD_TDM_T.Name = "HMCD_TDM_T"]]

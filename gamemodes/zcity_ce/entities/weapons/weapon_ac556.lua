@@ -93,7 +93,7 @@ if CLIENT then
 
 		[0.30] = function(self,timeMul)
 			if self:Clip1() < 1 then
-				local ent = hg.CreateMag( self, Vector(15,0,0),nil, true )
+				local ent = zc.CreateMag( self, Vector(15,0,0),nil, true )
 				for i = 0, ent:GetBoneCount() - 1 do
 					ent:ManipulateBoneScale(i, vector_origin)
 				end

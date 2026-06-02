@@ -145,7 +145,7 @@ function SWEP:CanSecondaryAttack()
 
         if (self.waitDecal or 0) < CurTime() then
             self.waitDecal = CurTime() + 0.02
-            local tr = hg.eyeTrace(self:GetOwner(), 256)
+            local tr = zc.eyeTrace(self:GetOwner(), 256)
 
             if tr.Hit then
                 local norm = tr.HitNormal
@@ -162,7 +162,7 @@ function SWEP:CanSecondaryAttack()
 
                 local pos = tr.StartPos:ToScreen()
 
-                if dot < -0.99 and pos.x > 0 and pos.x < ScrW() and pos.y > 0 and pos.y < ScrH() and hg.isVisible(LocalPlayer():EyePos(), tr.StartPos, {LocalPlayer(), self}, MASK_VISIBLE) then
+                if dot < -0.99 and pos.x > 0 and pos.x < ScrW() and pos.y > 0 and pos.y < ScrH() and zc.isVisible(LocalPlayer():EyePos(), tr.StartPos, {LocalPlayer(), self}, MASK_VISIBLE) then
                     //amtflashed2 = amtflashed2 + (FrameTime() * 2)
                 end//for now
             end
@@ -184,7 +184,7 @@ function SWEP:CanSecondaryAttack()
     else
         if (self.lasttimeused or 0) > CurTime() then return false end
         self.lasttimeused = CurTime() + 0.1
-        local tr = hg.eyeTrace(self:GetOwner(), 256)
+        local tr = zc.eyeTrace(self:GetOwner(), 256)
         self.sprayamt = self.sprayamt or 100
         self.sprayamt = self.sprayamt - FrameTime() * 40
         self:SetNWFloat("amountspray", self.sprayamt)
@@ -196,7 +196,7 @@ function SWEP:CanSecondaryAttack()
                     org.o2[1] = math.max(0,org.o2[1] - 0.5 * (0.1 / 0.25))
                     org.is_sprayed_at = true
                     if not org.unconscious and math.random(1, 8) == 1 then
-                        ent:Notify("", 5, "coughing", nil, function() hg.organism.module.random_events.TriggerRandomEvent(ent,"Cough") end, color_white)
+                        ent:Notify("", 5, "coughing", nil, function() zc.organism.module.random_events.TriggerRandomEvent(ent,"Cough") end, color_white)
                     end
                 end
             end
@@ -214,7 +214,7 @@ function SWEP:CanSecondaryAttack()
 end
 
 function SWEP:CanPrimaryAttack()
-    if IsValid(self:GetOwner()) and hg.KeyDown(self:GetOwner(), IN_RELOAD) then return end
+    if IsValid(self:GetOwner()) and zc.KeyDown(self:GetOwner(), IN_RELOAD) then return end
     if not self:GetNetVar("extinguishermode") then
         return true
     else

@@ -1,5 +1,5 @@
-hg.weaponInv = hg.weaponInv or {}
-local weaponInv = hg.weaponInv
+zc.weaponInv = zc.weaponInv or {}
+local weaponInv = zc.weaponInv
 
 function weaponInv.CanInsert(ply, wep)
 	local category = wep.weaponInvCategory

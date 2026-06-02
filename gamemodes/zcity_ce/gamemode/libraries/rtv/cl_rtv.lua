@@ -6,10 +6,10 @@ local winmap = ""
 local VoteCD = 0
 
 -- RTV CL Functions
-local BlurBackground = hg.DrawBlur
+local BlurBackground = zc.DrawBlur
 local uiColors = zc.colors.ui
 
-function zb.RTVMenu()
+function zc.RTVMenu()
     system.FlashWindow()
 
     local RTVMenu = vgui.Create("ZB_RTVMenu")
@@ -98,28 +98,28 @@ function zb.RTVMenu()
     end
 end
 
-function zb.StartRTV()
+function zc.StartRTV()
     maps = net.ReadTable()
     time = net.ReadFloat()
-    zb.RTVMenu()
+    zc.RTVMenu()
     rtvStarted = true
 end
 
 net.Receive("ZC_RTVMenu", function()
-    zb.RTVMenu()
+    zc.RTVMenu()
 end)
 
-function zb.RTVregVote()
+function zc.RTVregVote()
     votes = net.ReadTable()
 end
 
-function zb.EndRTV()
+function zc.EndRTV()
     winmap = net.ReadString()
     rtvEnded = true
 end
 
 -- NETWORKING
 
-net.Receive("ZC_RockTheVoteStart", zb.StartRTV)
-net.Receive("ZC_RockTheVoteVoteRegister", zb.RTVregVote)
-net.Receive("ZC_RockTheVoteEnd", zb.EndRTV)
+net.Receive("ZC_RockTheVoteStart", zc.StartRTV)
+net.Receive("ZC_RockTheVoteVoteRegister", zc.RTVregVote)
+net.Receive("ZC_RockTheVoteEnd", zc.EndRTV)

@@ -9,8 +9,8 @@ local function DrawSunEffect()
 	DrawSunbeams(0.1, 0.15 * dot * sun.obstruction, 0.1, scrpos.x / ScrW(), scrpos.y / ScrH())
 end
 
-hg.postprocess = hg.postprocess or {}
-local postprs = hg.postprocess
+zc.postprocess = zc.postprocess or {}
+local postprs = zc.postprocess
 postprs.addtiveLayer = {
 	bloom_darken = 0,
 	bloom_mul = 0,
@@ -84,7 +84,7 @@ hook.Add("RenderScreenspaceEffects", "ZC_RenderPostProcessing", function()
 	hook_Run("ZC_AfterPostProcessingDraw")
 end)
 
-local postprs = hg.postprocess
+local postprs = zc.postprocess
 postprs.LayerAdd("main", {
 	bloom_darken = 0.64,
 	bloom_mul = 0.5,
@@ -133,7 +133,7 @@ hook.Add("ZC_PrePostProcessing", "ZC_UpdateWaterPostProcessing", function()
 	if !IsValid(ply) then return end
 	local waterLevel = oldWaterLevel
 	if timecheck < CurTime() then
-		local pos = hg.eye(lply)
+		local pos = zc.eye(lply)
 
 		if !pos then return end
 
@@ -190,7 +190,7 @@ end )]]
 --[[hook.Add( "PreDrawHalos", "ZC_AddPropHalos", function() -- option with highlighting only when looking
 	local pickuphalo = {}
 
-	local tr = hg.eyeTrace(lply,72)
+	local tr = zc.eyeTrace(lply,72)
 	if IsValid(tr.Entity) and haloents[tr.Entity.Base] then
 		table.insert(pickuphalo, tr.Entity)
 		local dist = lply:GetPos():Distance(tr.Entity:GetPos()) * 0.03

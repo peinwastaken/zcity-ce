@@ -4,8 +4,8 @@ local MODE = MODE
 
 net.Receive("ZC_CoopStart",function()
     surface.PlaySound("hl2mode1.wav")
-	zb.RemoveFade()
-	hg.DynaMusic:Start("hl_coop")
+	zc.RemoveFade()
+	zc.DynaMusic:Start("hl_coop")
 end)
 
 local teams = {
@@ -18,8 +18,8 @@ local teams = {
 }
 
 function MODE:RenderScreenspaceEffects()
-    if zb.ROUND_START + 7.5 < CurTime() then return end
-    local fade = math.Clamp(zb.ROUND_START + 7.5 - CurTime(),0,1)
+    if zc.ROUND_START + 7.5 < CurTime() then return end
+    local fade = math.Clamp(zc.ROUND_START + 7.5 - CurTime(),0,1)
 
     surface.SetDrawColor(0,0,0,255 * fade)
     surface.DrawRect(-1,-1,ScrW() + 1,ScrH() + 1)
@@ -43,11 +43,11 @@ function MODE:HUDPaint()
 		surface.DrawText(string.FormattedTime(startTimer - CurTime(), "%02i:%02i"))
 	end
 
-    if zb.ROUND_START + 8.5 < CurTime() then return end
+    if zc.ROUND_START + 8.5 < CurTime() then return end
 
 	if not lply:Alive() then return end
-	zb.RemoveFade()
-    local fade = math.Clamp(zb.ROUND_START + 8 - CurTime(),0,1)
+	zc.RemoveFade()
+    local fade = math.Clamp(zc.ROUND_START + 8 - CurTime(),0,1)
 	lply:Team()
     draw.SimpleText("Homicide | CO-OP", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     local Rolename = (lply.role and lply.role.name) or "Unknown"
@@ -78,7 +78,7 @@ local colSpect2 = Color(255,255,255)
 
 
 
-BlurBackground = BlurBackground or hg.DrawBlur
+BlurBackground = BlurBackground or zc.DrawBlur
 
 if IsValid(hmcdEndMenu) then
     hmcdEndMenu:Remove()

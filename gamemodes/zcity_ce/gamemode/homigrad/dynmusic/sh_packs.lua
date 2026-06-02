@@ -2,9 +2,9 @@
     - add everything from zcity content dyn-music
 
 --]]
-hg = hg or {}
-hg.DynaMusic = hg.DynaMusic or {}
-local DMusic = hg.DynaMusic
+zc = zc or {}
+zc.DynaMusic = zc.DynaMusic or {}
+local DMusic = zc.DynaMusic
 
 DMusic.MusicMeta = DMusic.MusicMeta or {}
 local musMeta = DMusic.MusicMeta
@@ -204,9 +204,9 @@ end
 hook.Add("ZC_OnOrganismDamage", "ZC_AddDamagePanicMusic", function(ply, dmgInfo, hitgroup, ent, harm, hitBoxs, inputHole)
     if ent:IsPlayer() then
         --print(ply,dmgInfo:GetDamage()*5)
-        hg.DynaMusic:AddPanic(ply,dmgInfo:GetDamage()*25)
+        zc.DynaMusic:AddPanic(ply,dmgInfo:GetDamage()*25)
         if dmgInfo:GetAttacker():IsPlayer() then
-            hg.DynaMusic:AddPanic(dmgInfo:GetAttacker(),dmgInfo:GetDamage()*5)
+            zc.DynaMusic:AddPanic(dmgInfo:GetAttacker(),dmgInfo:GetDamage()*5)
         end
     end
 end)

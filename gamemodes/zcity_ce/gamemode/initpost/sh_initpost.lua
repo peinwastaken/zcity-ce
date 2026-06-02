@@ -16,11 +16,11 @@ function GAMEMODE:HandlePlayerLanding( ply, velocity, WasOnGround )
 end
 
 function GAMEMODE:GrabEarAnimation(ply)
-    hg.earanim(ply)
+    zc.earanim(ply)
 end
 
 function GAMEMODE:MouthMoveAnimation(ply)
-    hg.mouthmove(ply)
+    zc.mouthmove(ply)
 end
 
 if CLIENT then
@@ -33,7 +33,7 @@ if CLIENT then
             local ent = self.FakeRagdoll
             if IsValid(ent) then return end
 
-            hg.renderOverride(self, ent, flags)
+            zc.renderOverride(self, ent, flags)
         end
     end
 end
@@ -232,27 +232,27 @@ local function estimate_data(data)
 end
 
 //if CLIENT then
-    hg.precachedsounds = {}
+    zc.precachedsounds = {}
 
-    function hg.PrecacheSound(name)
-        if hg.precachedsounds[name] then return end
+    function zc.PrecacheSound(name)
+        if zc.precachedsounds[name] then return end
 
         game.GetWorld():EmitSound(name, 75, 100, 1, CHAN_AUTO, SND_STOP)
         local dur = estimate_data(file.Read("sound/"..name, "GAME"))
 
         //print(SoundDuration(name), dur, name)
 
-        hg.precachedsounds[name] = dur
+        zc.precachedsounds[name] = dur
     end
 
-    hg.ghetto_phrases = {}
+    zc.ghetto_phrases = {}
     local ghetto = "ground_control/radio/ghetto/"
     for _, file in ipairs(file.Find("sound/"..ghetto.."*", "GAME")) do
-        hg.PrecacheSound(ghetto..file)
-        hg.ghetto_phrases[#hg.ghetto_phrases + 1] = ghetto..file
+        zc.PrecacheSound(ghetto..file)
+        zc.ghetto_phrases[#zc.ghetto_phrases + 1] = ghetto..file
     end
 
-	hg.ghetto_phrases = {
+	zc.ghetto_phrases = {
 		"ground_control/radio/ghetto/move1.mp3",
 		"ground_control/radio/ghetto/move2.mp3",
 		"ground_control/radio/ghetto/move3.mp3",
@@ -286,7 +286,7 @@ end
 		"ground_control/radio/ghetto/thanks5.mp3",
 	}
 
-	//PrintTable(hg.ghetto_phrases)
+	//PrintTable(zc.ghetto_phrases)
 //end
 
 --// Don't allow dx8 users to play, because we are using shaders and other stuff that requires dx9

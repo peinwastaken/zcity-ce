@@ -1,6 +1,6 @@
-hg = hg or {}
-hg.PlayerBots = hg.PlayerBots or {}
-local _ENV = hg.PlayerBots
+zc = zc or {}
+zc.PlayerBots = zc.PlayerBots or {}
+local _ENV = zc.PlayerBots
 setmetatable(_ENV, {__index = _G})
 setfenv(1, _ENV)
 
@@ -175,7 +175,7 @@ doorTraceData = {
 BotCanSee = nil
 
 function BotDevPrint(msg)
-	zb.dev.DevPrint(msg)
+	zc.dev.DevPrint(msg)
 end
 
 function GetBotAimOrigin(bot)
@@ -196,7 +196,7 @@ end
 function GetBotTargetBody(ply)
 	if not IsValid(ply) then return NULL end
 
-	local rag = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or IsValid(hg.ragdollFake and hg.ragdollFake[ply]) and hg.ragdollFake[ply] or ply:GetNWEntity("FakeRagdoll")
+	local rag = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or IsValid(zc.ragdollFake and zc.ragdollFake[ply]) and zc.ragdollFake[ply] or ply:GetNWEntity("FakeRagdoll")
 	if IsValid(rag) then return rag end
 
 	return ply
@@ -235,14 +235,14 @@ end
 function IsBotInFakeRagdoll(bot)
 	if not IsValid(bot) then return false end
 
-	if hg.GetFakeState and hg.FAKE_STATE and hg.GetFakeState(bot) ~= hg.FAKE_STATE.NONE then return true end
-	return IsValid(bot.FakeRagdoll) or IsValid(hg.ragdollFake and hg.ragdollFake[bot]) or IsValid(bot:GetNWEntity("FakeRagdoll"))
+	if zc.GetFakeState and zc.FAKE_STATE and zc.GetFakeState(bot) ~= zc.FAKE_STATE.NONE then return true end
+	return IsValid(bot.FakeRagdoll) or IsValid(zc.ragdollFake and zc.ragdollFake[bot]) or IsValid(bot:GetNWEntity("FakeRagdoll"))
 end
 
 function GetBotFakeRagdollEntity(bot)
 	if not IsValid(bot) then return NULL end
 	if IsValid(bot.FakeRagdoll) then return bot.FakeRagdoll end
-	if IsValid(hg.ragdollFake and hg.ragdollFake[bot]) then return hg.ragdollFake[bot] end
+	if IsValid(zc.ragdollFake and zc.ragdollFake[bot]) then return zc.ragdollFake[bot] end
 	return bot:GetNWEntity("FakeRagdoll")
 end
 
@@ -449,7 +449,7 @@ end
 function IsRagdolledTarget(ply)
 	if not IsValid(ply) then return false end
 	if IsValid(ply.FakeRagdoll) then return true end
-	if IsValid(hg.ragdollFake and hg.ragdollFake[ply]) then return true end
+	if IsValid(zc.ragdollFake and zc.ragdollFake[ply]) then return true end
 
 	return IsValid(ply:GetNWEntity("FakeRagdoll"))
 end

@@ -54,7 +54,7 @@ function IsReasonable( pos )
 	return true
 end
 
-function hg.QueueCollisionRulesChanged(ent, relatedEnt, enableCustomCheck)
+function zc.QueueCollisionRulesChanged(ent, relatedEnt, enableCustomCheck)
 	if !IsValid(ent) then return end
 
 	if enableCustomCheck then

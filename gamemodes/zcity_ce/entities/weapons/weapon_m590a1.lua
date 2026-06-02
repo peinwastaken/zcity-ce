@@ -297,7 +297,7 @@ local function reloadFunc(self)
 			end
 		end
 
-		local key = hg.KeyDown(self:GetOwner(), IN_RELOAD)
+		local key = zc.KeyDown(self:GetOwner(), IN_RELOAD)
 		--print("reload",key)
 
 		if key and self:CanReload() then

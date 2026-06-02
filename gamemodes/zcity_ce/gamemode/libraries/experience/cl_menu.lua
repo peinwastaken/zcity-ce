@@ -1,10 +1,10 @@
 --
-zb = zb or {}
+zc = zc or {}
 
-zb.Experience = zb.Experience or {}
+zc.Experience = zc.Experience or {}
 
 
-local EXP = zb.Experience
+local EXP = zc.Experience
 
 EXP.OpenedMenu = EXP.OpenedMenu or nil
 
@@ -14,7 +14,7 @@ EXP.OpenedMenu = EXP.OpenedMenu or nil
 local gradient_u = Material("vgui/gradient-u")
 
 
-BlurBackground = hg.DrawBlur
+BlurBackground = zc.DrawBlur
 local uiColors = zc.colors.ui
 
 local function PaintFrame(self,w,h)

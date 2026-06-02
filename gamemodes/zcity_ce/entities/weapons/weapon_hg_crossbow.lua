@@ -170,14 +170,14 @@ function SWEP:Shoot(override)
 			-- bullet.Spread = ammotype.Spread or self.Primary.Spread or 0
 		bullet.AmmoType = "Armature"
 		bullet.Attacker = owner.suiciding and Entity(0) or owner
-		bullet.IgnoreEntity = not owner.suiciding and (owner.InVehicle and owner:InVehicle() and owner:GetVehicle() or hg.GetCurrentCharacter(owner)) or nil
+		bullet.IgnoreEntity = not owner.suiciding and (owner.InVehicle and owner:InVehicle() and owner:GetVehicle() or zc.GetCurrentCharacter(owner)) or nil
 			-- bullet.Callback = bulletHit
 			-- bullet.TracerName = self.Tracer or "nil"
 			-- bullet.Speed = ammotype.Speed
 			-- bullet.Distance = ammotype.Distance or 56756
 		bullet.Penetration = 10
 
-		hg.PhysBullet.CreateBullet(bullet)
+		zc.PhysBullet.CreateBullet(bullet)
 			-- self:FireBullets(bullet)
 		--else
 		--	local projectile = ents.Create("crossbow_projectile")

@@ -4,7 +4,7 @@ local zc_gopro = ConVarExists("zc_gopro") and GetConVar("zc_gopro") or CreateCli
 local zc_coolcamera = ConVarExists("zc_coolcamera") and GetConVar("zc_coolcamera") or CreateConVar("zc_coolcamera", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Cool camera movement", 0, 1)
 
 --\\ custom footsteps
-	local EmitSound, SoundDuration, hg, ViewPunch, CurTime, math = EmitSound, SoundDuration, hg, ViewPunch, CurTime, math
+	local EmitSound, SoundDuration, zc, ViewPunch, CurTime, math = EmitSound, SoundDuration, zc, ViewPunch, CurTime, math
 	local math_max = math.max
 
 	hook.Add("PlayerStepSoundTime", "ZC_OverrideFootstepTiming", function(ply, type, walking)
@@ -15,9 +15,9 @@ local zc_coolcamera = ConVarExists("zc_coolcamera") and GetConVar("zc_coolcamera
 		if (ply.lastStepTime or 0) > CurTime() then return true end
 		local vel = ply:GetVelocity()
 		local len = vel:Length()
-		local ent = hg.GetCurrentCharacter(ply)
+		local ent = zc.GetCurrentCharacter(ply)
 
-		local sprint = hg.KeyDown(ply, IN_SPEED)
+		local sprint = zc.KeyDown(ply, IN_SPEED)
 		ply.lastStepTime = CurTime() + 0.7 * (sprint and 1.5 or 1) * (1 / math_max(len, sprint and 200 or 150)) * 100
 
 		hook_Run("ZC_PlayerFootstepNotify", ply, pos, foot, sound, volume, rf)	--; Do not return anything from this _Notify hook

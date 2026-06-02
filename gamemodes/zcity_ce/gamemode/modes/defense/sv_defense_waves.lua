@@ -229,8 +229,8 @@ function MODE:StartNewWave()
     elseif self.Wave == self.TotalWaves then
         self.WaveCompleted = true
         timer.Simple(5, function()
-            if zb and zb.ROUND_STATE == 1 then
-                zb.EndMatch()
+            if zc and zc.ROUND_STATE == 1 then
+                zc.EndMatch()
             end
         end)
     end

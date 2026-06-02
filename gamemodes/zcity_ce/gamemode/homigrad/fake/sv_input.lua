@@ -4,9 +4,9 @@ concommand.Add("fake", function(ply)
 	if ply:IsFlagSet( FL_FROZEN ) then return end
 	--ply.fakecd = CurTime() + cooldown
 	if not IsValid(ply.FakeRagdoll) then
-		hg.Fake(ply)
+		zc.Fake(ply)
 	else
-		hg.FakeUp(ply)
+		zc.FakeUp(ply)
 	end
 end)
 
@@ -19,7 +19,7 @@ hook.Add("ZC_PlayerCollide", "ZC_HandleFakeRagdollPropCollision", function(ply, 
 		ply:TakeDamageInfo(d)]]
 		--
 		timer.Simple(0,function()
-			hg.LightStunPlayer(ply, 2)
+			zc.LightStunPlayer(ply, 2)
 		end)
 	end
 end)
@@ -28,7 +28,7 @@ end)
 local function LightStunPlayerNextTick(ply, time)
 	timer.Simple(0, function()
 		if IsValid(ply) and ply:IsPlayer() then
-			hg.LightStunPlayer(ply, time)
+			zc.LightStunPlayer(ply, time)
 		end
 	end)
 end
@@ -58,7 +58,7 @@ hook.Add("OnPlayerHitGround","ZC_FallStun",function(ply,inwater,onfloater,speed)
 
 	local hitPlayer = tr.Entity
 	if speed > 250 and IsValid(hitPlayer) and hitPlayer:IsPlayer() then
-		hg.drop(hitPlayer)
+		zc.drop(hitPlayer)
 		LightStunPlayerNextTick(hitPlayer,2)
 		--tr.Entity:TakeDamage(speed / 5,ply,ply)
 	end
@@ -72,8 +72,8 @@ concommand.Add("force_fake", function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsAdmin() then return end
 	ply = Player(tonumber(args[1]))
 	if not IsValid(ply.FakeRagdoll) then
-		hg.Fake(ply)
+		zc.Fake(ply)
 	else
-		hg.FakeUp(ply)
+		zc.FakeUp(ply)
 	end
 end)

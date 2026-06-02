@@ -18,7 +18,7 @@ function ENT:Think()
 	tr.collisiongroup = COLLISION_GROUP_PLAYER
 	local tr = util.TraceLine(tr)
 
-	if zb.dev.IsDeveloper() and LocalPlayer():IsAdmin() then
+	if zc.dev.IsDeveloper() and LocalPlayer():IsAdmin() then
 		debugoverlay.Line(pos, tr.HitPos, 1, color_white, true)
 	end
 

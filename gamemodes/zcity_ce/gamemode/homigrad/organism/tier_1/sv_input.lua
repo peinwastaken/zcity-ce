@@ -1,13 +1,13 @@
-hg = hg or {}
-hg.organism = hg.organism or {}
-hg.organism.fake_spine1 = 1
-hg.organism.fake_spine2 = 1
-hg.organism.fake_spine3 = 0.5
-hg.organism.fake_legs = 1
-hg.organism.input_list = hg.organism.input_list or {}
+zc = zc or {}
+zc.organism = zc.organism or {}
+zc.organism.fake_spine1 = 1
+zc.organism.fake_spine2 = 1
+zc.organism.fake_spine3 = 0.5
+zc.organism.fake_legs = 1
+zc.organism.input_list = zc.organism.input_list or {}
 
 local hook_Run = hook.Run
-local input_list = hg.organism.input_list
+local input_list = zc.organism.input_list
 local function Trace_Bullet(box, hit, ricochet, org, organs, dmg, dmgInfo, dir)
 	dmg = dmgInfo:GetDamage() / 25
 	local organ = box[6] and organs[box[6]][box[7]]
@@ -99,9 +99,9 @@ local hitgrouptolimb = {
 	[HITGROUP_RIGHTARM] = "rarm",
 }
 
-hg.bonetohitgroup = bonetohitgroup
+zc.bonetohitgroup = bonetohitgroup
 
-hg.amputeetable = {
+zc.amputeetable = {
 	--["ValveBiped.Bip01_L_UpperArm"] = "larm",
 	["ValveBiped.Bip01_L_Forearm"] = "larm",
 	["ValveBiped.Bip01_L_Hand"] = "larm",
@@ -122,21 +122,21 @@ for bon,hitgroup in pairs(bonetohitgroup) do
 	table.insert(hitgrouptobone[hitgroup],bon)
 end
 
-hg.DeathCam = false
+zc.DeathCam = false
 
-function hg.organism.GasDamage(org, dmg, dmgInfo)
-	hg.organism.input_list.lungsR(org, 1, dmg / 10, dmgInfo)
-	hg.organism.input_list.lungsL(org, 1, dmg / 10, dmgInfo)
-	hg.organism.input_list.trachea(org, 1, dmg / 10, dmgInfo)
+function zc.organism.GasDamage(org, dmg, dmgInfo)
+	zc.organism.input_list.lungsR(org, 1, dmg / 10, dmgInfo)
+	zc.organism.input_list.lungsL(org, 1, dmg / 10, dmgInfo)
+	zc.organism.input_list.trachea(org, 1, dmg / 10, dmgInfo)
 
 end
 
-function hg.organism.RadDamage(org, dmg, dmgInfo)
-	hg.organism.GasDamage(org, dmg, dmgInfo)
+function zc.organism.RadDamage(org, dmg, dmgInfo)
+	zc.organism.GasDamage(org, dmg, dmgInfo)
 
-	hg.organism.input_list.liver(org,nil,dmg / 20,dmgInfo)
-	hg.organism.input_list.stomach(org,nil,dmg / 20,dmgInfo)
-	hg.organism.input_list.intestines(org,nil,dmg / 20,dmgInfo)
+	zc.organism.input_list.liver(org,nil,dmg / 20,dmgInfo)
+	zc.organism.input_list.stomach(org,nil,dmg / 20,dmgInfo)
+	zc.organism.input_list.intestines(org,nil,dmg / 20,dmgInfo)
 end
 
 local limbs = {
@@ -156,7 +156,7 @@ local sounds = {
 }
 
 local ents_Create = ents.Create
-function hg.organism.AmputateLimb(org, limb)
+function zc.organism.AmputateLimb(org, limb)
 	if org[limb.."amputated"] == nil then return end
 
 	local bone = limbs[limb]
@@ -181,15 +181,15 @@ function hg.organism.AmputateLimb(org, limb)
 	org[limb.."amputated"] = true
 
 	for _ = 1, 5 do
-		hg.organism.AddWoundManual(org.owner, 50, vec + VectorRand(-2, 2), ang, boneup, CurTime() + math.Rand(0, 2))
+		zc.organism.AddWoundManual(org.owner, 50, vec + VectorRand(-2, 2), ang, boneup, CurTime() + math.Rand(0, 2))
 	end
 
 	local dmgInfo = DamageInfo()
-	hg.organism.input_list[limb.."up"](org, 0, 5, dmgInfo)
+	zc.organism.input_list[limb.."up"](org, 0, 5, dmgInfo)
 
 	org.owner:EmitSound(sounds[math.random(#sounds)], 70, math.random(95, 105), 2)
 
-	local ent = hg.GetCurrentCharacter(org.owner)
+	local ent = zc.GetCurrentCharacter(org.owner)
 	SpawnMeatGore(ent, ent:GetBonePosition(ent:LookupBone(bone)), 4)
 
 	hook.Run("ZC_OnAmputateLimb", org, ent, limb)
@@ -210,9 +210,9 @@ function hg.organism.AmputateLimb(org, limb)
 	net.Broadcast()
 end
 
---hg.organism.AmputateLimb(Entity(2).organism, "rarm")
+--zc.organism.AmputateLimb(Entity(2).organism, "rarm")
 
-function hg.organism.AddWound(ent, tr, bone, dmgInfo, dmgPos, dmgBlood, inputHole, outputHole)
+function zc.organism.AddWound(ent, tr, bone, dmgInfo, dmgPos, dmgBlood, inputHole, outputHole)
 	local org = ent.organism
 
 	local physBone = bone != -1 and bone or math.random(0, ent:GetPhysicsObjectCount() - 1)
@@ -255,7 +255,7 @@ function hg.organism.AddWound(ent, tr, bone, dmgInfo, dmgPos, dmgBlood, inputHol
 	end
 end
 
-function hg.organism.AddWoundManual(ent,dmgBlood,localPos,localAng,bone,time)
+function zc.organism.AddWoundManual(ent,dmgBlood,localPos,localAng,bone,time)
 	local org = ent.organism
 
 	if isnumber(bone) then bone = ent:GetBoneName(bone) end
@@ -308,8 +308,8 @@ end)
 util.AddNetworkString("ZC_BloodImpact")
 util.AddNetworkString("ZC_BloodSquirt")
 
-function hg.NPCDamage(ent,dmgInfo,npcdmg)
-	local tr = hg.GetTraceDamage(ent, dmgInfo:GetDamagePosition(), dmgInfo:GetDamageForce())
+function zc.NPCDamage(ent,dmgInfo,npcdmg)
+	local tr = zc.GetTraceDamage(ent, dmgInfo:GetDamagePosition(), dmgInfo:GetDamageForce())
 	local bone = ent:GetBoneName(ent:TranslatePhysBoneToBone(tr.PhysicsBone))
 
 	if istable(npcdmg) then
@@ -317,7 +317,7 @@ function hg.NPCDamage(ent,dmgInfo,npcdmg)
 			local val = istable(npcdmg[bone]) and npcdmg[bone][1] or npcdmg[bone]
 			dmgInfo:ScaleDamage(val)
 			if istable(npcdmg[bone]) and npcdmg[bone][2] then
-				hg.ArmorEffectEx(ent,dmgInfo,unpack(npcdmg[bone][2]))
+				zc.ArmorEffectEx(ent,dmgInfo,unpack(npcdmg[bone][2]))
 			end
 		end
 	else
@@ -325,22 +325,22 @@ function hg.NPCDamage(ent,dmgInfo,npcdmg)
 	end
 end
 
-function hg.AddHarmToAttacker(dmgInfo, harm, reason)
+function zc.AddHarmToAttacker(dmgInfo, harm, reason)
 	local ply = dmgInfo:GetAttacker()
 
 	if IsValid(ply) and ply:IsPlayer() then
-		hg.AddHarm(ply, harm, reason)
+		zc.AddHarm(ply, harm, reason)
 	end
 end
 
-function hg.AddHarm(ply, harm, reason)
+function zc.AddHarm(ply, harm, reason)
 	ply.harm = ply.harm + harm
 end
 
-function hg.ExplodeHead(ent)
+function zc.ExplodeHead(ent)
 	if !IsValid(ent) then return end
 
-	local ply = ent:IsRagdoll() and hg.RagdollOwner(ent) or ent
+	local ply = ent:IsRagdoll() and zc.RagdollOwner(ent) or ent
 	if ply:IsPlayer() and ply:Alive() then ply:Kill() end
 	if ent:IsNPC() and ent.organism then ent.organism.shock = 100 end
 
@@ -357,7 +357,7 @@ function hg.ExplodeHead(ent)
 		ent.headexploded = true
 
 		ent.organism.owner.fullsend = true
-		hg.send_bareinfo(ent.organism)
+		zc.send_bareinfo(ent.organism)
 	end)
 end
 
@@ -365,7 +365,7 @@ if not ConVarExists("zc_bloodimpacts") then
 	CreateConVar("zc_bloodimpacts", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Enable custom blood impact effects spray cool kill death", 0, 1)
 end
 
-local net, math, hg, IsValid = net, math, hg, IsValid
+local net, math, zc, IsValid = net, math, zc, IsValid
 local takeRagdollDamage
 hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 	if dmgInfo:IsDamageType(DMG_DISSOLVE) then return end
@@ -378,7 +378,7 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 	if IsValid(ent) and string.find(ent:GetClass(),"break") and
 		ent:GetBrushSurfaces() and ent:GetBrushSurfaces()[1] and string.find(ent:GetBrushSurfaces()[1]:GetMaterial():GetName(),"glass") and
 		IsValid(dmgInfo:GetInflictor()) and dmgInfo:GetInflictor() == dmgInfo:GetAttacker() and dmgInfo:GetInflictor().organism then
-			--hg.organism.AddWoundManual(dmgInfo:GetInflictor(),math.random(15,25),vector_origin,angle_zero,math.random(0,ent:GetBoneCount()),CurTime())
+			--zc.organism.AddWoundManual(dmgInfo:GetInflictor(),math.random(15,25),vector_origin,angle_zero,math.random(0,ent:GetBoneCount()),CurTime())
 	end
 
 	if ent:GetClass() == "npc_bullseye" then
@@ -425,7 +425,7 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 		end
 	end--]]
 
-	--if ent:IsNPC() and npcDmg[ent:GetClass()] then hg.NPCDamage(ent,dmgInfo,npcDmg[ent:GetClass()]) return end
+	--if ent:IsNPC() and npcDmg[ent:GetClass()] then zc.NPCDamage(ent,dmgInfo,npcDmg[ent:GetClass()]) return end
 	if ent:IsPlayer() and IsValid(ent.FakeRagdoll) then ent.FakeRagdoll:TakeDamageInfo(dmgInfo) return true end
 
 	if dmgInfo:IsDamageType(DMG_CRUSH) then
@@ -438,7 +438,7 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 	local org = ent.organism
 	if not org then return end
 
-	local ply = (ent:IsPlayer() and ent) or hg.RagdollOwner(ent)
+	local ply = (ent:IsPlayer() and ent) or zc.RagdollOwner(ent)
 
 	org.isPly = IsValid(ply)
 
@@ -511,10 +511,10 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 			if !IsValid(org.owner) then return end
 
 			org.owner.fullsend = true
-			hg.send_bareinfo(org)
+			zc.send_bareinfo(org)
 
 			if IsValid(org.owner) and org.owner.Alive and org.owner:Alive() then
-				hg.send_organism(org, org.owner)
+				zc.send_organism(org, org.owner)
 			end
 		end)
 	end
@@ -533,8 +533,8 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 		dmgInfo:GetInflictor().poisoned2 = nil
 	end
 
-	local organs = hg.organism.GetHitBoxOrgans(ent:GetModel(), ent)
-	local boxs, pos, sphere = hg.organism.ShootMatrix(ent, organs)
+	local organs = zc.organism.GetHitBoxOrgans(ent:GetModel(), ent)
+	local boxs, pos, sphere = zc.organism.ShootMatrix(ent, organs)
 	local dmgPos = dmgInfo:GetDamagePosition()
 	local tr = util.QuickTrace(dmgPos, dir:GetNormalized() * 100)
 	if tr.Hit and tr.Entity == ent then
@@ -557,14 +557,14 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 
 	local hitBoxs, inputHole, outputHole, outputDir, distance = {}, {}, {}, {}, nil
 	if dmgInfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SLASH+DMG_CLUB+DMG_GENERIC) then
-		local _, traceHitBoxs, traceInputHole, traceOutputHole, traceOutputDir, traceDistance = hg.organism.Trace(dmgPos, dir, size, maxpen, boxs, pos, sphere, organs, dmgInfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT), Trace_Bullet, ent.organism, organs, dmg / 25, dmgInfo, dir)
+		local _, traceHitBoxs, traceInputHole, traceOutputHole, traceOutputDir, traceDistance = zc.organism.Trace(dmgPos, dir, size, maxpen, boxs, pos, sphere, organs, dmgInfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT), Trace_Bullet, ent.organism, organs, dmg / 25, dmgInfo, dir)
 		hitBoxs, inputHole, outputHole, outputDir, distance = traceHitBoxs, traceInputHole, traceOutputHole, traceOutputDir, traceDistance
 	elseif dmgInfo:IsDamageType(DMG_BLAST) then
-		local organs = hg.organism.GetHitBoxOrgans(ent:GetModel(), ent)
-		local boxs = hg.organism.ShootMatrix(ent, organs)
+		local organs = zc.organism.GetHitBoxOrgans(ent:GetModel(), ent)
+		local boxs = zc.organism.ShootMatrix(ent, organs)
 
-		hg.organism.BlastTrace(dmgInfo:GetDamagePosition(), (ent:GetPos() - dmgInfo:GetDamagePosition()):Length() / 200, dmg * 2, boxs, organs, Trace_Blast, ent.organism, organs, dmg / 300, dmgInfo)
-		hg.organism.AddWoundManual(ent,dmg,vector_origin,angle_zero,math.random(0,ent:GetBoneCount()),CurTime())
+		zc.organism.BlastTrace(dmgInfo:GetDamagePosition(), (ent:GetPos() - dmgInfo:GetDamagePosition()):Length() / 200, dmg * 2, boxs, organs, Trace_Blast, ent.organism, organs, dmg / 300, dmgInfo)
+		zc.organism.AddWoundManual(ent,dmg,vector_origin,angle_zero,math.random(0,ent:GetBoneCount()),CurTime())
 	end
 
 	if attacker:IsPlayer() then
@@ -705,7 +705,7 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 	end
 
 	--print(dmg_before, 2)
-	local dmgBlood, dmgHurt, instaPain, immobilization = hg.organism.DamageTypeAffliction(dmg_before / 12, dmgInfo, ent, org)
+	local dmgBlood, dmgHurt, instaPain, immobilization = zc.organism.DamageTypeAffliction(dmg_before / 12, dmgInfo, ent, org)
 
 
 	--if hitbody then
@@ -730,10 +730,10 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 		org.shock_turn = 10 * (!org.unconscious and 1 or 0.1)
 
 		if org.shock > org.shock_turn * 1.5 * analgesiaMul * painkillerMul then
-			timer.Simple(0, function() hg.Fake(org.owner) end)
+			timer.Simple(0, function() zc.Fake(org.owner) end)
 		end
 
-		if bullet and hg.ammotypeshuy[bullet.AmmoType] and hg.ammotypeshuy[bullet.AmmoType].BulletSettings.tranquilizer then
+		if bullet and zc.ammotypeshuy[bullet.AmmoType] and zc.ammotypeshuy[bullet.AmmoType].BulletSettings.tranquilizer then
 			org.tranquilizer = org.tranquilizer + dmgInfo:GetDamage()
 		end
 
@@ -753,10 +753,10 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 			//org.lungsR[2] = math.min(org.lungsR[2] + bigRand,1)
 			org.lungsL[1] = math.min(org.lungsL[1] + bigRand, 1)
 			org.lungsR[1] = math.min(org.lungsR[1] + bigRand, 1)
-			hg.organism.input_list.liver(org, nil, smallRand, dmgInfo)
-			hg.organism.input_list.stomach(org, nil,smallRand, dmgInfo)
-			hg.organism.input_list.intestines(org, nil, smallRand, dmgInfo)
-			hg.AddHarmToAttacker(dmgInfo, bigRand, "Burns harm")
+			zc.organism.input_list.liver(org, nil, smallRand, dmgInfo)
+			zc.organism.input_list.stomach(org, nil,smallRand, dmgInfo)
+			zc.organism.input_list.intestines(org, nil, smallRand, dmgInfo)
+			zc.AddHarmToAttacker(dmgInfo, bigRand, "Burns harm")
 			--org.liver = math.min(org.liver + math.Rand(0.0005,0.0008),1)
 			--org.stomach = math.min(org.stomach + math.Rand(0.0005,0.0008),1)
 			//org.trachea = math.min(org.trachea + smallRand, 1)
@@ -779,7 +779,7 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 		hook_Run("ZC_PreOrganismBulletBleedAdd", org.fakePlayer and ent or ply, org, dmgInfo, hitgroup, attacker.harm, hitBoxs, inputHole, hook_info)
 
 		if(!hook_info.restricted)then
-			hg.organism.AddWound(ent, tr, bone, dmgInfo, dmgPos, hook_info.bleed, inputHole, outputHole)
+			zc.organism.AddWound(ent, tr, bone, dmgInfo, dmgPos, hook_info.bleed, inputHole, outputHole)
 		end
 	end
 
@@ -803,14 +803,14 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 				end
 			end
 
-			hg.AddForceRag(ply, bone, force * 0.5, 0.5)
+			zc.AddForceRag(ply, bone, force * 0.5, 0.5)
 
 			if ply.AddForceRag[bone][2] and ply.AddForceRag[bone][2]:Length() > 4500 then //seems like these values are kind of high, no?
 				if ply.AddForceRag[bone][2]:Length() > 7000 then
-					hg.StunPlayer(ply, 0.5)
-					hg.LightStunPlayer(ply, 2)
+					zc.StunPlayer(ply, 0.5)
+					zc.LightStunPlayer(ply, 2)
 				else
-					hg.LightStunPlayer(ply, 2)
+					zc.LightStunPlayer(ply, 2)
 				end
 			end
 		end
@@ -834,7 +834,7 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 	local damageStack = dmg_before / (dmgInfo:IsDamageType(DMG_BULLET) and RagdollDamageBoneMul[hitgroup] or 1)
 	--print(damageStack, 3)
 	damageStack = damageStack * (dmgInfo:IsDamageType(DMG_BLAST) and 200 / lend or 1) * (!dmgInfo:IsDamageType(DMG_CLUB+DMG_SLASH+DMG_BULLET+DMG_BLAST+DMG_SNIPER) and 0 or 1) * (ent:IsNPC() and 3 or 1)
-	--damageStack = damageStack * (bullet and bullet.AmmoType and hg.ammotypeshuy[bullet.AmmoType] and hg.ammotypeshuy[bullet.AmmoType].BulletSettings and hg.ammotypeshuy[bullet.AmmoType].BulletSettings.Mass or 1) / 8
+	--damageStack = damageStack * (bullet and bullet.AmmoType and zc.ammotypeshuy[bullet.AmmoType] and zc.ammotypeshuy[bullet.AmmoType].BulletSettings and zc.ammotypeshuy[bullet.AmmoType].BulletSettings.Mass or 1) / 8
 
 	org.dmgstack = org.dmgstack or {}
 	org.dmgstack[hitgroup] = org.dmgstack[hitgroup] or {}
@@ -873,12 +873,12 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 				if blast then
 					for i, limb in ipairs(limbs) do
 						if !org[limb.."amputated"] and math.random(5) < 200 / lend then
-							hg.organism.AmputateLimb(org, limb)
+							zc.organism.AmputateLimb(org, limb)
 						end
 					end
 				else
 					if !org[hitgrouptolimb[hitgroup].."amputated"] then
-						hg.organism.AmputateLimb(org, hitgrouptolimb[hitgroup])
+						zc.organism.AmputateLimb(org, hitgrouptolimb[hitgroup])
 					end
 				end
 			end
@@ -900,7 +900,7 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 			should = org.dmgstack[hitgroup][1] > hitgroup_max
 			--print(rag, should, hitgroup == HITGROUP_HEAD, bonename, hitgroup, HITGROUP_HEAD)
 			if should and hitgroup == HITGROUP_HEAD then
-				hg.ExplodeHead(ent)
+				zc.ExplodeHead(ent)
 
 				org.dmgstack[hitgroup][1] = nil
 				org.dmgstack[hitgroup][2] = nil
@@ -934,24 +934,24 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 			org.dmgstack[hitgroup][2] = nil
 
 			org.owner.fullsend = true
-			hg.send_bareinfo(org)
+			zc.send_bareinfo(org)
 		end)
 	end)
 
 	--[[if !org.llegamputated and dmgInfo:IsDamageType(DMG_BLAST) then
-		hg.organism.AmputateLimb(org, "lleg")
+		zc.organism.AmputateLimb(org, "lleg")
 	end
 
 	if !org.rlegamputated and dmgInfo:IsDamageType(DMG_BLAST) then
-		hg.organism.AmputateLimb(org, "rleg")
+		zc.organism.AmputateLimb(org, "rleg")
 	end
 
 	if !org.larmamputated and dmgInfo:IsDamageType(DMG_BLAST) then
-		hg.organism.AmputateLimb(org, "larm")
+		zc.organism.AmputateLimb(org, "larm")
 	end
 
 	if !org.rarmamputated and dmgInfo:IsDamageType(DMG_BLAST) then
-		hg.organism.AmputateLimb(org, "rarm")
+		zc.organism.AmputateLimb(org, "rarm")
 	end--]]
 
 	dmgInfo:ScaleDamage(dmgInfo:IsDamageType(DMG_BURN) and 0.015 or 0.15)
@@ -961,7 +961,7 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 	if org.isPly then
 		hook.Run("ZC_OrganismThinkCall", ply, org)
 
-		if (not ply:Alive() or not org.alive) and (math.Round(ply:GetInfoNum("zc_deathfadeout", 1)) == 1) then// or org.unconscious or hg.organism.paincheck(org) or (ply:Health() <= 0) then
+		if (not ply:Alive() or not org.alive) and (math.Round(ply:GetInfoNum("zc_deathfadeout", 1)) == 1) then// or org.unconscious or zc.organism.paincheck(org) or (ply:Health() <= 0) then
 			if org.skull == 1 then
 				//ent:SetNWString("PlayerName", "Unidentifiable person")
 			end
@@ -999,11 +999,11 @@ hook.Add("EntityTakeDamage", "ZC_ApplyOrganismDamage", function(ent, dmgInfo)
 
 		if dmgInfo:GetAttacker():IsNPC() and headcrabs[class] then
 			local armors = ply:GetNetVar("Armor",{})
-			local isHelm = armors["head"] and !hg.armor["head"][armors["head"]].nodrop
-			local isMask = armors["face"] and !hg.armor["face"][armors["face"]].nodrop
+			local isHelm = armors["head"] and !zc.armor["head"][armors["head"]].nodrop
+			local isMask = armors["face"] and !zc.armor["face"][armors["face"]].nodrop
 
 			if isHelm or isMask then
-				hg.DropArmorForce(ply, isHelm and armors["head"] or armors["face"])
+				zc.DropArmorForce(ply, isHelm and armors["head"] or armors["face"])
 				ply.ArmorCD = CurTime() + 5
 
 				return
@@ -1034,7 +1034,7 @@ end)
 	--end
 end)--	]]
 
-function hg.organism.DamageTypeAffliction(dmg, dmgInfo, ply, org)
+function zc.organism.DamageTypeAffliction(dmg, dmgInfo, ply, org)
 	local dmgBlood, dmgHurt, instaPain, immobilization = dmg, dmg, dmg, 0
 
 	if dmgInfo:IsDamageType(DMG_VEHICLE + DMG_SHOCK) then
@@ -1051,7 +1051,7 @@ function hg.organism.DamageTypeAffliction(dmg, dmgInfo, ply, org)
 
 	if dmgInfo:IsDamageType(DMG_GENERIC+DMG_SHOCK+DMG_CRUSH) then
 		if dmgInfo:GetInflictor():GetClass() == "trigger_hurt" then
-			hg.organism.input_list.brain(org, 1, dmg / 50, dmgInfo)
+			zc.organism.input_list.brain(org, 1, dmg / 50, dmgInfo)
 		end
 	end
 
@@ -1102,7 +1102,7 @@ function hg.organism.DamageTypeAffliction(dmg, dmgInfo, ply, org)
 			dmgHurt = 0
 			instaPain = 0
 		else
-			hg.organism.GasDamage(org, dmg, dmgInfo)
+			zc.organism.GasDamage(org, dmg, dmgInfo)
 			dmgBlood = 0
 			dmgHurt = dmg * 5
 			instaPain = 0
@@ -1111,7 +1111,7 @@ function hg.organism.DamageTypeAffliction(dmg, dmgInfo, ply, org)
 
 	if dmgInfo:IsDamageType(DMG_ACID + DMG_POISON) then
 		if not (ply.armors.face == "mask2" or ply.PlayerClassName == "Combine") then
-			hg.organism.GasDamage(org, dmg, dmgInfo)
+			zc.organism.GasDamage(org, dmg, dmgInfo)
 		end
 		dmgBlood = dmg * 2
 		dmgHurt = dmg * 5
@@ -1121,7 +1121,7 @@ function hg.organism.DamageTypeAffliction(dmg, dmgInfo, ply, org)
 
 	if dmgInfo:IsDamageType(DMG_RADIATION) then
 		dmg = dmg * 2
-		hg.organism.RadDamage(org, dmg, dmgInfo)
+		zc.organism.RadDamage(org, dmg, dmgInfo)
 	end
 
 	return dmgBlood * 2, dmgHurt, instaPain / 20, immobilization
@@ -1154,12 +1154,12 @@ local function GetTraceDamage(ent, start, dir)
 	return traceResult
 end
 
-hg.GetTraceDamage = GetTraceDamage
+zc.GetTraceDamage = GetTraceDamage
 
 local abs = math.abs
 takeRagdollDamage = function(ent, dmgInfo)
 	if not ent:IsRagdoll() then return end
-	local ply = hg.RagdollOwner(ent)
+	local ply = zc.RagdollOwner(ent)
 	if not IsValid(ply) then return end
 	if ply.organism and ply.organism.godmode then return end
 	local traceResult = GetTraceDamage(ent, dmgInfo:GetDamagePosition(), dmgInfo:GetDamageForce())
@@ -1199,7 +1199,7 @@ takeRagdollDamage = function(ent, dmgInfo)
 	//end
 end
 
-hg.takeRagdollDamage = takeRagdollDamage
+zc.takeRagdollDamage = takeRagdollDamage
 
 local bleedSurfaces = { -- https://developer.valvesoftware.com/wiki/Material_surface_properties
 	["boulder"] = true,
@@ -1273,7 +1273,7 @@ local function velocityDamage(ent, data)
 	att.harm = dmgInfo:GetDamage() / 15
 	-- 100 is kil
 
-	local ply = hg.RagdollOwner(ent)
+	local ply = zc.RagdollOwner(ent)
 
 	local traceResult = GetTraceDamage(ent, data.HitPos, -(data.OurOldVelocity - data.TheirOldVelocity))
 
@@ -1296,21 +1296,21 @@ local function velocityDamage(ent, data)
 	if org.godmode then return end
 	org.fearadd = org.fearadd + dmg * 0.5
 
-		if hitgroup == HITGROUP_LEFTLEG and (dmg * 3 > 0.25) then hg.organism.input_list.llegup(org, bone, dmg * 1 * math.Rand(1, 2), dmgInfo) end--org.lleg = math.min(org.lleg + dmg, 1) end
-		if hitgroup == HITGROUP_RIGHTLEG and (dmg * 3 > 0.25) then hg.organism.input_list.rlegup(org, bone, dmg * 1 * math.Rand(1, 2), dmgInfo) end
-		if hitgroup == HITGROUP_LEFTARM and (dmg * 2 > 0.2) then hg.organism.input_list.larmup(org, bone, dmg * 1 * math.Rand(1, 2), dmgInfo) end
-		if hitgroup == HITGROUP_RIGHTARM and (dmg * 2 > 0.2) then hg.organism.input_list.rarmup(org, bone, dmg * 1 * math.Rand(1, 2), dmgInfo) end
-		if hitgroup == HITGROUP_CHEST and (dmg * 3 > 0.25) then hg.organism.input_list.chest(org, bone, dmg * 3, dmgInfo) end
-		if hitgroup == HITGROUP_STOMACH and (dmg * 3 > 0.25) then hg.organism.input_list.pelvis(org, bone, dmg * 3, dmgInfo) end
+		if hitgroup == HITGROUP_LEFTLEG and (dmg * 3 > 0.25) then zc.organism.input_list.llegup(org, bone, dmg * 1 * math.Rand(1, 2), dmgInfo) end--org.lleg = math.min(org.lleg + dmg, 1) end
+		if hitgroup == HITGROUP_RIGHTLEG and (dmg * 3 > 0.25) then zc.organism.input_list.rlegup(org, bone, dmg * 1 * math.Rand(1, 2), dmgInfo) end
+		if hitgroup == HITGROUP_LEFTARM and (dmg * 2 > 0.2) then zc.organism.input_list.larmup(org, bone, dmg * 1 * math.Rand(1, 2), dmgInfo) end
+		if hitgroup == HITGROUP_RIGHTARM and (dmg * 2 > 0.2) then zc.organism.input_list.rarmup(org, bone, dmg * 1 * math.Rand(1, 2), dmgInfo) end
+		if hitgroup == HITGROUP_CHEST and (dmg * 3 > 0.25) then zc.organism.input_list.chest(org, bone, dmg * 3, dmgInfo) end
+		if hitgroup == HITGROUP_STOMACH and (dmg * 3 > 0.25) then zc.organism.input_list.pelvis(org, bone, dmg * 3, dmgInfo) end
 		local physAng = data.PhysObject:GetAngles()
 
-		if hitgroup == HITGROUP_STOMACH and physAng:Forward():Dot(data.HitNormal) > 0.6 then hg.organism.input_list.spine1(org, bone, dmg * (math.random(3) > 1 and 1 or 0) * 3, dmgInfo) end -- | AND WHY DOES OUR SPINE REALLY BREAK FROM FALLING ON THE CHEST OR STOMACH...
-		if hitgroup == HITGROUP_CHEST and physAng:Forward():Dot(data.HitNormal) > 0.6 then hg.organism.input_list.spine2(org, bone, dmg * (math.random(3) > 1 and 1 or 0) * 3, dmgInfo) end
+		if hitgroup == HITGROUP_STOMACH and physAng:Forward():Dot(data.HitNormal) > 0.6 then zc.organism.input_list.spine1(org, bone, dmg * (math.random(3) > 1 and 1 or 0) * 3, dmgInfo) end -- | AND WHY DOES OUR SPINE REALLY BREAK FROM FALLING ON THE CHEST OR STOMACH...
+		if hitgroup == HITGROUP_CHEST and physAng:Forward():Dot(data.HitNormal) > 0.6 then zc.organism.input_list.spine2(org, bone, dmg * (math.random(3) > 1 and 1 or 0) * 3, dmgInfo) end
 
 
 		--print(dmg * 3, dmg * 80)
 		if surfaceType and surfaceType ~= nil and bleedSurfaces[surfaceType] and (dmg * 3 > 0.17) and math.random(2) == 2 then
-			hg.organism.AddWoundManual(ent,dmg*5,vector_origin,angle_zero,bone,CurTime() + (dmg * 250))
+			zc.organism.AddWoundManual(ent,dmg*5,vector_origin,angle_zero,bone,CurTime() + (dmg * 250))
 			--PrintTable(org.wounds)
 		end
 		--print(dmg)
@@ -1323,14 +1323,14 @@ local function velocityDamage(ent, data)
 		if hitgroup == HITGROUP_HEAD then
 			local hadhelmet = org.owner.armors and org.owner.armors["head"] != nil
 
-			hg.organism.input_list.skull(org, bone, dmg * 6 * (hadhelmet and 0.2 or 1), dmgInfo)
+			zc.organism.input_list.skull(org, bone, dmg * 6 * (hadhelmet and 0.2 or 1), dmgInfo)
 
 			org.consciousness = math.Approach(org.consciousness, 0, dmg * 20 * (hadhelmet and 0.2 or 1))
 
 			local neck_not_broken = org.spine3 < 0.8
 
 			//if dmg > 0.5 then
-				hg.organism.input_list.spine3(org, bone, dmg * (math.random(4) == 1 and 1 or 0) * 3 * (hadhelmet and 0.5 or 1), dmgInfo)
+				zc.organism.input_list.spine3(org, bone, dmg * (math.random(4) == 1 and 1 or 0) * 3 * (hadhelmet and 0.5 or 1), dmgInfo)
 			//end
 			if dmg * 10 > 0.5 and !hadhelmet then
 				org.unconscious = true
@@ -1338,7 +1338,7 @@ local function velocityDamage(ent, data)
 			end
 
 			if neck_not_broken and org.spine3 >= 0.8 then
-				hg.BreakNeck(ent)
+				zc.BreakNeck(ent)
 			end
 		end
 
@@ -1347,7 +1347,7 @@ local function velocityDamage(ent, data)
 	if org.isPly and ply then
 		hook.Run("ZC_OrganismThinkCall", ply, org)
 
-		if (not ply:Alive() or not org.alive) and (math.Round(ply:GetInfoNum("zc_deathfadeout", 1)) == 1) then// or org.unconscious or hg.organism.paincheck(org) or (ply:Health() <= 0) then
+		if (not ply:Alive() or not org.alive) and (math.Round(ply:GetInfoNum("zc_deathfadeout", 1)) == 1) then// or org.unconscious or zc.organism.paincheck(org) or (ply:Health() <= 0) then
 			if org.skull == 1 then
 				//ent:SetNWString("PlayerName", "Unidentifiable person")
 			end
@@ -1360,11 +1360,11 @@ local function velocityDamage(ent, data)
 	timer.Create("send_info_org"..ent:EntIndex(),0.01,1,function()
 		if !IsValid(ent) then return end
 
-		hg.send_bareinfo(org)
+		zc.send_bareinfo(org)
 
 		if IsValid(ply) and ply.Alive and ply:Alive() then
 			ply.fullsend = true
-			hg.send_organism(org, ply)
+			zc.send_organism(org, ply)
 		end
 	end)
 
@@ -1381,10 +1381,10 @@ local function velocityDamage(ent, data)
 	//end
 end
 
-function hg.BreakNeck(ent)
+function zc.BreakNeck(ent)
 	if !IsValid(ent) then return end
 
-	local ply = ent:IsRagdoll() and hg.RagdollOwner(ent) or ent
+	local ply = ent:IsRagdoll() and zc.RagdollOwner(ent) or ent
 	if ply:Alive() then ply:Kill() end
 
 	ent.organism.spine3 = 1
@@ -1419,7 +1419,7 @@ hook.Add("ZC_OnAmputateLimb", "ZC_AmputateCuffs", function(org, ent, limb)
 			ent.handcuffed = false
 		end
 
-		local ply = hg.RagdollOwner(ent)
+		local ply = zc.RagdollOwner(ent)
 		org.handcuffed = false
 		ent:SetNetVar("handcuffed", false)
 		if ply then ply:SetNetVar("handcuffed", false) end
@@ -1450,7 +1450,7 @@ hook.Add("ZC_OnAmputateLimb", "ZC_AmputateFlashlight", function(org, ent, limb)
 	end
 end)
 
-hg.velocityDamage = velocityDamage
+zc.velocityDamage = velocityDamage
 
 hook.Add("ZC_OnRagdollCollide", "ZC_Organism", function(ragdoll, data)
 	if ragdoll == data.HitEntity then return end
@@ -1460,7 +1460,7 @@ hook.Add("ZC_OnRagdollCollide", "ZC_Organism", function(ragdoll, data)
 
 	velocityDamage(ragdoll, data)
 	--if data.Speed < 250 then return end
-	--if data.HitEntity:IsPlayer() then hg.Fake(data.HitEntity) end
+	--if data.HitEntity:IsPlayer() then zc.Fake(data.HitEntity) end
 end)
 
 hook.Add("ZC_PlayerSpawn", "ZC_ResetOrganismWoundsOnSpawn", function(ply)
@@ -1495,15 +1495,15 @@ hook.Add("ZC_PlayerGetUp", "ZC_RebindGetupPhysicsCallback", function(ply)
 				return
 			end
 			local ent = data.HitObject:GetEntity()
-			if ent:IsRagdoll() and hg.RagdollOwner(ent) then
-				local attacker = hg.RagdollOwner(ent)
+			if ent:IsRagdoll() and zc.RagdollOwner(ent) then
+				local attacker = zc.RagdollOwner(ent)
 				hook.Run("ZC_OnPlayerKnockedDownBy",attacker,ply)
 				--attacker.Guilt = attacker.Guilt or 0
 				--attacker.Guilt = attacker.Guilt < 4 and 5 or attacker.Guilt
 				--print(attacker.Guilt)
 			end
 			timer.Simple(0, function()
-				hg.LightStunPlayer(ply,math.min(force / needed,4))
+				zc.LightStunPlayer(ply,math.min(force / needed,4))
 			end)
 		end
 	end)
@@ -1514,7 +1514,7 @@ end)
 	--self.organism.painadd = self.organism.painadd + number
 --end
 
-function hg.VehicleHitFunc(ent, tr, bullet, details)
+function zc.VehicleHitFunc(ent, tr, bullet, details)
 	local maxdmg = 0
 	local penetration = true
 
@@ -1547,7 +1547,7 @@ end
 
 local defaultEngineMins = Vector(-25, -35, -8)
 local defaultEngineMaxs = Vector(35, 35, 35)
-hg.vehicledetails = {
+zc.vehicledetails = {
 	["prop_vehicle_prisoner_pod"] = {},
 	["default"] = {
 		{
@@ -1602,11 +1602,11 @@ hg.vehicledetails = {
 }
 
 hook.Add("Think", "ZC_DrawDeveloperVehicleDebug", function()
-	if zb.dev.IsDeveloper() then
+	if zc.dev.IsDeveloper() then
 		for i, ent in pairs(ents.GetAll()) do
 			if !ent:IsVehicle() then continue end
 
-			local details = hg.GetVehicleDetails(ent)
+			local details = zc.GetVehicleDetails(ent)
 
 			if details then
 				for i, detail in pairs(details) do
@@ -1627,12 +1627,12 @@ hook.Add("Think", "ZC_DrawDeveloperVehicleDebug", function()
 	end
 end)
 
-function hg.GetVehicleDetails(ent)
-	return hg.vehicledetails[ent:GetClass()] or hg.vehicledetails["default"]
+function zc.GetVehicleDetails(ent)
+	return zc.vehicledetails[ent:GetClass()] or zc.vehicledetails["default"]
 end
 
-function hg.VehiclePenetration(ent, tr, bullet)
-	local details = hg.GetVehicleDetails(ent)
+function zc.VehiclePenetration(ent, tr, bullet)
+	local details = zc.GetVehicleDetails(ent)
 
-	return hg.VehicleHitFunc(ent, tr, bullet, details)
+	return zc.VehicleHitFunc(ent, tr, bullet, details)
 end

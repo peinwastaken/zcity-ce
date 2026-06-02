@@ -103,7 +103,7 @@ function SWEP:SetupDataTables()
 end
 
 function SWEP:GetEyeTrace()
-	return hg.eyeTrace(self:GetOwner())
+	return zc.eyeTrace(self:GetOwner())
 end
 
 --function SWEP:DrawWorldModel()
@@ -136,7 +136,7 @@ end
 
 function SWEP:BoneSet(lookup_name, vec, ang)
 	if IsValid(self:GetOwner()) and not self:GetOwner():IsPlayer() then return end
-	hg.bone.Set(self:GetOwner(), lookup_name, vec, ang)
+	zc.bone.Set(self:GetOwner(), lookup_name, vec, ang)
 end
 
 local lang1, lang2 = Angle(0, -10, 0), Angle(0, 10, 0)
@@ -245,7 +245,7 @@ end
 
 function SWEP:FindObjects()
 	local Owner = self:GetOwner()
-	local Pos, Vec, GotOne, Tries, TrOne, TrTwo = hg.eye(Owner), Owner:GetAimVector(), false, 0, nil, nil
+	local Pos, Vec, GotOne, Tries, TrOne, TrTwo = zc.eye(Owner), Owner:GetAimVector(), false, 0, nil, nil
 	while not GotOne and (Tries < 100) do
 		local Tr = util.QuickTrace(Pos - Vec * 10, Vec * 60, {Owner})
 		local FindBone = util.QuickTrace(Pos, Vec * 60, {Owner})
@@ -284,7 +284,7 @@ end
 function SWEP:PrimaryAttack()
 	local Owner = self:GetOwner()
 	if Owner:KeyDown(IN_SPEED) then return end
-	if not hg.CanUseLeftHand(Owner) or not hg.CanUseRightHand(Owner) then return end
+	if not zc.CanUseLeftHand(Owner) or not zc.CanUseRightHand(Owner) then return end
 	if self:GetHolding() == 25 or self:GetHolding() == 95 then
 		self:EmitSound("player/clothes_generic_foley_0"..math.random(5)..".wav", 55, math.random(95, 105), 0.25)
 	end
@@ -327,7 +327,7 @@ function SWEP:PrimaryAttack()
 				Owner:SetAnimation(PLAYER_ATTACK1)
 				Owner:ViewPunch(Angle(3, 0, 0))
 				self:SprayDecals()
-				Owner:PrintMessage(HUD_PRINTCENTER, zb.locale.GetLocalized("door/sealed"))
+				Owner:PrintMessage(HUD_PRINTCENTER, zc.locale.GetLocalized("door/sealed"))
 				timer.Simple(.1, function() if self.TapeAmount <= 0 then self:Remove() end end)
 				self:SetHolding(25)
 			else
@@ -341,7 +341,7 @@ function SWEP:PrimaryAttack()
 				util.Decal("hmcd_jackatape", TrOne.HitPos + TrOne.HitNormal, TrOne.HitPos - TrOne.HitNormal)
 				util.Decal("hmcd_jackatape", TrTwo.HitPos + TrTwo.HitNormal, TrTwo.HitPos - TrTwo.HitNormal)
 				--Owner:PrintMessage(HUD_PRINTCENTER,"Bond strength: "..tostring(Strength))
-				Owner:ChatPrint(zb.locale.GetLocalized("door/bond_strength", tostring(Strength)))
+				Owner:ChatPrint(zc.locale.GetLocalized("door/bond_strength", tostring(Strength)))
 				timer.Simple(.1, function() if self.TapeAmount <= 0 then self:Remove() end end)
 				self:SetHolding(25)
 			end
@@ -360,7 +360,7 @@ end
 
 function SWEP:SprayDecals()
 	local Owner = self:GetOwner()
-	local pos = hg.eye(Owner)
+	local pos = zc.eye(Owner)
 	local aim = Owner:GetAimVector()
 	local Tr = util.QuickTrace(pos, aim * 70, {Owner})
 	util.Decal("hmcd_jackatape", Tr.HitPos + Tr.HitNormal, Tr.HitPos - Tr.HitNormal)

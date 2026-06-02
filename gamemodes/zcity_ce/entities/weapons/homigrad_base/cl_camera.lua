@@ -140,7 +140,7 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen, ply)
 	ply = ply or self:GetOwner()
 	gun = self:GetWeaponEntity()
 
-	hg.DrawWorldModel(self, true)
+	zc.DrawWorldModel(self, true)
 
 	if not ply.GetAimVector then return end
 
@@ -229,7 +229,7 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen, ply)
 	local outputPos, outputAng
 	local animpos = (self.AdditionalAng or Angle(0, 0, 0))[2] / 20 + (self.AdditionalAng2 or Angle(0, 0, 0))[2] / 20 - self.AdditionalPos2[2] / 15
 	local eyeSpray = -(-self.EyeSpray)
-	local mult = (hg.GunPositions[ply] and hg.GunPositions[ply][1] and (hg.GunPositions[ply][1] / 4 + 1) / 2 + 1 or 1) / 2
+	local mult = (zc.GunPositions[ply] and zc.GunPositions[ply][1] and (zc.GunPositions[ply][1] / 4 + 1) / 2 + 1 or 1) / 2
 
 	local spray = self:GetCameraSprayValues(animpos) * mult
 
@@ -245,7 +245,7 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen, ply)
 	outputPos = LerpVector(k, posIdle, posZoom)
 	outputAng = LerpAngle(k, angIdle, angIdle)
 
-	if zoom or hg.KeyDown(ply, IN_SPEED) then offsetView = LerpFT(0.07, offsetView, angZero) end
+	if zoom or zc.KeyDown(ply, IN_SPEED) then offsetView = LerpFT(0.07, offsetView, angZero) end
 
 	outputAng:Add(-eyeSpray * 10)
 

@@ -65,7 +65,7 @@ SWEP.FakeReloadEvents = {
 	end,
 	[0.35] = function( self, timeMul ) 
 		if CLIENT and self:Clip1() < 1 then
-			hg.CreateMag( self, Vector(0,55,-55) )
+			zc.CreateMag( self, Vector(0,55,-55) )
 			self:GetWM():ManipulateBoneScale(55, vector_origin)
 			self:GetWM():ManipulateBoneScale(56, vector_origin)
 			self:GetOwner():PullLHTowards("ValveBiped.Bip01_L_Thigh", 0.8 * timeMul,nil,nil,function() 
@@ -195,7 +195,7 @@ SWEP.LHAng = Angle(5,9,-100)
 function SWEP:PrimaryShootPost()
 	local owner = self:GetOwner()
 	if SERVER and self.SprayI > 25 and (owner.posture == 7 or owner.posture == 8) then
-		hg.drop(owner,self,nil,-150)
+		zc.drop(owner,self,nil,-150)
 	end
 end
 

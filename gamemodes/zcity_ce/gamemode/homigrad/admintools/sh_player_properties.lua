@@ -2,7 +2,7 @@ local function check(self, ent, ply)
     if not ply:ZCTools_GetAccess() then return false end
 	if ( !IsValid( ent ) ) then return false end
 	if ( ent:IsPlayer() ) then return true end
-    local pEnt = hg.RagdollOwner( ent )
+    local pEnt = zc.RagdollOwner( ent )
     if ( ent:IsRagdoll() ) and pEnt and pEnt:IsPlayer() and pEnt:Alive() then return true end
 end
 properties.Add( "notify", {
@@ -31,7 +31,7 @@ properties.Add( "notify", {
 
 		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
 		if ( !self:Filter( ent, ply ) ) then return end
-        ent = hg.RagdollOwner( ent ) or ent
+        ent = zc.RagdollOwner( ent ) or ent
 
 		ent:Notify( text, 0 )
 		print(tostring(ply:Nick() or ply) .." has notfied ".. tostring(ent:Nick() or ent) .." with the following message; "..text)
@@ -63,7 +63,7 @@ properties.Add( "givegun", {
         local text = net.ReadString()
 		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
 		if ( !self:Filter( ent, ply ) ) then return end
-        ent = hg.RagdollOwner( ent ) or ent
+        ent = zc.RagdollOwner( ent ) or ent
 
 		local spawned = ent:Give( text )
         if not IsValid(spawned) then return end
@@ -97,7 +97,7 @@ properties.Add( "strip", {
 
 		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
 		if ( !self:Filter( ent, ply ) ) then return end
-        ent = hg.RagdollOwner( ent ) or ent
+        ent = zc.RagdollOwner( ent ) or ent
 		ent:StripWeapons( )
         ent:Give("weapon_hands_sh")
 		print(tostring(ply:Nick() or ply) .." has stripped ".. tostring(ent:Nick() or ent) .." of their weapons.")
@@ -129,7 +129,7 @@ properties.Add( "fullstrip", {
 
 		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
 		if ( !self:Filter( ent, ply ) ) then return end
-        ent = hg.RagdollOwner( ent ) or ent
+        ent = zc.RagdollOwner( ent ) or ent
 
 		ent:StripWeapons( )
 		print(tostring(ply:Nick() or ply) .." has full stripped ".. tostring(ent:Nick() or ent) .." of their weapons and fist.")
@@ -161,9 +161,9 @@ properties.Add( "reset_org", {
 
 		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
 		if ( !self:Filter( ent, ply ) ) then return end
-        ent = hg.RagdollOwner( ent ) or ent
+        ent = zc.RagdollOwner( ent ) or ent
 
-		hg.organism.Clear( ent.organism )
+		zc.organism.Clear( ent.organism )
 		print(tostring(ply:Nick() or ply) .." reset the health of ".. tostring(ent:Nick() or ent))
 	end
 } )
@@ -176,7 +176,7 @@ properties.Add( "freeze", {
 	Filter = function( self, ent, ply )
         if not ply:ZCTools_GetAccess() then return false end
 	    if ( !IsValid( ent ) ) then return false end
-        local pEnt = hg.RagdollOwner( ent ) or ent
+        local pEnt = zc.RagdollOwner( ent ) or ent
         self.MenuLabel = pEnt:IsPlayer() and pEnt:IsFrozen() and "Unfreeze" or "Freeze"
         self.MenuIcon = pEnt:IsPlayer() and pEnt:IsFrozen() and "icon16/control_pause.png" or "icon16/control_pause_blue.png"
 	    if ( ent:IsPlayer() ) then return true end
@@ -192,7 +192,7 @@ properties.Add( "freeze", {
 
 		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
 		if ( !self:Filter( ent, ply ) ) then return end
-        ent = hg.RagdollOwner( ent ) or ent
+        ent = zc.RagdollOwner( ent ) or ent
 
 		ent:Freeze(not ent:IsFrozen())
 		print(tostring(ply:Nick() or ply) .. (not ent:IsFrozen() and " has frozen " or " has unfrozen ").. tostring(ent:Nick() or ent))
@@ -228,7 +228,7 @@ properties.Add( "snatch", {
 
 		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
 		if ( !self:Filter( ent, ply ) ) then return end
-        ent = hg.RagdollOwner( ent ) or ent
+        ent = zc.RagdollOwner( ent ) or ent
 
 		local bot = ents.Create("bot_fear")
         bot.Victim = ent
@@ -252,14 +252,14 @@ properties.Add( "ragdollize", {
 		local ent = net.ReadEntity()
 
 		if not self:Filter(ent, ply) then return end
-        ent = hg.RagdollOwner(ent) or ent
+        ent = zc.RagdollOwner(ent) or ent
 
 		if not IsValid(ent.FakeRagdoll) then
 			print(tostring(ply:Nick() or ply) .." has stunned ".. tostring(ent:Nick() or ent))
-			hg.LightStunPlayer(ent, 5)
+			zc.LightStunPlayer(ent, 5)
 		else
 			print(tostring(ply:Nick() or ply) .." has unstunned ".. tostring(ent:Nick() or ent))
-			hg.FakeUp(ent)
+			zc.FakeUp(ent)
 		end
 	end
 } )
@@ -279,9 +279,9 @@ properties.Add( "vomit", {
 		local ent = net.ReadEntity()
 
 		if not self:Filter(ent, ply) then return end
-        ent = hg.RagdollOwner(ent) or ent
+        ent = zc.RagdollOwner(ent) or ent
 
-		hg.organism.Vomit(ent)
+		zc.organism.Vomit(ent)
 		print(tostring(ply:Nick() or ply) .." forced ".. tostring(ent:Nick() or ent) .." to vomit.")
 	end
 } )
@@ -301,7 +301,7 @@ properties.Add( "lobotomize", {
 		local ent = net.ReadEntity()
 
 		if not self:Filter(ent, ply) then return end
-        ent = hg.RagdollOwner(ent) or ent
+        ent = zc.RagdollOwner(ent) or ent
 
         ent.organism.brain = ent.organism.brain + 0.05
         ply:ChatPrint("Lobotomized brain to "..math.Round(ent.organism.brain * 100).."%")
@@ -328,7 +328,7 @@ properties.Add("killsilent", {
 		local ent = net.ReadEntity()
 
 		if ( !self:Filter( ent, ply ) ) then return end
-        ent = hg.RagdollOwner( ent ) or ent
+        ent = zc.RagdollOwner( ent ) or ent
 		print(tostring(ply:Nick() or ply) .." has silently killed ".. tostring(ent:Nick() or ent))
 		ent:Kill()
 	end
@@ -349,7 +349,7 @@ properties.Add("removeply", {
 		local ent = net.ReadEntity()
 
 		if ( !self:Filter( ent, ply ) ) then return end
-        ent = hg.RagdollOwner( ent ) or ent
+        ent = zc.RagdollOwner( ent ) or ent
 		print(tostring(ply:Nick() or ply) .." has removed ".. tostring(ent:Nick() or ent))
 		ent:KillSilent()
 		ent:Remove()
@@ -378,7 +378,7 @@ properties.Add( "setplayerclass", {
 		if not self:Filter(ent, ply) then return end -- this line was not here before
 		local class = net.ReadString( )
 
-		ent = hg.RagdollOwner(ent) or hg.GetCurrentCharacter(ent) or ent
+		ent = zc.RagdollOwner(ent) or zc.GetCurrentCharacter(ent) or ent
 		if IsValid(ent) and ent:IsPlayer() and player.classList[class] then
 			ent:SetPlayerClass(class)
 		end
@@ -405,7 +405,7 @@ properties.Add( "break_limb", {
 
 	Filter = check,
 	MenuOpen = function( self, option, ent, tr )
-		ent = hg.RagdollOwner(ent) or hg.GetCurrentCharacter(ent) or ent
+		ent = zc.RagdollOwner(ent) or zc.GetCurrentCharacter(ent) or ent
 
 		local submenu = option:AddSubMenu()
 
@@ -470,25 +470,25 @@ properties.Add( "break_limb", {
 		local limb = net.ReadUInt( 8 )
 
 		if not self:Filter(ent, ply) then return end
-       	ent = hg.RagdollOwner(ent) or hg.GetCurrentCharacter(ent) or ent
+       	ent = zc.RagdollOwner(ent) or zc.GetCurrentCharacter(ent) or ent
 
         local dmgInfo = DamageInfo()
 		if limb == 0 then
-            hg.BreakNeck(ent)
+            zc.BreakNeck(ent)
         elseif limb == 1 then
-            hg.organism.input_list.larmup(ent.organism, 0, 1, dmgInfo)
+            zc.organism.input_list.larmup(ent.organism, 0, 1, dmgInfo)
 		elseif limb == 2 then
-			hg.organism.input_list.rarmup(ent.organism, 0, 1, dmgInfo)
+			zc.organism.input_list.rarmup(ent.organism, 0, 1, dmgInfo)
 		elseif limb == 3 then
-			hg.organism.input_list.llegup(ent.organism, 0, 1, dmgInfo)
+			zc.organism.input_list.llegup(ent.organism, 0, 1, dmgInfo)
 		elseif limb == 4 then
-			hg.organism.input_list.rlegup(ent.organism, 0, 1, dmgInfo)
+			zc.organism.input_list.rlegup(ent.organism, 0, 1, dmgInfo)
 		elseif limb == 5 then
-			hg.organism.input_list.spine1(ent.organism, 0, 1, dmgInfo)
+			zc.organism.input_list.spine1(ent.organism, 0, 1, dmgInfo)
 		elseif limb == 6 then
-			hg.organism.input_list.spine2(ent.organism, 0, 1, dmgInfo)
+			zc.organism.input_list.spine2(ent.organism, 0, 1, dmgInfo)
 		elseif limb == 7 then
-			hg.organism.input_list.spine3(ent.organism, 0, 1, dmgInfo)
+			zc.organism.input_list.spine3(ent.organism, 0, 1, dmgInfo)
 		end
 	end
 } )
@@ -500,7 +500,7 @@ properties.Add( "amputate_limb", {
 
 	Filter = check,
 	MenuOpen = function( self, option, ent, tr )
-		ent = hg.RagdollOwner(ent) or hg.GetCurrentCharacter(ent) or ent
+		ent = zc.RagdollOwner(ent) or zc.GetCurrentCharacter(ent) or ent
 
 		local submenu = option:AddSubMenu()
 
@@ -547,21 +547,21 @@ properties.Add( "amputate_limb", {
 		local limb = net.ReadUInt( 8 )
 
 		if not self:Filter(ent, ply) then return end
-        ent = hg.RagdollOwner(ent) or ent
+        ent = zc.RagdollOwner(ent) or ent
 
         DamageInfo()
 		if limb == 0 then
 			if SERVER and not ent.noHead then
-				hg.ExplodeHead(ent)
+				zc.ExplodeHead(ent)
 			end
         elseif limb == 1 then
-            hg.organism.AmputateLimb(ent.organism, "larm")
+            zc.organism.AmputateLimb(ent.organism, "larm")
 		elseif limb == 2 then
-			hg.organism.AmputateLimb(ent.organism, "rarm")
+			zc.organism.AmputateLimb(ent.organism, "rarm")
 		elseif limb == 3 then
-			hg.organism.AmputateLimb(ent.organism, "lleg")
+			zc.organism.AmputateLimb(ent.organism, "lleg")
 		elseif limb == 4 then
-			hg.organism.AmputateLimb(ent.organism, "rleg")
+			zc.organism.AmputateLimb(ent.organism, "rleg")
 		end
 	end
 } )
@@ -661,19 +661,19 @@ local function Respawn(ply,body)
                 ply:SetAmmo( v, k )
             end
             ply:Give( "weapon_hands_sh" )
-            hg.Fake( ply, body )
-            hg.LightStunPlayer( ply )
+            zc.Fake( ply, body )
+            zc.LightStunPlayer( ply )
 
             timer.Simple(0.1,function()
                 if body.CurAppearance then
                     local color = body:GetNWVector("PlayerColor", vector_origin)
                     body.CurAppearance.AColor = Color( color[1] * 255,color[2] * 255,color[3] * 255 )
                     ply:SetPlayerColor(color)
-                    hg.Appearance.ForceApplyAppearance( ply, body.CurAppearance )
+                    zc.Appearance.ForceApplyAppearance( ply, body.CurAppearance )
                     ply:SetModel(body:GetModel())
                 else
                     -- prevent funny submaterial glitch
-                    local Appearance = ply.CurAppearance or hg.Appearance.GetRandomAppearance()
+                    local Appearance = ply.CurAppearance or zc.Appearance.GetRandomAppearance()
                     Appearance.AColthes = ""
                     ply:SetNetVar("Accessories", "")
                     ply:SetModel(body:GetModel())
@@ -686,7 +686,7 @@ local function Respawn(ply,body)
     end)
 end
 
-hg.RespawnIntoBody = Respawn
+zc.RespawnIntoBody = Respawn
 
 properties.Add( "respawn_ply_in_rag", {
 	MenuLabel = "Respawn Player", -- Name to display on the context menu
@@ -696,12 +696,12 @@ properties.Add( "respawn_ply_in_rag", {
 	Filter = function( self, ent, ply )
         if not ply:ZCTools_GetAccess() then return false end
 	    if ( !IsValid( ent ) ) then return false end
-        local pEnt = hg.RagdollOwner( ent ) or ent
+        local pEnt = zc.RagdollOwner( ent ) or ent
         if ( pEnt:IsRagdoll() ) then return true end
     end,
 	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
 
-        hg.DermaPlayerQuery(
+        zc.DermaPlayerQuery(
             function( ply )
                 self:MsgStart()
                     net.WriteEntity( ent )
@@ -715,7 +715,7 @@ properties.Add( "respawn_ply_in_rag", {
         local sPly = net.ReadEntity()
 		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
 		if ( !self:Filter( ent, ply ) ) then return end
-        --ent = hg.RagdollOwner( ent ) or ent
+        --ent = zc.RagdollOwner( ent ) or ent
 
 		Respawn(sPly,ent)
 	end
@@ -729,7 +729,7 @@ properties.Add( "respawn_lply_in_rag", {
 	Filter = function( self, ent, ply )
         if not ply:ZCTools_GetAccess() then return false end
 	    if ( !IsValid( ent ) ) then return false end
-        local pEnt = hg.RagdollOwner( ent ) or ent
+        local pEnt = zc.RagdollOwner( ent ) or ent
         if ( pEnt:IsRagdoll() ) then return true end
     end,
 	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
@@ -752,7 +752,7 @@ properties.Add( "respawn_lply_in_rag", {
         local sPly = net.ReadEntity()
 		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
 		if ( !self:Filter( ent, ply ) ) then return end
-        --ent = hg.RagdollOwner( ent ) or ent
+        --ent = zc.RagdollOwner( ent ) or ent
 
 		Respawn(sPly,ent)
 	end
@@ -766,7 +766,7 @@ properties.Add( "respawn_ragply_in_rag", {
 	Filter = function( self, ent, ply )
         if not ply:ZCTools_GetAccess() then return false end
 	    if ( !IsValid( ent ) ) then return false end
-        local pEnt = hg.RagdollOwner( ent ) or ent
+        local pEnt = zc.RagdollOwner( ent ) or ent
         if ( pEnt:IsRagdoll() ) then return true end
     end,
 	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
@@ -789,11 +789,11 @@ properties.Add( "respawn_ragply_in_rag", {
 		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
 		if ( !self:Filter( ent, ply ) ) then return end
         if not sPly then return end
-        --ent = hg.RagdollOwner( ent ) or ent
+        --ent = zc.RagdollOwner( ent ) or ent
 
 		Respawn(sPly,ent)
 	end
 } )
 
 
---hg.Fake(owner, body)
+--zc.Fake(owner, body)

@@ -258,7 +258,7 @@ local function reloadFunc(self)
 			self:GetWM():ManipulateBoneScale(self.MagIndex, vector_origin)
 		end
 
-		local key = hg.KeyDown(self:GetOwner(), IN_RELOAD)
+		local key = zc.KeyDown(self:GetOwner(), IN_RELOAD)
 
 		if key and self:CanReload() then
 			reloadFunc(self)
@@ -309,7 +309,7 @@ function SWEP:Reload(time)
 				self:GetWM():ManipulateBoneScale(self.MagIndex, vector_origin)
 			end
 
-			local key = hg.KeyDown(self:GetOwner(), IN_RELOAD)
+			local key = zc.KeyDown(self:GetOwner(), IN_RELOAD)
 
 			if key and self:CanReload() then
 				reloadFunc(self)
@@ -374,8 +374,8 @@ if CLIENT then
 
 		local pos = tr.StartPos:ToScreen()
 
-		if dot < -0.5 and pos.x > 0 and pos.x < ScrW() and pos.y > 0 and pos.y < ScrH() and hg.isVisible(lply:EyePos(), tr.StartPos, {lply, self}, MASK_VISIBLE) then
-			hg.AddFlash(view.origin, dot, tr.StartPos, 40, 4000)
+		if dot < -0.5 and pos.x > 0 and pos.x < ScrW() and pos.y > 0 and pos.y < ScrH() and zc.isVisible(lply:EyePos(), tr.StartPos, {lply, self}, MASK_VISIBLE) then
+			zc.AddFlash(view.origin, dot, tr.StartPos, 40, 4000)
 		end
 	end)
 end

@@ -181,7 +181,7 @@ if IsValid(MENUPANELHUYHUY) then
 	MENUPANELHUYHUY = nil
 end
 
-hg.radialOptions = hg.radialOptions or {}
+zc.radialOptions = zc.radialOptions or {}
 local colBlack = Color(0, 0, 0, 152)
 local colOption = Color(40, 0, 55, 152)
 local colWhite = Color(255, 255, 255, 255)
@@ -205,7 +205,7 @@ local colBack = Color(0,0,0)
 local surface, draw, hook, IsColor, IsValid, math, input = surface, draw, hook, IsColor, IsValid, math, input
 local function CreateRadialMenu(options_arg, bAutoClose)
 	local sizeX, sizeY = ScrW(), ScrH()
-	hg.radialOptions = {}
+	zc.radialOptions = {}
 	local paining = lply.organism and lply.organism.pain and (lply.organism.pain > 100 or lply.organism.brain > 0.2) or false
 
 	if !options_arg then
@@ -216,9 +216,9 @@ local function CreateRadialMenu(options_arg, bAutoClose)
 	end
 
 	//hook_Run("ZC_RadialOptions")
-	local options1 = options_arg or hg.radialOptions
+	local options1 = options_arg or zc.radialOptions
 
-	hg.radialOptions = options1
+	zc.radialOptions = options1
 
 	if IsValid(MENUPANELHUYHUY) then
 		MENUPANELHUYHUY:Remove()
@@ -254,7 +254,7 @@ local function CreateRadialMenu(options_arg, bAutoClose)
 			if menuPanel:GetAlpha() < 255 then return end
 			if thinkwait > CurTime() then return end
 			thinkwait = CurTime() + 0.25
-			table.Empty(hg.radialOptions)
+			table.Empty(zc.radialOptions)
 			local functions = hook.GetTable()["ZC_RadialOptions"]
 
 			for _, func in SortedPairs(functions) do
@@ -318,7 +318,7 @@ local function CreateRadialMenu(options_arg, bAutoClose)
 
 					if paining then
 						math.randomseed(math.Round(CurTime() / 5 + num + i, 0))
-						opt = ""//hg.get_status_message(ply)
+						opt = ""//zc.get_status_message(ply)
 						math.randomseed(os.time())
 					end
 
@@ -364,7 +364,7 @@ local function CreateRadialMenu(options_arg, bAutoClose)
 				if txt and !options_old then return end
 				if paining then
 					math.randomseed(math.Round(CurTime() / 5 + num, 0))
-					txt = hg.get_status_message(ply)
+					txt = zc.get_status_message(ply)
 					math.randomseed(os.time())
 				end
 				draw.DrawText(txt, "HomigradFont", scrW / 2 + math.sin(a) * r * 0.75, scrH / 2 + math.cos(a) * r * 0.75, colWhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -385,7 +385,7 @@ local function CreateRadialMenu(options_arg, bAutoClose)
 end
 
 local function PressRadialMenu(mouseClick)
-	local options = hg.radialOptions
+	local options = zc.radialOptions
 	--print(options[current_option][1])
 	--[[if lply.organism and lply.organism.pain and lply.organism.pain > 100 then
 		hook_Run("ZC_RadialMenuPressed")
@@ -410,8 +410,8 @@ local function PressRadialMenu(mouseClick)
 	end
 end
 
-hg.CreateRadialMenu = CreateRadialMenu
-hg.PressRadialMenu = PressRadialMenu
+zc.CreateRadialMenu = CreateRadialMenu
+zc.PressRadialMenu = PressRadialMenu
 
 local firstTime = true
 local firstTime2 = true
@@ -443,7 +443,7 @@ hook.Add( "ZC_HandleRadialMenuBind", "ZC_HandleRadialMenuBind", function( open )
 end)
 
 hook.Add("Think", "ZC_RadialMenu", function()
-	local bindDown = zb and zb.binds and zb.binds.IsDown and zb.binds.IsDown("open_radial") or false
+	local bindDown = zc and zc.binds and zc.binds.IsDown and zc.binds.IsDown("open_radial") or false
 	if bindDown != radialMenuBindDown then
 		radialMenuBindDown = bindDown
 		hook_Run("ZC_HandleRadialMenuBind", bindDown)
@@ -518,7 +518,7 @@ hook.Add("ZC_RadialOptions", "ZC_DropWeaponRadialOption", function()
 	local organism = lply.organism or {}
 	if not organism.unconscious and IsValid(lply:GetActiveWeapon()) and lply:GetActiveWeapon():GetClass() ~= "weapon_hands_sh" and lply:KeyDown(IN_WALK) then
 		local tbl = {dropWeapon, "Drop Weapon"}
-		hg.radialOptions[#hg.radialOptions + 1] = tbl
+		zc.radialOptions[#zc.radialOptions + 1] = tbl
 	end
 end)
 
@@ -544,7 +544,7 @@ hook.Add("ZC_RadialOptions", "ZC_GestureRadialOption", function()
     local ply = LocalPlayer()
     local organism = ply.organism or {}
 
-    if ply:Alive() and not organism.unconscious and hg.GetCurrentCharacter(ply) == ply then
+    if ply:Alive() and not organism.unconscious and zc.GetCurrentCharacter(ply) == ply then
         if ply.GetPlayerClass and ply:GetPlayerClass() and ply:GetPlayerClass().CanUseGestures ~= nil and not ply:GetPlayerClass().CanUseGestures then return end
 		local tbl = {function(mouseClick)
 			if mouseClick == 1 then
@@ -574,7 +574,7 @@ hook.Add("ZC_RadialOptions", "ZC_GestureRadialOption", function()
 				CreateRadialMenu(commands)
 			end
 		end, "Do Gesture\nRMB - Menu"}
-        hg.radialOptions[#hg.radialOptions + 1] = tbl
+        zc.radialOptions[#zc.radialOptions + 1] = tbl
     end
 end)
 
@@ -598,7 +598,7 @@ hook.Add("HUDPaint","ZC_Identifier",function()
 	if !lply:Alive() then return end
 	if lply:GetNetVar("disappearance", nil) then return end
 
-	local trace = hg.eyeTrace(lply)
+	local trace = zc.eyeTrace(lply)
 
 	if not trace then return end
 
@@ -646,16 +646,16 @@ hook.Add("HUDPaint","ZC_EntHints",function()
 	if lply.organism and lply.organism.unconscious then return end
 	if !lply:Alive() then return end
 
-	local trace = hg.eyeTrace(lply)
+	local trace = zc.eyeTrace(lply)
 
 	if not trace then return end
 
 	HintBackgroundColor.a = LerpFT(0.1, HintBackgroundColor.a, (IsValid(trace.Entity) and trace.Entity.HudHintMarkup) and 200 or 0)
 
-	hg.BasicHudHint(trace.Entity, trace, hint)
+	zc.BasicHudHint(trace.Entity, trace, hint)
 end)
 
-function hg.BasicHudHint(ent, trace)
+function zc.BasicHudHint(ent, trace)
 	hint = (IsValid(ent) and ent.HudHintMarkup) or hint
 
 	if not hint then return end
@@ -688,7 +688,7 @@ hook.Add("HUDPaint","ZC_AfflictionList",function()
 	if org.lleg >= 0.99 then
 		local w, h = 200, 200
 
-		local ent = hg.GetCurrentCharacter(lply)
+		local ent = zc.GetCurrentCharacter(lply)
 		local lkp = ent:LookupBone("ValveBiped.Bip01_R_Thigh")
 		local matrix = ent:GetBoneMatrix(lkp)
 

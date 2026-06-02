@@ -135,7 +135,7 @@ hook.Add("PrePlayerDraw", "ZC_SubRolesAbilities", function(ply, flags)
 				-- if(bone_matrix)then
 					-- local pos, ang = bone_matrix:GetTranslation(), bone_matrix:GetAngles()
 					
-					-- hg.DragHandsToPos(ply, ply:GetActiveWeapon(), pos, true, 3.5, ang:Up(), Angle(90,-15,180), Angle(90,15,0))
+					-- zc.DragHandsToPos(ply, ply:GetActiveWeapon(), pos, true, 3.5, ang:Up(), Angle(90,-15,180), Angle(90,15,0))
 				-- end
 			-- end
 		-- end

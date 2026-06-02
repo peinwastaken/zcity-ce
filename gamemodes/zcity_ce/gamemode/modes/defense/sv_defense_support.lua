@@ -96,7 +96,7 @@ local function CreateFallingAirdrop(items, requester)
 
     if not dropPos then
 
-        local spawnPoints = zb.GetMapPoints("DEFENSE_POINT")
+        local spawnPoints = zc.GetMapPoints("DEFENSE_POINT")
         if spawnPoints and #spawnPoints > 0 then
             local selectedPoint = spawnPoints[math.random(#spawnPoints)]
             dropPos = selectedPoint.pos
@@ -389,13 +389,13 @@ local function RespawnDeadPlayers(requester)
                     ply:GiveAmmo(30, ply:GetWeapon(weaponClass):GetPrimaryAmmoType(), true)
                 end
                 pcall(function()
-                    hg.AddAttachmentForce(ply, gun, DEFENSE_ATTACHMENTS[0][math.random(#DEFENSE_ATTACHMENTS[0])])
+                    zc.AddAttachmentForce(ply, gun, DEFENSE_ATTACHMENTS[0][math.random(#DEFENSE_ATTACHMENTS[0])])
                 end)
             end
         end)
 
         pcall(function()
-            hg.AddArmor(ply, DEFENSE_ARMOR[0][math.random(#DEFENSE_ARMOR[0])])
+            zc.AddArmor(ply, DEFENSE_ARMOR[0][math.random(#DEFENSE_ARMOR[0])])
         end)
 
         ply:Give("weapon_melee")

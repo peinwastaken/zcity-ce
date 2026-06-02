@@ -2,7 +2,7 @@
 local PANEL = {}
 
 
-BlurBackground = hg.DrawBlur
+BlurBackground = zc.DrawBlur
 
 function PANEL:Paint( w, h )
 

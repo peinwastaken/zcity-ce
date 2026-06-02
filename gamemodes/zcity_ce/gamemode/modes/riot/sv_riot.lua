@@ -81,7 +81,7 @@ end
 
 
 function MODE:ShouldRoundEnd()
-    local endround, _ = zb:CheckWinner(self:CheckAlivePlayers())
+    local endround, _ = zc:CheckWinner(self:CheckAlivePlayers())
     return endround
 end
 
@@ -109,7 +109,7 @@ function MODE:GiveEquipment()
         ply:SetPlayerClass("terrorist")
 
 
-        zb.GiveRole(ply, "Rioter", Color(190, 0, 0))
+        zc.GiveRole(ply, "Rioter", Color(190, 0, 0))
 
         ply:Give("weapon_hands_sh")
 
@@ -125,7 +125,7 @@ function MODE:GiveEquipment()
         ply:Give(riotConsumables[math.random(#riotConsumables)])
 
         if math.random(100) <= riotArmorChance then
-            hg.AddArmor(ply, "ent_armor_helmet2")
+            zc.AddArmor(ply, "ent_armor_helmet2")
         end
 
         local riotWeapon = riotWeapons[math.random(#riotWeapons)]
@@ -144,7 +144,7 @@ function MODE:GiveEquipment()
         ply:SetupTeam(1)
         ply:SetPlayerClass("police")
 
-        zb.GiveRole(ply, "Law Enforcement", Color(0, 0, 190))
+        zc.GiveRole(ply, "Law Enforcement", Color(0, 0, 190))
 
         local inv = ply:GetNetVar("Inventory")
         inv["Weapons"]["hg_sling"] = true
@@ -160,8 +160,8 @@ function MODE:GiveEquipment()
         end
 
 
-        hg.AddArmor(ply, "ent_armor_helmet3")
-        hg.AddArmor(ply, "ent_armor_vest2")
+        zc.AddArmor(ply, "ent_armor_helmet3")
+        zc.AddArmor(ply, "ent_armor_vest2")
 
 
         if i == numRioters + 1 then
@@ -182,7 +182,7 @@ function MODE:GiveEquipment()
 end
 
 function MODE:GetTeamSpawn()
-	return zb.TranslatePointsToVectors(zb.GetMapPoints( "HMCD_TDM_T" )), zb.TranslatePointsToVectors(zb.GetMapPoints( "HMCD_TDM_CT" ))
+	return zc.TranslatePointsToVectors(zc.GetMapPoints( "HMCD_TDM_T" )), zc.TranslatePointsToVectors(zc.GetMapPoints( "HMCD_TDM_CT" ))
 end
 
 function MODE:RoundThink()
@@ -203,8 +203,8 @@ function MODE:CanLaunch()
     end
 
     return true
-    --[[local pointsRioters = zb.GetMapPoints("RIOT_TDM_RIOTERS")
-    local pointsLaw = zb.GetMapPoints("RIOT_TDM_LAW")
+    --[[local pointsRioters = zc.GetMapPoints("RIOT_TDM_RIOTERS")
+    local pointsLaw = zc.GetMapPoints("RIOT_TDM_LAW")
     return (#pointsRioters > 0) and (#pointsLaw > 0)--]]
 end
 

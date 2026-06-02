@@ -84,9 +84,9 @@ end
 
 
 function MODE:ShouldRoundEnd()
-	if zb.ROUND_START + 91 > CurTime() then return end
+	if zc.ROUND_START + 91 > CurTime() then return end
 	local aliveTeams = self:CheckAlivePlayers()
-	local endround, _ = zb:CheckWinner(aliveTeams)
+	local endround, _ = zc:CheckWinner(aliveTeams)
 	return endround
 end
 
@@ -148,9 +148,9 @@ local tblarmors = {
 }
 
 function MODE:CanLaunch()
-	local points = zb.GetMapPoints( "HMCD_CRI_CT" )
-	local points2 = zb.GetMapPoints( "HMCD_CRI_T" )
-	local plramount = zb:CheckPlaying()
+	local points = zc.GetMapPoints( "HMCD_CRI_CT" )
+	local points2 = zc.GetMapPoints( "HMCD_CRI_T" )
+	local plramount = zc:CheckPlaying()
     return (#points > 3) and (#points2 > 0) and (#plramount > 5)
 end
 
@@ -176,16 +176,16 @@ function MODE:GiveEquipment()
 					inv["Weapons"]["hg_sling"] = true
 					ply:SetNetVar("Inventory",inv)
 
-					hg.AddArmor(ply, tblarmors[ply:Team()][math.random(#tblarmors[ply:Team()])])
+					zc.AddArmor(ply, tblarmors[ply:Team()][math.random(#tblarmors[ply:Team()])])
 
-					zb.GiveRole(ply, "SWAT", Color(0,0,190))
+					zc.GiveRole(ply, "SWAT", Color(0,0,190))
 
 					table.insert(swatPlayers, ply)
 
 					local wep = tblweps[ply:Team()][math.random(#tblweps[ply:Team()])]
 					local gun = ply:Give(wep[1])
 					if IsValid(gun) and gun.GetMaxClip1 then
-						hg.AddAttachmentForce(ply,gun,wep[2])
+						zc.AddAttachmentForce(ply,gun,wep[2])
 						ply:GiveAmmo(gun:GetMaxClip1() * 3,gun:GetPrimaryAmmoType(),true)
 					else
 						print("WTH???")
@@ -211,7 +211,7 @@ function MODE:GiveEquipment()
 
 				ply:SetPlayerClass("terrorist")
 
-				zb.GiveRole(ply, "Suspect", Color(190,0,0))
+				zc.GiveRole(ply, "Suspect", Color(190,0,0))
 
 				local gun = ply:Give(tblweps[ply:Team()][math.random(#tblweps[ply:Team()])])
 				if IsValid(gun) and gun.GetMaxClip1 then
@@ -251,7 +251,7 @@ function MODE:RoundThink()
 end
 
 function MODE:GetTeamSpawn()
-	return {zb:GetRandomSpawn()}, {zb:GetRandomSpawn()}
+	return {zc:GetRandomSpawn()}, {zc:GetRandomSpawn()}
 end
 
 function MODE:CanSpawn()
@@ -268,7 +268,7 @@ function MODE:EndRound()
 		timer.Remove("SWATSpawn")
 	end
 
-	local _, winner = zb:CheckWinner(self:CheckAlivePlayers())
+	local _, winner = zc:CheckWinner(self:CheckAlivePlayers())
 
 	timer.Simple(2,function()
 		net.Start("ZC_CrisisResponseRoundEnd")

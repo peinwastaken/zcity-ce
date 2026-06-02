@@ -1,4 +1,4 @@
-hg.Appearance = hg.Appearance or {}
+zc.Appearance = zc.Appearance or {}
 
 local RandomNames = {
     [1] = { -- MaleNames
@@ -41,4 +41,4 @@ local RandomNames = {
     }
 }
 
-hg.Appearance.RandomNames = RandomNames
+zc.Appearance.RandomNames = RandomNames

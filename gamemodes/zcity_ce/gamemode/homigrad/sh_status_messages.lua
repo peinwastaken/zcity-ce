@@ -40,7 +40,7 @@ local sharp_pain = {
 	"AAAaaAAHH!!",
 }
 
-hg.sharp_pain = sharp_pain
+zc.sharp_pain = sharp_pain
 
 local random_phrase = {
 	"*yawn*",
@@ -254,19 +254,19 @@ function string.Random(length)
     return table.concat(result)
 end
 
-function hg.nothing_happening(ply)
+function zc.nothing_happening(ply)
 	if not IsValid(ply) then return end
 
 	return ply.organism and ply.organism.fear < -0.6
 end
 
-function hg.fearful(ply)
+function zc.fearful(ply)
 	if not IsValid(ply) then return end
 
 	return ply.organism and ply.organism.fear > 0.5
 end
 
-function hg.likely_to_phrase(ply)
+function zc.likely_to_phrase(ply)
 	local org = ply.organism
 
 	local pain = org.pain
@@ -364,13 +364,13 @@ local function get_status_message(ply)
 		end
 	elseif after_unconscious_notify then
 		most_wanted_phraselist = after_unconscious
-	elseif hg.nothing_happening(ply) then
+	elseif zc.nothing_happening(ply) then
 		most_wanted_phraselist = random_phrase
 
 		if hungry and hungry > 25 and math.random(5) == 1 then
 			most_wanted_phraselist = hungry > 45 and very_hungry or hungry_a_bit
 		end
-	elseif hg.fearful(ply) then
+	elseif zc.fearful(ply) then
 		most_wanted_phraselist = ((IsAimedAt(ply) > 0.9) and is_aimed_at_phrases or (math.random(10) == 1 and fear_hurt_ironic or fear_phrases))
 	end
 
@@ -391,7 +391,7 @@ local allowedlist_types = {
 	heatvomit = heatvomit_phraselist,
 }
 
-function hg.get_phraselist(ply, type)
+function zc.get_phraselist(ply, type)
 	if not IsValid(ply) then
 		if CLIENT then
 			ply = lply
@@ -416,7 +416,7 @@ function hg.get_phraselist(ply, type)
 	return str
 end
 
-function hg.get_status_message(ply)
+function zc.get_status_message(ply)
 	local txt = get_status_message(ply)
 
 	return txt

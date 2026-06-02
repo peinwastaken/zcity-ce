@@ -58,7 +58,7 @@ function ENT:ActivateExplosive()
 	bullet.AmmoType = "Metal Debris"
 	bullet.Attacker = self.owner
 	bullet.Distance = 56756
-	bullet.Callback = hg.bulletHit
+	bullet.Callback = zc.bulletHit
 	bullet.IgnoreEntity = self
 	bullet.Tracer = 10000
 	bullet.DisableLagComp = true
@@ -125,14 +125,14 @@ function ENT:ActivateExplosive()
 	local normal = self:GetAngles():Right()
 	timer.Simple(0.3,function()
 		ParticleEffect("pcf_jack_groundsplode_medium",selfPos+vector_up*1,-normal:Angle())
-		--hg.ExplosionEffect(selfPos, blastdist, 80)
+		--zc.ExplosionEffect(selfPos, blastdist, 80)
 	end)
 
 	local attacker = IsValid(self.owner) and self.owner or Entity(0)
 
 	for _, ply in ipairs(ents.FindInSphere(selfPos,self.ConcussionDis)) do
 		if not ply:IsPlayer() then continue end
-		local tr = hg.ExplosionTrace(selfPos,ply:GetPos(),{self})
+		local tr = zc.ExplosionTrace(selfPos,ply:GetPos(),{self})
 		if tr.Entity != ply then continue end
 		local dist = ply:GetPos():Distance(selfPos)
 		local tinnitusDuration = math.Clamp(10 * (1 - dist/self.ConcussionDis), 2, 10)

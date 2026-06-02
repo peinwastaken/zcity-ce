@@ -29,11 +29,11 @@ surface.CreateFont("ZB_TraitorSelectionFont", {
 })
 
 function PANEL:Init()
-	if IsValid(zb.TraitorSelectionWindow) then
-		zb.TraitorSelectionWindow:Remove()
+	if IsValid(zc.TraitorSelectionWindow) then
+		zc.TraitorSelectionWindow:Remove()
 	end
 
-	zb.TraitorSelectionWindow = self
+	zc.TraitorSelectionWindow = self
 
 	self:SetPos(sw * 0.4, sh * 0.4)
 	self:SetSize(sw * 0.6, sh * 0.6)
@@ -49,7 +49,7 @@ function PANEL:Init()
 	but:SetSize(sw * 0.4 - 20, sh * 0.6 - 20)
 
 	function but:DoClick()
-		zb.TraitorSelectionWindow:Close()
+		zc.TraitorSelectionWindow:Close()
 	end
 
 	self.appearProgress = 0

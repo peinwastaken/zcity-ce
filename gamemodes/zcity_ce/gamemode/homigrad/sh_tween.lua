@@ -370,4 +370,4 @@ local tween = {
     }, Tween_mt)
   end
   
-  hg.tween = tween
+  zc.tween = tween

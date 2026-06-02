@@ -8,7 +8,7 @@ local TRAITOR_FAIRNESS_MAX_KARMA_FACTOR = 1 -- Highest karma multiplier; 1 means
 
 function MODE:SetupChances()
 	for name, tbl in pairs(MODE.Types) do
-		zb.ModesChances[name] = zb.ModesChances[name] or tbl.Chance
+		zc.ModesChances[name] = zc.ModesChances[name] or tbl.Chance
 	end
 end
 
@@ -244,7 +244,7 @@ MODE.Type = MODE.Type or "standard"
 MODE.Types = MODE.Types or {}
 MODE.Types.standard = {
 	Chance = 0.2,
-	ChanceFunction = function() return (zb.GetWorldSize() < ZBATTLE_BIGMAP) and (zb.ModesChances["standard"] or zb.modes["hmcd"].Types.standard.Chance) or 0 end,
+	ChanceFunction = function() return (zc.GetWorldSize() < ZBATTLE_BIGMAP) and (zc.ModesChances["standard"] or zc.modes["hmcd"].Types.standard.Chance) or 0 end,
 	LootTable = MODE.LootTableStandard,
 	Messages = {
 		[3] = "Everyone died.",
@@ -285,11 +285,11 @@ MODE.Types.standard = {
 		local glock = ply:Give("weapon_glock17")
 		ply:GiveAmmo(glock:GetMaxClip1() * 3,glock:GetPrimaryAmmoType(),true)
 		if math.random(0,1) then
-			hg.AddAttachmentForce(ply,gun,"holo16")
+			zc.AddAttachmentForce(ply,gun,"holo16")
 		end
 
 		if math.random(0,1) then
-			hg.AddAttachmentForce(ply,gun,"laser3")
+			zc.AddAttachmentForce(ply,gun,"laser3")
 		end
 
 		ply:Give("weapon_medkit_sh")
@@ -303,7 +303,7 @@ MODE.Types.standard = {
 		local gun = ply:Give("weapon_taser")
 		ply:GiveAmmo(gun:GetMaxClip1() * 3,gun:GetPrimaryAmmoType(),true)
 
-		hg.AddArmor(ply, {"vest2"})
+		zc.AddArmor(ply, {"vest2"})
 
 		local hands = ply:Give("weapon_hands_sh")
 		ply:SetActiveWeapon( hands )
@@ -313,12 +313,12 @@ MODE.Types.standard = {
 		ply:SetNetVar("Inventory",inv)
 		ply.organism.recoilmul = 0.8
 
-		zb.GiveRole(ply, "Police Officer", Color(15,15,255))
+		zc.GiveRole(ply, "Police Officer", Color(15,15,255))
 	end
 }
 MODE.Types.wildwest = {
 	Chance = 0.05,
-	ChanceFunction = function() return (zb.GetWorldSize() < ZBATTLE_BIGMAP) and (zb.ModesChances["wildwest"] or zb.modes["hmcd"].Types.wildwest.Chance) or 0 end,
+	ChanceFunction = function() return (zc.GetWorldSize() < ZBATTLE_BIGMAP) and (zc.ModesChances["wildwest"] or zc.modes["hmcd"].Types.wildwest.Chance) or 0 end,
 	LootTable = MODE.LootTableStandard,
 	Messages = {
 		[3] = "The dead silence fills the empty city...",
@@ -361,7 +361,7 @@ MODE.Types.wildwest = {
             for i = 1, #mats do
                 if mats[i] == v then slot = i-1 break end
             end
-            ply:SetSubMaterial(slot, hg.Appearance.Clothes[tMdl.sex and 2 or 1][tbl.AClothes[k]] )*/
+            ply:SetSubMaterial(slot, zc.Appearance.Clothes[tMdl.sex and 2 or 1][tbl.AClothes[k]] )*/
 
 	GunManLoot = function(ply)
 		for k,v in player.Iterator() do
@@ -379,8 +379,8 @@ MODE.Types.wildwest = {
 				tbl.AClothes["pants"] = "formal"
 				tbl.AClothes["boots"] = "formal"
 				tbl.AColor = Color(1 * 255,0.690196 * 255,0.537255 * 255)
-				hg.Appearance.ForceApplyAppearance(v,tbl)
-				--v:SetSubMaterial(table.Flip(v:GetMaterials())[hg.Appearance.FuckYouModels[sex][v:GetModel()].submatSlots.main] - 1, hg.Appearance.Clothes[sex]["formal"])
+				zc.Appearance.ForceApplyAppearance(v,tbl)
+				--v:SetSubMaterial(table.Flip(v:GetMaterials())[zc.Appearance.FuckYouModels[sex][v:GetModel()].submatSlots.main] - 1, zc.Appearance.Clothes[sex]["formal"])
 				--v:SetPlayerColor(Vector(1,0.690196,0.537255))
 			end)
 			if v.isTraitor then continue end
@@ -415,11 +415,11 @@ MODE.Types.wildwest = {
 		local glock = ply:Give("weapon_glock17")
 		ply:GiveAmmo(glock:GetMaxClip1() * 3,glock:GetPrimaryAmmoType(),true)
 		if math.random(0,1) then
-			hg.AddAttachmentForce(ply,gun,"holo16")
+			zc.AddAttachmentForce(ply,gun,"holo16")
 		end
 
 		if math.random(0,1) then
-			hg.AddAttachmentForce(ply,gun,"laser3")
+			zc.AddAttachmentForce(ply,gun,"laser3")
 		end
 
 		ply:Give("weapon_medkit_sh")
@@ -433,7 +433,7 @@ MODE.Types.wildwest = {
 		local gun = ply:Give("weapon_taser")
 		ply:GiveAmmo(gun:GetMaxClip1() * 3,gun:GetPrimaryAmmoType(),true)
 
-		hg.AddArmor(ply, {"vest2"})
+		zc.AddArmor(ply, {"vest2"})
 
 		local hands = ply:Give("weapon_hands_sh")
 		ply:SetActiveWeapon( hands )
@@ -442,13 +442,13 @@ MODE.Types.wildwest = {
 		inv["Weapons"]["hg_flashlight"] = true
 		ply:SetNetVar("Inventory",inv)
 
-		zb.GiveRole(ply, "Police Officer", Color(15,15,255))
+		zc.GiveRole(ply, "Police Officer", Color(15,15,255))
 	end
 }
 
 MODE.Types.gunfreezone = {
 	Chance = 0.05,
-	ChanceFunction = function() return (zb.GetWorldSize() < ZBATTLE_BIGMAP) and (zb.ModesChances["gunfreezone"] or zb.modes["hmcd"].Types.gunfreezone.Chance) or 0 end,
+	ChanceFunction = function() return (zc.GetWorldSize() < ZBATTLE_BIGMAP) and (zc.ModesChances["gunfreezone"] or zc.modes["hmcd"].Types.gunfreezone.Chance) or 0 end,
 	LootTable = MODE.LootTableStandard,
 	Messages = {
 		[3] = "Everyone died.",
@@ -488,11 +488,11 @@ MODE.Types.gunfreezone = {
 		local glock = ply:Give("weapon_glock17")
 		ply:GiveAmmo(glock:GetMaxClip1() * 3,glock:GetPrimaryAmmoType(),true)
 		if math.random(0,1) then
-			hg.AddAttachmentForce(ply,glock,"holo16")
+			zc.AddAttachmentForce(ply,glock,"holo16")
 		end
 
 		if math.random(0,1) then
-			hg.AddAttachmentForce(ply,glock,"laser3")
+			zc.AddAttachmentForce(ply,glock,"laser3")
 		end
 
 		ply:Give("weapon_medkit_sh")
@@ -506,7 +506,7 @@ MODE.Types.gunfreezone = {
 		local gun = ply:Give("weapon_taser")
 		ply:GiveAmmo(gun:GetMaxClip1() * 3,gun:GetPrimaryAmmoType(),true)
 
-		hg.AddArmor(ply, {"vest2"})
+		zc.AddArmor(ply, {"vest2"})
 
 		local hands = ply:Give("weapon_hands_sh")
 		ply:SetActiveWeapon( hands )
@@ -516,14 +516,14 @@ MODE.Types.gunfreezone = {
 		ply:SetNetVar("Inventory",inv)
 		ply.organism.recoilmul = 0.8
 
-		zb.GiveRole(ply, "Police Officer", Color(15,15,255))
+		zc.GiveRole(ply, "Police Officer", Color(15,15,255))
 
 	end
 }
 
 MODE.Types.soe = {
 	Chance = 0.2,
-	ChanceFunction = function() return (zb.GetWorldSize() >= ZBATTLE_BIGMAP) and (zb.ModesChances["soe"] or zb.modes["hmcd"].Types.soe.Chance) or 0 end,
+	ChanceFunction = function() return (zc.GetWorldSize() >= ZBATTLE_BIGMAP) and (zc.ModesChances["soe"] or zc.modes["hmcd"].Types.soe.Chance) or 0 end,
 	LootTable = MODE.LootTable,
 	Messages = {
 		[3] = "Everyone died.",
@@ -533,7 +533,7 @@ MODE.Types.soe = {
 	Message = "The traitor was ",
 	TraitorLoot = function(ply)
 		local p22 = ply:Give("weapon_p22")
-		hg.AddAttachmentForce(ply,p22,"supressor4")
+		zc.AddAttachmentForce(ply,p22,"supressor4")
 		ply:Give("weapon_sogknife")
 		ply:Give("weapon_hg_type59_tpik")
 		ply:Give("weapon_walkie_talkie")
@@ -554,7 +554,7 @@ MODE.Types.soe = {
 		local gun = ply:Give( ( math.random(1,2) > 1 and "weapon_remington870" ) or "weapon_kar98" )
 		ply.organism.recoilmul = 1.0
 		if gun:GetClass() == "weapon_kar98" then
-			hg.AddAttachmentForce(ply,gun,"optic12")
+			zc.AddAttachmentForce(ply,gun,"optic12")
 		end
 		local inv = ply:GetNetVar("Inventory")
 		inv["Weapons"]["hg_sling"] = true
@@ -577,7 +577,7 @@ MODE.Types.soe = {
 
 		gun = ply:Give("weapon_hk416")
 		ply:GiveAmmo(gun:GetMaxClip1() * 3, gun:GetPrimaryAmmoType(), true)
-		hg.AddAttachmentForce(ply, gun, {"holo14", "laser3", "grip3"})
+		zc.AddAttachmentForce(ply, gun, {"holo14", "laser3", "grip3"})
 
 		ply:Give("weapon_hg_grenade_tpik")
 		ply:Give("weapon_melee")
@@ -596,12 +596,12 @@ MODE.Types.soe = {
 		gun = ply:Give("weapon_taser")
 		ply:GiveAmmo(gun:GetMaxClip1() * 3, gun:GetPrimaryAmmoType(), true)
 
-		hg.AddArmor(ply, {"vest4", "helmet1"})
+		zc.AddArmor(ply, {"vest4", "helmet1"})
 
 		local hands = ply:Give("weapon_hands_sh")
 		ply:SetActiveWeapon(hands)
 
-		zb.GiveRole(ply, "National Guard", Color(55, 85, 0))
+		zc.GiveRole(ply, "National Guard", Color(55, 85, 0))
 	end,
 	PoliceText = "National guards have arrived.",
 	PoliceSound = "snd_jack_hmcd_heli2.mp3"
@@ -786,16 +786,16 @@ function MODE:Intermission()
 
 			local role = self.Roles[self.Type][(ply.isTraitor and "traitor") or (ply.isGunner and "gunner") or "innocent"]
 
-			zb.GiveRole(ply, role.name, role.color)
+			zc.GiveRole(ply, role.name, role.color)
 		end
 	end
 
-	--local pts = zb.GetMapPoints( "RandomSpawns" )
+	--local pts = zc.GetMapPoints( "RandomSpawns" )
 
 	local ent = ents.Create("prop_ragdoll")
-	local appearance = hg.Appearance.GetRandomAppearance()
+	local appearance = zc.Appearance.GetRandomAppearance()
 
-	local tMdl = hg.Appearance.PlayerModels[1][appearance.AModel] or hg.Appearance.PlayerModels[2][appearance.AModel] or appearance.AModel
+	local tMdl = zc.Appearance.PlayerModels[1][appearance.AModel] or zc.Appearance.PlayerModels[2][appearance.AModel] or appearance.AModel
 	local mdl = istable(tMdl) and tMdl.mdl or tMdl
 
 	ent:SetModel(mdl)
@@ -829,10 +829,10 @@ function MODE:Intermission()
 	ent:SetAngles(AngleRand(-180, 180))
 	ent:Spawn()
 	ent:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-	hg.organism.Add(ent)
-	hg.organism.Clear(ent.organism)
+	zc.organism.Add(ent)
+	zc.organism.Clear(ent.organism)
 	ent.organism.fakePlayer = true
-	hg.Appearance.ForceApplyAppearance(ent, appearance)
+	zc.Appearance.ForceApplyAppearance(ent, appearance)
 	ent.organism.alive = false
 	ent.organism.o2[1] = 0
 	ent.organism.pulse = 0
@@ -842,7 +842,7 @@ function MODE:Intermission()
 		local bone = ent:TranslatePhysBoneToBone(physNum)
 		if bone < 0 then continue end
 
-		phys:SetMass(hg.IdealMassPlayer[ent:GetBoneName(bone)] or 4)
+		phys:SetMass(zc.IdealMassPlayer[ent:GetBoneName(bone)] or 4)
 		phys:SetPos(ent:GetPos() + VectorRand(-32, 32))
 	end
 
@@ -862,10 +862,10 @@ function MODE:Intermission()
 		tbl.AClothes["pants"] = "formal"
 		tbl.AClothes["boots"] = "formal"
 		tbl.AColor = Color(1 * 255,0.690196 * 255,0.537255 * 255)
-		hg.Appearance.ForceApplyAppearance(ent, tbl)
+		zc.Appearance.ForceApplyAppearance(ent, tbl)
 
 		for i = 1, 5 do
-			hg.organism.AddWoundManual(ent, 50, vector_origin, angle_zero,"ValveBiped.Bip01_Head1", CurTime() + 2)
+			zc.organism.AddWoundManual(ent, 50, vector_origin, angle_zero,"ValveBiped.Bip01_Head1", CurTime() + 2)
 		end
 	end
 end
@@ -963,7 +963,7 @@ function MODE:RoundThink()
 		local currentType = self.Type
 
 		timer.Create("HMCDSpawnSWAT", 60, 1, function()
-			if zb.ROUND_STATE ~= 1 or not MODE or MODE.Type ~= currentType then return end
+			if zc.ROUND_STATE ~= 1 or not MODE or MODE.Type ~= currentType then return end
 
 			if not MODE.Types[MODE.Type] or not MODE.Types[MODE.Type].PoliceAllowed then return end
 
@@ -1007,10 +1007,10 @@ function MODE:SpawnForce(teamtype, count)
         ply:Spawn()
 
         if not basepos then
-            basepos = zb:GetRandomSpawn()
+            basepos = zc:GetRandomSpawn()
 			ply:SetPos(basepos)
 		else
-			hg.tpPlayer(basepos, ply, i)
+			zc.tpPlayer(basepos, ply, i)
 		end
 
         if teamtype == "police" then
@@ -1064,7 +1064,7 @@ function MODE:EquipSWAT(ply, index)
 	local gun = ply:Give("weapon_taser")
 	ply:GiveAmmo(gun:GetMaxClip1() * 3, gun:GetPrimaryAmmoType(),true)
 
-	hg.AddArmor(ply, {"helmet6", "vest8", tbl_Random({"mask1", "mask2", "nightvision1"})})
+	zc.AddArmor(ply, {"helmet6", "vest8", tbl_Random({"mask1", "mask2", "nightvision1"})})
 
     local inv = ply:GetNetVar("Inventory") or {}
     inv["Weapons"] = inv["Weapons"] or {}
@@ -1078,7 +1078,7 @@ function MODE:EquipSWAT(ply, index)
     local hands = ply:Give("weapon_hands_sh")
     ply:SetActiveWeapon(hands)
 
-    zb.GiveRole(ply, "SWAT Operative", Color(30, 30, 100))
+    zc.GiveRole(ply, "SWAT Operative", Color(30, 30, 100))
 end
 
 function MODE:EquipNationalGuard(ply, index)
@@ -1104,7 +1104,7 @@ function MODE:EquipNationalGuard(ply, index)
 	local gun = ply:Give("weapon_taser")
 	ply:GiveAmmo(gun:GetMaxClip1() * 3,gun:GetPrimaryAmmoType(),true)
 
-    hg.AddArmor(ply, {"vest4", "helmet1"})
+    zc.AddArmor(ply, {"vest4", "helmet1"})
 
 	local inv = ply:GetNetVar("Inventory") or {}
 	inv["Weapons"] = inv["Weapons"] or {}
@@ -1114,7 +1114,7 @@ function MODE:EquipNationalGuard(ply, index)
 
     local hands = ply:Give("weapon_hands_sh")
     ply:SetActiveWeapon(hands)
-    zb.GiveRole(ply, "National Guard", Color(60, 90, 0))
+    zc.GiveRole(ply, "National Guard", Color(60, 90, 0))
 end
 
 --\\
@@ -1233,7 +1233,7 @@ function MODE:ShouldRoundEnd()
 			MODE.SpawnPlayers(true)
 		end
 	else
-		local endround, winner = zb:CheckWinner(self:CheckAlivePlayers())
+		local endround, winner = zc:CheckWinner(self:CheckAlivePlayers())
 
 		if(endround)then
 			MODE.ChoosingPlayersList = {}
@@ -1290,7 +1290,7 @@ function MODE:EndRound()
 
 	local traitors, gunners = {}, {}
 	local players_alive = 0
-	local endround, winner = zb:CheckWinner(self:CheckAlivePlayers())
+	local endround, winner = zc:CheckWinner(self:CheckAlivePlayers())
 
 	-- for _, ply in player.Iterator() do	--; Extreme optimization
 		-- ply.SubRole = nil
@@ -1431,7 +1431,7 @@ hook.Add("ZC_PlayerDeath", "ZC_HandleHomicidePlayerDeath", function(ply, _)
 	end
 
 	timer.Simple(.1,function()
-		for attacker,attacker_harm in pairs(zb.HarmDone[ply] or {}) do
+		for attacker,attacker_harm in pairs(zc.HarmDone[ply] or {}) do
 			if not IsValid(attacker) then continue end
 			if most_harm < attacker_harm then
 				most_harm = attacker_harm
@@ -1503,7 +1503,7 @@ concommand.Add("hmcd_request_main_traitor", function(ply, cmd, args)
     if not IsValid(ply) or not ply:IsAdmin() then return end
 
 
-    if zb.ROUND_STATE == 1 then
+    if zc.ROUND_STATE == 1 then
         ply:ChatPrint("when round end")
         return
     end
@@ -1564,7 +1564,7 @@ function MODE.SpawnPlayers(spawn_with_subroles)
             for _, ply in RandomPairs(player.GetAll()) do
                 if(ply:Team() != TEAM_SPECTATOR)then
                     if((math.random(100) <= (ply.Karma or 100)) and (math.random(1, 3) == 1 or (!ply.isTraitor and !ply.isGunner)))then
-                        local profession_key, profession = hg.WeightedRandomSelect(professions_possible)
+                        local profession_key, profession = zc.WeightedRandomSelect(professions_possible)
                         professions_possible[profession_key][1] = professions_possible[profession_key][1] / 2
                         ply.Profession = profession
                         professions_count_to_satisfy = professions_count_to_satisfy - 1
@@ -1580,7 +1580,7 @@ function MODE.SpawnPlayers(spawn_with_subroles)
             if(professions_count_to_satisfy > 0)then
                 for _, ply in RandomPairs(player.GetAll()) do
                     if(ply:Team() != TEAM_SPECTATOR and !ply.Profession)then
-                        local profession_key, profession = hg.WeightedRandomSelect(professions_possible)
+                        local profession_key, profession = zc.WeightedRandomSelect(professions_possible)
                         professions_possible[profession_key][1] = professions_possible[profession_key][1] / 2
                         ply.Profession = profession
                         professions_count_to_satisfy = professions_count_to_satisfy - 1
@@ -1758,7 +1758,7 @@ function MODE.SpawnPlayers(spawn_with_subroles)
 
                 local role = MODE.Roles[MODE.Type][(this_player.isTraitor and "traitor") or (this_player.isGunner and "gunner") or "innocent"]
                 if role then
-                    zb.GiveRole(this_player, role.name, role.color)
+                    zc.GiveRole(this_player, role.name, role.color)
                 end
             end)
         end

@@ -6,8 +6,8 @@ end
 
 function MODE:CanLaunch()
 	return true
-	--[[local points = zb.GetMapPoints( "HMCD_TDM_T" )
-	local points2 = zb.GetMapPoints( "HMCD_TDM_CT" )
+	--[[local points = zc.GetMapPoints( "HMCD_TDM_T" )
+	local points2 = zc.GetMapPoints( "HMCD_TDM_CT" )
     return (#points > 0) and (#points2 > 0)]] -- can work without them
 end
 
@@ -28,11 +28,11 @@ function MODE:Intermission()
 end
 
 function MODE:CheckAlivePlayers()
-	return zb:CheckAliveTeams(true)
+	return zc:CheckAliveTeams(true)
 end
 
 function MODE:ShouldRoundEnd()
-	local endround, _ = zb:CheckWinner(self:CheckAlivePlayers())
+	local endround, _ = zc:CheckWinner(self:CheckAlivePlayers())
 	return endround
 end
 
@@ -74,18 +74,18 @@ function MODE:GiveEquipment()
 
 			if ply:Team() == 1 then
 				ply:SetPlayerClass("swat")
-				zb.GiveRole(ply, "Counter Terrorist", Color(0,0,190))
+				zc.GiveRole(ply, "Counter Terrorist", Color(0,0,190))
 			else
 				ply:SetPlayerClass("terrorist")
-				zb.GiveRole(ply, "Terrorist", Color(190,0,0))
+				zc.GiveRole(ply, "Terrorist", Color(190,0,0))
 			end
 
 			--[[if giveweapons:GetBool() then
 				local gun = ply:Give(tblweps[ply:Team()][mrand])
 				ply:GiveAmmo(gun:GetMaxClip1() * 3,gun:GetPrimaryAmmoType(),true)
 
-				hg.AddAttachmentForce(ply,gun,tblatts[ply:Team()][mrand])
-				hg.AddArmor(ply, tblarmors[ply:Team()][mrand])
+				zc.AddAttachmentForce(ply,gun,tblatts[ply:Team()][mrand])
+				zc.AddArmor(ply, tblarmors[ply:Team()][mrand])
 
 
 				ply:Give("weapon_hg_rgd_tpik")
@@ -119,7 +119,7 @@ function MODE:RoundThink()
 end
 
 function MODE:GetTeamSpawn()
-	return zb.TranslatePointsToVectors(zb.GetMapPoints( "HMCD_TDM_T" )), zb.TranslatePointsToVectors(zb.GetMapPoints( "HMCD_TDM_CT" ))
+	return zc.TranslatePointsToVectors(zc.GetMapPoints( "HMCD_TDM_T" )), zc.TranslatePointsToVectors(zc.GetMapPoints( "HMCD_TDM_CT" ))
 end
 
 function MODE:CanSpawn()
@@ -131,7 +131,7 @@ function MODE:EndRound()
 		net.Start("ZC_TeamDeathmatchRoundEnd")
 		net.Broadcast()
 	end)
-	local _, winner = zb:CheckWinner(self:CheckAlivePlayers())
+	local _, winner = zc:CheckWinner(self:CheckAlivePlayers())
 	for _,ply in player.Iterator() do
 		if ply:Team() == winner then
 			ply:GiveExp(math.random(15,30))
@@ -158,7 +158,7 @@ util.AddNetworkString( "ZC_TeamDeathmatchBuyItem" )
 local AttachmentPrice = 50
 net.Receive("ZC_TeamDeathmatchBuyItem",function(len,ply)
 	if !CurrentRound().buymenu then return end
-	if ((zb.ROUND_START or 0) + 40 < CurTime()) then ply:ChatPrint(zb.locale.GetLocalized("tdm/time_up")) return end
+	if ((zc.ROUND_START or 0) + 40 < CurTime()) then ply:ChatPrint(zc.locale.GetLocalized("tdm/time_up")) return end
 	local tItem = net.ReadTable()
 	if not istable(tItem) then return end
 	local category = tItem[1]
@@ -171,18 +171,18 @@ net.Receive("ZC_TeamDeathmatchBuyItem",function(len,ply)
 	if not item then return end
 
 	if tItem[3] then
-		if not ply:HasWeapon(item.ItemClass) then ply:ChatPrint(zb.locale.GetLocalized("tdm/cant_buy_attachment_without_weapon")) return end
-		if ((ply:GetNWInt("TDM_Money",0) - AttachmentPrice) < 0) then ply:ChatPrint(zb.locale.GetLocalized("tdm/not_enough_money")) return end
+		if not ply:HasWeapon(item.ItemClass) then ply:ChatPrint(zc.locale.GetLocalized("tdm/cant_buy_attachment_without_weapon")) return end
+		if ((ply:GetNWInt("TDM_Money",0) - AttachmentPrice) < 0) then ply:ChatPrint(zc.locale.GetLocalized("tdm/not_enough_money")) return end
 
 		local wep = ply:GetWeapon(item.ItemClass)
-		hg.AddAttachmentForce( ply,wep,tItem[3] )
+		zc.AddAttachmentForce( ply,wep,tItem[3] )
 		ply:SetNWInt( "TDM_Money", ply:GetNWInt("TDM_Money",0) - AttachmentPrice )
 		ply:EmitSound("items/itempickup.wav")
 
 		return
 	end
 
-	if ((ply:GetNWInt("TDM_Money",0) - item.Price) < 0) then ply:ChatPrint(zb.locale.GetLocalized("tdm/not_enough_money")) return end
+	if ((ply:GetNWInt("TDM_Money",0) - item.Price) < 0) then ply:ChatPrint(zc.locale.GetLocalized("tdm/not_enough_money")) return end
 	local ent = ply:Give(item.ItemClass)
 
 	if ent.Use and IsValid(ent) then

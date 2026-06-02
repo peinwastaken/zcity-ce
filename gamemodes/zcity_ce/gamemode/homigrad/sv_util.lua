@@ -1,7 +1,7 @@
 local getBloodColor = FindMetaTable( "Entity" ).GetBloodColor
 local isBulletDamage = FindMetaTable( "CTakeDamageInfo" ).IsBulletDamage
 
-hg.ConVars = hg.ConVars or {}
+zc.ConVars = zc.ConVars or {}
 
 if not ConVarExists("zc_legacycam") then
 	CreateConVar("zc_legacycam", 0, FCVAR_REPLICATED, "Toggle legacy first-person view camera", 0, 1)
@@ -340,15 +340,15 @@ net.Receive("ZC_LookAway",function(len,ply)
 	rf:AddPVS(ply:GetPos())
 	rf:RemovePlayer(ply)
 
-	local MaxLookX,MinLookX = hg.MaxLookX or MaxLookX, hg.MinLookX or MinLookX
-	local MaxLookY,MinLookY = hg.MaxLookY or MaxLookY, hg.MinLookY or MinLookY
+	local MaxLookX,MinLookX = zc.MaxLookX or MaxLookX, zc.MinLookX or MinLookX
+	local MaxLookY,MinLookY = zc.MaxLookY or MaxLookY, zc.MinLookY or MinLookY
 
 	local LookX = net.ReadFloat()
 	local LookY = net.ReadFloat()
 
 	-- THE MOST TERIBLE EXPLOIT EVER!!!!!!
 	if ( LookX > MaxLookX or LookX < MinLookX ) or ( LookY > MaxLookY or LookY < MinLookY ) then
-		hg.BreakNeck(ply)
+		zc.BreakNeck(ply)
 	end
 
 	net.Start("ZC_LookAway", true)
@@ -358,9 +358,9 @@ net.Receive("ZC_LookAway",function(len,ply)
 	net.Send(rf)
 end)
 
-hg = hg or {}
+zc = zc or {}
 -- This function can be used to scare NPCs.. Or lure them where needed, MGS5 mode
-function hg.EmitAISound(pos, vol, dur, typ) -- https://developer.valvesoftware.com/wiki/Ai_sound
+function zc.EmitAISound(pos, vol, dur, typ) -- https://developer.valvesoftware.com/wiki/Ai_sound
 	local snd = ents.Create("ai_sound")
 	snd:SetPos(pos)
 	snd:SetKeyValue("volume", tostring(vol))
@@ -478,7 +478,7 @@ hook.Add("ZC_PostEntityFireBullets","ZC_BulletSuppression",function(ent,bullet)
 		local isVisible = !util.TraceLine({
 			start = pos,
 			endpos = eyePos,
-			filter = {ent, ply, hg.GetCurrentCharacter(ply), ent:GetOwner()},
+			filter = {ent, ply, zc.GetCurrentCharacter(ply), ent:GetOwner()},
 			mask = MASK_SHOT
 		}).Hit
 
@@ -491,7 +491,7 @@ hook.Add("ZC_PostEntityFireBullets","ZC_BulletSuppression",function(ent,bullet)
 		if shooterdist < 200 and !IsLookingAt(ent:GetOwner(),eyePos) then continue end
 
 		if ent:GetOwner():IsPlayer() then
-			hg.DynaMusic:AddPanic(ent:GetOwner(),0.5)
+			zc.DynaMusic:AddPanic(ent:GetOwner(),0.5)
 		end
 
 		if !org.unconscious then
@@ -504,16 +504,16 @@ end)
 
 --//
 
-function hg.StunPlayer(ply,time)
+function zc.StunPlayer(ply,time)
 	if !IsValid(ply) or !ply:IsPlayer() then return end
-	if !IsValid(ply.FakeRagdoll) then hg.Fake(ply) end
+	if !IsValid(ply.FakeRagdoll) then zc.Fake(ply) end
 
 	ply.organism.stun = CurTime() + (time or 1)
 end
 
-function hg.LightStunPlayer(ply,time)
+function zc.LightStunPlayer(ply,time)
 	if !IsValid(ply) or !ply:IsPlayer() then return end
-	if !IsValid(ply.FakeRagdoll) then hg.Fake(ply,nil,true) end
+	if !IsValid(ply.FakeRagdoll) then zc.Fake(ply,nil,true) end
 
 	ply.organism.lightstun = CurTime() + (time or 1)
 	ply:SetLocalVar("stun", ply.organism.lightstun)
@@ -555,7 +555,7 @@ function entMeta.EmitSound(self,soundName,soundLevel,pitch,volume,channel,soundF
 	end
 end
 
-function hg.ExplosionEffect(pos, dis, dmg)
+function zc.ExplosionEffect(pos, dis, dmg)
 	net.Start("ZC_AddSuppression") -- i think this useless for now
 	net.WriteVector(pos)
 	net.Broadcast()
@@ -1041,7 +1041,7 @@ end)
 
 hook.Add( "Move", "ZC_RagdollIntoWalls", function( ply, mv)
 	local vel = mv:GetVelocity()
-	if ply:GetMoveType() == MOVETYPE_WALK and vel:LengthSqr() > 750 * 750 and not hg.GetCurrentCharacter(ply):IsRagdoll() and !(ply.IsStimulated and ply:IsStimulated()) then
+	if ply:GetMoveType() == MOVETYPE_WALK and vel:LengthSqr() > 750 * 750 and not zc.GetCurrentCharacter(ply):IsRagdoll() and !(ply.IsStimulated and ply:IsStimulated()) then
 		local tr = util.TraceLine({
 			start = ply:GetPos(),
 			endpos = ply:GetPos() + vel:Angle():Forward() * 100,
@@ -1071,7 +1071,7 @@ hook.Add( "Move", "ZC_RagdollIntoWalls", function( ply, mv)
 				ply:EmitSound("physics/concrete/boulder_impact_hard"..math.random(1,4)..".wav",75)
 				util.Decal("Rollermine.Crater",tr.HitPos + tr.HitNormal, tr.HitPos - tr.HitNormal, ply)
 			else
-				hg.Fake(ply)
+				zc.Fake(ply)
 			end
 		end
 	end
@@ -1211,7 +1211,7 @@ hook.Add( "OnEntityCreated", "ZC_ReplaceEnt", function( ent )
 		if istable(replacmentEnt) then replacmentEnt = table.Random(replacmentEnt) end
 
 		if replacmentEnt == "*ammo*" then
-			replacmentEnt = "ent_ammo_" .. table.Random(hg.ammotypeshuy).name
+			replacmentEnt = "ent_ammo_" .. table.Random(zc.ammotypeshuy).name
 		end
 
 		if replacmentEnt == entclass then return end
@@ -1404,7 +1404,7 @@ function entMeta:StealthOpenDoor(user)
 	self:SetSaveValue("soundopenoverride", "")
 	self:SetSaveValue("soundunlockedoverride", "")
 
-	hg.RunZManipAnim(user, !DoorIsOpen2(self) and "door_open_forward" or "door_open_back", nil, 2, {self})
+	zc.RunZManipAnim(user, !DoorIsOpen2(self) and "door_open_forward" or "door_open_back", nil, 2, {self})
 end
 
 hook.Add("StartCommand", "ZC_AdjustDoorOpenAngleWithMouseWheel", function(ply, cmd)
@@ -1443,7 +1443,7 @@ function entMeta:NormalOpenDoor(user)
 		self:SetSaveValue( "soundunlockedoverride", self.oldsnd7 )
 	end
 
-	hg.RunZManipAnim(user, !DoorIsOpen2(self) and "door_open_forward" or "door_open_back", nil, nil, {self})
+	zc.RunZManipAnim(user, !DoorIsOpen2(self) and "door_open_forward" or "door_open_back", nil, nil, {self})
 end
 
 local vpang = Angle(2,0,0)
@@ -1475,7 +1475,7 @@ function entMeta:FastOpenDoor(user, mul, noanim)
 	self:SetSaveValue( "Speed", self.oldspeed * math.min(math.max(user:GetVelocity():Length() / 50, 1.5), 3) * (mul or 1) )
 	user:ViewPunch(vpang)
 	if !noanim then
-		hg.RunZManipAnim(user, !DoorIsOpen2(self) and "door_open_forward" or "door_open_back", nil, nil, {self})
+		zc.RunZManipAnim(user, !DoorIsOpen2(self) and "door_open_forward" or "door_open_back", nil, nil, {self})
 	end
 	if user.organism then
 		user.organism.stamina.subadd = user.organism.stamina.subadd + 5
@@ -1515,12 +1515,12 @@ hook.Add("PlayerUse", "ZC_DoorClose", function(ply, ent)
 	if string_find(tostring(getdoor), "prop_door_rotating") and getdoor:GetInternalVariable("m_eDoorState") == 2 then
 		if getdoor:GetInternalVariable("m_hMaster") != NULL then
 			getdoor:GetInternalVariable("m_hMaster"):Fire("close")
-			hg.RunZManipAnim(ply, "door_open_back", nil, 2, {self})
+			zc.RunZManipAnim(ply, "door_open_back", nil, 2, {self})
 
 			return false
 		else
 			getdoor:Fire("close")
-			hg.RunZManipAnim(ply, "door_open_back", nil, 2, {self})
+			zc.RunZManipAnim(ply, "door_open_back", nil, 2, {self})
 
 			return false
 		end
@@ -1533,7 +1533,7 @@ hook.Add( "KeyPress", "ZC_SnowballsPickup", function( ply, key )
 	if ply.SnowBallPickupCD > CurTime() then return end
 
 	if ( key == IN_USE ) then
-		local tr = hg.eyeTrace(ply, 120)
+		local tr = zc.eyeTrace(ply, 120)
 		if tr.MatType == MAT_SNOW then
 			ply:EmitSound("player/footsteps/snow1.wav",65,math.Rand(90,110))
 			ply.SnowBallPickupCD = CurTime() + 1
@@ -1548,7 +1548,7 @@ local warmingEnts = {
 	["vfire"] = function(ent) return ent:GetFireState() end,
 }
 
-hg.MapTemps = {
+zc.MapTemps = {
 	["gm_wintertown"] = -10,
 	["cs_drugbust_winter"] = -10,
 	["cs_office"] = -10,
@@ -1566,7 +1566,7 @@ hg.MapTemps = {
 	["gm_construct"] = 20 -- temperature test
 }
 
-function hg.TranslateToBodyTemp(temp, org)
+function zc.TranslateToBodyTemp(temp, org)
 	return math.Remap(temp, -20, 20, 27, org and org.needed_temp or 36.7) -- math.Remap doesn't clamp
 end
 
@@ -1586,7 +1586,7 @@ hook.Add("ZC_OrganismThink", "ZC_BodyTemperature", function(owner, org, timeValu
 	owner.CheckTemp = CurTime() + 0.5--optimization update
 
 	local timeValue = 0.5
-	local ent = hg.GetCurrentCharacter(owner)
+	local ent = zc.GetCurrentCharacter(owner)
 
 	local IsVisibleSkyBox = util.TraceLine( {
 		start = ent:GetPos() + vector_up * 15,
@@ -1597,7 +1597,7 @@ hook.Add("ZC_OrganismThink", "ZC_BodyTemperature", function(owner, org, timeValu
 	org.temperature = org.temperature or 36.7
 
 	local currentPulse = org.pulse or 70
-	local temp = sf2_get_temp and sf2_get_temp() or hg.MapTemps[game.GetMap()] or 20
+	local temp = sf2_get_temp and sf2_get_temp() or zc.MapTemps[game.GetMap()] or 20
 
 	if currentPulse > 80 then
 		local pulseMultiplier = math.min((currentPulse - 70) / 100, 1.2)
@@ -1614,7 +1614,7 @@ hook.Add("ZC_OrganismThink", "ZC_BodyTemperature", function(owner, org, timeValu
 		end
 	end
 
-	for _, tbl in ipairs(hg.gasolinePath) do
+	for _, tbl in ipairs(zc.gasolinePath) do
 		--tbl[2] -> true = burned, number = still burning, false = unignited
 		if tbl[2] and isnumber(tbl[2]) and (ownerpos - tbl[1]):LengthSqr() < 200 * 200 then
 			warming = warming + 0.5
@@ -1654,7 +1654,7 @@ hook.Add("ZC_OrganismThink", "ZC_BodyTemperature", function(owner, org, timeValu
 		temp = math.min(-20, temp)
 	end
 
-	org.temperature = math.Approach(org.temperature, hg.TranslateToBodyTemp(temp, org), org.tempchanging)
+	org.temperature = math.Approach(org.temperature, zc.TranslateToBodyTemp(temp, org), org.tempchanging)
 
 	-- When cold
 	if owner:Alive() and not org.unconscious and org.temperature < 36 then
@@ -1679,10 +1679,10 @@ hook.Add("ZC_OrganismThink", "ZC_BodyTemperature", function(owner, org, timeValu
 
 		if org.VomitCD < CurTime() then
 			org.VomitCD = CurTime() + math.random(35, 75)
-			owner:Notify(hg.get_phraselist(owner, "heatvomit"), 1, "phrase", 1, nil, Color(255, 85, 85, 255))
+			owner:Notify(zc.get_phraselist(owner, "heatvomit"), 1, "phrase", 1, nil, Color(255, 85, 85, 255))
 
 			timer.Simple(3, function()
-				hg.organism.Vomit(org.owner)
+				zc.organism.Vomit(org.owner)
 			end)
 		end
 	end
@@ -1772,7 +1772,7 @@ hook.Add("Move", "ZC_DetectLandingViewPunch", function(ply)
 	if !ply.prev_on_ground and ply:OnGround() and vel:LengthSqr() > 100 * 100 and ply:GetMoveType() != MOVETYPE_NOCLIP then
 		local lookat = ply:GetPos() + vel * 5
 		if !IsLookingAt(ply, lookat, 0.2) then
-			hg.Fake(ply)
+			zc.Fake(ply)
 		end
 	end
 
@@ -1848,7 +1848,7 @@ end
 
 
 hook.Add("SetupMove", "ZC_AntiCrouchSpam", function(ply, mvd, cmd) -- actually pretty useless crap; just prevents crouch spam lol
-	if !ply:Alive() or !hg.GetCurrentCharacter( ply ):IsPlayer() then return end
+	if !ply:Alive() or !zc.GetCurrentCharacter( ply ):IsPlayer() then return end
 
 	ply.OldCrouchState = ply.OldCrouchState or false
 

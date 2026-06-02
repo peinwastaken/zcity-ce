@@ -6,7 +6,7 @@ TOOL.ClientConVar["point"] = ""
 function TOOL:LeftClick(trace, attach)
 	local ply = self:GetOwner()
 	if not ply:IsAdmin() then
-		ply:ChatPrint(zb.locale.GetLocalized("points/admin_required"))
+		ply:ChatPrint(zc.locale.GetLocalized("points/admin_required"))
 		return false
 	end
 
@@ -24,8 +24,8 @@ function TOOL:LeftClick(trace, attach)
 			ang = ang
 		}
 
-		zb.CreateMapPoint(name, pointData)
-		zb.SendPoints()
+		zc.CreateMapPoint(name, pointData)
+		zc.SendPoints()
 	end
 
 	return true
@@ -34,7 +34,7 @@ end
 function TOOL:RightClick(trace)
 	local ply = self:GetOwner()
 	if not ply:IsAdmin() then
-		ply:ChatPrint(zb.locale.GetLocalized("points/admin_required"))
+		ply:ChatPrint(zc.locale.GetLocalized("points/admin_required"))
 		return false
 	end
 
@@ -47,7 +47,7 @@ function TOOL:RightClick(trace)
 			local closest_winner_point
 			local closest_winner_key
 
-			for k, v in pairs(zb.Points) do
+			for k, v in pairs(zc.Points) do
 				if not v.Points then continue end
 
 				for k2, v2 in ipairs(v.Points) do
@@ -60,8 +60,8 @@ function TOOL:RightClick(trace)
 			end
 
 			if closest_winner_key then
-				zb.RemoveMapPoint(closest_winner_point, closest_winner_key, true)
-				zb.SendPoints()
+				zc.RemoveMapPoint(closest_winner_point, closest_winner_key, true)
+				zc.SendPoints()
 			end
 		end)
 	end
@@ -83,15 +83,15 @@ function TOOL:Think()
 			local trace2 = util.QuickTrace(ply:EyePos(), ply:EyeAngles():Forward() * 1000, ply)
 			local distance = self.Trace1.HitPos:Distance(trace2.HitPos)
 
-			for k, v in pairs(zb.Points) do
+			for k, v in pairs(zc.Points) do
 				if not v.Points then continue end
 
 				for i = #v.Points, 1, -1 do
-					if self.Trace1.HitPos:Distance(v.Points[i].pos) <= distance then zb.RemoveMapPoint(k, i, true) end
+					if self.Trace1.HitPos:Distance(v.Points[i].pos) <= distance then zc.RemoveMapPoint(k, i, true) end
 				end
 			end
 
-			zb.SendPoints()
+			zc.SendPoints()
 		end
 
 		self.LastHold = nil
@@ -112,7 +112,7 @@ function TOOL.BuildCPanel(CPanel)
 	dlist:SetTall(ScreenScale(100))
 	dlist:AddColumn("Point Name")
 
-	for k, _ in SortedPairs(zb.Points) do
+	for k, _ in SortedPairs(zc.Points) do
 		dlist:AddLine(k)
 	end
 
@@ -131,7 +131,7 @@ function TOOL:Deploy()
 
 		ply:EmitSound("zbattle/pointinator.mp3")
 
-		zb.SendPointsToPly(ply)
+		zc.SendPointsToPly(ply)
 	end
 end
 
@@ -148,7 +148,7 @@ function TOOL:DrawHUD()
 	angeye:RotateAroundAxis(angeye:Forward(), 90)
 	angeye:RotateAroundAxis(angeye:Right(), 90)
 
-	for id, points in pairs(zb.ClPoints) do
+	for id, points in pairs(zc.ClPoints) do
 		for id2, point in pairs(points) do
 			if not point then continue end
 
@@ -157,8 +157,8 @@ function TOOL:DrawHUD()
 
 			render.SetColorMaterial() -- white material for easy coloring
 
-			local color = zb.Points[id].Color
-			local name = zb.Points[id].Name
+			local color = zc.Points[id].Color
+			local name = zc.Points[id].Name
 			local text = name .. " #" .. id2
 
 			surface.SetFont("ChatFont")
@@ -212,5 +212,5 @@ function TOOL:DrawToolScreen(width, height)
 	local ply = self:GetOwner()
 	if ply:GetInfo("point_editor_point") == "" or !point_editor then return end
 
-	draw.SimpleText(point_editor:GetString(), "ZB_ScrappersSmall", width / 2, height * 0.7, zb.Points[point_editor:GetString()].Color or color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	draw.SimpleText(point_editor:GetString(), "ZB_ScrappersSmall", width / 2, height * 0.7, zc.Points[point_editor:GetString()].Color or color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end

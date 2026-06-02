@@ -222,7 +222,7 @@ local function reloadFunc(self)
 		self:InsertAmmo(1)
 		self:GetWM():ManipulateBoneScale(47, vector_origin)
 
-		local key = hg.KeyDown(self:GetOwner(), IN_RELOAD)
+		local key = zc.KeyDown(self:GetOwner(), IN_RELOAD)
 		--print("reload",key)
 
 		if key and self:CanReload() then

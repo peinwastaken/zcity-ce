@@ -1,9 +1,9 @@
 --
 local zc_hungersystem = CreateConVar("zc_hungersystem", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "Enables/disabled hunger system", 0, 1)
 local max, min, Round = math.max, math.min, math.Round
---local Organism = hg.organism
-hg.organism.module.metabolism = {}
-local module = hg.organism.module.metabolism
+--local Organism = zc.organism
+zc.organism.module.metabolism = {}
+local module = zc.organism.module.metabolism
 module[1] = function(org)
 	org.satiety = 0
     org.hungry = 0

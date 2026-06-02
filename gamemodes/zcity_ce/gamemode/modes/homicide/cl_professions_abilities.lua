@@ -27,7 +27,7 @@ local footMat = Material("thieves/footprint")
 function MODE.IsRoundTypeSuitableForProfessions()
 	mode_type = MODE.Type or mode_type
 
-	return zb.CROUND == "hmcd"-- and MODE.ProfessionsRoundTypes[mode_type]
+	return zc.CROUND == "hmcd"-- and MODE.ProfessionsRoundTypes[mode_type]
 end
 
 --\\Use these and only these functions to address MODE.FootSteps, otherwise it will break
@@ -172,7 +172,7 @@ hook.Add("ZC_RadialOptions", "ZC_EngineerCraft", function()
 				continue
 			end
 
-			local tbl = hg.ammotypeshuy[name]
+			local tbl = zc.ammotypeshuy[name]
 			if tbl.BulletSettings and tbl.BulletSettings.Mass * amt > 50 then
 				have_ammo = true
 			end
@@ -181,7 +181,7 @@ hook.Add("ZC_RadialOptions", "ZC_EngineerCraft", function()
 		local have_pipe = ply:HasWeapon("weapon_leadpipe")
 		if have_ammo and have_pipe and have_nails then
 			local tbl = {createPipeBomb, "Create pipe bomb"}
-        	hg.radialOptions[#hg.radialOptions + 1] = tbl
+        	zc.radialOptions[#zc.radialOptions + 1] = tbl
 		end
 
 		-- molotov
@@ -190,7 +190,7 @@ hook.Add("ZC_RadialOptions", "ZC_EngineerCraft", function()
 		local have_bottle = ply:HasWeapon("weapon_hg_bottle")
 
 		for _, ent in ipairs(ents.FindInSphere(ply:GetPos(), 64)) do
-			if hg.gas_models[ent:GetModel()] and !ent:GetNWBool("EmptyBarrel", false) then
+			if zc.gas_models[ent:GetModel()] and !ent:GetNWBool("EmptyBarrel", false) then
 				have_barrel_nearby = true
 				break
 			end
@@ -198,7 +198,7 @@ hook.Add("ZC_RadialOptions", "ZC_EngineerCraft", function()
 
 		if have_barrel_nearby and have_bandage and have_bottle then
 			local tbl = {createMolotov, "Create molotov"}
-        	hg.radialOptions[#hg.radialOptions + 1] = tbl
+        	zc.radialOptions[#zc.radialOptions + 1] = tbl
 		end
     end
 end)

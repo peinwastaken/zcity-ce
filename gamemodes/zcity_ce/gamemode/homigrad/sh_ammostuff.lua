@@ -52,7 +52,7 @@ else
 
 	net.Receive("ZC_AmmoSilkToEntity", function(len, ply)
 		-- Entity(1):ChatPrint(12312)
-		local bullet_key = net.ReadUInt(hg.PhysBullet.MaxKeyBits)
+		local bullet_key = net.ReadUInt(zc.PhysBullet.MaxKeyBits)
 		local ent_id = net.ReadUInt(HGAmmo_MaxKeyBits)
 		local ent = Entity(ent_id)
 
@@ -203,7 +203,7 @@ local function onstopped_explosive(self, last_unsure_penetration_pos, reason, tr
 			net.Broadcast()
 
 			util.BlastDamage(Entity(0), IsValid(attacker) and attacker or Entity(0), self.Pos, 100, 50)
-			hg.ExplosionEffect(self.Pos, 1500 / 0.01905, 250)
+			zc.ExplosionEffect(self.Pos, 1500 / 0.01905, 250)
 
 			--local effectdata = EffectData()
 			--effectdata:SetOrigin(selfPos)
@@ -263,7 +263,7 @@ end
 local matPistolAmmo = Material("vgui/hud/bullets/low_caliber.png")
 local matRfileAmmo = Material("vgui/hud/bullets/high_caliber.png")
 local matShotgunAmmo = Material("vgui/hud/bullets/buck_caliber.png")
-hg.ammotypes = {
+zc.ammotypes = {
 	["5.56x45mm"] = {
 		name = "5.56x45 mm",
 		allowed = true,
@@ -2435,7 +2435,7 @@ hg.ammotypes = {
 	},
 }
 
-local ammotypes = hg.ammotypes
+local ammotypes = zc.ammotypes
 local ammoents = {
 	["5.56x45mm"] = {
 		Icon = "vgui/hud/hmcd_round_556",
@@ -2812,7 +2812,7 @@ local ammoents = {
 	},
 }
 
-hg.ammoents = ammoents
+zc.ammoents = ammoents
 
 local function addAmmoTypes()
 	for name, tbl in pairs(ammotypes) do
@@ -2860,7 +2860,7 @@ for i,tbl in pairs(table.Copy(ammotypes)) do
 	ammotypeshuy[tbl.name].name = i
 end
 
-hg.ammotypeshuy = ammotypeshuy
+zc.ammotypeshuy = ammotypeshuy
 
 local ammotypesallowed = {}
 for i,tbl in pairs(table.Copy(ammotypeshuy)) do
@@ -2868,7 +2868,7 @@ for i,tbl in pairs(table.Copy(ammotypeshuy)) do
 	ammotypesallowed[i] = tbl
 end
 
-hg.ammotypesallowed = ammotypesallowed
+zc.ammotypesallowed = ammotypesallowed
 
 if CLIENT then
 	local red = Color(75,25,25)
@@ -2876,7 +2876,7 @@ if CLIENT then
 
 	local gradient_u = Material("vgui/gradient-u")
 	local gradient_d = Material("vgui/gradient-d")
-	BlurBackground = hg.DrawBlur
+	BlurBackground = zc.DrawBlur
 
 	local function PaintInnerFrame(self,w,h)
 		BlurBackground(self)
@@ -2979,7 +2979,7 @@ if CLIENT then
 	hook.Add("ZC_RadialOptions", "ZC_OpenAmmoRadialMenu", function()
 		local organism = LocalPlayer().organism or {}
 		if not organism.unconscious and table.Count(LocalPlayer():GetAmmo()) > 0 and lply:KeyDown(IN_WALK) then
-			hg.radialOptions[#hg.radialOptions + 1] = {
+			zc.radialOptions[#zc.radialOptions + 1] = {
 				function()
 					RunConsoleCommand("hg_ammomenu")
 

@@ -1,5 +1,5 @@
 --\\Translate plugin things into your things
-hg.Abnormalties = hg.Abnormalties or {}
+zc.Abnormalties = zc.Abnormalties or {}
 --//
 
 

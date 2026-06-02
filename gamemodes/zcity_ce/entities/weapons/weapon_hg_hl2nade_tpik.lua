@@ -1,4 +1,4 @@
-﻿if SERVER then AddCSLuaFile() end
+if SERVER then AddCSLuaFile() end
 SWEP.Base = "weapon_hg_grenade_tpik"
 SWEP.PrintName = "Combine Frag Grenade"
 SWEP.Instructions = 
@@ -169,7 +169,7 @@ function SWEP:AddStep()
         self.nextgrenadetick = self.nextgrenadetick or CurTime()
         if self.nextgrenadetick > CurTime() then return end
         
-        hg.GetCurrentCharacter(self:GetOwner()):EmitSound("weapons/grenade/tick1.wav",65)
+        zc.GetCurrentCharacter(self:GetOwner()):EmitSound("weapons/grenade/tick1.wav",65)
 
         self.nextgrenadetick = CurTime() + 0.5 * math.max(time / (ent.timeToBoom * 1.5),0.5)
     end

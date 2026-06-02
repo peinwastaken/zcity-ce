@@ -25,6 +25,6 @@ hook.Add("PreDrawEffects", "ZC_BloodParticles", function()
 end)
 
 hook.Add("PostCleanupMap","ZC_RemoveDecals",function()
-	table.Empty(hg.bloodparticles1)
-	table.Empty(hg.bloodparticles2)
+	table.Empty(zc.bloodparticles1)
+	table.Empty(zc.bloodparticles2)
 end)

@@ -37,28 +37,28 @@ if CLIENT then
 		outline = false,
 	})
 
-	hg.notifications = hg.notifications or {}
-	hg.notificationFont = "HuyFont"
+	zc.notifications = zc.notifications or {}
+	zc.notificationFont = "HuyFont"
 
 	hook.Add("ZC_PlayerDeath","ZC_ClearNotifications",function(ply)
 		if ply != lply then return end
 
-		//hg.currentNotification = nil
-		hg.notifications = {}
+		//zc.currentNotification = nil
+		zc.notifications = {}
 	end)
 
 	hook.Add("ZC_PlayerSpawn","ZC_ClearNotificationsOnSpawn",function(ply)
 		if ply != lply then return end
 
-		hg.currentNotification = nil
-		hg.notifications = {}
+		zc.currentNotification = nil
+		zc.notifications = {}
 	end)
 
 	hook.Add("ZC_OnPlayerUnconscious","ZC_ClearNotificationsOnUnconscious",function(ply)
 		if ply != lply then return end
 
-		//hg.currentNotification = nil
-		hg.notifications = {}
+		//zc.currentNotification = nil
+		zc.notifications = {}
 	end)
 
 	local defaultShowTimer = 3
@@ -68,21 +68,21 @@ if CLIENT then
 			return
 		end
 
-		table.insert(hg.notifications, {msg, (showTimer or defaultShowTimer), clr or Color(255, 255, 255, 255)})
+		table.insert(zc.notifications, {msg, (showTimer or defaultShowTimer), clr or Color(255, 255, 255, 255)})
 	end
 
 	local function CreateNotificationBerserk(msg, showTimer, clr)
-		local tbl = hg.currentNotification
+		local tbl = zc.currentNotification
 
 		local clr = tbl and tbl[4] and IsColor(tbl[4]) and tbl[4] or Color(255, 255, 255, 255)
 		if tbl and clr and tbl[1] then
 			chat.AddText(Color(clr.r, clr.g, clr.b, 255), (last_message or tbl[1]).."\n")
 		end
 
-		hg.currentNotification = nil
-		hg.notifications = {}
+		zc.currentNotification = nil
+		zc.notifications = {}
 
-		table.insert(hg.notifications, {msg, (showTimer or defaultShowTimer), clr or Color(255, 255, 255, 255)})
+		table.insert(zc.notifications, {msg, (showTimer or defaultShowTimer), clr or Color(255, 255, 255, 255)})
 	end
 
 	local PLAYER = FindMetaTable("Player")
@@ -113,34 +113,34 @@ if CLIENT then
 		CreateNotificationBerserk(msg, showtime, clr)
 	end)
 
-	hg.CreateNotification = CreateNotification
-	hg.CreateNotificationBerserk = CreateNotificationBerserk
+	zc.CreateNotification = CreateNotification
+	zc.CreateNotificationBerserk = CreateNotificationBerserk
 
 	local time_spent = CurTime()
 	local coloruse = Color(255,255,255,255)
 	local function NotificationsThink()
-		//if hg.currentNotification or #hg.notifications == 0 then return end
-		if #hg.notifications == 0 then return end
-		if hg.currentNotification then return end
-		if !lply:Alive() then hg.notifications = {} return end
+		//if zc.currentNotification or #zc.notifications == 0 then return end
+		if #zc.notifications == 0 then return end
+		if zc.currentNotification then return end
+		if !lply:Alive() then zc.notifications = {} return end
 		if lply.organism and lply.organism.unconscious then return end
-		local tbl = hg.notifications[1]
+		local tbl = zc.notifications[1]
 
 		if tbl and istable(tbl) and not table.IsEmpty(tbl) then
-			/*if hg.currentNotification then
-				local tbl2 = hg.currentNotification
+			/*if zc.currentNotification then
+				local tbl2 = zc.currentNotification
 
 				local clr = tbl2 and tbl2[4] and IsColor(tbl2[4]) and tbl2[4] or Color(255, 255, 255, 255)
 				if tbl2 and clr and tbl2[1] then
 					chat.AddText(Color(coloruse.r, coloruse.g, coloruse.b, 255), (last_message or tbl2[1]).."\n")
 				end
 
-				hg.currentNotification = nil
+				zc.currentNotification = nil
 			end*/
 
-			hg.currentNotification = {tbl[1], time_spent, tbl[2], tbl[3]}
+			zc.currentNotification = {tbl[1], time_spent, tbl[2], tbl[3]}
 
-			table.remove(hg.notifications,1)
+			table.remove(zc.notifications,1)
 		end--show only one notification at a time (keep the rest in mind....)
 	end
 
@@ -170,7 +170,7 @@ if CLIENT then
 		//if org.unconscious and !last_message then return end
 
 		//if zc_old_notificate:GetBool() then return end
-		local tbl = hg.currentNotification
+		local tbl = zc.currentNotification
 
 		if tbl and istable(tbl) and not table.IsEmpty(tbl) then
 			local msg, time, timeshow, clr = tbl[1], tbl[2], tbl[3], tbl[4]
@@ -178,7 +178,7 @@ if CLIENT then
 			local mul = ((org.brain > 0.1 or org.pulse < 50) and 3 or 1)// * (org.fear > 0 and math.max(1 - org.fear, 0.6) or 1)
 			local time_one_symbol = 0.06 * mul//(lply.organism and lply.organism.fear >= 0.5 and 0.5 or 1)
 			local time_to_read = (utf8.len(msg) * time_one_symbol)
-			local wait = math.Clamp(time_to_read / 3 * math.Clamp(1 - #hg.notifications / 1, 0.25, 1), 1, 4) + timeshow
+			local wait = math.Clamp(time_to_read / 3 * math.Clamp(1 - #zc.notifications / 1, 0.25, 1), 1, 4) + timeshow
 
 			if (time + time_to_read + wait > time_spent) then
 				local part = math.min(1 - (time + time_to_read - time_spent) / time_to_read, 1)
@@ -214,7 +214,7 @@ if CLIENT then
 					last_time = nil
 				end
 
-				local font = hg.notificationFont
+				local font = zc.notificationFont
 
 				surface.SetFont(font)
 				local txtw, _ = surface.GetTextSize(last_message or txt)
@@ -223,10 +223,10 @@ if CLIENT then
 				col.a = 255 * (last_time and (last_time + 2 - time_spent) or part2)
 				colBrown.a = 255 * (last_time and (last_time + 2 - time_spent) or part2)
 
-				if hg.underberserk2 then
+				if zc.underberserk2 then
 					local scale = 1
 
-					scale = (1 + ((hg.berserkIntensity or 0) / 4))
+					scale = (1 + ((zc.berserkIntensity or 0) / 4))
 
 					local rand = org.berserk * 2 * (col.a / 255)
 
@@ -237,9 +237,9 @@ if CLIENT then
 					m:Scale( vector_one * ( scale or 3) )
 					m:Translate( Vector( -txtw / 2, 0, 0 ) )
 
-					col.r = col.r + math.min(1, hg.berserkIntensity) * 255
-					col.g = col.g - math.min(1, hg.berserkIntensity) * 200
-					col.b = col.b - math.min(1, hg.berserkIntensity) * 200
+					col.r = col.r + math.min(1, zc.berserkIntensity) * 255
+					col.g = col.g - math.min(1, zc.berserkIntensity) * 200
+					col.b = col.b - math.min(1, zc.berserkIntensity) * 200
 
 					render.PushFilterMag( TEXFILTER.ANISOTROPIC )
 
@@ -247,9 +247,9 @@ if CLIENT then
 					DisableClipping(true)
 						local col2
 						for i = 1, 40 do
-							col2 = HSVToColor(350 + (math.sin(SysTime() + i / 50) * 10 * hg.berserkIntensity), 0.8, 0.9)
-							local posX = -math.sin(RealTime() * 7) * i / 2 * hg.berserkIntensity
-							local posY = -math.cos(RealTime() * 7) * i / 2 * hg.berserkIntensity
+							col2 = HSVToColor(350 + (math.sin(SysTime() + i / 50) * 10 * zc.berserkIntensity), 0.8, 0.9)
+							local posX = -math.sin(RealTime() * 7) * i / 2 * zc.berserkIntensity
+							local posY = -math.cos(RealTime() * 7) * i / 2 * zc.berserkIntensity
 							draw.SimpleText(last_message or txt, font, posX, posY, ColorAlpha(col2, col.a - i * 5), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 						end
 
@@ -265,7 +265,7 @@ if CLIENT then
 					draw.SimpleTextOutlined(last_message or txt, font, x, y, col, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, 1.5, colBrown)
 				end
 			else
-				local tbl = hg.currentNotification
+				local tbl = zc.currentNotification
 
 				local clr = tbl and tbl[4] and IsColor(tbl[4]) and tbl[4] or Color(255, 255, 255, 255)
 				if tbl and clr and tbl[1] then
@@ -276,7 +276,7 @@ if CLIENT then
 				last_message = nil
 				last_time = nil
 
-				hg.currentNotification = nil
+				zc.currentNotification = nil
 			end
 		end
 	end

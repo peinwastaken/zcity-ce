@@ -1,5 +1,5 @@
 AddCSLuaFile()
-hg.attachments = hg.attachments or {}
+zc.attachments = zc.attachments or {}
 SWEP.availableAttachments = {}
 if not ConVarExists("zc_random_atts") then
 	CreateConVar("zc_random_atts", 0, FCVAR_SERVER_CAN_EXECUTE, "Toggle random attachments on weapon spawn", 0, 1)
@@ -22,7 +22,7 @@ function SWEP:ClearAttachments()
 
 	if self.StartAtt then
 		for _,att in ipairs(self.StartAtt) do
-			hg.SetAttachment(self.attachments,att,self:GetClass())
+			zc.SetAttachment(self.attachments,att,self:GetClass())
 		end
 	end
 
@@ -41,7 +41,7 @@ function SWEP:ClearAttachments()
 	return self.attachments
 end
 
-function hg.ClearAttachments(wep)
+function zc.ClearAttachments(wep)
 	local self = weapons.Get(wep)
 	local tbl = {}
 
@@ -62,20 +62,20 @@ function hg.ClearAttachments(wep)
 
 	if self.StartAtt then
 		for _,att in ipairs(self.StartAtt) do
-			hg.SetAttachment(tbl.attachments,att,wep)
+			zc.SetAttachment(tbl.attachments,att,wep)
 		end
 	end
 
 	return tbl.attachments
 end
 
-function hg.SetAttachment(tbl,att,wep)
+function zc.SetAttachment(tbl,att,wep)
 	if not wep then return end
 	local wep = weapons.Get(wep)
 	if not wep then return end
 	local placement = nil
 
-	for _, tbl in pairs(hg.attachments) do
+	for _, tbl in pairs(zc.attachments) do
 		placement = tbl[att] and tbl[att][1] or placement
 	end
 
@@ -102,7 +102,7 @@ function SWEP:HasAttachment(whereabouts, attachment)
 		has = has[1] ~= "empty"
 	end
 
-	return has and self.attachments[whereabouts], has and hg.attachments[whereabouts][self.attachments[whereabouts][1]]
+	return has and self.attachments[whereabouts], has and zc.attachments[whereabouts][self.attachments[whereabouts][1]]
 end
 
 function SWEP:GetAttachmentModel(whereabouts, attachment)
@@ -163,7 +163,7 @@ function SWEP:DrawAttachments()
 	if self.availableAttachments.mount then
 		if self.availableAttachments.mount then
 			if not self.attachments then return end
-			local data = self.attachments["sight"] and self.attachments["sight"][1] and hg.attachments.sight[self.attachments["sight"][1]] or self.attachments["underbarrel"] and self.attachments["underbarrel"][1] and hg.attachments.underbarrel[self.attachments["underbarrel"][1]]
+			local data = self.attachments["sight"] and self.attachments["sight"][1] and zc.attachments.sight[self.attachments["sight"][1]] or self.attachments["underbarrel"] and self.attachments["underbarrel"][1] and zc.attachments.underbarrel[self.attachments["underbarrel"][1]]
 			if data then
 				self.attachments.mount = self.availableAttachments.mount[data.mountType]
 			end
@@ -174,7 +174,7 @@ function SWEP:DrawAttachments()
 	self.modelAtt = self.modelAtt or {}
 	local flagRemovehuy = false
 	for plc,att in pairs(self.attachments) do
-		local attdata = hg.attachments[plc][att[1]]
+		local attdata = zc.attachments[plc][att[1]]
 
 		local tblhuy = self:HasAttachment(plc) and available[plc] and ((available[plc][att[1]] and istable(available[plc][att[1]]) and available[plc][att[1]][2]) or (istable(available[plc]["removehuy"]) and available[plc]["removehuy"][attdata.mountType] or available[plc]["removehuy"]))
 		if tblhuy then flagRemovehuy = true end
@@ -219,7 +219,7 @@ function SWEP:DrawAttachments()
 			attdata.drawFunction(self,model)
 		end
 
-		hg.attachmentFunc(self, attdata, plc, att[1])
+		zc.attachmentFunc(self, attdata, plc, att[1])
 	end
 end
 
@@ -429,7 +429,7 @@ if CLIENT then
 		if not laser or table.IsEmpty(laser) and not self.laser then return end
 		local attachmentData
 		if laser and not table.IsEmpty(laser) then
-			attachmentData = hg.attachments.underbarrel[laser[1]]
+			attachmentData = zc.attachments.underbarrel[laser[1]]
 		else
 			attachmentData = self.laserData
 		end
@@ -696,12 +696,12 @@ if CLIENT then
 		return tblcpy
 	end
 
-	hg.GetAttachmentsInv = refreshtbl
+	zc.GetAttachmentsInv = refreshtbl
 
 	hook.Add("ZC_OnNetVarSet", "ZC_AttachmentPanelRefresh", function(index, key, var)
 		if key == "Inventory" or key == "attachments" and Entity(index) == lply:GetActiveWeapon() then
-			if IsValid(hg.attachmentsMenuPanel) and hg.attachmentsMenuPanel.RefreshTbl then
-				hg.attachmentsMenuPanel:RefreshTbl()
+			if IsValid(zc.attachmentsMenuPanel) and zc.attachmentsMenuPanel.RefreshTbl then
+				zc.attachmentsMenuPanel:RefreshTbl()
 			end
 		end
 	end)
@@ -710,15 +710,15 @@ if CLIENT then
 	local clr_blackalpha = Color(0, 0, 0, 100)
 
 	CreateMenu = function()
-		if IsValid(hg.attachmentsMenuPanel) then
-			hg.attachmentsMenuPanel:Remove()
-			hg.attachmentsMenuPanel = nil
+		if IsValid(zc.attachmentsMenuPanel) then
+			zc.attachmentsMenuPanel:Remove()
+			zc.attachmentsMenuPanel = nil
 		end
 
 		local tblcpy = refreshtbl()
 
 		local frame = vgui.Create( "ZFrame" )
-		hg.attachmentsMenuPanel = frame
+		zc.attachmentsMenuPanel = frame
 		frame:SetTitle("")
 		frame:SetSize( ScrW() / 3, ScrH() / 2 )
 		frame:SetPos( ScrW() * 0.5 - frame:GetWide() * 0.5,ScrH() + 500 )
@@ -741,7 +741,7 @@ if CLIENT then
 		lbl:DockMargin(10,0,0,10)
 
 		lbl.Paint = function(self, w, h)
-			draw.SimpleText(zb.locale.GetLocalized("attachments/help"), "ZCity_Tiny", w * 0.5, h * 0.5, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.SimpleText(zc.locale.GetLocalized("attachments/help"), "ZCity_Tiny", w * 0.5, h * 0.5, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 
 		local scroll = vgui.Create("DScrollPanel",frame)
@@ -777,16 +777,16 @@ if CLIENT then
 
 			table.sort(tblcpy, function(a, b) return ((string.byte(a[1][1], 1, 1) + (a[2] and 9999 or 0)) > (string.byte(b[1][1], 1, 1) + (b[2] and 9999 or 0))) end)
 			for _, v in pairs(tblcpy) do
-				if !hg.attachmentslaunguage[v[1]] then continue end
+				if !zc.attachmentslaunguage[v[1]] then continue end
 				local but = vgui.Create("DButton")
-				but:SetText( hg.attachmentslaunguage[v[1]]..(v[2] and zb.locale.GetLocalized("attachments/on_weapon_suffix") or "") )
+				but:SetText( zc.attachmentslaunguage[v[1]]..(v[2] and zc.locale.GetLocalized("attachments/on_weapon_suffix") or "") )
 				but:SetFont("ZCity_Tiny")
 				but:Dock( TOP )
 				but:DockMargin( 0, 0, 0, 5 )
 				but:SetSize(0, ScreenScaleH(20))
 
 				local but2 = vgui.Create("DButton", but)
-				but2:SetText( zb.locale.GetLocalized("common/drop") )
+				but2:SetText( zc.locale.GetLocalized("common/drop") )
 				but2:SetFont("ZCity_SuperTiny")
 				but2:Dock( RIGHT )
 
@@ -810,16 +810,16 @@ if CLIENT then
 				img:SetSize(ScreenScaleH(20), ScreenScaleH(20))
 				img:Dock(LEFT)
 				img:DockMargin( 5, 0, 0, 0 )
-				if hg.attachmentsIcons[v[1]] then
-					img:SetImage( hg.attachmentsIcons[v[1]] )
+				if zc.attachmentsIcons[v[1]] then
+					img:SetImage( zc.attachmentsIcons[v[1]] )
 				end
 
 				/*but.Think = function()
-					if !hg.attachmentslaunguage[tblcpy[k][1]] then return end
+					if !zc.attachmentslaunguage[tblcpy[k][1]] then return end
 
-					img:SetImage( hg.attachmentsIcons[tblcpy[k][1]] )
+					img:SetImage( zc.attachmentsIcons[tblcpy[k][1]] )
 
-					but:SetText( hg.attachmentslaunguage[tblcpy[k][1]]..(tblcpy[k][2] and zb.locale.GetLocalized("attachments/on_weapon_suffix") or "") )
+					but:SetText( zc.attachmentslaunguage[tblcpy[k][1]]..(tblcpy[k][2] and zc.locale.GetLocalized("attachments/on_weapon_suffix") or "") )
 				end*/
 
 				but.DoClick = function()

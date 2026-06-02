@@ -63,7 +63,7 @@ function ENT:Detonate(data)
 		end
 	end)
 
-	hg.EmitAISound(SelfPos, 1024, 16, 512)
+	zc.EmitAISound(SelfPos, 1024, 16, 512)
 
 	for _, npc in ipairs(ents.FindInSphere(SelfPos, 1024)) do
 		if IsValid(npc) and npc:IsNPC() and npc:GetClass() == "npc_antlion" then

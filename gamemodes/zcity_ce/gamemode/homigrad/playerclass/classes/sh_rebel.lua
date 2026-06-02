@@ -96,7 +96,7 @@ local primary_weapons = {
 local primary_attachments = {
     ["weapon_svd"] = function(ply, wep)
         if IsValid(wep) then
-            hg.AddAttachmentForce(ply,wep,"optic11")
+            zc.AddAttachmentForce(ply,wep,"optic11")
         end
     end,
 }
@@ -169,7 +169,7 @@ local rebel_subclasses = {
 
             local wep1 = ply:Give(primary_weapons[math.random(#primary_weapons)])
             ply:GiveAmmo(wep1:GetMaxClip1() * 3, wep1:GetPrimaryAmmoType(), true)
-            //hg.AddAttachmentForce(ply, wep1, "ent_att_laser2")
+            //zc.AddAttachmentForce(ply, wep1, "ent_att_laser2")
 
             local wep2 = ply:Give(secondary_weapons[math.random(#secondary_weapons)])
             ply:GiveAmmo(wep2:GetMaxClip1() * 3, wep2:GetPrimaryAmmoType(), true)
@@ -211,9 +211,9 @@ local function giveSubClassLoadout(ply, subClass)
     local randFace = face_list[math.random(#face_list)]
     local randHelmet = helmet_list[math.random(#helmet_list)]
 
-    if randVest ~= "" then hg.AddArmor(ply, randVest) end
-    if randHelmet ~= "" then hg.AddArmor(ply, randHelmet) end
-    if randFace ~= "" then hg.AddArmor(ply, randFace) end
+    if randVest ~= "" then zc.AddArmor(ply, randVest) end
+    if randHelmet ~= "" then zc.AddArmor(ply, randHelmet) end
+    if randFace ~= "" then zc.AddArmor(ply, randFace) end
 
     ply:SyncArmor()
 
@@ -226,14 +226,14 @@ function CLASS.On(self, data)
     if CLIENT then return end
 
     ApplyAppearance(self,nil,nil,nil,true)
-    local appearance = self.CurAppearance or hg.Appearance.GetRandomAppearance()
+    local appearance = self.CurAppearance or zc.Appearance.GetRandomAppearance()
     appearance.AAttachments = ""
     appearance.AColthes = ""
 
     local mdl_key = appearance.AModel
     if not rebel_models[mdl_key] then
         self:ChatPrint("zcity/appearance.json have invalid variables.. Setting random Appearance")
-        appearance = hg.Appearance.GetRandomAppearance()
+        appearance = zc.Appearance.GetRandomAppearance()
         mdl_key = appearance.AModel
     end
 
@@ -257,8 +257,8 @@ function CLASS.On(self, data)
 
     self.subClass = nil
 
-    if zb and zb.GiveRole then
-        zb.GiveRole(self, "Rebel", Color(0, 173, 43))
+    if zc and zc.GiveRole then
+        zc.GiveRole(self, "Rebel", Color(0, 173, 43))
     end
 
     self:SetBodygroup(10, 1)

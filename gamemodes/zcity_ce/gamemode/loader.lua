@@ -1,9 +1,9 @@
-hg = hg or {}
-hg.Version = "1.0.0"
-hg.GitHub_ReposOwner = "peinwastaken"
-hg.GitHub_ReposName = "zcity-ce"
-hg.Authors = {"uzelezz", "Sadsalat", "Mr.Point", "Zac90", "Deka", "Mannytko"}
-hg.Authors_CE = {"pein", "NERO2k", "r4tb0y", "senvixe", "ChatGPT"}
+zc = zc or {}
+zc.Version = "1.0.0"
+zc.GitHub_ReposOwner = "peinwastaken"
+zc.GitHub_ReposName = "zcity-ce"
+zc.Authors = {"uzelezz", "Sadsalat", "Mr.Point", "Zac90", "Deka", "Mannytko"}
+zc.Authors_CE = {"pein", "NERO2k", "r4tb0y", "senvixe", "ChatGPT"}
 
 local loadedFiles = {}
 
@@ -90,14 +90,14 @@ local function LoadVendorRuntime()
 	LoadVendorFile("zcity_ce/gamemode/vendor/wos/sh_dynabase_loader.lua")
 end
 
-hg.loaded = false
+zc.loaded = false
 
 LoadVendorRuntime()
 LoadIfExists("zcity_ce/gamemode/libraries/globals", true)
 LoadIfExists("zcity_ce/gamemode/homigrad", false)
 LoadIfExists("zcity_ce/gamemode/libraries", true)
 
-hg.loaded = true
+zc.loaded = true
 hook.Run("ZC_OnLoaded")
 
 hook.Add("InitPostEntity", "ZC_LoadInitPostFiles", function()
@@ -118,19 +118,19 @@ timer.Simple(5, function()
 	end
 end)
 
-zb.modesHooks = {}
-zb.modes = zb.modes or {}
+zc.modesHooks = {}
+zc.modes = zc.modes or {}
 
 local function addModeHook( MODE, hookName, func )
-	zb.modesHooks[MODE.name] = zb.modesHooks[MODE.name] or {}
-	zb.modesHooks[MODE.name][hookName] = func
+	zc.modesHooks[MODE.name] = zc.modesHooks[MODE.name] or {}
+	zc.modesHooks[MODE.name][hookName] = func
 
 	hook.Add( hookName, "ZC_ModeHook" .. hookName, function( ... )
-		local Current = zb.CROUND_MAIN or zb.CROUND or "tdm"
+		local Current = zc.CROUND_MAIN or zc.CROUND or "tdm"
 
-		local modeHooks = zb.modesHooks[Current]
+		local modeHooks = zc.modesHooks[Current]
 		if modeHooks and modeHooks[hookName] then
-			local ModeTable = zb.modes[Current]
+			local ModeTable = zc.modes[Current]
 			local a, b, c, d, e, f = modeHooks[hookName]( ModeTable, ... )
 
 			if a ~= nil then
@@ -144,13 +144,13 @@ local function InitMode()
 	if table.IsEmpty(MODE) then return end
 
 	local name = MODE.name
-	local saved = zb.modes[name] and zb.modes[name].saved or {} -- saved table is used for saving data between hotloads
+	local saved = zc.modes[name] and zc.modes[name].saved or {} -- saved table is used for saving data between hotloads
 
 	if MODE.base then
-		table.Inherit(MODE, zb.modes[MODE.base])
+		table.Inherit(MODE, zc.modes[MODE.base])
 
 		for i in pairs(MODE) do
-			if istable(MODE[i]) and istable(zb.modes[MODE.base][i]) then
+			if istable(MODE[i]) and istable(zc.modes[MODE.base][i]) then
 				tbl2 = {}
 
 				table.CopyFromTo(MODE[i], tbl2)
@@ -164,14 +164,14 @@ local function InitMode()
 		end
 	end
 
-	zb.modes[name] = MODE
-	zb.modes[name].saved = saved
+	zc.modes[name] = MODE
+	zc.modes[name].saved = saved
 
 	if SERVER then
 		if MODE.SetupChances then
 			MODE:SetupChances()
 		else
-			zb.ModesChances[name] = zb.ModesChances[name] or MODE.Chance
+			zc.ModesChances[name] = zc.ModesChances[name] or MODE.Chance
 		end
 	end
 
@@ -186,24 +186,24 @@ local chancesfile = "zbattle/modeschances.json"
 
 if SERVER then
 	hook.Add("ShutDown", "ZC_SaveModeChances", function()
-		file.Write(chancesfile, util.TableToJSON(zb.ModesChances or {}, true))
+		file.Write(chancesfile, util.TableToJSON(zc.ModesChances or {}, true))
 	end)
 
 	concommand.Add("zb_getmodeschances", function(ply, cmd, args)
-		ply:zChatPrint(util.TableToJSON(zb.ModesChances, true))
+		ply:zChatPrint(util.TableToJSON(zc.ModesChances, true))
 	end)
 
 	concommand.Add("zb_setmodechance", function(ply, cmd, args)
 		local mode = args[1]
 		local chance = tonumber(args[2])
 
-		if !zb.ModesChances[mode] or !chance then return end
+		if !zc.ModesChances[mode] or !chance then return end
 
-		zb.ModesChances[mode] = chance
+		zc.ModesChances[mode] = chance
 	end)
 
 	concommand.Add("zb_savemodeschances", function(ply, cmd, args)
-		file.Write(chancesfile, util.TableToJSON(zb.ModesChances or {}, true))
+		file.Write(chancesfile, util.TableToJSON(zc.ModesChances or {}, true))
 	end)
 end
 
@@ -212,7 +212,7 @@ local function LoadModes()
 	local files, folders = file.Find(directory .. "/*", "LUA")
 
 	if SERVER then
-		zb.ModesChances = util.JSONToTable(file.Read(chancesfile,  "DATA") or "") or {}
+		zc.ModesChances = util.JSONToTable(file.Read(chancesfile,  "DATA") or "") or {}
 	end
 
 	for _, v in ipairs(files) do
@@ -230,11 +230,11 @@ local function LoadModes()
 	end
 
 	if SERVER and !file.Exists(chancesfile,  "DATA") then
-		file.Write(chancesfile, util.TableToJSON(zb.ModesChances, true))
+		file.Write(chancesfile, util.TableToJSON(zc.ModesChances, true))
 	end
 
 	if SERVER then
-		zb.modeconfig.LoadAll()
+		zc.modeconfig.LoadAll()
 	end
 end
 

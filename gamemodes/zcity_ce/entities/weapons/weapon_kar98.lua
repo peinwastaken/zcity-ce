@@ -224,7 +224,7 @@ local function reloadFunc(self)
 			self:GetWM():ManipulateBoneScale(self.MagIndex, vector_origin)
 		end
 
-		local key = hg.KeyDown(self:GetOwner(), IN_RELOAD)
+		local key = zc.KeyDown(self:GetOwner(), IN_RELOAD)
 		--print("reload",key)
 
 		if key and self:CanReload() then

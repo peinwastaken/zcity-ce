@@ -42,7 +42,7 @@ function SWEP:InitializeAdd()
 	if SERVER then
 		if math.random(2) == 1 then
 			self.modeValues[1] = 1
-			//local val,index = table.Random(hg.organism.bloodtypes)
+			//local val,index = table.Random(zc.organism.bloodtypes)
 			self.bloodtype = "o-"
 		end
 	end
@@ -93,7 +93,7 @@ local zc_healanims = ConVarExists("zc_healanims") and GetConVar("zc_healanims") 
 if SERVER then
 	function SWEP:SecondaryAttack()
 		if not self:GetOwner():KeyPressed(IN_ATTACK2) then return end
-		local ent = hg.eyeTrace(self:GetOwner()).Entity
+		local ent = zc.eyeTrace(self:GetOwner()).Entity
 		if ent:IsPlayer() or ent:IsRagdoll() then
 			self.sndcd = CurTime() + 1
 			self:GetOwner():EmitSound("zcity/healing/bloodbag_spear_0.wav")
@@ -138,9 +138,9 @@ if SERVER then
 		if self:GetNetVar("mode",2) == 2 then
 			if self.modeValues[1] != 1 then
 				if owner:KeyDown(IN_ATTACK) or owner:KeyDown(IN_ATTACK2) then
-					local ent = owner:KeyDown(IN_ATTACK) and owner or hg.eyeTrace(self:GetOwner()).Entity
+					local ent = owner:KeyDown(IN_ATTACK) and owner or zc.eyeTrace(self:GetOwner()).Entity
 					if not ent.organism then return end
-					local ent = hg.GetCurrentCharacter(ent)
+					local ent = zc.GetCurrentCharacter(ent)
 					if ent:GetVelocity():LengthSqr() < 25 and ent.organism.blood > 2000 and (not self.bloodtype or ent.organism.bloodtype == self.bloodtype) then
 						local old = -(-self.modeValues[1])
 						self.modeValues[1] = math.min(self.modeValues[1] + FrameTime() * (math.max(ent.organism.pulse / 70,0.3)) * 0.5,1)
@@ -163,12 +163,12 @@ if SERVER then
 		else
 			if self.modeValues[1] > 0 then
 				if owner:KeyDown(IN_ATTACK) or owner:KeyDown(IN_ATTACK2) then
-					local ent = owner:KeyDown(IN_ATTACK) and owner or hg.eyeTrace(self:GetOwner()).Entity
+					local ent = owner:KeyDown(IN_ATTACK) and owner or zc.eyeTrace(self:GetOwner()).Entity
 					if not ent.organism then return end
-					local ent = hg.GetCurrentCharacter(ent)
+					local ent = zc.GetCurrentCharacter(ent)
 					if ent:GetVelocity():LengthSqr() < 1000 then
 						local old = -(-ent.organism.blood)
-						local good_type = hg.organism.bloodtypes[self.bloodtype or "o-"][ent.organism.bloodtype or "o-"]
+						local good_type = zc.organism.bloodtypes[self.bloodtype or "o-"][ent.organism.bloodtype or "o-"]
 
 						if self.poisoned2 then
 							ent.organism.poison4 = CurTime()
@@ -231,7 +231,7 @@ else
 	end
 
 	function SWEP:Think()
-		local ent = hg.eyeTrace(self:GetOwner()).Entity
+		local ent = zc.eyeTrace(self:GetOwner()).Entity
 		ent = IsValid(ent) and ent.organism and ent or self:GetOwner()
 		local mode = self:GetNetVar("mode",2) - 1
 		if mode == 0 then mode = 2 end

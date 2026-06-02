@@ -1,9 +1,9 @@
 --
-hg = hg or {}
+zc = zc or {}
 
 local bandanamat = Material("mats_jack_gmod_sprites/respirator_vignette.png")
 
-hg.Accessories = {
+zc.Accessories = {
 	["none"] = {},
 
     ["eyeglasses"] = {
@@ -1407,13 +1407,13 @@ hg.Accessories = {
 }
 
 hook.Add("Think","ZC_RegisterPointshopAccessories",function()
-    hg.PointShop = hg.PointShop or {}
+    zc.PointShop = zc.PointShop or {}
 
-    local PLUGIN = hg.PointShop
+    local PLUGIN = zc.PointShop
 
     PLUGIN.Items = {}
 
-    for k, acces in pairs(hg.Accessories) do
+    for k, acces in pairs(zc.Accessories) do
         if not acces.bPointShop then continue end
 
         PLUGIN:CreateItem( k, string.NiceName( acces.name or k ), acces.model, acces.bodygroups, acces.skin, acces.vpos or Vector(0,0,0), acces.price, acces.isdpoint, {[0] = acces.SubMat} )

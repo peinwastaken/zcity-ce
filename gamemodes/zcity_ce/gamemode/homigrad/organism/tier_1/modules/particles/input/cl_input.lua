@@ -19,8 +19,8 @@ local cloudmat = Material("effects/smoke_b")
 --[[for i = 4, 6 do
 	mats[i-3] = Material("homigrad/decals/bld" .. i)
 end]]
-hg.bloodparticles1 = hg.bloodparticles1 or {}
-hg.bloodparticles2 = hg.bloodparticles2 or {}
+zc.bloodparticles1 = zc.bloodparticles1 or {}
+zc.bloodparticles2 = zc.bloodparticles2 or {}
 local vecZero = Vector(0, 0, 0)
 if not ConVarExists("zc_blood_fps") then
 	CreateClientConVar("zc_blood_fps", 24, true, nil, "fps to draw blood", 12, 165)
@@ -37,9 +37,9 @@ local function addBloodPart(pos, vel, mat, w, h, artery, kishki, owner)
 	local pos2 = Vector()
 	pos2:Set(pos)
 
-	if #hg.bloodparticles1 > 200 then table.remove(hg.bloodparticles1, 1) end
+	if #zc.bloodparticles1 > 200 then table.remove(zc.bloodparticles1, 1) end
 
-	hg.bloodparticles1[#hg.bloodparticles1 + 1] = {pos, pos2, vel, mat or mat_huy, w or 2, h or 2, CurTime(), artery = artery, kishki = kishki, owner = owner, start_velocity = IsValid(owner) and owner:GetVelocity() or vector_origin}
+	zc.bloodparticles1[#zc.bloodparticles1 + 1] = {pos, pos2, vel, mat or mat_huy, w or 2, h or 2, CurTime(), artery = artery, kishki = kishki, owner = owner, start_velocity = IsValid(owner) and owner:GetVelocity() or vector_origin}
 end
 
 local function addBloodPart2(pos, vel, mat, w, h, time, water, owner)
@@ -53,15 +53,15 @@ local function addBloodPart2(pos, vel, mat, w, h, time, water, owner)
 	local pos2 = Vector()
 	pos2:Set(pos)
 
-	if #hg.bloodparticles2 > 200 then table.remove(hg.bloodparticles2, 1) end
+	if #zc.bloodparticles2 > 200 then table.remove(zc.bloodparticles2, 1) end
 	--if water and math.random(2) == 1 then return end
 	--if water and math.random(3) > 1 then return end
 
-	hg.bloodparticles2[#hg.bloodparticles2 + 1] = {pos, pos2, vel, mat or cloudmat, w or 60, h or 60, CurTime() + time, time, water = water, owner = owner}
+	zc.bloodparticles2[#zc.bloodparticles2 + 1] = {pos, pos2, vel, mat or cloudmat, w or 60, h or 60, CurTime() + time, time, water = water, owner = owner}
 end
 
-hg.addBloodPart = addBloodPart
-hg.addBloodPart2 = addBloodPart2
+zc.addBloodPart = addBloodPart
+zc.addBloodPart2 = addBloodPart2
 
 local Rand = math.Rand
 
@@ -120,7 +120,7 @@ local limbs = {
 
 hook.Add("ZC_OnOrganismChanged", "ZC_SpawnAmputationBloodBurst", function(oldorg, org)
 	local ply = org.owner
-	local ent = hg.GetCurrentCharacter(ply)
+	local ent = zc.GetCurrentCharacter(ply)
 
 	for ind, nam in pairs(limbs) do
 		if !oldorg[ind.."amputated"] and org[ind.."amputated"] then
@@ -143,7 +143,7 @@ hook.Add("ZC_OnOrganismChanged", "ZC_SpawnAmputationBloodBurst", function(oldorg
 	end
 end)
 
-hg.explode = explode
+zc.explode = explode
 
 net.Receive("ZC_AddBloodFountain",function()
 	local ent = net.ReadEntity()
@@ -176,7 +176,7 @@ net.Receive("ZC_BloodSquirt", function()
 	local dir = net.ReadVector()
 	local len = dir:Length()
 
-	local ent = hg.RagdollOwner(ent) or ent
+	local ent = zc.RagdollOwner(ent) or ent
 
 	//local mat = ent:GetBoneMatrix(bone)
 	local localPos, localDir = WorldToLocal(pos, dir:Angle(), mat:GetTranslation(), mat:GetAngles())
@@ -220,7 +220,7 @@ net.Receive("ZC_BloodSquirtAlt", function()
 	local dir = net.ReadVector()
 	local len = dir:Length()
 
-	local ent = hg.RagdollOwner(ent) or ent
+	local ent = zc.RagdollOwner(ent) or ent
 	local ply = ent
 
 	//local mat = ent:GetBoneMatrix(bone)

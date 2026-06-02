@@ -62,7 +62,7 @@ function SWEP:DrawWorldModel2()
 	local owner = self:GetOwner()
 	WorldModel:SetNoDraw(true)
 	WorldModel:SetModelScale(self.ModelScale or 1)
-	local renderGuy = hg.GetCurrentCharacter(owner)
+	local renderGuy = zc.GetCurrentCharacter(owner)
 	if IsValid(owner) then
 		local offsetVec = self.offsetVec
 		local offsetAng = self.offsetAng
@@ -95,7 +95,7 @@ function SWEP:Think()
 end
 
 function SWEP:GetEyeTrace()
-	return hg.eyeTrace(self:GetOwner())
+	return zc.eyeTrace(self:GetOwner())
 end
 
 SWEP.BlastDis = 12
@@ -163,7 +163,7 @@ if CLIENT then
 	end
 end
 
-function hg.ExplosionDisorientation(enta, tinnitus, disorientation)
+function zc.ExplosionDisorientation(enta, tinnitus, disorientation)
 	enta.organism.owner:AddTinnitus(tinnitus)
 	enta.organism.disorientation = enta.organism.disorientation + (disorientation)
 
@@ -212,7 +212,7 @@ local function ExplodeTheItem(self,ent)
 				effectdata:SetNormal(-ent:GetAngles():Forward())
 				util.Effect("eff_jack_genericboom", effectdata)
 			end
-			hg.ExplosionEffect(EntPos, BlastDis / 0.2, 80)
+			zc.ExplosionEffect(EntPos, BlastDis / 0.2, 80)
 
 			local mat = ent:GetMaterialType()
 			if mat == MAT_METAL then
@@ -231,7 +231,7 @@ local function ExplodeTheItem(self,ent)
 			local disorientation_dis = 10 / 0.01905
 			for _, enta in ipairs(ents.FindInSphere(EntPos, disorientation_dis)) do
 				local tracePos = enta:IsPlayer() and (enta:GetPos() + enta:OBBCenter()) or enta:GetPos()
-				local tr = hg.ExplosionTrace(EntPos, tracePos, {ent})
+				local tr = zc.ExplosionTrace(EntPos, tracePos, {ent})
 
 				local phys = enta:GetPhysicsObject()
 				local force = (enta:GetPos() - EntPos)
@@ -244,8 +244,8 @@ local function ExplodeTheItem(self,ent)
 				if enta.organism then
 					local behindwall = tr.Entity != enta and tr.MatType != MAT_GLASS
 					if IsValid(enta.organism.owner) and enta.organism.owner:IsPlayer() and not behindwall then
-						hg.ExplosionDisorientation(enta, 5 * frac * 1.5, 6 * frac * 1.5)
-						hg.RunZManipAnim(enta.organism.owner, "shieldexplosion")
+						zc.ExplosionDisorientation(enta, 5 * frac * 1.5, 6 * frac * 1.5)
+						zc.RunZManipAnim(enta.organism.owner, "shieldexplosion")
 					end
 				end
 
@@ -259,10 +259,10 @@ local function ExplodeTheItem(self,ent)
 				end
 
 				if enta:IsPlayer() then
-					hg.AddForceRag(enta, 0, forceadd * 0.5, 0.5)
-					hg.AddForceRag(enta, 1, forceadd * 0.5, 0.5)
+					zc.AddForceRag(enta, 0, forceadd * 0.5, 0.5)
+					zc.AddForceRag(enta, 1, forceadd * 0.5, 0.5)
 
-					hg.LightStunPlayer(enta)
+					zc.LightStunPlayer(enta)
 				end
 
 				if not IsValid(phys) then continue end
@@ -350,7 +350,7 @@ local function ExplodeTheItem(self,ent)
 end
 
 function SWEP:CanSecondaryAttack()
-	return IsValid(self:GetOwner()) and not hg.GetCurrentCharacter(self:GetOwner()):IsRagdoll()
+	return IsValid(self:GetOwner()) and not zc.GetCurrentCharacter(self:GetOwner()):IsRagdoll()
 end
 
 function SWEP:SecondaryAttack(calledFrom)
@@ -456,7 +456,7 @@ if SERVER then
 				self.nextattackhuy = CurTime() + 2
 				self:SetPlanted(true)
 				return
-			elseif hg.GetCurrentCharacter(Owner):IsRagdoll() then
+			elseif zc.GetCurrentCharacter(Owner):IsRagdoll() then
 				self:SecondaryAttack(true)
 				return
 			end

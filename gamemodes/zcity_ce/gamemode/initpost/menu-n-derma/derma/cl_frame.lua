@@ -27,7 +27,7 @@ end
 
 function PANEL:Paint(w,h)
     draw.RoundedBox(0,0,0,w,h,self.ColorBG)
-    hg.DrawBlur(self, self.BlurStrengh)
+    zc.DrawBlur(self, self.BlurStrengh)
 
     if self.DrawBorder then
         surface.SetDrawColor(self.ColorBR)

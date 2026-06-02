@@ -80,7 +80,7 @@ function CLASS.On(self)
 
 	if SERVER then
 		ApplyAppearance(self,nil,nil,nil,true)
-		local Appearance = self.CurAppearance or hg.Appearance.GetRandomAppearance()
+		local Appearance = self.CurAppearance or zc.Appearance.GetRandomAppearance()
 		Appearance.AAttachments = ""
 
 		self:SetNetVar("Accessories", "")
@@ -100,9 +100,9 @@ function CLASS.On(self)
 
 		if SERVER then
 			if not table.IsEmpty(clothTbl) and not fallbackMats[self.PreZombClass] then
-				self:SetSubMaterial(self:GetSubMaterialIdByName("distac/gloves/players_sheet"), hg.Appearance.Clothes[1][clothTbl["main"]])
-				self:SetSubMaterial(self:GetSubMaterialIdByName("distac/gloves/pants"), hg.Appearance.Clothes[1][clothTbl["pants"]])
-				self:SetSubMaterial(self:GetSubMaterialIdByName("distac/gloves/cross"), hg.Appearance.Clothes[1][clothTbl["boots"]])
+				self:SetSubMaterial(self:GetSubMaterialIdByName("distac/gloves/players_sheet"), zc.Appearance.Clothes[1][clothTbl["main"]])
+				self:SetSubMaterial(self:GetSubMaterialIdByName("distac/gloves/pants"), zc.Appearance.Clothes[1][clothTbl["pants"]])
+				self:SetSubMaterial(self:GetSubMaterialIdByName("distac/gloves/cross"), zc.Appearance.Clothes[1][clothTbl["boots"]])
 			else
 				self:SetSubMaterial(self:GetSubMaterialIdByName("distac/gloves/players_sheet"), fallbackMats[self.PreZombClass]["main"])
 				self:SetSubMaterial(self:GetSubMaterialIdByName("distac/gloves/pants"), fallbackMats[self.PreZombClass]["pants"])
@@ -155,12 +155,12 @@ function CLASS.On(self)
 
 		--\\ Remove armor
 		local armors = self:GetNetVar("Armor",{})
-		if armors["head"] and !hg.armor["head"][armors["head"]].nodrop then
-			hg.DropArmorForce(self, armors["head"])
+		if armors["head"] and !zc.armor["head"][armors["head"]].nodrop then
+			zc.DropArmorForce(self, armors["head"])
 		end
 
-		if armors["face"] and !hg.armor["face"][armors["face"]].nodrop then
-			hg.DropArmorForce(self, armors["face"])
+		if armors["face"] and !zc.armor["face"][armors["face"]].nodrop then
+			zc.DropArmorForce(self, armors["face"])
 		end
 
 		--\\ Give hands if we don't have it
@@ -221,12 +221,12 @@ function CLASS.Think(self)
 
 	--\\ Remove armor
 	local armors = self:GetNetVar("Armor",{})
-	if armors["head"] and !hg.armor["head"][armors["head"]].nodrop then
-		hg.DropArmorForce(self, armors["head"])
+	if armors["head"] and !zc.armor["head"][armors["head"]].nodrop then
+		zc.DropArmorForce(self, armors["head"])
 	end
 
-	if armors["face"] and !hg.armor["face"][armors["face"]].nodrop then
-		hg.DropArmorForce(self, armors["face"])
+	if armors["face"] and !zc.armor["face"][armors["face"]].nodrop then
+		zc.DropArmorForce(self, armors["face"])
 	end
 
 	--\\ Only hands will be active..
@@ -363,7 +363,7 @@ end)
 
 if SERVER then
 	hook.Add("ZC_PlayerFootstep", "ZC_PlayHeadcrabZombieFootsteps", function(ply)
-		local chr = hg.GetCurrentCharacter(ply)
+		local chr = zc.GetCurrentCharacter(ply)
 		if ply:Alive() and ply.PlayerClassName == "headcrabzombie" then
 			if IsValid(ply.FakeRagdoll) and ply:GetNetVar("lastFake") == 0 then return end
 			if not ply:IsSprinting() and (ply:KeyDown(IN_DUCK) or ply:KeyDown(IN_WALK)) then
@@ -493,8 +493,8 @@ else
 			origin = origin + spineAng:Right() * -8 + spineAng:Forward() * -2
 			angles.z = math.sin(CurTime() * 2) * 4
 
-			local chr = hg.GetCurrentCharacter(ply)
-			if CLIENT and hg.IsLocal(ply) and chr:GetBodygroup(1) ~= 0 then
+			local chr = zc.GetCurrentCharacter(ply)
+			if CLIENT and zc.IsLocal(ply) and chr:GetBodygroup(1) ~= 0 then
 				chr:SetBodygroup(1, 0)
 			elseif chr:GetBodygroup(1) == 0 and not ply.organism.headamputated then
 				chr:SetBodygroup(1, 1)

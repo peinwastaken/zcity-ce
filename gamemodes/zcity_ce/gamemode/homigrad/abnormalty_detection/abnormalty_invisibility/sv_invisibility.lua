@@ -1,6 +1,6 @@
 --\\Translate plugin things into your things
-hg.Abnormalties = hg.Abnormalties or {}
-local PLUGIN = hg.Abnormalties
+zc.Abnormalties = zc.Abnormalties or {}
+local PLUGIN = zc.Abnormalties
 --//
 
 --\\
@@ -28,7 +28,7 @@ function PLUGIN.Invisibility.Invis(owner, time)
 	}
 end
 
--- ulx luarun hg.Abnormalties.Invisibility.Invis(Entity(1), 1)
+-- ulx luarun zc.Abnormalties.Invisibility.Invis(Entity(1), 1)
 
 local function TryInvis(zone, ply)
 	local consumption = 50

@@ -487,7 +487,7 @@ local tDefaultAmmoTable = {
 
 local numbullets = 0
 
-hg.vehicles = hg.vehicles or {}
+zc.vehicles = zc.vehicles or {}
 
 local armsbones = {
 	["ValveBiped.Bip01_L_Clavicle"] = true,
@@ -536,7 +536,7 @@ function ENTITY:FireLuaBullets(tInfo)
 	local flDistance = tInfo.Distance or MAX_TRACE_LENGTH
 	local Filter = tInfo.Filter or owner
 
-	//table.Add(Filter, hg.vehicles)
+	//table.Add(Filter, zc.vehicles)
 
 	local iFlags = tInfo.Flags or 0
 	local flForce = tInfo.Force or 1
@@ -731,7 +731,7 @@ function ENTITY:FireLuaBullets(tInfo)
 
 				local bonename = ent:GetBoneName(ent:TranslatePhysBoneToBone(tr.PhysicsBone))
 
-				if !(armsbones[bonename] and hg.RagdollOwner(tr.Entity) == pInflictorOwner) and !IsValid(tr.Entity.OldRagdoll) and (tr.PhysicsBone != 0 or !tr.StartSolid) and (!hg.amputeetable[bonename] or !ent.organism[hg.amputeetable[bonename].."amputated"]) then break end
+				if !(armsbones[bonename] and zc.RagdollOwner(tr.Entity) == pInflictorOwner) and !IsValid(tr.Entity.OldRagdoll) and (tr.PhysicsBone != 0 or !tr.StartSolid) and (!zc.amputeetable[bonename] or !ent.organism[zc.amputeetable[bonename].."amputated"]) then break end
 
 				tr = bHullTrace and iShot % 2 == 0 and
 					// Half of the shotgun pellets are hulls that make it easier to hit targets with the shotgun.

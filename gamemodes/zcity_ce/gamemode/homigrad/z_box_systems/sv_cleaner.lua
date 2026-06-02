@@ -1,8 +1,8 @@
 -- Map cleanup, body removal, weapon and loot scavenging
-ZBox = ZBox or {}
-ZBox.Plugins = ZBox.Plugins or {}
-ZBox.Plugins["Cleaner"] = ZBox.Plugins["Cleaner"] or {}
-local PLUGIN = ZBox.Plugins["Cleaner"]
+zc = zc or {}
+zc.Plugins = zc.Plugins or {}
+zc.Plugins["Cleaner"] = zc.Plugins["Cleaner"] or {}
+local PLUGIN = zc.Plugins["Cleaner"]
 
 PLUGIN.Name = "Cleaner"
 

@@ -57,7 +57,7 @@ function EVENT:Think( ply )
     if self.Started + 60 < CurTime() then self:StopScare() return end
     --self.Ent:SetAngles((ply:EyePos() - self.Ent:GetPos()):Angle())
     local pos = self.Ent:GetPos() + vector_up * 32
-    if IsLookingAt(ply, pos, 0.75) and hg.isVisible(pos,ply:EyePos(),{self.Ent, ply},MASK_VISIBLE) then
+    if IsLookingAt(ply, pos, 0.75) and zc.isVisible(pos,ply:EyePos(),{self.Ent, ply},MASK_VISIBLE) then
         self.LookinTime = self.LookinTime or CurTime() + 1
         if self.LookinTime < CurTime() then
             self:Run(ply)

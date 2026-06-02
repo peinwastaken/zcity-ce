@@ -75,7 +75,7 @@ function ENT:Think()
 		return true
 	end
 
-	if (CurTime() - self.timer) < self.timeToBoom then hg.EmitAISound(self:GetPos(), 256, 2, 8) end
+	if (CurTime() - self.timer) < self.timeToBoom then zc.EmitAISound(self:GetPos(), 256, 2, 8) end
 	if (CurTime() - self.timer) > self.timeToBoom and not self.Exploded then self:Explode() end
 
 	return true
@@ -96,7 +96,7 @@ local function createSpoon(self)
 	end
 
 	entasd:EmitSound("weapons/m67/m67_spooneject.wav",65)
-	hg.EmitAISound(self:GetPos(), 256, 5, 8)
+	zc.EmitAISound(self:GetPos(), 256, 5, 8)
 
 	return entasd
 end
@@ -143,7 +143,7 @@ function ENT:Explode()
 		self.Exploded = true
 		return
 	end
-	hg.EmitAISound(self:GetPos(), 512, 16, 1)
+	zc.EmitAISound(self:GetPos(), 512, 16, 1)
 
 	self.owner = self.owner or Entity(0)
 
@@ -264,7 +264,7 @@ function ENT:Explode()
 	local entsCount = 0
 	for _, enta in ipairs(ents.FindInSphere(selfPos, disorientation_dis)) do
 		local tracePos = enta:IsPlayer() and (enta:GetPos() + enta:OBBCenter()) or enta:GetPos()
-		local tr = hg.ExplosionTrace(selfPos, tracePos, {self})
+		local tr = zc.ExplosionTrace(selfPos, tracePos, {self})
 		local phys = enta:GetPhysicsObject()
 		if IsValid(phys) then
 			entsCount = entsCount + 1
@@ -281,8 +281,8 @@ function ENT:Explode()
 		if enta.organism then
 			local behindwall = tr.Entity != enta and tr.MatType != MAT_GLASS
 			if IsValid(enta.organism.owner) and enta.organism.owner:IsPlayer() and not behindwall then
-				hg.ExplosionDisorientation(enta, 5 * frac, 6 * frac)
-				hg.RunZManipAnim(enta.organism.owner, "shieldexplosion")
+				zc.ExplosionDisorientation(enta, 5 * frac, 6 * frac)
+				zc.RunZManipAnim(enta.organism.owner, "shieldexplosion")
 			end
 		end
 
@@ -291,10 +291,10 @@ function ENT:Explode()
 
 
 		if enta:IsPlayer() then
-			hg.AddForceRag(enta, 0, forceadd * 0.5, 0.5)
-			hg.AddForceRag(enta, 1, forceadd * 0.5, 0.5)
+			zc.AddForceRag(enta, 0, forceadd * 0.5, 0.5)
+			zc.AddForceRag(enta, 1, forceadd * 0.5, 0.5)
 
-			hg.LightStunPlayer(enta)
+			zc.LightStunPlayer(enta)
 		end
 
 		if not IsValid(phys) then continue end
@@ -323,7 +323,7 @@ function ENT:Explode()
 		util.ScreenShake( selfPos, 35, 200, 1, 1000 )
 
 		local ammo = "Metal Debris"
-		local ammotype = hg.ammotypeshuy[ammo].BulletSettings
+		local ammotype = zc.ammotypeshuy[ammo].BulletSettings
 
 		local co = coroutine.create(function()
 
@@ -359,7 +359,7 @@ function ENT:Explode()
 						bullet.DisableLagComp = true
 						bullet.Filter = {self}
 						bullet.Dir = dir
-						bullet.Callback = hg.bulletHit
+						bullet.Callback = zc.bulletHit
 
 						self:FireLuaBullets(bullet, true)
 					end
@@ -395,7 +395,7 @@ function ENT:Explode()
 		end
 	end)
 	util.ScreenShake( selfPos, 35, 1, 1, 1000, true )
-	hg.EmitAISound(self:GetPos(), 300, 3, bit.bor(1, 33554432)) -- hope it works
+	zc.EmitAISound(self:GetPos(), 300, 3, bit.bor(1, 33554432)) -- hope it works
 end
 
 --;; Salat, if you think this is ChatGPT shit, this is a message for you - FUCK YOU!

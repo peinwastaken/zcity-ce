@@ -249,8 +249,8 @@ local function GetPlayerClassPhrases(ply, phraseType)
 	return nil
 end
 
-hg = hg or {}
-hg.GetPlayerClassPhrases = GetPlayerClassPhrases
+zc = zc or {}
+zc.GetPlayerClassPhrases = GetPlayerClassPhrases
 
 local mClamp, mRandom = math.Clamp, math.random
 
@@ -266,7 +266,7 @@ local function PlayClassPhrase(ply, phraseType)
 	end
 
 	local randomPhrase = classPhrases[mRandom(#classPhrases)]
-	local ent = hg.GetCurrentCharacter(ply)
+	local ent = zc.GetCurrentCharacter(ply)
 	local muffed = ply.armors and ply.armors["face"] == "mask2"
 
 	ent:EmitSound(randomPhrase, muffed and 75 or 85, ply.VoicePitch or 100, 1, CHAN_AUTO, 0, muffed and 14 or 0)
@@ -332,7 +332,7 @@ net.Receive("ZC_PhraseSync", function(len, ply)
 
 	local huy = random < 10 and "0" or ""
 	local phrase = phr[1] .. huy .. random .. phr[2]
-	local ent = hg.GetCurrentCharacter(ply)
+	local ent = zc.GetCurrentCharacter(ply)
 	local muffed = false
 	local pitch = nil
 
@@ -344,7 +344,7 @@ net.Receive("ZC_PhraseSync", function(len, ply)
 
 
 	if ply.PlayerClassName == "bloodz" or ply.PlayerClassName == "groove" then
-		phrase = table.Random(hg.ghetto_phrases)
+		phrase = table.Random(zc.ghetto_phrases)
 		local rf = RecipientFilter()
 		rf:AddPAS(ply:GetPos())
 		ply.sndplay = CreateSound(ply, phrase, rf)
@@ -355,10 +355,10 @@ net.Receive("ZC_PhraseSync", function(len, ply)
 		timer.Simple(0.2, function()
 			ply.sndplay:ChangeVolume(1)
 		end)
-		timer.Simple(hg.precachedsounds[phrase] - 0.5, function()
+		timer.Simple(zc.precachedsounds[phrase] - 0.5, function()
 			ply.sndplay:ChangeVolume(0)
 		end)
-		ply.phrCld = CurTime() + (hg.precachedsounds[phrase] or 0)
+		ply.phrCld = CurTime() + (zc.precachedsounds[phrase] or 0)
 		ply.lastPhr = phrase
 		return
 	end
@@ -376,13 +376,13 @@ net.Receive("ZC_PhraseSync", function(len, ply)
 end)
 
 hook.Add("PlayerDeath", "ZC_StopPhrOnDeath",function(ply)
-	local ent = hg.GetCurrentCharacter(ply)
+	local ent = zc.GetCurrentCharacter(ply)
 	ent:StopSound(ply.lastPhr or "")
 	ply.phrCld = 0
 end)
 
 hook.Add("ZC_OnPlayerUnconscious", "ZC_StopPhrOnUnconscious", function( ply )
-	local ent = hg.GetCurrentCharacter(ply)
+	local ent = zc.GetCurrentCharacter(ply)
 	ent:StopSound(ply.lastPhr or "")
 	ply.phrCld = 0
 end)
@@ -392,7 +392,7 @@ local maleCount = 14
 local clr = Color(204,48,0)
 
 hook.Add("ZC_PreOrganismDamage","ZC_BurnScream", function( ent, dmgInfo )
-	local ply = ent:IsRagdoll() and hg.RagdollOwner(ent) or ent
+	local ply = ent:IsRagdoll() and zc.RagdollOwner(ent) or ent
 
 	if dmgInfo:IsDamageType(DMG_BURN) and IsValid(ply) and ply:IsPlayer()
 	and ply.organism and !ply.organism.unconscious and ply:Alive() then
@@ -404,10 +404,10 @@ hook.Add("ZC_PreOrganismDamage","ZC_BurnScream", function( ent, dmgInfo )
 			ply, phrase = override_ply, override_phrase
 		end
 
-		ply:Notify(hg.sharp_pain[math.random(#hg.sharp_pain)],
+		ply:Notify(zc.sharp_pain[math.random(#zc.sharp_pain)],
 		SoundDuration(phrase), "ply_burn", 0.5, function(ply)
-			if hg.GetCurrentCharacter(ply):IsOnFire() then
-				hg.GetCurrentCharacter(ply):EmitSound(phrase)
+			if zc.GetCurrentCharacter(ply):IsOnFire() then
+				zc.GetCurrentCharacter(ply):EmitSound(phrase)
 				ply.phrCld = CurTime() + (SoundDuration(phrase) or 0)
 				ply.lastPhr = phrase
 			end
@@ -431,8 +431,8 @@ end)
 // Stop it in water
 hook.Add("OnEntityWaterLevelChanged","ZC_StopPhraseInWater",function(ent,old,new)
 	if ent:IsPlayer() or ent:IsRagdoll() then
-		local ply = ent:IsRagdoll() and hg.RagdollOwner(ent) or ent
-		local entReal = hg.GetCurrentCharacter(ply)
+		local ply = ent:IsRagdoll() and zc.RagdollOwner(ent) or ent
+		local entReal = zc.GetCurrentCharacter(ply)
 		if ent == entReal and new == 3 then
 			ply.phrCld = 0
 			ent:StopSound(ply.lastPhr or "")
@@ -471,10 +471,10 @@ hook.Add("ZC_CanUsePhrase", "ZC_CheckPhrase", function(ply, cmd, args)
 	--if ply.PlayerClassName and ply:GetPlayerClass() and !ply:GetPlayerClass().CanUseDefaultPhrase then return true end
 
 	if org.vomitInThroat then
-		hg.organism.CoughBlood(org)
+		zc.organism.CoughBlood(org)
 	end
 
-	if !hg.organism.CanBreath(org) then return true end
+	if !zc.organism.CanBreath(org) then return true end
 end)
 
 hook.Add("ZC_PhraseContext", "ZC_CheckPhrase", function(ply, cmd, args)
@@ -485,7 +485,7 @@ hook.Add("ZC_PhraseContext", "ZC_CheckPhrase", function(ply, cmd, args)
 		return true
 	end
 
-	if (org.pain > 30 or hg.fearful(ply)) and args[1] == "Satisfied" then return true end
+	if (org.pain > 30 or zc.fearful(ply)) and args[1] == "Satisfied" then return true end
 end)
 
 hook.Add("ZC_OnHarmDone", "ZC_PlayKillPhrase", function(attacker, victim, amt)

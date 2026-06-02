@@ -47,7 +47,7 @@ net.Receive("ZC_GuiltMenuOpen", function()
     OpenMenu(tbl)
 end)
 
-local BlurBackground = hg.DrawBlur
+local BlurBackground = zc.DrawBlur
 
 
 local showstuff = CurTime() + 5

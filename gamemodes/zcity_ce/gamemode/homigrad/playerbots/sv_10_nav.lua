@@ -1,6 +1,6 @@
-hg = hg or {}
-hg.PlayerBots = hg.PlayerBots or {}
-local _ENV = hg.PlayerBots
+zc = zc or {}
+zc.PlayerBots = zc.PlayerBots or {}
+local _ENV = zc.PlayerBots
 setmetatable(_ENV, {__index = _G})
 setfenv(1, _ENV)
 

@@ -1,4 +1,4 @@
-hg.organism = hg.organism or {}
+zc.organism = zc.organism or {}
 local Vector = Vector --hehe
 
 
@@ -6,7 +6,7 @@ local util_IntersectRayWithOBB = util.IntersectRayWithOBB
 local math_ceil = math.ceil
 local stepDiv = 1
 local tracePos = Vector(0, 0, 0)
-function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs, ricochetable, funcInput, ...)
+function zc.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs, ricochetable, funcInput, ...)
 	local endDisSqr = endDis * endDis
 	tracePos:Set(pos)
 
@@ -136,7 +136,7 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 	return tracePos, hitBoxs, inputHole, outputHole, dir, distance, tracePoses
 end
 
-function hg.organism.BlastTrace(pos, size, dmg, boxs, organs, funcInput, ...)
+function zc.organism.BlastTrace(pos, size, dmg, boxs, organs, funcInput, ...)
 	local box
 	local center
 

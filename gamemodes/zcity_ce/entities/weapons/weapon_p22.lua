@@ -51,7 +51,7 @@ SWEP.FakeReloadEvents = {
 	end,
 	[0.43] = function( self )
 		if CLIENT and self:Clip1() < 1 then
-			local ent = hg.CreateMag( self, Vector(0,15,-15) )
+			local ent = zc.CreateMag( self, Vector(0,15,-15) )
 			ent:SetSubMaterial(1,"models/zcity/skins/walther_p22/classic/walther1")
 			ent:SetSubMaterial(0,"models/zcity/skins/walther_p22/classic/walther2")
 			for i = 0, ent:GetBoneCount() - 1 do

@@ -1,4 +1,4 @@
-hg = hg or {}
+zc = zc or {}
 
 local vpang = Angle(1,-2,1)
 local function drop(ply, wep, newWeapon, vel)
@@ -50,7 +50,7 @@ local function drop(ply, wep, newWeapon, vel)
 	end)
 end
 
-hg.drop = drop
+zc.drop = drop
 
 concommand.Add("drop", drop)
 concommand.Add("dropweapon", drop)

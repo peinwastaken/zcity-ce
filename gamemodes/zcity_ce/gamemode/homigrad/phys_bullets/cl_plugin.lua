@@ -1,5 +1,5 @@
-hg.PhysBullet = hg.PhysBullet or {}
-local PLUGIN = hg.PhysBullet
+zc.PhysBullet = zc.PhysBullet or {}
+local PLUGIN = zc.PhysBullet
 
 function PLUGIN.NetworkReceivedBulletCreate()
 	local bullet = {}

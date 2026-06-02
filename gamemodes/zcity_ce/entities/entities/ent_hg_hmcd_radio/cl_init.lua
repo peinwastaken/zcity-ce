@@ -79,7 +79,7 @@ local frame
 
 local red = Color(150,0,0)
 
-BlurBackground = BlurBackground or hg.DrawBlur
+BlurBackground = BlurBackground or zc.DrawBlur
 
 net.Receive("ZC_RadioUrlInput", function()
 	if IsValid(frame) then return end

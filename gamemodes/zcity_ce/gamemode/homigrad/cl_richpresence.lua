@@ -35,7 +35,7 @@ function StartDiscordPresence(arguments)
 		if prefix then
 			mapname = string.sub(mapname, prefix + 1)
 		end
-		local gm = gmod.GetGamemode().Name .. " | " .. string.NiceName(zb ~= nil and zb.GetRoundName or mapname)
+		local gm = gmod.GetGamemode().Name .. " | " .. string.NiceName(zc ~= nil and zc.GetRoundName or mapname)
 		local text = gm .. " | " .. showip .. " | " .. (ply.exp or 0) .. " XP " .. math.Round(ply.skill or 0, 3) .. " Skill"
 		rpc_data["details"] = text
 		rpc_data["startTimestamp"] = discord_start
@@ -76,7 +76,7 @@ function StartSteamPresence(arguments)
 		if prefix then
 			mapname = string.sub(mapname, prefix + 1)
 		end
-		local gm = gmod.GetGamemode().Name .. " | " .. string.NiceName(zb ~= nil and zb.GetRoundName or mapname)
+		local gm = gmod.GetGamemode().Name .. " | " .. string.NiceName(zc ~= nil and zc.GetRoundName or mapname)
 		local ip = game.GetIPAddress()
 		local showip = ip
 

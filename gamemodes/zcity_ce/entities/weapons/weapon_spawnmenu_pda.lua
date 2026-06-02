@@ -152,7 +152,7 @@ if SERVER then
         local Time = (CartWeight/KgInTime)*60
         if Time == 0 then wep:AddNotificate("First, get stuff in your cart.") return end
 
-        local pos = hg.eyeTrace(ply).HitPos
+        local pos = zc.eyeTrace(ply).HitPos
         local tr = util.TraceLine({
             start = pos,
             endpos = pos + Vector(0,0,1) * 9999999,

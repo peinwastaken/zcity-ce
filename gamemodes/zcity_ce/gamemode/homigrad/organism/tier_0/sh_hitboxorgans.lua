@@ -1,4 +1,4 @@
-hg.organism = hg.organism or {}
+zc.organism = zc.organism or {}
 local Vector = Vector --hehe
 local box, _mins = Vector(0, 0, 0), Vector(0, 0, 0)
 local center
@@ -15,7 +15,7 @@ local function getTransform(pos, ang, mins, maxs, obbCenter)
 end
 
 local LocalToWorld = LocalToWorld
-function hg.organism.ShootMatrix(ent, organs)
+function zc.organism.ShootMatrix(ent, organs)
 	if not organs or not istable(organs) or table.IsEmpty(organs) then return end
 	local boxs = {}
 	local mins, maxs, matrix
@@ -45,7 +45,7 @@ function hg.organism.ShootMatrix(ent, organs)
 			--print(key,organ[1])
 			local additional = organ[7]
 			if additional then
-				local ent = ent:IsPlayer() and ent or ent:IsRagdoll() and IsValid(hg.RagdollOwner(ent)) and hg.RagdollOwner(ent) or ent
+				local ent = ent:IsPlayer() and ent or ent:IsRagdoll() and IsValid(zc.RagdollOwner(ent)) and zc.RagdollOwner(ent) or ent
 				if ent and ent.armors and not table.HasValue(ent.armors,organ[1]) then
 					continue
 				end
@@ -67,7 +67,7 @@ end
 --local util_IsOBBIntersectingOBB = util.IsOBBIntersectingOBB --huy not server side
 local math_ceil = math.ceil
 
-function hg.organism.Trace_Bullet(organs)
+function zc.organism.Trace_Bullet(organs)
 	local organ = box[6] and organs[box[6]][box[7]]
 	return organ and organ[2] or 0
 end
@@ -84,17 +84,17 @@ hook.Add("PostDrawTranslucentRenderables", "ZC_DrawOrganHitboxes", function()
 	if not LocalPlayer():IsAdmin() then return end
 	for _, ply in player.Iterator() do
 		if GetViewEntity() == ply then continue end
-		ply = hg.GetCurrentCharacter(ply)
-		local organs = hg.organism.GetHitBoxOrgans(ply:GetModel(), ply)
+		ply = zc.GetCurrentCharacter(ply)
+		local organs = zc.organism.GetHitBoxOrgans(ply:GetModel(), ply)
 		if not organs then return end
-		local boxs, pos, sphere = hg.organism.ShootMatrix(ply, organs)
-		if zc_show_hitbox_dir:GetFloat() > 0 and hg.organism.Trace then
+		local boxs, pos, sphere = zc.organism.ShootMatrix(ply, organs)
+		if zc_show_hitbox_dir:GetFloat() > 0 and zc.organism.Trace then
 			local dir = Vector(zc_show_hitbox_dir:GetFloat(), 0, 0)
 			dir:Rotate(LocalPlayer():EyeAngles())
 			local distance = math_ceil(dir:Length())
-			local start = hg.eyeTrace(lply).HitPos -- Vector(1005.879456,608.151123,-77.997421)
+			local start = zc.eyeTrace(lply).HitPos -- Vector(1005.879456,608.151123,-77.997421)
 			//pos, dir, size, maxpen, boxs, center, endDis, organs, ricochetable, funcInput, ...
-			local _, hitBoxs, inputHole, outputHole = hg.organism.Trace(start, dir, 1, 0, boxs, pos, sphere, organs, false, hg.organism.Trace_Bullet, organs)
+			local _, hitBoxs, inputHole, outputHole = zc.organism.Trace(start, dir, 1, 0, boxs, pos, sphere, organs, false, zc.organism.Trace_Bullet, organs)
 			--render.DrawWireframeBox(endPos, angZero, -box, box)
 
 			render.DrawWireframeBox(start, LocalPlayer():EyeAngles(), -Vector(0,distance / 50,distance / 50),Vector(distance / 1,distance / 50,distance / 50))

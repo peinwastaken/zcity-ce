@@ -14,7 +14,7 @@ end)
 local offsetVec = Vector(-1,0,0)
 local offsetAng = Angle(-90,-90,-20)
 --hook.Add("ZC_PostDrawPlayerRagdoll","ZC_DrawHeadcrabPlayer",function(ent,ply)
-function hg.RenderHeadcrab(ent, ply)
+function zc.RenderHeadcrab(ent, ply)
     if not IsValid(ply.headcrabmodel) then
         ply.headcrabmodel = ClientsideModel(ply:GetNetVar("headcrab"))
         

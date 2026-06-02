@@ -17,7 +17,7 @@ function CLASS.On(self)
     timer.Simple(0,function()
         self:SetBodyGroups("00000000000")
     end)
-    local Appearance = self.CurAppearance or hg.Appearance.GetRandomAppearance()
+    local Appearance = self.CurAppearance or zc.Appearance.GetRandomAppearance()
     Appearance.AAttachments = ""
     Appearance.AColthes = ""
     self:SetNetVar("Accessories", "")
@@ -38,10 +38,10 @@ function CLASS.Guilt(self, Victim)
     end
 
     if CurrentRound().name == "hmcd" then
-        return zb.ForcesAttackedInnocent(self, Victim)
+        return zc.ForcesAttackedInnocent(self, Victim)
     end
 
-    if Victim == zb.hostage then
+    if Victim == zc.hostage then
         return 1
     end
 
@@ -50,7 +50,7 @@ end
 
 hook.Add("ZC_PlayerFootstep", "ZC_SwatFootsteps", function(ply, pos, foot, sound, volume, rf)
 	if ply:Alive() and ply.PlayerClassName == "swat" then
-		local ent = hg.GetCurrentCharacter(ply)
+		local ent = zc.GetCurrentCharacter(ply)
 
 		if not (ply:IsWalking() or ply:Crouching()) and ent == ply then
 			local snd = "zcitysnd/" .. string.Replace(sound, "player/footsteps", "player/footsteps_military/")

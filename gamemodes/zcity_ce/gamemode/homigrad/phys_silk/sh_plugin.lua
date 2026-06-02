@@ -1,6 +1,6 @@
 --\\Translate plugin things into your things
-	hg.PhysSilk = hg.PhysSilk or {}
-	local PLUGIN = hg.PhysSilk
+	zc.PhysSilk = zc.PhysSilk or {}
+	local PLUGIN = zc.PhysSilk
 	PLUGIN.ID = "PhysSilk"
 --//
 

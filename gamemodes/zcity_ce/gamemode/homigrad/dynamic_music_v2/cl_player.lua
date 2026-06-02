@@ -2,9 +2,9 @@
     TO-DO
     - Add a nice popup when a track starts.
 --]]
-hg = hg or {}
-hg.DynamicMusicV2 = hg.DynamicMusicV2 or {}
-hg.DynamicMusicV2.Player = hg.DynamicMusicV2.Player or {}
+zc = zc or {}
+zc.DynamicMusicV2 = zc.DynamicMusicV2 or {}
+zc.DynamicMusicV2.Player = zc.DynamicMusicV2.Player or {}
 
 
 --[[
@@ -43,12 +43,12 @@ DYNAMIC_MUSIC_PAUSE = 0
 DYNAMIC_MUSIC_STOP = -1
 DYNAMIC_MUSIC_PLAY = 1
 
-hg.DynamicMusicV2.Player.CurrentTrack = "None"
-hg.DynamicMusicV2.Player.State = hg.DynamicMusicV2.Player.State or DYNAMIC_MUSIC_STOP
+zc.DynamicMusicV2.Player.CurrentTrack = "None"
+zc.DynamicMusicV2.Player.State = zc.DynamicMusicV2.Player.State or DYNAMIC_MUSIC_STOP
 
 
-hg.DynamicMusicV2.Player.Layers = hg.DynamicMusicV2.Player.Layers or {}
-local layers = hg.DynamicMusicV2.Player.Layers
+zc.DynamicMusicV2.Player.Layers = zc.DynamicMusicV2.Player.Layers or {}
+local layers = zc.DynamicMusicV2.Player.Layers
 local function SetupMusicFile(name, path, callback)
     sound.PlayFile("sound/" .. path, "noplay noblock", function(Channel, Err, ErrStr)
         --print(Channel, Err, ErrStr)
@@ -61,31 +61,31 @@ local function SetupMusicFile(name, path, callback)
 end
 
 local function GetTrack()
-    return hg.DynamicMusicV2.Trakcs and hg.DynamicMusicV2.Trakcs[ hg.DynamicMusicV2.Player.CurrentTrack ]
+    return zc.DynamicMusicV2.Trakcs and zc.DynamicMusicV2.Trakcs[ zc.DynamicMusicV2.Player.CurrentTrack ]
 end
 
-hg.DynamicMusicV2.Player.GetTrack = GetTrack
+zc.DynamicMusicV2.Player.GetTrack = GetTrack
 
-function hg.DynamicMusicV2.Player.SetupLayers()
+function zc.DynamicMusicV2.Player.SetupLayers()
     if !IsValid(lply) then return end
     local Track = GetTrack()
 
     if !Track then return end
 
-    hg.DynamicMusicV2.Player.Stop(true)
+    zc.DynamicMusicV2.Player.Stop(true)
     local amount = table.Count(Track.Layers)
     for k,v in pairs(Track.Layers) do
         SetupMusicFile(k, v, function()
             amount = amount - 1
             --print(amount)
-            if amount <= 0 then hg.DynamicMusicV2.Player.Play() end
+            if amount <= 0 then zc.DynamicMusicV2.Player.Play() end
         end)
     end
 
-    hg.DynamicMusicV2.Player.State = DYNAMIC_MUSIC_PAUSE
+    zc.DynamicMusicV2.Player.State = DYNAMIC_MUSIC_PAUSE
 end
 
-function hg.DynamicMusicV2.Player.Stop(overide)
+function zc.DynamicMusicV2.Player.Stop(overide)
     if !IsValid(lply) then return end
 
     for _,v in ipairs(layers) do
@@ -95,8 +95,8 @@ function hg.DynamicMusicV2.Player.Stop(overide)
     table.Empty(layers)
 
     if !overide then
-        hg.DynamicMusicV2.Player.CurrentTrack = "None"
-        hg.DynamicMusicV2.Player.State = DYNAMIC_MUSIC_STOP
+        zc.DynamicMusicV2.Player.CurrentTrack = "None"
+        zc.DynamicMusicV2.Player.State = DYNAMIC_MUSIC_STOP
     end
 end
 
@@ -112,7 +112,7 @@ local function LayerFade(channel, volume)
     channel:SetVolume(l_volume)
 end
 
-function hg.DynamicMusicV2.Player.Play()
+function zc.DynamicMusicV2.Player.Play()
     for i = 1, #layers do
         local layer = layers[i]
         layer[2]:SetVolume( 0 )
@@ -120,21 +120,21 @@ function hg.DynamicMusicV2.Player.Play()
         layer[2]:Play()
     end
 
-    hg.DynamicMusicV2.Player.State = DYNAMIC_MUSIC_PLAY
+    zc.DynamicMusicV2.Player.State = DYNAMIC_MUSIC_PLAY
 end
 
-function hg.DynamicMusicV2.Player.Start( strTrackName )
-    hg.DynamicMusicV2.Player.CurrentTrack = strTrackName or hg.DynamicMusicV2.Player.CurrentTrack
-    hg.DynamicMusicV2.Player.SetupLayers()
+function zc.DynamicMusicV2.Player.Start( strTrackName )
+    zc.DynamicMusicV2.Player.CurrentTrack = strTrackName or zc.DynamicMusicV2.Player.CurrentTrack
+    zc.DynamicMusicV2.Player.SetupLayers()
 end
 
---hg.DynamicMusicV2.Player.Start( "overdose" )
---hg.DynamicMusicV2.Player.Start( "final_heartbeat" )
+--zc.DynamicMusicV2.Player.Start( "overdose" )
+--zc.DynamicMusicV2.Player.Start( "final_heartbeat" )
 
-function hg.DynamicMusicV2.Player.Think()
+function zc.DynamicMusicV2.Player.Think()
     if !IsValid(lply) then return end
 
-    if hg.DynamicMusicV2.Player.State != DYNAMIC_MUSIC_PLAY then
+    if zc.DynamicMusicV2.Player.State != DYNAMIC_MUSIC_PLAY then
         for i = 1, #layers do
             local layer = layers[i]
             LayerFadeOut(layer[2])
@@ -158,4 +158,4 @@ function hg.DynamicMusicV2.Player.Think()
     end
 end
 
-hook.Add("Think", "ZC_DynamicMusicV2", hg.DynamicMusicV2.Player.Think)
+hook.Add("Think", "ZC_DynamicMusicV2", zc.DynamicMusicV2.Player.Think)

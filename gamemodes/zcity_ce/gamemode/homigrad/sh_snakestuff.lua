@@ -193,7 +193,7 @@ if CLIENT then
 			for i = #segments,1,-1 do--govno debila
 				local r,g,b,a = LerpColor(i / #poses_right,color,color2)
 				surface.SetDrawColor(r,g,b,a)
-				hg.drawPart(segments[i],r,g,b,a)
+				zc.drawPart(segments[i],r,g,b,a)
 				if poses_right[i] then
 					local poly = {
 						poses_left[i+1],
@@ -292,7 +292,7 @@ if CLIENT then
 
 		hook.Add("HUDPaint","ZC_DrawSnakeGame",zmeyka_lmao)
 
-		if zc_zmeyka_legs:GetBool() then hg.start_snake() end
+		if zc_zmeyka_legs:GetBool() then zc.start_snake() end
 	end
 
 	hook.Add("ContextMenuOpen","ZC_HandleSnakeGameControls",function()
@@ -362,7 +362,7 @@ if CLIENT then
 	AddOptionPanel( "zc_zmeyka_legs", "switcher", {desc = "func"}, "general" )
 
 
-	BlurBackground = BlurBackground or hg.DrawBlur
+	BlurBackground = BlurBackground or zc.DrawBlur
 
 	local function CreateOptionsMenu()
 		local sizeX,sizeY = ScrW() / 3.2 ,ScrH() / 2.2
@@ -512,7 +512,7 @@ if CLIENT then
 		end
 	end
 
-	hg.drawPart = function(segment,r,g,b,a)
+	zc.drawPart = function(segment,r,g,b,a)
 		local leg = Segments[segment.leg1]
 
 		if leg then
@@ -619,7 +619,7 @@ if CLIENT then
 		end
 	end
 
-	hg.start_snake = start_snake
+	zc.start_snake = start_snake
 
 	hook.Add("HUDPaint","ZC_UpdateSnakeGame",function() render_segments() end)
 	hook.Add("Think","ZC_UpdateSnakeGame",function() think_segments() end)

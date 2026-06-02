@@ -88,7 +88,7 @@ SWEP.DesiredSilks = {	--; WARNING POINTER
 
 
 function SWEP:DrawPostWorldModel()
-	if(hg.PhysSilk)then
+	if(zc.PhysSilk)then
 		local model_ent = self.worldModel
 		
 		if(IsValid(self.worldModel2))then
@@ -106,7 +106,7 @@ function SWEP:DrawPostWorldModel()
 				local silk = table.Copy(silk_desired)
 				silk.Pos = model_ent:LocalToWorld(silk_desired.EntityOffset)
 				silk.Entity = model_ent
-				self.Silks[silk_desired_key] = hg.PhysSilk.CreateSilk(silk, true)
+				self.Silks[silk_desired_key] = zc.PhysSilk.CreateSilk(silk, true)
 			end
 		end
 	end

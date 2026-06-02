@@ -1,54 +1,54 @@
-hg.organism = hg.organism or {}
---local Organism = hg.organism
-hg.organism.list = hg.organism.list or {}
+zc.organism = zc.organism or {}
+--local Organism = zc.organism
+zc.organism.list = zc.organism.list or {}
 local hook_Run = hook.Run
-function hg.organism.Add(ent)
+function zc.organism.Add(ent)
 	ent.organism = {
 		owner = ent
 	}
 
 	local org = ent.organism
 	org.owner = ent
-	hg.organism.list[ent] = org
+	zc.organism.list[ent] = org
 	return org
 end
 
-function hg.organism.Clear(org)
+function zc.organism.Clear(org)
 	hook_Run("ZC_OrganismClear", org)//.owner.organism_internal)
 	if IsValid(org.owner) then org.owner.fullsend = true end
-	hg.send_organism(org)
+	zc.send_organism(org)
 end
 
-function hg.organism.Remove(ent)
-	local org = hg.organism.list[ent]
+function zc.organism.Remove(ent)
+	local org = zc.organism.list[ent]
 	if org then org.owner = nil end
-	hg.organism.list[ent] = nil
+	zc.organism.list[ent] = nil
 end
 
-hook.Add("PlayerInitialSpawn", "ZC_AddOrganismOnInitialSpawn", function(ply) hg.organism.Add(ply) end)
-hook.Add("ZC_PlayerSpawn", "ZC_ClearOrganismOnPlayerSpawn", function(ply) hg.organism.Clear(ply.organism) end)
-hook.Add("PlayerDisconnected", "ZC_RemoveOrganismOnDisconnect", function(ply) hg.organism.Remove(ply) end)
+hook.Add("PlayerInitialSpawn", "ZC_AddOrganismOnInitialSpawn", function(ply) zc.organism.Add(ply) end)
+hook.Add("ZC_PlayerSpawn", "ZC_ClearOrganismOnPlayerSpawn", function(ply) zc.organism.Clear(ply.organism) end)
+hook.Add("PlayerDisconnected", "ZC_RemoveOrganismOnDisconnect", function(ply) zc.organism.Remove(ply) end)
 hook.Add("PostPlayerDeath", "ZC_MoveOrganismToDeathRagdoll", function(ply)
 	local ragdoll = ply:GetNWEntity("RagdollDeath")
 	
 	if not IsValid(ragdoll) then ragdoll = ply.FakeRagdoll end
 
 	if IsValid(ragdoll) then
-		local newOrg = hg.organism.Add(ragdoll)
+		local newOrg = zc.organism.Add(ragdoll)
 		table.Merge(newOrg, ply.organism)
 
 		hook.Run("ZC_OnRagdollDeath", ply, ragdoll)
 
-		table.Merge(zb.net.list[ragdoll], zb.net.list[ply])
+		table.Merge(zc.net.list[ragdoll], zc.net.list[ply])
 
 		newOrg.alive = false
 		newOrg.owner = ragdoll
-		ragdoll:CallOnRemove("organism", hg.organism.Remove, ragdoll)
+		ragdoll:CallOnRemove("organism", zc.organism.Remove, ragdoll)
 		newOrg.owner.fullsend = true
-		hg.send_bareinfo(newOrg)
+		zc.send_bareinfo(newOrg)
 	end
 
-	hg.organism.Clear(ply.organism)
+	zc.organism.Clear(ply.organism)
 
 	hook.Run("ZC_AfterPostPlayerDeath", ply, ragdoll)
 end)
@@ -74,9 +74,9 @@ hook.Add("Think", "ZC_UpdateOrganismThinkLoop", function()
 	mulTime = (SysTime() - start) * game.GetTimeScale()
 
 	start = SysTime()
-	for owner, org in pairs(hg.organism.list) do -- now it is clear why corpses cause lag...
+	for owner, org in pairs(zc.organism.list) do -- now it is clear why corpses cause lag...
 		if not IsValid(owner) then
-			hg.organism.list[owner] = nil
+			zc.organism.list[owner] = nil
 			continue
 		end
 
@@ -88,7 +88,7 @@ end)
 local lastcall = SysTime()
 hook.Add("ZC_OrganismThinkCall", "ZC_RunOrganismThink", function(owner, org)
 	if not IsValid(owner) then
-		if owner ~= nil then hg.organism.list[owner] = nil end
+		if owner ~= nil then zc.organism.list[owner] = nil end
 		return
 	end
 	if not org then return end
@@ -101,5 +101,5 @@ end)
 
 hook.Add("ZC_OnFakeRagdollCreated", "ZC_Organism", function(ply, ragdoll)
 	ragdoll.organism = ply.organism
-	--zb.net.list[ragdoll] = zb.net.list[ply]
+	--zc.net.list[ragdoll] = zc.net.list[ply]
 end)

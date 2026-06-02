@@ -12,9 +12,9 @@
         - Music transition depends on adrenaline and damage received - (so melee users trigger this too)
 --]]
 
-hg = hg or {}
-hg.DynaMusic = hg.DynaMusic or {}
-local DMusic = hg.DynaMusic
+zc = zc or {}
+zc.DynaMusic = zc.DynaMusic or {}
+local DMusic = zc.DynaMusic
 
 DMusic.MusicMeta = DMusic.MusicMeta or {}
 

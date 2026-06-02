@@ -41,7 +41,7 @@ end
 function PANEL:SetMarkup(text)
 	self.text = text
 
-	self.markup = hg.markup.Parse(self.text, self:GetWide())
+	self.markup = zc.markup.Parse(self.text, self:GetWide())
 	self.markup.onDrawText = PaintMarkupOverride
 
 	self:SetTall(self.markup:GetHeight())
@@ -70,7 +70,7 @@ function PANEL:SetMarkup(text)
 end
 
 function PANEL:PerformLayout(width, height)
-	self.markup = hg.markup.Parse(self.text, width)
+	self.markup = zc.markup.Parse(self.text, width)
 	self.markup.onDrawText = PaintMarkupOverride
 
 	self:SetTall(self.markup:GetHeight())
@@ -79,15 +79,15 @@ end
 function PANEL:Paint(width, height)
 	local newAlpha
 
-	if (hg.chat:GetActive()) then
-		newAlpha = math.max(hg.chat.alpha, self.alpha)
+	if (zc.chat:GetActive()) then
+		newAlpha = math.max(zc.chat.alpha, self.alpha)
 	else
-		newAlpha = self.alpha - (255 - hg.chat.realAlpha)
+		newAlpha = self.alpha - (255 - zc.chat.realAlpha)
 	end
 
 	DisableClipping(true)
-		local chatboxX, chatboxY = hg.chat:GetPos()
-		local wide, tall = hg.chat:GetSize()
+		local chatboxX, chatboxY = zc.chat:GetPos()
+		local wide, tall = zc.chat:GetSize()
 
 		render.SetScissorRect(chatboxX, chatboxY, chatboxX + wide, chatboxY + tall, true)
 			self.markup:draw(0, self.yAnim, nil, nil, newAlpha)
@@ -106,7 +106,7 @@ function PANEL:Init()
 	self:SetUpdateOnType(true)
 	self:SetHistoryEnabled(true)
 
-	self.History = hg.chat.messageHistory
+	self.History = zc.chat.messageHistory
 	self.droppedCharacters = {}
 
 	self.prevText = ""
@@ -172,7 +172,7 @@ function PANEL:Paint(w, h)
 		end
 	end
 
-	if ShowTextBoxInactive:GetBool() and !hg.chat:GetActive() and self.prevText != "" then
+	if ShowTextBoxInactive:GetBool() and !zc.chat:GetActive() and self.prevText != "" then
 		DisableClipping(true)
 		surface.SetAlphaMultiplier(1)
 			surface.SetTextColor(150, 150, 150, 55)
@@ -235,7 +235,7 @@ AccessorFunc(PANEL, "bActive", "Active", FORCE_BOOL)
 AccessorFunc(PANEL, "realAlpha", "RealAlpha", FORCE_BOOL)
 
 function PANEL:Init()
-	hg.chat = self
+	zc.chat = self
 
 	self.entries = {}
 	self.messageHistory = {}
@@ -349,15 +349,15 @@ function PANEL:OnMessageSent()
 	local text = self.entry:GetText()
 
 	if (text:find("%S")) then
-		local lastEntry = hg.chat.messageHistory[#hg.chat.messageHistory]
+		local lastEntry = zc.chat.messageHistory[#zc.chat.messageHistory]
 
 		-- only add line to textentry history if it isn't the same message
 		if (lastEntry != text) then
-			if (#hg.chat.messageHistory >= 20) then
-				table.remove(hg.chat.messageHistory, 1)
+			if (#zc.chat.messageHistory >= 20) then
+				table.remove(zc.chat.messageHistory, 1)
 			end
 
-			hg.chat.messageHistory[#hg.chat.messageHistory + 1] = text
+			zc.chat.messageHistory[#zc.chat.messageHistory + 1] = text
 		end
 
 		net.Start("ZC_ChatMessage")

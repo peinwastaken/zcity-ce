@@ -80,7 +80,7 @@ end
 SWEP.traceLen = 5
 
 function SWEP:GetEyeTrace()
-	return hg.eyeTrace( self:GetOwner())
+	return zc.eyeTrace( self:GetOwner())
 end
 
 if CLIENT then
@@ -104,13 +104,13 @@ end
 
 local function handcuff(ragdoll)
 	local body = ragdoll:GetPhysicsObjectNum(0)
-	local lh = ragdoll:GetPhysicsObjectNum(hg.realPhysNum(ragdoll,5))
+	local lh = ragdoll:GetPhysicsObjectNum(zc.realPhysNum(ragdoll,5))
 	lh:SetPos(body:GetPos())
 
-	local rh = ragdoll:GetPhysicsObjectNum(hg.realPhysNum(ragdoll,7))
+	local rh = ragdoll:GetPhysicsObjectNum(zc.realPhysNum(ragdoll,7))
 	rh:SetPos(body:GetPos())
 
-	local weld = constraint.Weld(ragdoll, ragdoll, hg.realPhysNum(ragdoll,7), hg.realPhysNum(ragdoll,5), 0, true, false)
+	local weld = constraint.Weld(ragdoll, ragdoll, zc.realPhysNum(ragdoll,7), zc.realPhysNum(ragdoll,5), 0, true, false)
 
 	local handcuffs = ents.Create("prop_physics")
 	handcuffs:SetModel("models/weapons/spy/w_handcuffs.mdl")
@@ -120,7 +120,7 @@ local function handcuff(ragdoll)
 	ang:RotateAroundAxis(ang:Right(),-20)
 	handcuffs:SetAngles(ang)
 
-	handcuffs:FollowBone(ragdoll,ragdoll:TranslatePhysBoneToBone(hg.realPhysNum(ragdoll,7)))
+	handcuffs:FollowBone(ragdoll,ragdoll:TranslatePhysBoneToBone(zc.realPhysNum(ragdoll,7)))
 	handcuffs:SetMoveType(MOVETYPE_VPHYSICS)
 	handcuffs:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
 	handcuffs:Spawn()
@@ -129,7 +129,7 @@ local function handcuff(ragdoll)
 	ragdoll.handcuffs = {weld, handcuffs}
 end
 
-hg.handcuff = handcuff
+zc.handcuff = handcuff
 
 SWEP.CoolDown = 0
 
@@ -138,9 +138,9 @@ function SWEP:Tie(tr)
 	--self:EmitSound()
 	--timer.Simple(1,function()
 		if IsValid(ent) and IsValid(self) and IsValid(self:GetOwner()) and self:GetOwner():Alive() and self:GetOwner():GetPos():Distance(ent:GetPos()) < 500 then
-			if IsValid(ent) and (ent:IsRagdoll() or (ent:IsPlayer() and ent:GetVelocity():Length() < 1)) and hg.RagdollOwner(ent) ~= self:GetOwner() then
+			if IsValid(ent) and (ent:IsRagdoll() or (ent:IsPlayer() and ent:GetVelocity():Length() < 1)) and zc.RagdollOwner(ent) ~= self:GetOwner() then
 				--if ent.handcuffed then return end
-				self:GetOwner():ChatPrint(zb.locale.GetLocalized("handcuffs/threat_handcuffed"))
+				self:GetOwner():ChatPrint(zc.locale.GetLocalized("handcuffs/threat_handcuffed"))
 
 				if ent:IsRagdoll() then handcuff(ent) end
 
@@ -148,8 +148,8 @@ function SWEP:Tie(tr)
 				ent:PhysWake()
 
 				local org = ent.organism
-				if IsValid(hg.RagdollOwner(ent)) and hg.RagdollOwner(ent):Alive() then
-					local ply = hg.RagdollOwner(ent)
+				if IsValid(zc.RagdollOwner(ent)) and zc.RagdollOwner(ent):Alive() then
+					local ply = zc.RagdollOwner(ent)
 					ply:SelectWeapon("weapon_hands_sh")
 					ply:SetNetVar("handcuffed",true)
 				end

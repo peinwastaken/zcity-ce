@@ -1,4 +1,4 @@
-function hg.InstallAnimationMethods(meta)
+function zc.InstallAnimationMethods(meta)
 	local function TweenAnimationThink(object)
 		for k, v in pairs(object.tweenAnimations) do
 			if (!v.bShouldPlay) then
@@ -80,7 +80,7 @@ function hg.InstallAnimationMethods(meta)
 			end
 		end
 
-		local animation = hg.tween.new(
+		local animation = zc.tween.new(
 			(length == 0 and 1 or length) or 1,
 			data.subject or self,
 			data.target or {},
@@ -145,5 +145,5 @@ end
 
 if (CLIENT) then
 	local panelMeta = FindMetaTable("Panel")
-	hg.InstallAnimationMethods(panelMeta)
+	zc.InstallAnimationMethods(panelMeta)
 end

@@ -41,7 +41,7 @@ function MODE:ZC_PreDrawPlayerOverride(ent, ply)
 	end
 end
 
-hg.ghostStation = hg.ghostStation or nil
+zc.ghostStation = zc.ghostStation or nil
 local cc = Material( "effects/shaders/merc_chromaticaberration" )
 
 local tab = {
@@ -88,8 +88,8 @@ local atpeace = {
 	"Is this really how it ends?"
 }
 
-hg.fearphrase1 = hg.fearphrase1 or nil
-hg.fearphrase2 = hg.fearphrase2 or nil
+zc.fearphrase1 = zc.fearphrase1 or nil
+zc.fearphrase2 = zc.fearphrase2 or nil
 
 function MODE:RenderScreenspaceEffects()
 	local lply = LocalPlayer()
@@ -98,25 +98,25 @@ function MODE:RenderScreenspaceEffects()
 
 	local disappearance = lply:GetNetVar("disappearance", nil)
 
-	if disappearance and !hg.fearphrase1 then
+	if disappearance and !zc.fearphrase1 then
 		timer.Simple(math.Rand(20, 40), function()
-			hg.CreateNotification(table.Random(alone))
+			zc.CreateNotification(table.Random(alone))
 		end)
-		hg.fearphrase1 = true
+		zc.fearphrase1 = true
 	end
 
 	if !disappearance then
-		hg.fearphrase1 = nil
+		zc.fearphrase1 = nil
 	end
 
 	local ghost = lply:GetNetVar("afterlife") // curtime start here
 	if !ghost then
-		if IsValid(hg.ghostStation) then
-			hg.ghostStation:Stop()
-			hg.ghostStation = nil
+		if IsValid(zc.ghostStation) then
+			zc.ghostStation:Stop()
+			zc.ghostStation = nil
 		end
 
-		hg.fearphrase2 = nil
+		zc.fearphrase2 = nil
 		return
 	end
 	
@@ -124,11 +124,11 @@ function MODE:RenderScreenspaceEffects()
 
 	local time = 60
 
-	if intensity > time and !IsValid(hg.ghostStation) then
+	if intensity > time and !IsValid(zc.ghostStation) then
 		sound.PlayFile("sound/zbattle/dragonfly_wings.ogg", "noplay", function(channel) //the track is 59 seconds btw
 			channel:SetVolume(0)
 			channel:Play()
-			hg.ghostStation = channel
+			zc.ghostStation = channel
 		end)
 	end
 
@@ -147,13 +147,13 @@ function MODE:RenderScreenspaceEffects()
 		render.DrawScreenQuad()
 	end
 
-	if IsValid(hg.ghostStation) then
-		hg.ghostStation:SetVolume(math.min((intensity - time) / 50, 1))
+	if IsValid(zc.ghostStation) then
+		zc.ghostStation:SetVolume(math.min((intensity - time) / 50, 1))
 	end
 
-	if intensity > time + 30 and !hg.fearphrase2 then
-		hg.CreateNotification(table.Random(atpeace))
-		hg.fearphrase2 = true
+	if intensity > time + 30 and !zc.fearphrase2 then
+		zc.CreateNotification(table.Random(atpeace))
+		zc.fearphrase2 = true
 	end
 end
 
@@ -197,7 +197,7 @@ function MODE:ZC_PlayerDeath(ply)
 	local lply = LocalPlayer()
 
 	self:CreateTimer("fearfearingfearful", 3, 1, function()
-		local players = zb:CheckAlive()
+		local players = zc:CheckAlive()
 
 		if #players == 1 and players[1] == lply then
 			self:CreateTimer("fearfearingfearful2", 0.1, 1, function()
@@ -206,16 +206,16 @@ function MODE:ZC_PlayerDeath(ply)
 
 			self:CreateTimer("fear", 5, 1, function()
 				--RunConsoleCommand("cl_soundscape_flush")
-				hg.CreateNotification(table.Random(notifs))
+				zc.CreateNotification(table.Random(notifs))
 
 				self:CreateTimer("fear2", 115, 1, function()
-					hg.CreateNotification("bye")
+					zc.CreateNotification("bye")
 				end)
 			end)
 
 			self:CreateTimer("fearfearingfearful3", 1, 1, function()
 				sound.PlayFile("sound/crawlspace.mp3", "", function(channel)
-					hg.lastOneStation = channel
+					zc.lastOneStation = channel
 				end)
 			end)
 		end
@@ -247,9 +247,9 @@ function MODE:EndRound()
 		timer.Remove(k)
 	end
 
-	if IsValid(hg.lastOneStation) then
-		hg.lastOneStation:Stop()
-		hg.lastOneStation = nil
+	if IsValid(zc.lastOneStation) then
+		zc.lastOneStation:Stop()
+		zc.lastOneStation = nil
 	end
 end
 

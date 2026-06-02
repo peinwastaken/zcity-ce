@@ -10,7 +10,7 @@ ZonePos = ZonePos or Vector(0,0,0)
 
 net.Receive("ZC_EventStart",function()
     roundend = false
-    zb.RemoveFade()
+    zc.RemoveFade()
 end)
 
 
@@ -34,9 +34,9 @@ local eventer = {
 
 function MODE:RenderScreenspaceEffects()
 
-    if zb.ROUND_START + 7.5 < CurTime() then return end
+    if zc.ROUND_START + 7.5 < CurTime() then return end
 
-    local fade = math.Clamp(zb.ROUND_START + 7.5 - CurTime(),0,1)
+    local fade = math.Clamp(zc.ROUND_START + 7.5 - CurTime(),0,1)
 
     surface.SetDrawColor(0,0,0,255 * fade)
     surface.DrawRect(-1,-1,ScrW() + 1,ScrH() + 1)
@@ -45,9 +45,9 @@ end
 function MODE:HUDPaint()
 
 	if not lply:Alive() then return end
-    if zb.ROUND_START + 8.5 < CurTime() then return end
-	zb.RemoveFade()
-    local fade = math.Clamp(zb.ROUND_START + 8 - CurTime(),0,1)
+    if zc.ROUND_START + 8.5 < CurTime() then return end
+	zc.RemoveFade()
+    local fade = math.Clamp(zc.ROUND_START + 8 - CurTime(),0,1)
 
     local eventname = GetGlobalString("ZB_EventName","Event")
     draw.SimpleText("ZCity | "..eventname, "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -94,7 +94,7 @@ local colSpect2 = Color(255,255,255)
 
 
 
-BlurBackground = BlurBackground or hg.DrawBlur
+BlurBackground = BlurBackground or zc.DrawBlur
 
 if IsValid(hmcdEndMenu) then
     hmcdEndMenu:Remove()

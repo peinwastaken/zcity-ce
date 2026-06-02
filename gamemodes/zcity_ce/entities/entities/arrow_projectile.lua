@@ -40,7 +40,7 @@ if SERVER then
 
 			if mat then
 				for _ = 1, 5 do
-					hg.organism.AddWoundManual(self.HitEntity.organism.owner, 50, vector_origin, AngleRand(-180, 180), self.HitEntity:GetBoneName(self.HitEntity:TranslatePhysBoneToBone(self.phys_bone_id)), CurTime() + math.Rand(0, 2))
+					zc.organism.AddWoundManual(self.HitEntity.organism.owner, 50, vector_origin, AngleRand(-180, 180), self.HitEntity:GetBoneName(self.HitEntity:TranslatePhysBoneToBone(self.phys_bone_id)), CurTime() + math.Rand(0, 2))
 				end
 			end
 

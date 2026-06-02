@@ -30,7 +30,7 @@ local function CreateNotification(ply, msg, delay, msgKey, showTime, func, clr)
     if ply.organism and ply.organism.brain > 0.1 then
         for i = 1, utf8.len(msg) do
             if math.random(3) == 1 and msg[i] != "?" and msg[i] != "." then
-                msg = hg.replace_by_index(msg, i, (math.random(1,2) > 1 and "m" or "b") )
+                msg = zc.replace_by_index(msg, i, (math.random(1,2) > 1 and "m" or "b") )
             end
         end
     end
@@ -97,7 +97,7 @@ local function CreateNotificationBerserk(ply, msg, delay, msgKey, showTime, func
     if ply.organism and ply.organism.brain > 0.1 then
         for i = 1, utf8.len(msg) do
             if math.random(3) == 1 and msg[i] != "?" and msg[i] != "." then
-                msg = hg.replace_by_index(msg, i, (math.random(1,2) > 1 and "m" or "b") )
+                msg = zc.replace_by_index(msg, i, (math.random(1,2) > 1 and "m" or "b") )
             end
         end
     end
@@ -134,7 +134,7 @@ local function ResetNotification(ply, key)
     ply.msgs[key] = nil
 end
 
-hg.CreateNotification = CreateNotification
+zc.CreateNotification = CreateNotification
 
 hook.Add("ZC_PlayerSpawn","ZC_ClearNotifications",function(ply)
     ply.msgs = {}

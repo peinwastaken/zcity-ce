@@ -18,12 +18,12 @@ function SWEP:PrimaryShootPost()
 	if self:IsResting() then return end
 
 	local owner = self:GetOwner()
-	local char = hg.GetCurrentCharacter(owner)
+	local char = zc.GetCurrentCharacter(owner)
 	if not char:IsRagdoll() then
-		hg.AddForceRag(owner, 2, owner:EyeAngles():Forward() * -10000, 0.5)
-		hg.AddForceRag(owner, 0, owner:EyeAngles():Forward() * -10000, 0.5)
+		zc.AddForceRag(owner, 2, owner:EyeAngles():Forward() * -10000, 0.5)
+		zc.AddForceRag(owner, 0, owner:EyeAngles():Forward() * -10000, 0.5)
 
-		hg.LightStunPlayer(owner,1)
+		zc.LightStunPlayer(owner,1)
 	end
 	
 	char:GetPhysicsObjectNum(0):SetVelocity(char:GetVelocity() + owner:EyeAngles():Forward() * -1000)

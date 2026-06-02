@@ -7,11 +7,11 @@ if CLIENT then
 	local fontWeight = CreateClientConVar("zc_chat_fontweight", 1000, true, false, "Font weight", 0, 1000)
 
 	local function CreateChat()
-		if (IsValid(hg.chat)) then
-			hg.chat:Remove()
+		if (IsValid(zc.chat)) then
+			zc.chat:Remove()
 		end
 
-		hg.chat = vgui.Create("zChatbox")
+		zc.chat = vgui.Create("zChatbox")
 	end
 
 	hook.Add("InitPostEntity", "ZC_InitZChat", function()
@@ -32,15 +32,15 @@ if CLIENT then
 		bind = bind:lower()
 
 		if (bind:find("messagemode") and pressed) then
-			hg.chat:SetActive(true)
+			zc.chat:SetActive(true)
 
 			return true
 		end
 	end)
 
 	hook.Add("ZC_OnShowPause", "ZC_CloseZChatOnPause", function()
-		if !hg.chat:GetActive() then return end
-		hg.chat:SetActive(false)
+		if !zc.chat:GetActive() then return end
+		zc.chat:SetActive(false)
 
 		return false
 	end)
@@ -75,14 +75,14 @@ if CLIENT then
 	end)
 
 	hook.Add("ChatText", "ZC_RouteEngineChatToZChat", function(index, name, text, messageType)
-		if (IsValid(hg.chat)) then
-			hg.chat:AddMessage(text)
+		if (IsValid(zc.chat)) then
+			zc.chat:AddMessage(text)
 		end
 	end)
 
 	function chat.AddText(...)
-		if (IsValid(hg.chat)) then
-			hg.chat:AddMessage(...)
+		if (IsValid(zc.chat)) then
+			zc.chat:AddMessage(...)
 		end
 
 		-- log chat message to console

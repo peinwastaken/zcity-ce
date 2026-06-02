@@ -72,8 +72,8 @@ local function OpenAdminConfigMenu(modeId)
   if !lply:IsAdmin() then print("not admin") return end
   if openMenu then return end
 
-  local id = modeId or zb.CROUND
-  local mode = zb.modes[id]
+  local id = modeId or zc.CROUND
+  local mode = zc.modes[id]
   if !mode then
     print(string.format("Could not find gamemode with id %s", id))
     return

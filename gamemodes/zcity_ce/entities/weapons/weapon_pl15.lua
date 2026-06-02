@@ -57,7 +57,7 @@ SWEP.FakeReloadEvents = {
 	end,
 	[0.3] = function( self ) 
 		if CLIENT and self:Clip1() < 1 then
-			hg.CreateMag( self, Vector(0,0,-35) )
+			zc.CreateMag( self, Vector(0,0,-35) )
 			self:GetWM():ManipulateBoneScale(50, vector_origin)
 			self:GetWM():ManipulateBoneScale(93, vector_origin)
 			self:GetWM():ManipulateBoneScale(94, vector_origin)

@@ -5,10 +5,10 @@ util.AddNetworkString("ZC_RockTheVoteStart")
 util.AddNetworkString("ZC_RockTheVoteVote")
 util.AddNetworkString("ZC_RockTheVoteVoteRegister")
 util.AddNetworkString("ZC_RockTheVoteEnd")
-zb = zb or {}
+zc = zc or {}
 local cooldown = {}
 local votes = {}
-zb.votestarted = false
+zc.votestarted = false
 local playervote = {}
 
 local mappull = {}
@@ -44,13 +44,13 @@ local blacklist = {
 
 local allowedPrefix = {
     ["ttt"] = true, ["hmcd"] = true, ["mu"] = true, ["ze"] = false,
-    ["zs"] = true, ["tdm"] = true, ["zb"] = false, ["zbattle"] = false,
+    ["zs"] = true, ["tdm"] = true, ["zc"] = false, ["zbattle"] = false,
     ["gm"] = true, ["ph"] = true, ["cs"] = true, ["de"] = true
 }
 
 local prefixWeights = {
     ["ttt"] = 18, ["hmcd"] = 19, ["mu"] = 18, ["ze"] = 0,
-    ["zs"] = 9,  ["tdm"] = 5,  ["zb"] = 0,  ["zbattle"] = 0,
+    ["zs"] = 9,  ["tdm"] = 5,  ["zc"] = 0,  ["zbattle"] = 0,
     ["gm"] = 20, ["ph"] = 11, ["cs"] = 1,  ["de"] = 1
 }
 
@@ -93,7 +93,7 @@ local function getmaps()
     local maps = file.Find("maps/*.bsp", "GAME") or {}
 
     --[[
-    if hg and hg.xmas then
+    if zc and zc.xmas then
         table.Empty(mappull)
         mappull = {
             "cs_office",
@@ -160,12 +160,12 @@ local function getMapsByPrefix(prefix)
 end
 
 hook.Add("InitPostEntity", "ZC_LoadRtvMaps", function()
-    zb.votestarted = false
+    zc.votestarted = false
     getmaps()
 end)
 
 net.Receive("ZC_RockTheVoteVote", function(len, ply)
-    if not zb.votestarted then return end
+    if not zc.votestarted then return end
     if cooldown[ply:EntIndex()] and cooldown[ply:EntIndex()] > CurTime() then return end
 
     cooldown[ply:EntIndex()] = CurTime() + 1
@@ -193,7 +193,7 @@ end)
 
 local endStarted = false
 
-function zb.EndRTV()
+function zc.EndRTV()
     if endStarted then return end
 
     local winmap = table.GetWinningKey(votes)
@@ -207,7 +207,7 @@ function zb.EndRTV()
 
     if not IsValidMapName(winmap) then
         ErrorNoHalt("[zcity] RTV ended without any valid maps; aborting map change.\n")
-        zb.votestarted = false
+        zc.votestarted = false
         endStarted = false
         hook.Remove("Think", "ZC_RtvThink")
         return
@@ -268,7 +268,7 @@ function zb.EndRTV()
     endStarted = true
 
     timer.Simple(3, function()
-        --zb.votestarted = false
+        --zc.votestarted = false
         table.Empty(votes)
         table.Empty(playervote)
         table.Empty(playerVoteWeight)
@@ -277,10 +277,10 @@ function zb.EndRTV()
 end
 
 local rtvtime = 0
-function zb.ThinkRTV()
-    if not zb.votestarted then return end
+function zc.ThinkRTV()
+    if not zc.votestarted then return end
     if rtvtime < CurTime() then
-        zb.EndRTV()
+        zc.EndRTV()
     end
 end
 
@@ -326,8 +326,8 @@ local function getMapWeight(map)
     return 1 - (pop / 100)
 end
 
-function zb.StartRTV(time)
-    if zb.votestarted then return end
+function zc.StartRTV(time)
+    if zc.votestarted then return end
 
     getmaps()
 
@@ -473,14 +473,14 @@ function zb.StartRTV(time)
         net.WriteFloat(rtvtime)
     net.Broadcast()
 
-    zb.votestarted = true
+    zc.votestarted = true
 
 
-    hook.Add("Think", "ZC_RtvThink", zb.ThinkRTV)
+    hook.Add("Think", "ZC_RtvThink", zc.ThinkRTV)
 end
 
 util.AddNetworkString("ZC_RTVMenu")
-function zb.RTVMenu(ply)
+function zc.RTVMenu(ply)
     net.Start("ZC_RTVMenu")
     net.Send(ply)
 end
@@ -488,7 +488,7 @@ end
 
 COMMANDS.forcertv = {function(ply, args)
 	if not ply:IsAdmin() then ply:ChatPrint("You don't have access") return end
-		zb.StartRTV(20)
+		zc.StartRTV(20)
 	end,
 	0
 }
@@ -498,7 +498,7 @@ local rtvVotes = {} -- Dagestani fleas heard lezginka and trampled a cat to deat
 local rtvTimeout = nil
 
 
-function zb.ClearRTVVotes()
+function zc.ClearRTVVotes()
     rtvVotes = {}
     if rtvTimeout then
         timer.Remove("RTVTimeout")
@@ -507,7 +507,7 @@ function zb.ClearRTVVotes()
 end
 
 -- DEKA, HOW DID YOU MANAGE TO MAKE IT PRINT NONSTOP THAT RTV WILL HAPPEN, WHERE DID YOU MAKE THIS MESS
-function zb.CheckRTVVotes(needPrint)
+function zc.CheckRTVVotes(needPrint)
     local votesNeeded = math.ceil(#player.GetAll() / 2)
     local votes = table.Count(rtvVotes)
 
@@ -524,9 +524,9 @@ function zb.CheckRTVVotes(needPrint)
     return false
 end
 local function rtv(ply, args)
-    --print(zb.votestarted)
-	if zb.votestarted then
-		zb.RTVMenu(ply)
+    --print(zc.votestarted)
+	if zc.votestarted then
+		zc.RTVMenu(ply)
 		return
 	end
 
@@ -553,7 +553,7 @@ local function rtv(ply, args)
                 for _, v in pairs(player.GetAll()) do
                     v:ChatPrint("Map change votes have been reset due to timeout (30 minutes).")
                 end
-                zb.ClearRTVVotes()
+                zc.ClearRTVVotes()
             end
         end)
     end--]]
@@ -573,7 +573,7 @@ local function rtv(ply, args)
         end
     end
 
-    if zb.CheckRTVVotes(true) then
+    if zc.CheckRTVVotes(true) then
         return
     end
 end
@@ -581,9 +581,9 @@ end
 COMMANDS.rtv = {rtv, 0}
 COMMANDS.кем = {rtv, 0}
 
-hook.Add("ShutDown", "ZC_ResetRTVVotesOnMapChange", zb.ClearRTVVotes)
+hook.Add("ShutDown", "ZC_ResetRTVVotesOnMapChange", zc.ClearRTVVotes)
 hook.Add("PostGamemodeLoaded", "ZC_InitializeRTVSystem", function()
-    zb.ClearRTVVotes()
+    zc.ClearRTVVotes()
 end)
 
 hook.Add("PlayerDisconnected", "ZC_CheckRTVAfterDisconnect", function(ply)
@@ -594,6 +594,6 @@ hook.Add("PlayerDisconnected", "ZC_CheckRTVAfterDisconnect", function(ply)
         --   v:ChatPrint(ply:Nick() .. " left the server (their RTV vote was removed).")
         --end
 
-        timer.Simple(0.1, zb.CheckRTVVotes)
+        timer.Simple(0.1, zc.CheckRTVVotes)
     end
 end)

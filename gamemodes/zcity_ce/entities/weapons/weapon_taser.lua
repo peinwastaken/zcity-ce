@@ -174,7 +174,7 @@ function SWEP:Shoot(override)
 			if not ent:IsPlayer() and not ent:IsRagdoll() then return end
             if IsValid(ent.FakeRagdoll) then return end
 
-			//if ent == hg.GetCurrentCharacter( owner ) then return end
+			//if ent == zc.GetCurrentCharacter( owner ) then return end
 			local d = DamageInfo()
 			d:SetDamage(5)
 			d:SetAttacker(owner)
@@ -187,7 +187,7 @@ function SWEP:Shoot(override)
             local ply = ent
 
             if ent:IsRagdoll() then
-                ply = hg.RagdollOwner(ent) or ent
+                ply = zc.RagdollOwner(ent) or ent
             end
 
 			if ply:InVehicle() then
@@ -198,7 +198,7 @@ function SWEP:Shoot(override)
 
             local time = math.random(5,7) * (drugged and 0.2 or 1)
 
-			hg.StunPlayer(ply, time + 3 * (drugged and 0.2 or 1))
+			zc.StunPlayer(ply, time + 3 * (drugged and 0.2 or 1))
 
 			if IsValid(ply) and ply:Alive() then
                 local org = ply.organism
@@ -210,7 +210,7 @@ function SWEP:Shoot(override)
 			timer.Simple(0.1,function()
 				for i = 0, 1 do
 					if not IsValid(ent) then return end
-					local ent = hg.GetCurrentCharacter(ent)
+					local ent = zc.GetCurrentCharacter(ent)
 					local phys = ent:GetPhysicsObjectNum(tr.PhysicsBone or 0)
 					local localpos, _ = WorldToLocal(tr.HitPos + tr.Normal * 5, angle_zero, IsValid(phys) and phys:GetPos() or ent:GetPos(), IsValid(phys) and phys:GetAngles() or angle_zero)
 					local lpos2, _ = WorldToLocal(tr.StartPos, angle_zero, self:GetWM():GetPos(), self:GetWM():GetAngles())
@@ -262,22 +262,22 @@ function SWEP:Shoot(override)
 					local mul = 1000 * ragdoll.organism.pulse / 70
 					local damp = 50
 
-					--hg.ShadowControl(ragdoll, 0, 0.001, ang, mul, damp, vector_origin, 0, 0)
-					--hg.ShadowControl(ragdoll, 1, 0.001, ang, mul, damp, vector_origin, 0, 0)
+					--zc.ShadowControl(ragdoll, 0, 0.001, ang, mul, damp, vector_origin, 0, 0)
+					--zc.ShadowControl(ragdoll, 1, 0.001, ang, mul, damp, vector_origin, 0, 0)
 
-					hg.ShadowControl(ragdoll, 3, 0.001, ang, mul, damp, vector_origin, 0, 0)
-					hg.ShadowControl(ragdoll, 4, 0.001, ang, mul, damp, vector_origin, 0, 0)
-					hg.ShadowControl(ragdoll, 5, 0.001, ang, mul, damp, vector_origin, 0, 0)
+					zc.ShadowControl(ragdoll, 3, 0.001, ang, mul, damp, vector_origin, 0, 0)
+					zc.ShadowControl(ragdoll, 4, 0.001, ang, mul, damp, vector_origin, 0, 0)
+					zc.ShadowControl(ragdoll, 5, 0.001, ang, mul, damp, vector_origin, 0, 0)
 
-					hg.ShadowControl(ragdoll, 2, 0.001, ang, mul, damp, vector_origin, 0, 0)
-					hg.ShadowControl(ragdoll, 6, 0.001, ang, mul, damp, vector_origin, 0, 0)
-					hg.ShadowControl(ragdoll, 7, 0.001, ang, mul, damp, vector_origin, 0, 0)
+					zc.ShadowControl(ragdoll, 2, 0.001, ang, mul, damp, vector_origin, 0, 0)
+					zc.ShadowControl(ragdoll, 6, 0.001, ang, mul, damp, vector_origin, 0, 0)
+					zc.ShadowControl(ragdoll, 7, 0.001, ang, mul, damp, vector_origin, 0, 0)
 
-					hg.ShadowControl(ragdoll, 8, 0.001, ang, mul, damp, vector_origin, 0, 0)
-					hg.ShadowControl(ragdoll, 9, 0.001, ang, mul, damp, vector_origin, 0, 0)
+					zc.ShadowControl(ragdoll, 8, 0.001, ang, mul, damp, vector_origin, 0, 0)
+					zc.ShadowControl(ragdoll, 9, 0.001, ang, mul, damp, vector_origin, 0, 0)
 
-					hg.ShadowControl(ragdoll, 11, 0.001, ang, mul, damp, vector_origin, 0, 0)
-					hg.ShadowControl(ragdoll, 12, 0.001, ang, mul, damp, vector_origin, 0, 0)
+					zc.ShadowControl(ragdoll, 11, 0.001, ang, mul, damp, vector_origin, 0, 0)
+					zc.ShadowControl(ragdoll, 12, 0.001, ang, mul, damp, vector_origin, 0, 0)
 				end
 
                 if ent:IsPlayer() then

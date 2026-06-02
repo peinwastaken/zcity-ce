@@ -24,7 +24,7 @@ function ENT:Explode()
     effectdata:SetScale(0.5)
     effectdata:SetNormal(-self:GetAngles():Forward())
     util.Effect("eff_jack_genericboom", effectdata)
-    hg.EmitAISound(SelfPos, 512, 16, 1)
+    zc.EmitAISound(SelfPos, 512, 16, 1)
 
 
     --[[net.Start("ZC_ProjectileFarSound")
@@ -63,13 +63,13 @@ function ENT:Explode()
     for _, ply in ipairs(ents.FindInSphere(SelfPos, 700)) do
         if not ply:IsPlayer() or not ply:Alive() then continue end
 
-        if hg.isVisible(ply:GetShootPos(), SelfPos, {ply, self}, MASK_VISIBLE) then
+        if zc.isVisible(ply:GetShootPos(), SelfPos, {ply, self}, MASK_VISIBLE) then
             net.Start("ZC_Flashbang")
                 net.WriteVector(SelfPos)
             net.Send(ply)
         end
 
-        local tr = hg.ExplosionTrace(SelfPos, ply:GetPos(), {self, ply})
+        local tr = zc.ExplosionTrace(SelfPos, ply:GetPos(), {self, ply})
 
         if tr.Hit then continue end
 
@@ -107,8 +107,8 @@ function ENT:Explode()
 
         if distance <= disorientationRadius then
             if org then
-                hg.ExplosionDisorientation(org.owner, 5, 6)
-				hg.RunZManipAnim(org.owner, "shieldexplosion")
+                zc.ExplosionDisorientation(org.owner, 5, 6)
+				zc.RunZManipAnim(org.owner, "shieldexplosion")
                 //org.owner:ViewPunch(Angle(0, 0, org.owner:GetAimVector():Dot((SelfPos - org.owner:EyePos()):GetNormalized()) * 55))
             end
         end

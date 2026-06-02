@@ -1,7 +1,7 @@
 --
-hg = hg or {}
-hg.WeaponSelector = hg.WeaponSelector or {}
-local WS = hg.WeaponSelector
+zc = zc or {}
+zc.WeaponSelector = zc.WeaponSelector or {}
+local WS = zc.WeaponSelector
 
 function WS.GetPrintName( self )
 	local class = self:GetClass()

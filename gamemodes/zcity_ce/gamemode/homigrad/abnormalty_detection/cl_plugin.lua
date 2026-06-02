@@ -1,5 +1,5 @@
-hg.Abnormalties = hg.Abnormalties or {}
-local PLUGIN = hg.Abnormalties
+zc.Abnormalties = zc.Abnormalties or {}
+local PLUGIN = zc.Abnormalties
 
 --\\
 local convar_newbie = CreateClientConVar("zc_abnormalties_newbie", "1", true, false, "Set to 1 if you want to see a hint again")

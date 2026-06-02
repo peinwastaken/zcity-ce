@@ -108,7 +108,7 @@ function SWEP:Reload()
 	self.SqueezeCD = time + 2
 
 	local SelfPos = self:GetPos()
-	hg.EmitAISound(SelfPos, 512, 16, 512)
+	zc.EmitAISound(SelfPos, 512, 16, 512)
 
 	for _, npc in ipairs(ents.FindInSphere(SelfPos, 512)) do
 		if IsValid(npc) and npc:IsNPC() and npc:GetClass() == "npc_antlion" then

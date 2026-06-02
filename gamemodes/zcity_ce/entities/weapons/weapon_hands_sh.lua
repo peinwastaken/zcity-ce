@@ -1,7 +1,7 @@
 if SERVER then AddCSLuaFile() end
 SWEP.Base = "zcity_weapon_base"
 local function RagdollOwner(ent)
-	return hg.RagdollOwner(ent)
+	return zc.RagdollOwner(ent)
 end
 
 SWEP.Category = "ZCity Other"
@@ -93,7 +93,7 @@ if CLIENT then
 
 		if (IsValid(owner)) then
 			local ang = owner:EyeAngles()
-			local posa, _ = hg.eye(owner)--hg.eyeTrace(owner)
+			local posa, _ = zc.eye(owner)--zc.eyeTrace(owner)
 
 			local pos = posa + ang:Forward() * (-14) + ang:Up() * -9 * self.blockinganim
 
@@ -133,8 +133,8 @@ function SWEP:ModelAnim(model, pos, ang)
 
 	if !IsValid(owner) or !owner:IsPlayer() then return end
 
-	local ent = hg.GetCurrentCharacter(owner)
-	local pos, aimvec = hg.eye(owner, 60, ent)--hg.eyeTrace(owner, 60, ent)
+	local ent = zc.GetCurrentCharacter(owner)
+	local pos, aimvec = zc.eye(owner, 60, ent)--zc.eyeTrace(owner, 60, ent)
 	local eyeAng = owner:EyeAngles()
 
 	local vel = ent:GetVelocity()
@@ -223,7 +223,7 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen)
 	local owner = self:GetOwner()
 	if not IsValid(owner) then return end
 
-	self.walkinglerp = Lerp(hg.lerpFrameTime2(0.1),self.walkinglerp or 0, owner.InVehicle and owner:InVehicle() and 0 or hg.GetCurrentCharacter(owner):GetVelocity():LengthSqr())
+	self.walkinglerp = Lerp(zc.lerpFrameTime2(0.1),self.walkinglerp or 0, owner.InVehicle and owner:InVehicle() and 0 or zc.GetCurrentCharacter(owner):GetVelocity():LengthSqr())
 	self.huytime = self.huytime or 0
 	local walk = math.Clamp(self.walkinglerp / 10000,0,1)
 
@@ -255,7 +255,7 @@ if CLIENT then
 	local lpos,lang = Vector(-3.5,0,0),Angle(0,0,-90)
 
 	--hook.Add("ZC_PostDrawPlayerRagdoll","ZC_DrawHandcuffs", function(ply,ent)
-	function hg.CuffedAnim(ent, ply)
+	function zc.CuffedAnim(ent, ply)
 		if ply:IsRagdoll() or ent:IsRagdoll() then return end
 		if not IsValid(ply) or not ply:IsPlayer() or not ply:Alive() or not ply:GetNetVar("handcuffed",false) then return end
 
@@ -297,25 +297,25 @@ local ang5 = Angle(0,0,0)
 
 local clamp = math.Clamp
 
-function hg.handcuffedhands(ply)
+function zc.handcuffedhands(ply)
 	local posi, ang = ply:GetBonePosition(0)
 	local dtime = SysTime() - (ply.dtimehandcuffs or SysTime())
-	ply.crouchinglerp = Lerp(hg.lerpFrameTime2(0.1,dtime),ply.crouchinglerp or 0, (ply:IsFlagSet(FL_ANIMDUCKING)) and 1 or 0)
+	ply.crouchinglerp = Lerp(zc.lerpFrameTime2(0.1,dtime),ply.crouchinglerp or 0, (ply:IsFlagSet(FL_ANIMDUCKING)) and 1 or 0)
 	ply.dtimehandcuffs = SysTime()
 	ang1[1] = 90 - 50 * ply.crouchinglerp
 	ang2[1] = 90 - 50 * ply.crouchinglerp
 
 	local pos = posi + ang:Up() * (6 + 12 * ply.crouchinglerp) + ang:Right() * (2 + -14 * ply.crouchinglerp) + ang:Forward() * 4 * ply.crouchinglerp
-	hg.torsoTrace(ply,20)
-	--[[if hg.KeyDown(ply,IN_ATTACK2) then
+	zc.torsoTrace(ply,20)
+	--[[if zc.KeyDown(ply,IN_ATTACK2) then
 		pos = pointpos.HitPos
-		ply.lerphandpos = Lerp(hg.lerpFrameTime2(0.1,dtime), ply.lerphandpos or Vector(0,0,0), pos)
-		hg.DragHandsToPos(ply,ply:GetActiveWeapon(),ply.lerphandpos,true,4.5,pointpos.Normal,ang3,angle_zero)
+		ply.lerphandpos = Lerp(zc.lerpFrameTime2(0.1,dtime), ply.lerphandpos or Vector(0,0,0), pos)
+		zc.DragHandsToPos(ply,ply:GetActiveWeapon(),ply.lerphandpos,true,4.5,pointpos.Normal,ang3,angle_zero)
 	else
-		ply.lerphandpos = Lerp(hg.lerpFrameTime2(0.1,dtime), ply.lerphandpos or Vector(0,0,0), pos)
-		hg.DragHandsToPos(ply,ply:GetActiveWeapon(),ply.lerphandpos,true,4.5,ang:Up(),ang1,ang2)
+		ply.lerphandpos = Lerp(zc.lerpFrameTime2(0.1,dtime), ply.lerphandpos or Vector(0,0,0), pos)
+		zc.DragHandsToPos(ply,ply:GetActiveWeapon(),ply.lerphandpos,true,4.5,ang:Up(),ang1,ang2)
 	end--]]
-	hg.DragHandsToPos(ply, ply:GetActiveWeapon(), pos, true, 3.5, ang:Up(), ang1, ang2)
+	zc.DragHandsToPos(ply, ply:GetActiveWeapon(), pos, true, 3.5, ang:Up(), ang1, ang2)
 end
 
 SWEP.KnuckleModel = "models/mosi/fallout4/props/weapons/melee/knuckles.mdl"
@@ -340,7 +340,7 @@ function SWEP:SetHandPos(noset)
 
 	local ent = self:GetNWEntity("carryent")
 	self.rhandik = (self:GetFists()) or (IsValid(ent) and twohands)
-	self.lhandik = (self:GetFists() and hg.CanUseLeftHand(ply)) or IsValid(ent)
+	self.lhandik = (self:GetFists() and zc.CanUseLeftHand(ply)) or IsValid(ent)
 
 
 	local ply_spine_index = ply:LookupBone("ValveBiped.Bip01_Spine4")
@@ -361,7 +361,7 @@ function SWEP:SetHandPos(noset)
 	end
 
 	if ply:GetNetVar("handcuffed",false) then
-		hg.handcuffedhands(ply)
+		zc.handcuffedhands(ply)
 
 		return
 	end
@@ -376,7 +376,7 @@ function SWEP:SetHandPos(noset)
 
 		ang[2] = ang[2] - break_data.Progress / 5
 
-		hg.DragHandsToPos(ply, ply:GetActiveWeapon(), head, true, 2, ang:Forward(), ang4, ang5)
+		zc.DragHandsToPos(ply, ply:GetActiveWeapon(), head, true, 2, ang:Forward(), ang4, ang5)
 	end
 
 	local ang = ply:EyeAngles()
@@ -387,7 +387,7 @@ function SWEP:SetHandPos(noset)
 	ply.lhold = lhmat
 
 	if self:GetFists() then
-		local bones = hg.TPIKBonesRH
+		local bones = zc.TPIKBonesRH
 
 		local lastaddpos = self:IsLocal() and self.lastAddPos or vector_origin
 		local posadd, _ = LocalToWorld(lastaddpos, angle_zero, vector_origin, ply:EyeAngles())
@@ -429,7 +429,7 @@ function SWEP:SetHandPos(noset)
 			end
 		end
 
-		local bones = hg.TPIKBonesLH
+		local bones = zc.TPIKBonesLH
 
 		posadd:Rotate(Angle(0,0,0))
 
@@ -489,7 +489,7 @@ function SWEP:SetHandPos(noset)
 		kastet:SetModelScale(0.9) -- with new hands, 1 can be left
 	end
 
-	hg.DragHands(self:GetOwner(), self)
+	zc.DragHands(self:GetOwner(), self)
 
 	if true then return end
 	if self:GetFists() or self:GetBlocking() or IsValid(ply:GetNetVar("carryent")) then return end
@@ -503,7 +503,7 @@ function SWEP:SetHandPos(noset)
 	if IsValid(ply:GetNetVar("carryent2")) and trace2.Entity == ply:GetNetVar("carryent2") then return end
 
 	if trace2.Hit and not (trace2.Entity:IsPlayer() or trace2.Entity:IsNPC()) then -- freaky
-		-- hg.DragRightHand(ply, self, trace2.HitPos - ply:GetAimVector() * 5, ply:GetAimVector(), (trace2.Entity:IsWorld() and Lerp(1, trace2.HitNormal:Angle(), ply:EyeAngles() + ang180) or ply:EyeAngles() + ang180) + ang2 - ply:EyeAngles())
+		-- zc.DragRightHand(ply, self, trace2.HitPos - ply:GetAimVector() * 5, ply:GetAimVector(), (trace2.Entity:IsWorld() and Lerp(1, trace2.HitNormal:Angle(), ply:EyeAngles() + ang180) or ply:EyeAngles() + ang180) + ang2 - ply:EyeAngles())
 	end
 
 	local wmpos1 = ply_spine_matrix:GetTranslation() - ply:EyeAngles():Right() * 5
@@ -515,7 +515,7 @@ function SWEP:SetHandPos(noset)
 	if trace.Entity:IsPlayer() or trace.Entity:IsNPC() then return end -- freaky
 
 	if trace.Hit and not trace2.Hit and not IsValid(ply:GetNetVar("carryent2")) then
-		-- hg.DragLeftHand(ply, self, trace.HitPos - ply:GetAimVector() * 5, ply:GetAimVector(), (trace.Entity:IsWorld() and Lerp(1, trace.HitNormal:Angle(), ply:EyeAngles() + ang180) or ply:EyeAngles() + ang180) + ang1 - ply:EyeAngles())
+		-- zc.DragLeftHand(ply, self, trace.HitPos - ply:GetAimVector() * 5, ply:GetAimVector(), (trace.Entity:IsWorld() and Lerp(1, trace.HitNormal:Angle(), ply:EyeAngles() + ang180) or ply:EyeAngles() + ang180) + ang1 - ply:EyeAngles())
 	end
 end
 
@@ -549,7 +549,7 @@ else
 
 		if GetViewEntity() ~= owner then return end
 		if owner:InVehicle() then return end
-		local Tr = hg.eyeTrace(owner, self.ReachDistance)
+		local Tr = zc.eyeTrace(owner, self.ReachDistance)
 		if not Tr then return end
 		local Size = math.max(math.min(1 - (Tr and Tr.Fraction or 0), 1), 0.1)
 		local x, y = Tr.HitPos:ToScreen().x, Tr.HitPos:ToScreen().y
@@ -564,8 +564,8 @@ else
 
 		local ent = IsValid(Tr.Entity) and Tr.Entity.organism and Tr.Entity or owner
 		if ent.organism then
-			if Tr.Entity == ent then ent.is_lookedat = hg.KeyDown(owner, IN_RELOAD) end
-			lerpalpha = LerpFT(0.1, lerpalpha, hg.KeyDown(owner, IN_RELOAD) and 255 + 2000 or 0)
+			if Tr.Entity == ent then ent.is_lookedat = zc.KeyDown(owner, IN_RELOAD) end
+			lerpalpha = LerpFT(0.1, lerpalpha, zc.KeyDown(owner, IN_RELOAD) and 255 + 2000 or 0)
 			local lerpalpha = lerpalpha - 2000
 			local org = ent.organism
 			local add_x = 0
@@ -587,60 +587,60 @@ else
 			surface.DrawText(txt)
 
 			if org.blood and org.blood < 4000 then
-				hg.DrawAffliction(posx + add_x, posy - h, w, h, (4000 - org.blood) / 4000, hg.afflictions.pale, lerpalpha, "Pale skin")
+				zc.DrawAffliction(posx + add_x, posy - h, w, h, (4000 - org.blood) / 4000, zc.afflictions.pale, lerpalpha, "Pale skin")
 
 				add_x = add_x + w + add
 			end
 
 			if org.bleed and org.bleed > 0.1 then
-				hg.DrawAffliction(posx + add_x, posy - h, w, h, math.min(org.bleed / 10, 1), hg.afflictions.bleeding, lerpalpha, "Bleeding")
+				zc.DrawAffliction(posx + add_x, posy - h, w, h, math.min(org.bleed / 10, 1), zc.afflictions.bleeding, lerpalpha, "Bleeding")
 
 				add_x = add_x + w + add
 			end
 
 			if org.disorientation and org.disorientation > 0.1 and ent == owner then
-				hg.DrawAffliction(posx + add_x, posy - h, w, h, math.min(org.disorientation / 2, 1), hg.afflictions.concussion, lerpalpha, "Concussion")
+				zc.DrawAffliction(posx + add_x, posy - h, w, h, math.min(org.disorientation / 2, 1), zc.afflictions.concussion, lerpalpha, "Concussion")
 
 				add_x = add_x + w + add
 			end
 
 			if org.rleg and org.rleg > 0 then
-				hg.DrawAffliction(posx + add_x, posy - h, w, h, org.rleg, org.rleg > 0.999 and hg.afflictions.lfracture or hg.afflictions.lblunt, lerpalpha, org.rleg > 0.999 and "Right leg fracture" or "Right leg blunt trauma")
+				zc.DrawAffliction(posx + add_x, posy - h, w, h, org.rleg, org.rleg > 0.999 and zc.afflictions.lfracture or zc.afflictions.lblunt, lerpalpha, org.rleg > 0.999 and "Right leg fracture" or "Right leg blunt trauma")
 
 				add_x = add_x + w + add
 			end
 
 			if org.lleg and org.lleg > 0 then
-				hg.DrawAffliction(posx + add_x, posy - h, w, h, org.lleg, org.lleg > 0.999 and hg.afflictions.lfracture or hg.afflictions.lblunt, lerpalpha, org.lleg > 0.999 and "Left leg fracture" or "Left leg blunt trauma")
+				zc.DrawAffliction(posx + add_x, posy - h, w, h, org.lleg, org.lleg > 0.999 and zc.afflictions.lfracture or zc.afflictions.lblunt, lerpalpha, org.lleg > 0.999 and "Left leg fracture" or "Left leg blunt trauma")
 
 				add_x = add_x + w + add
 			end
 
 			if org.rarm and org.rarm > 0 then
-				hg.DrawAffliction(posx + add_x, posy - h, w, h, org.rarm, org.rarm > 0.999 and hg.afflictions.afracture or hg.afflictions.ablunt, lerpalpha, org.rarm > 0.999 and "Right arm fracture" or "Right arm blunt trauma")
+				zc.DrawAffliction(posx + add_x, posy - h, w, h, org.rarm, org.rarm > 0.999 and zc.afflictions.afracture or zc.afflictions.ablunt, lerpalpha, org.rarm > 0.999 and "Right arm fracture" or "Right arm blunt trauma")
 
 				add_x = add_x + w + add
 			end
 
 			if org.larm and org.larm > 0 then
-				hg.DrawAffliction(posx + add_x, posy - h, w, h, org.larm, org.larm > 0.999 and hg.afflictions.afracture or hg.afflictions.ablunt, lerpalpha, org.larm > 0.999 and "Left arm fracture" or "Left arm blunt trauma")
+				zc.DrawAffliction(posx + add_x, posy - h, w, h, org.larm, org.larm > 0.999 and zc.afflictions.afracture or zc.afflictions.ablunt, lerpalpha, org.larm > 0.999 and "Left arm fracture" or "Left arm blunt trauma")
 
 				add_x = add_x + w + add
 			end
 
 			if org.pain and org.pain > 20 and not org.unconscious then
-				hg.DrawAffliction(posx + add_x, posy - h, w, h, (org.pain - 20) / 30, hg.afflictions.pain, lerpalpha, "Pain")
+				zc.DrawAffliction(posx + add_x, posy - h, w, h, (org.pain - 20) / 30, zc.afflictions.pain, lerpalpha, "Pain")
 
 				add_x = add_x + w + add
 			end
 
 			if org.o2 and org.o2[1] < 5 then
-				hg.DrawAffliction(posx + add_x, posy - h, w, h, (5 - org.o2[1]) / 5, hg.afflictions.lung_failure, lerpalpha, "Lung failure")
+				zc.DrawAffliction(posx + add_x, posy - h, w, h, (5 - org.o2[1]) / 5, zc.afflictions.lung_failure, lerpalpha, "Lung failure")
 
 				add_x = add_x + w + add
 			end
 
-			--hg.DrawAffliction(scrw * 0.05 + add_x, scrh * 0.95 - h, w, h, 1, 3, 255)
+			--zc.DrawAffliction(scrw * 0.05 + add_x, scrh * 0.95 - h, w, h, 1, 3, 255)
 
 			if add_x == 0 then
 				surface.SetFont("HomigradFontLarge")
@@ -655,7 +655,7 @@ end
 local function WhomILookinAt(ply, cone, dist)
 	local CreatureTr, ObjTr, OtherTr
 	for _ = 1, 150 * cone do
-		local Tr = hg.eyeTrace(ply, dist)
+		local Tr = zc.eyeTrace(ply, dist)
 		if Tr.Hit and not Tr.HitSky and Tr.Entity then
 			local Ent, Class = Tr.Entity, Tr.Entity:GetClass()
 			if Ent:IsPlayer() or Ent:IsNPC() then
@@ -748,14 +748,14 @@ function SWEP:SecondaryAttack()
 	if SERVER then
 		self:SetCarrying()
 		local ply = owner
-		local pos = hg.eye(ply)
+		local pos = zc.eye(ply)
 		local tr = util.QuickTrace(pos, owner:GetAimVector() * self.ReachDistance, {owner})
 
 		if clawClasses[ply.PlayerClassName] then
 			tr = util.TraceHull({
 				start = pos,
 				endpos = pos + owner:GetAimVector() * self.ReachDistance,
-				filter = {ply, hg.GetCurrentCharacter(ply)},
+				filter = {ply, zc.GetCurrentCharacter(ply)},
 				mins = trMinsClaws,
 				maxs = trMaxsClaws,
 			})
@@ -763,7 +763,7 @@ function SWEP:SecondaryAttack()
 			tr = util.TraceLine({
 				start = pos,
 				endpos = pos + owner:GetAimVector() * self.ReachDistance,
-				filter = {ply, hg.GetCurrentCharacter(ply)},
+				filter = {ply, zc.GetCurrentCharacter(ply)},
 				mins = trMins,
 				maxs = trMaxs,
 			})
@@ -772,7 +772,7 @@ function SWEP:SecondaryAttack()
 				tr = util.TraceHull({
 					start = pos,
 					endpos = pos + owner:GetAimVector() * self.ReachDistance,
-					filter = {ply, hg.GetCurrentCharacter(ply)},
+					filter = {ply, zc.GetCurrentCharacter(ply)},
 					mins = trMins,
 					maxs = trMaxs,
 				})
@@ -781,7 +781,7 @@ function SWEP:SecondaryAttack()
 
 		--if (IsValid(tr.Entity) or game.GetWorld() == tr.Entity) and self:CanPickup(tr.Entity) and not tr.Entity:IsPlayer() then
 		if (IsValid(tr.Entity)) and self:CanPickup(tr.Entity) and not tr.Entity:IsPlayer() then
-			local Dist = (hg.eye(owner) - tr.HitPos):Length()
+			local Dist = (zc.eye(owner) - tr.HitPos):Length()
 			--if Dist < self.ReachDistance then
 				sound.Play("Flesh.ImpactSoft", owner:GetShootPos(), 65, math.random(90, 110))
 				self:SetCarrying(tr.Entity, tr.PhysicsBone, tr.HitPos, Dist)
@@ -789,16 +789,16 @@ function SWEP:SecondaryAttack()
 				self:ApplyForce()
 			--end
 		elseif IsValid(tr.Entity) and tr.Entity:IsPlayer() then
-			local Dist = (hg.eye(owner) - tr.HitPos):Length()
+			local Dist = (zc.eye(owner) - tr.HitPos):Length()
 			if Dist < self.ReachDistance then
 				sound.Play("Flesh.ImpactSoft", owner:GetShootPos(), 65, math.random(90, 110))
 				owner:SetVelocity(owner:GetAimVector() * 20)
 				tr.Entity:SetVelocity((owner:KeyDown(IN_SPEED) and 1 or -1) * owner:GetAimVector() * 50)
 				self:SetNextSecondaryFire(CurTime() + .25)
 				if owner.PlayerClassName == "sc_infiltrator" or (clawClasses[owner.PlayerClassName] and !(tr.Entity.IsBerserk and tr.Entity:IsBerserk())) or owner:IsBerserk() then
-					hg.LightStunPlayer(tr.Entity, 3)
+					zc.LightStunPlayer(tr.Entity, 3)
 					timer.Simple(0,function()
-						local rag = hg.GetCurrentCharacter(tr.Entity)
+						local rag = zc.GetCurrentCharacter(tr.Entity)
 						if IsValid(rag) and rag ~= tr.Entity then
 							self:SetCarrying(rag, tr.PhysicsBone, tr.HitPos, Dist)
 						end
@@ -827,7 +827,7 @@ SWEP.Checking = 0
 
 function SWEP:ApplyForce()
 	local ply = self:GetOwner()
-	local target = self:GetOwner():GetAimVector() * self.CarryDist + hg.eye(ply)
+	local target = self:GetOwner():GetAimVector() * self.CarryDist + zc.eye(ply)
 	if not IsValid(self.CarryEnt) then return end
 	local phys = self.CarryEnt:GetPhysicsObjectNum(self.CarryBone)
 
@@ -850,7 +850,7 @@ function SWEP:ApplyForce()
 		if self.CarryEnt.organism and ((ply.sendTimeOrg or 0) < CurTime()) then
 			ply.sendTimeOrg = CurTime() + 0.5
 
-			//hg.send_organism(self.CarryEnt.organism, ply)
+			//zc.send_organism(self.CarryEnt.organism, ply)
 		end
 
 		if self.CarryPos then
@@ -921,21 +921,21 @@ function SWEP:ApplyForce()
 						end
 
 						if (org.last_heartbeat + 60) > CurTime() then
-							ply:ChatPrint(zb.locale.GetLocalized("body/still_warm"))
+							ply:ChatPrint(zc.locale.GetLocalized("body/still_warm"))
 						else
-							ply:ChatPrint(zb.locale.GetLocalized((org.last_heartbeat + 180) < CurTime() and "body/here_awhile" or "body/slightly_warm"))
+							ply:ChatPrint(zc.locale.GetLocalized((org.last_heartbeat + 180) < CurTime() and "body/here_awhile" or "body/slightly_warm"))
 						end
 
 						if org.blood < 3500 then
 							//if org.blood < 1000 then
 								//ply:ChatPrint("The skin looks almost white.")
 							//else
-								ply:ChatPrint(zb.locale.GetLocalized("body/skin_pale"))
+								ply:ChatPrint(zc.locale.GetLocalized("body/skin_pale"))
 							//end
 						end
 
 						if org.bleed > 0 then
-							ply:ChatPrint(zb.locale.GetLocalized("body/bleeding", zb.locale.GetLocalized((org.bleed > 10 and "body/bleeding/profusely") or (org.bleed > 5 and "body/bleeding/moderately") or "body/bleeding/slightly")))
+							ply:ChatPrint(zc.locale.GetLocalized("body/bleeding", zc.locale.GetLocalized((org.bleed > 10 and "body/bleeding/profusely") or (org.bleed > 5 and "body/bleeding/moderately") or "body/bleeding/slightly")))
 						end
 
 						//org.bulletwounds = 0
@@ -946,27 +946,27 @@ function SWEP:ApplyForce()
 						//org.explosionwounds = 0
 
 						if org.bulletwounds > 0 then
-							ply:ChatPrint(zb.locale.GetLocalized("body/bullet_wounds", org.bulletwounds))
+							ply:ChatPrint(zc.locale.GetLocalized("body/bullet_wounds", org.bulletwounds))
 						end
 
 						if org.stabwounds > 0 then
-							ply:ChatPrint(zb.locale.GetLocalized("body/stab_wounds", org.stabwounds))//28 STAB WOUNDS. YOU WOULDNT LEAVE HIM A CHANCE, HUH?
+							ply:ChatPrint(zc.locale.GetLocalized("body/stab_wounds", org.stabwounds))//28 STAB WOUNDS. YOU WOULDNT LEAVE HIM A CHANCE, HUH?
 						end
 
 						if org.slashwounds > 0 then
-							ply:ChatPrint(zb.locale.GetLocalized("body/slash_wounds", org.slashwounds))
+							ply:ChatPrint(zc.locale.GetLocalized("body/slash_wounds", org.slashwounds))
 						end
 
 						if org.bruises > 0 then
-							ply:ChatPrint(zb.locale.GetLocalized("body/bruises", org.bruises))
+							ply:ChatPrint(zc.locale.GetLocalized("body/bruises", org.bruises))
 						end
 
 						if org.burns > 0 then
-							ply:ChatPrint(zb.locale.GetLocalized("body/burned"))
+							ply:ChatPrint(zc.locale.GetLocalized("body/burned"))
 						end
 
 						if org.explosionwounds > 0 then
-							ply:ChatPrint(zb.locale.GetLocalized("body/blast_trauma"))
+							ply:ChatPrint(zc.locale.GetLocalized("body/blast_trauma"))
 						end
 
 						if (bone == "ValveBiped.Bip01_Head1") then
@@ -979,7 +979,7 @@ function SWEP:ApplyForce()
 							--ply:ChatPrint(org.unconscious and "No reaction." or "Reaction present.")
 
 							if org.isPly and not org.unconscious then
-								org.owner:ChatPrint(zb.locale.GetLocalized("body/checked_for_reaction"))
+								org.owner:ChatPrint(zc.locale.GetLocalized("body/checked_for_reaction"))
 							end
 						end
 					end
@@ -1012,7 +1012,7 @@ function SWEP:ApplyForce()
 				if org and bone == "ValveBiped.Bip01_Spine2" and trace.Hit then
 					if self.firstTimePrint then
 						if not ply2.noHead then
-							ply:ChatPrint(zb.locale.GetLocalized("body/begin_cpr"))
+							ply:ChatPrint(zc.locale.GetLocalized("body/begin_cpr"))
 						else
 							ply:Notify("I dont think CPR would help here...", 10)
 						end
@@ -1022,7 +1022,7 @@ function SWEP:ApplyForce()
 					if (self.CPRThink or 0) < CurTime() then
 						self.CPRThink = CurTime() + (1 / 120) * 60
 						if org.alive then
-							//org.o2[1] = math.min(org.o2[1] + hg.organism.OxygenateBlood(org) * 2 * (ply.Profession == "doctor" and 2 or 1), org.o2.range)
+							//org.o2[1] = math.min(org.o2[1] + zc.organism.OxygenateBlood(org) * 2 * (ply.Profession == "doctor" and 2 or 1), org.o2.range)
 							org.pulse = math.min(org.pulse + 5 * (ply.Profession == "doctor" and 2 or 1),70)
 							org.CO = math.Approach(org.CO, 0, (ply.Profession == "doctor" and 2 or 1))
 							org.COregen = math.Approach(org.COregen, 0, (ply.Profession == "doctor" and 2 or 1))
@@ -1035,7 +1035,7 @@ function SWEP:ApplyForce()
 								local dmginfo = DamageInfo()
 								dmginfo:SetDamageType(DMG_CRUSH)
 								dmginfo:SetInflictor(self)
-								hg.organism.input_list.chest(org, 1, 5, dmginfo)
+								zc.organism.input_list.chest(org, 1, 5, dmginfo)
 							end
 
 							if org.pulse > 15 then org.heartstop = false end
@@ -1064,7 +1064,7 @@ function SWEP:ApplyForce()
 		end
 
 		--[[if IsValid(self.CarryEnt) and self.CarryBone then
-			hg.ShadowControl(self.CarryEnt, self.CarryBone, 0.1, angle_zero, 0, 0, target, 60, 40)
+			zc.ShadowControl(self.CarryEnt, self.CarryBone, 0.1, angle_zero, 0, 0, target, 60, 40)
 		end]]
 
 		if ply:KeyDown(IN_USE) then
@@ -1114,11 +1114,11 @@ function SWEP:SetCarrying(ent, bone, pos, dist)
 		end
 
 		if not self.CarryEnt:GetCustomCollisionCheck() then
-			hg.QueueCollisionRulesChanged(self.CarryEnt, owner, true)
+			zc.QueueCollisionRulesChanged(self.CarryEnt, owner, true)
 
 			self.CarryEnt:CallOnRemove("removenarsla",function()
 				if not IsValid(owner) then return end
-				hg.QueueCollisionRulesChanged(owner)
+				zc.QueueCollisionRulesChanged(owner)
 				owner:SetNetVar("carryent",nil)
 				owner:SetNetVar("carrybone",nil)
 				owner:SetNetVar("carrymass",nil)
@@ -1129,7 +1129,7 @@ function SWEP:SetCarrying(ent, bone, pos, dist)
 		end
 	else
 		if IsValid(self.CarryEnt) and self.CarryEnt:GetCustomCollisionCheck() then
-			hg.QueueCollisionRulesChanged(self.CarryEnt, owner)
+			zc.QueueCollisionRulesChanged(self.CarryEnt, owner)
 			//self.CarryEnt:SetCustomCollisionCheck(false)
 		end
 
@@ -1150,11 +1150,11 @@ end
 SWEP.DamagePrimary = 10
 
 function SWEP:BlockingLogic(ent, mul, attacktype, trace)
-    ent = hg.RagdollOwner(ent) or ent
+    ent = zc.RagdollOwner(ent) or ent
 
     if ent:IsPlayer() then
         local wep = ent:GetActiveWeapon()
-        local pos, aimvec = hg.eye(ent)
+        local pos, aimvec = zc.eye(ent)
         local dist = util.DistanceToLine(pos + aimvec * 100, pos, trace.HitPos)
         local dmg = wep.DamagePrimary
         local selfdmg = self.DamagePrimary * 0.2
@@ -1237,8 +1237,8 @@ function SWEP:Think()
 		if IsValid(self.CarryEnt) or game.GetWorld() == self.CarryEnt then self:ApplyForce() end
 	elseif self.CarryEnt then
 		if IsValid(self.CarryEnt) and self.CarryEnt.organism and self.CarryEnt.organism.alive then
-			if zb and zb.hostage and self.CarryEnt == zb.hostage then
-				zb.hostageLastTouched = owner
+			if zc and zc.hostage and self.CarryEnt == zc.hostage then
+				zc.hostageLastTouched = owner
 			end
 		end
 		self:SetCarrying()
@@ -1424,22 +1424,22 @@ function SWEP:AttackFront(special_attack, rand)
 	owner:LagCompensation(true)
 	local Ent, HitPos, _, physbone, trace = WhomILookinAt(owner, .3, special_attack and 35 or 45)
 	if clawClasses[owner.PlayerClassName] then
-		local pos = hg.eye(owner)
+		local pos = zc.eye(owner)
 		trace = util.TraceHull({
 			start = pos,
 			endpos = pos + owner:GetAimVector() * self.ReachDistance,
-			filter = {owner, hg.GetCurrentCharacter(owner)},
+			filter = {owner, zc.GetCurrentCharacter(owner)},
 			mins = trMinsClaws,
 			maxs = trMaxsClaws,
 		})
 		Ent = trace.Entity
 		HitPos = trace.HitPos
 	else
-		local pos = hg.eye(owner)
+		local pos = zc.eye(owner)
 		trace = util.TraceHull({
 			start = pos,
 			endpos = pos + owner:GetAimVector() * self.ReachDistance,
-			filter = {owner, hg.GetCurrentCharacter(owner)},
+			filter = {owner, zc.GetCurrentCharacter(owner)},
 			mins = trMins,
 			maxs = trMaxs,
 		})
@@ -1556,7 +1556,7 @@ function SWEP:AttackFront(special_attack, rand)
 		Ent:TakeDamageInfo(Dam)
 
 		if glass and Ent:Health() <= 0 then
-			hg.organism.AddWoundManual(owner, math.Rand(50,75) * 0.5, vector_origin, AngleRand(), owner:LookupBone("ValveBiped.Bip01_"..(rand and "R" or "L").."_Hand"), CurTime())
+			zc.organism.AddWoundManual(owner, math.Rand(50,75) * 0.5, vector_origin, AngleRand(), owner:LookupBone("ValveBiped.Bip01_"..(rand and "R" or "L").."_Hand"), CurTime())
 		end
 
 		local Phys = Ent:IsPlayer() and Ent:GetPhysicsObject() or Ent:GetPhysicsObjectNum(physbone or 0)
@@ -1583,7 +1583,7 @@ end
 
 heldents = heldents or {}
 
-function hg.RemoveCarryEnt2(ent)
+function zc.RemoveCarryEnt2(ent)
 	heldents[ent] = nil
 
 	ent.rememberedang = nil
@@ -1600,12 +1600,12 @@ function hg.RemoveCarryEnt2(ent)
 	ent:RemoveCallOnRemove("removenasral")
 end
 
-function hg.SetCarryEnt2(ply, ent, bone, mass, carrypos, targetpos, targetang, dist)
+function zc.SetCarryEnt2(ply, ent, bone, mass, carrypos, targetpos, targetang, dist)
 	if not IsValid(ent) then
 		local ent2 = ply:GetNetVar("carryent2")
 
 		if IsValid(ent2) then
-			hg.RemoveCarryEnt2(ent2)
+			zc.RemoveCarryEnt2(ent2)
 		end
 
 		ply:SetNetVar("carryent2",nil)
@@ -1634,7 +1634,7 @@ function hg.SetCarryEnt2(ply, ent, bone, mass, carrypos, targetpos, targetang, d
 			ply:SetNetVar("carrypos2", carrypos)
 
 			if not ent:GetCustomCollisionCheck() then
-				hg.QueueCollisionRulesChanged(ent, ply, true)
+				zc.QueueCollisionRulesChanged(ent, ply, true)
 			end
 
 			local dist = dist or phys:GetPos():Distance(ply:EyePos())
@@ -1669,9 +1669,9 @@ function SWEP:Reload()
 
 			if ((bone ~= "ValveBiped.Bip01_L_Hand") and (bone  ~= "ValveBiped.Bip01_R_Hand") and (bone ~= "ValveBiped.Bip01_Head1")) then
 				if not heldents[ent:EntIndex()] then
-					hg.SetCarryEnt2(owner, ent, bon, phys:GetMass(), self.CarryPos, owner:GetAimVector() * (self.CarryDist or 50) + owner:GetShootPos())
+					zc.SetCarryEnt2(owner, ent, bon, phys:GetMass(), self.CarryPos, owner:GetAimVector() * (self.CarryDist or 50) + owner:GetShootPos())
 				else
-					--hg.SetCarryEnt2(owner)
+					--zc.SetCarryEnt2(owner)
 				end
 			end
 
@@ -1686,7 +1686,7 @@ if SERVER then
 		for i, tbl in pairs(heldents) do
 			if not tbl or not IsValid(tbl[1]) then
 				if IsValid(tbl[2]) then
-					hg.SetCarryEnt2(tbl[2])
+					zc.SetCarryEnt2(tbl[2])
 				end
 				heldents[i] = nil
 
@@ -1708,7 +1708,7 @@ if SERVER then
 			end
 
 			if heldEntityInvalid or playerCannotKeepHolding then
-				hg.SetCarryEnt2(ply)
+				zc.SetCarryEnt2(ply)
 				heldents[i] = nil
 
 				continue
@@ -1764,7 +1764,7 @@ if SERVER then
 			phys:Wake()
 
 			if len > 100 then
-				hg.SetCarryEnt2(ply)
+				zc.SetCarryEnt2(ply)
 				heldents[i] = nil
 
 				continue
@@ -1799,7 +1799,7 @@ if SERVER then
 			if wep.GetCarrying and ply:KeyDown(IN_ATTACK) then
 				phys:ApplyForceCenter(ply:GetAimVector() * math.min(5000, phys:GetMass() * 800))
 
-				hg.SetCarryEnt2(ply)
+				zc.SetCarryEnt2(ply)
 				heldents[i] = nil
 			end
 		end
@@ -1863,7 +1863,7 @@ function SWEP:UpdateNextIdle()
 end
 
 function SWEP:IsEntSoft(ent)
-	return ent:IsNPC() or ent:IsPlayer() or hg.RagdollOwner(ent) or ent:IsRagdoll()
+	return ent:IsNPC() or ent:IsPlayer() or zc.RagdollOwner(ent) or ent:IsRagdoll()
 end
 
 hook.Add("ShouldCollide","ZC_CustomCollisions",function(ent1,ent2)

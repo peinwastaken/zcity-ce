@@ -98,7 +98,7 @@ if SERVER then
 		if not org then return end
 
 		local owner = self:GetOwner()
-		if ent == hg.GetCurrentCharacter(owner) and zc_healanims:GetBool() then
+		if ent == zc.GetCurrentCharacter(owner) and zc_healanims:GetBool() then
 			self:SetHolding(math.min(self:GetHolding() + 50, 100))
 
 			if self:GetHolding() < 100 then return end

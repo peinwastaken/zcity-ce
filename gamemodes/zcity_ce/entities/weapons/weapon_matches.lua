@@ -55,7 +55,7 @@ end
 
 function SWEP:BoneSet(lookup_name, vec, ang)
     if IsValid(self:GetOwner()) and !self:GetOwner():IsPlayer() then return end
-	hg.bone.Set(self:GetOwner(), lookup_name, vec, ang)
+	zc.bone.Set(self:GetOwner(), lookup_name, vec, ang)
 end
 
 local lang1, lang2 = Angle(0, -10, 0), Angle(0, 10, 0)
@@ -116,7 +116,7 @@ function SWEP:PrimaryAttack()
     self:SetNextPrimaryFire(CurTime() + 1)
     self:EmitSound("f_firematch_strike.wav")
 
-    local tr = hg.eyeTrace(self:GetOwner(), 120)
+    local tr = zc.eyeTrace(self:GetOwner(), 120)
     if tr.Entity and tr.Entity.OnMatches then
         tr.Entity:OnMatches()
         self:TakePrimaryAmmo(1)
@@ -163,7 +163,7 @@ if CLIENT then
 	function SWEP:DrawHUD()
 		if GetViewEntity() ~= LocalPlayer() then return end
 		if LocalPlayer():InVehicle() then return end
-		local tr = hg.eyeTrace(self:GetOwner(), 120)
+		local tr = zc.eyeTrace(self:GetOwner(), 120)
 
 		if not tr then return end
 		local toScreen = tr.HitPos:ToScreen()

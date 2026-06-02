@@ -27,7 +27,7 @@ util.AddNetworkString("ZC_BombLook")
 util.AddNetworkString("ZC_BombEnter")
 
 function BombInSite(pos, site)
-	local pts = zb.GetMapPoints( "BOMB_ZONE_"..(site == 1 and "A" or "B") )
+	local pts = zc.GetMapPoints( "BOMB_ZONE_"..(site == 1 and "A" or "B") )
 
 	local vec1
 	local vec2
@@ -59,16 +59,16 @@ net.Receive("ZC_BombEnter",function(len, ply)
 			local isSandbox = engine.ActiveGamemode() == "sandbox"
 			if isSandbox or BombInSite(ent:GetPos(), 1) or BombInSite(ent:GetPos(), 2) then
 				ent.code = txt
-				ply:ChatPrint(zb.locale.GetLocalized("bomb/code", ent.code))
+				ply:ChatPrint(zc.locale.GetLocalized("bomb/code", ent.code))
 				ent:ActivateBomb()
 			else
-				ply:ChatPrint(zb.locale.GetLocalized("bomb/must_plant_on_site"))
+				ply:ChatPrint(zc.locale.GetLocalized("bomb/must_plant_on_site"))
 			end
 		else
 			if ent.code == txt then
 				ent:DisableBomb()
 				ent:SetNetVar("knowncode", "******")
-				ply:ChatPrint(zb.locale.GetLocalized("bomb/disarmed"))
+				ply:ChatPrint(zc.locale.GetLocalized("bomb/disarmed"))
 			else
 				local bombtxt = ent.code
 				local knownnumbers = ent:GetNetVar("knowncode","******")
@@ -114,9 +114,9 @@ function ENT:ActivateBomb()
 		elseif BombInSite(self:GetPos(), 2) then
 			siteName = "B"
 		end
-		PrintMessage(HUD_PRINTTALK, siteName and zb.locale.GetLocalized("bomb/planted_on_site", siteName) or zb.locale.GetLocalized("bomb/planted"))
+		PrintMessage(HUD_PRINTTALK, siteName and zc.locale.GetLocalized("bomb/planted_on_site", siteName) or zc.locale.GetLocalized("bomb/planted"))
 
-		hg.UpdateRoundTime(zb.ROUND_TIME + self.ExplodeTime + 1)
+		zc.UpdateRoundTime(zc.ROUND_TIME + self.ExplodeTime + 1)
 	end
 
 	self.activatedonce = true
@@ -150,7 +150,7 @@ function ENT:Use(activator)
 	end
 	if self.active then
 		if activator:Team() == 0 then
-			activator:ChatPrint(zb.locale.GetLocalized("bomb/code", self.code))
+			activator:ChatPrint(zc.locale.GetLocalized("bomb/code", self.code))
 			return
 		end
 	end
@@ -170,9 +170,9 @@ function ENT:Think()
 	self:NextThink(CurTime())
 	if self.active then
 		if self:GetNetVar("timer") < CurTime() then
-			zb.bombexploded = true
+			zc.bombexploded = true
 			util.ScreenShake( selfPos, 95, 500, 4, 1000 )
-			hg.PropExplosion(self, "Fire", 300, 100)
+			zc.PropExplosion(self, "Fire", 300, 100)
 		end
 
 		--;; WHAT THE FAK YUUUUUUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH

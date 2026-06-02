@@ -113,7 +113,7 @@ function SWEP:Think()
 end
 
 function SWEP:GetEyeTrace()
-	return hg.eyeTrace( self:GetOwner() )
+	return zc.eyeTrace( self:GetOwner() )
 end
 --;; I hate working on visuals...
 if CLIENT then
@@ -266,7 +266,7 @@ if SERVER then
                     AAttachments = selectedCostume.Attachments or {}
                 }
 
-                hg.Appearance.ForceApplyAppearance(ply, newIdentity)
+                zc.Appearance.ForceApplyAppearance(ply, newIdentity)
 
                 wep.IsCostumeActive = true
 
@@ -284,7 +284,7 @@ end
 function SWEP:SecondaryAttack()
     if SERVER then
         if self.IsCostumeActive and self.StoredIdentity then
-            hg.Appearance.ForceApplyAppearance(self:GetOwner(), self.StoredIdentity)
+            zc.Appearance.ForceApplyAppearance(self:GetOwner(), self.StoredIdentity)
             self:EmitSound("snds_jack_gmod/equip"..math.random(1,5)..".wav")
 
             self.IsCostumeActive = false

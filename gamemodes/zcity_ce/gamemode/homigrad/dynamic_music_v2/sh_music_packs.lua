@@ -1,5 +1,5 @@
-hg.DynamicMusicV2 = hg.DynamicMusicV2 or {}
-hg.DynamicMusicV2.Trakcs = hg.DynamicMusicV2.Trakcs or {}
+zc.DynamicMusicV2 = zc.DynamicMusicV2 or {}
+zc.DynamicMusicV2.Trakcs = zc.DynamicMusicV2.Trakcs or {}
 
 --[[
     ["example track"] = {
@@ -44,8 +44,8 @@ local function basicSelectPreset(ply)
 end
 
 local function AddTrack(strName, tPresets, tLayers, fSelectPreset, strAuthor, strNormalName, iBPM, fOffset)
-    hg.DynamicMusicV2.Trakcs[strName] = {}
-    local Track = hg.DynamicMusicV2.Trakcs[strName]
+    zc.DynamicMusicV2.Trakcs[strName] = {}
+    local Track = zc.DynamicMusicV2.Trakcs[strName]
 
     Track["Presets"] = tPresets
     Track["Layers"] = tLayers
@@ -305,8 +305,8 @@ AddTrack(
         if (!org or org.unconscious) or !ply:Alive() then return -1 end
 
         if org.noradrenaline and org.noradrenaline > 0 then
-            local timediff = SysTime() - hg.noradrenalineStartTime
-            local add = hg.GetCurrentCharacter(ply):GetVelocity():LengthSqr() > 650 * 650 and 1 or 0
+            local timediff = SysTime() - zc.noradrenalineStartTime
+            local add = zc.GetCurrentCharacter(ply):GetVelocity():LengthSqr() > 650 * 650 and 1 or 0
             return math.min(5, (org.noradrenaline > 1.5 and 5 or (timediff < 3) and 1 or timediff < 8 and 2 or (org.noradrenaline > 0.6 and 3 or org.noradrenaline > 0.3 and 2 or org.noradrenaline > 0.1 and 1 or 0)) + add)
         end
 

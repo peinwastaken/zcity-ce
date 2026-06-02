@@ -1,7 +1,7 @@
-hg = hg or {}
-hg.AdminSystem = hg.AdminSystem or {}
+zc = zc or {}
+zc.AdminSystem = zc.AdminSystem or {}
 
-local AS = hg.AdminSystem
+local AS = zc.AdminSystem
 
 AS.Version = "2.0"
 AS.Modules = AS.Modules or {}
@@ -74,14 +74,14 @@ if SERVER then
 end
 
 function AS:GetCurrentMode()
-	local mode = zb and (zb.CROUND_MAIN or zb.CROUND)
+	local mode = zc and (zc.CROUND_MAIN or zc.CROUND)
 	return mode and string.lower(mode) or "unknown"
 end
 
 hook.Add("InitPostEntity", "ZC_AdminSystemInit", function()
 	timer.Simple(1, function()
-		if hg.AdminSystem.InitModules then
-			hg.AdminSystem:InitModules()
+		if zc.AdminSystem.InitModules then
+			zc.AdminSystem:InitModules()
 		end
 		hook.Run("ZC_OnAdminSystemLoaded")
 	end)

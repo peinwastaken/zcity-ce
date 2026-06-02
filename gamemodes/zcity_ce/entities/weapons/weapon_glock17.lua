@@ -94,7 +94,7 @@ if CLIENT then
 		end,
 		[0.3] = function( self )
 			if self:Clip1() < 1 then
-				hg.CreateMag( self, Vector(0,55,-55) )
+				zc.CreateMag( self, Vector(0,55,-55) )
 				self:GetWM():ManipulateBoneScale(47, vector_origin)
 				self:GetWM():ManipulateBoneScale(49, vector_origin)
 			else

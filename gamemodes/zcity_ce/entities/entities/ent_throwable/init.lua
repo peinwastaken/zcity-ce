@@ -132,7 +132,7 @@ function ENT:Use(ply)
 				dmginfo:SetDamageType(DMG_SLASH)
 				self.PainMultiplier = 0.5
 				tbl.Ent2:TakeDamageInfo(dmginfo)
-				hg.organism.AddWoundManual(tbl.Ent2,self.returnblood or 10,vector_origin,angle_zero,tbl["Bone2"] or 0,CurTime())
+				zc.organism.AddWoundManual(tbl.Ent2,self.returnblood or 10,vector_origin,angle_zero,tbl["Bone2"] or 0,CurTime())
 			end
 		end
 

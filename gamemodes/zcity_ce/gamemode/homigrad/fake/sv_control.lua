@@ -46,30 +46,30 @@ local left_arm = {
 	["ValveBiped.Bip01_L_Hand"] = true,
 }
 
-hg.cachedmodels = hg.cachedmodels or {}
+zc.cachedmodels = zc.cachedmodels or {}
 
 local function realPhysNum(ragdoll, physNumber)
 	local bone = defaultBones[physNumber]
 	local model = ragdoll:GetModel()
 
-	if hg.cachedmodels[model] and hg.cachedmodels[model][bone] then
-		return hg.cachedmodels[model][bone]
+	if zc.cachedmodels[model] and zc.cachedmodels[model][bone] then
+		return zc.cachedmodels[model][bone]
 	else
-		hg.cacheModel(ragdoll)
+		zc.cacheModel(ragdoll)
 
-		return hg.cachedmodels[model] and hg.cachedmodels[model][bone] or 0
+		return zc.cachedmodels[model] and zc.cachedmodels[model][bone] or 0
 	end
 end
 
 
-hg.realPhysNum = realPhysNum
-function hg.ShadowControl(ragdoll, physNumber, ss, ang, maxang, maxangdamp, pos, maxspeed, maxspeeddamp)
+zc.realPhysNum = realPhysNum
+function zc.ShadowControl(ragdoll, physNumber, ss, ang, maxang, maxangdamp, pos, maxspeed, maxspeeddamp)
 	physNumber = realPhysNum(ragdoll, physNumber) or 0
 	local phys = ragdoll:GetPhysicsObjectNum(physNumber)
 
 	shadowparams.secondstoarrive = ss
 	shadowparams.angle = ang
-	shadowparams.maxangular = maxang and maxang * (ragdoll.power or 1)-- * (hg.IdealMassPlayer[physNumber] and hg.IdealMassPlayer[physNumber] / phys:GetMass() or 0)
+	shadowparams.maxangular = maxang and maxang * (ragdoll.power or 1)-- * (zc.IdealMassPlayer[physNumber] and zc.IdealMassPlayer[physNumber] / phys:GetMass() or 0)
 	shadowparams.maxangulardamp = maxangdamp
 	shadowparams.pos = pos
 	shadowparams.maxspeed = maxspeed and maxspeed * (ragdoll.power or 1)
@@ -80,7 +80,7 @@ function hg.ShadowControl(ragdoll, physNumber, ss, ang, maxang, maxangdamp, pos,
 	phys:ComputeShadowControl(shadowparams)
 end
 
-local shadowControl = hg.ShadowControl
+local shadowControl = zc.ShadowControl
 
 hook.Add("ZC_OnFakeRagdollCreated", "ZC_ResetFakeControlCooldowns", function(ply, ragdoll)
 	ply.forcefakeaim = true
@@ -160,16 +160,16 @@ local function GetFakeControlEyeAngles(ply)
 end
 
 hook.Add("Think", "ZC_UpdateFakeRagdollControl", function()
-	hg.humans_cached = player_GetHumans()
+	zc.humans_cached = player_GetHumans()
 
-	//for ply, ragdoll in pairs(hg.ragdollFake) do
+	//for ply, ragdoll in pairs(zc.ragdollFake) do
 	for _, ply in player.Iterator() do
 		local inUse = FakeRagdollAimKeyDown(ply)
-		if hg.GetFakeState and hg.GetFakeState(ply) ~= ((hg.FAKE_STATE and hg.FAKE_STATE.ACTIVE) or 1) then continue end
+		if zc.GetFakeState and zc.GetFakeState(ply) ~= ((zc.FAKE_STATE and zc.FAKE_STATE.ACTIVE) or 1) then continue end
 
-		local ragdoll = hg.ragdollFake[ply]//ply.FakeRagdoll
+		local ragdoll = zc.ragdollFake[ply]//ply.FakeRagdoll
 		if not IsValid(ragdoll) then
-			//hg.ragdollFake[ply] = nil
+			//zc.ragdollFake[ply] = nil
 			continue
 		end
 
@@ -212,12 +212,12 @@ hook.Add("Think", "ZC_UpdateFakeRagdollControl", function()
 
 		local inmove = false
 
-		local ragdollcombat = hg.RagdollCombatInUse(ply)
+		local ragdollcombat = zc.RagdollCombatInUse(ply)
 		if !ragdollcombat and ragdoll == ply.FakeRagdoll then
-			hg.SetFreemove(ply, false)
+			zc.SetFreemove(ply, false)
 		end
 
-		if (org.lightstun < CurTime()) and (tracehuy.Hit or ply.FakeRagdoll ~= ragdoll) and org.spine1 < hg.organism.fake_spine1 and org.canmove and ((ply.lastFake and (ply.lastFake) > CurTime()) or ply.FakeRagdoll ~= ragdoll) and !ply.jumpedfake then
+		if (org.lightstun < CurTime()) and (tracehuy.Hit or ply.FakeRagdoll ~= ragdoll) and org.spine1 < zc.organism.fake_spine1 and org.canmove and ((ply.lastFake and (ply.lastFake) > CurTime()) or ply.FakeRagdoll ~= ragdoll) and !ply.jumpedfake then
 			local power = 1
 			inmove = true
 
@@ -274,7 +274,7 @@ hook.Add("Think", "ZC_UpdateFakeRagdollControl", function()
 			end
 
 			if ragdollcombat then
-				hg.SetFreemove(ply, true)
+				zc.SetFreemove(ply, true)
 			end
 
 			if ply:InVehicle() then
@@ -771,10 +771,10 @@ hook.Add("Think", "ZC_UpdateFakeRagdollControl", function()
 			local org = choking1.organism
 			if org then
 				org.choking = true
-				if zb then
+				if zc then
 					local dmgInfo = DamageInfo()
 					dmgInfo:SetAttacker(ply)
-					hook.Run("ZC_OnOrganismDamage", org.owner, dmgInfo, HITGROUP_RIGHTARM, hg.GetCurrentCharacter(org.owner), ragdoll.dtime * ((zb.MaximumHarm or 10) / 50) )
+					hook.Run("ZC_OnOrganismDamage", org.owner, dmgInfo, HITGROUP_RIGHTARM, zc.GetCurrentCharacter(org.owner), ragdoll.dtime * ((zc.MaximumHarm or 10) / 50) )
 				end
 
 				if org.unconscious then
@@ -838,7 +838,7 @@ hook.Add("Think", "ZC_UpdateFakeRagdollControl", function()
 		end
 
 		if FakeControlKeyDown(ply, IN_DUCK) and !ply:InVehicle() then
-			if org.canmove and org.spine1 < hg.organism.fake_spine1 then
+			if org.canmove and org.spine1 < zc.organism.fake_spine1 then
 				local head = ragdoll:GetPhysicsObject(ragdoll:TranslateBoneToPhysBone(ragdoll:LookupBone("ValveBiped.Bip01_Head1")))
 				local angle = -(-angles2)
 				angle:RotateAroundAxis(angle:Forward(), -90)

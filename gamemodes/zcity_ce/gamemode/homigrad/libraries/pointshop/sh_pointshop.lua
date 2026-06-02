@@ -1,7 +1,7 @@
 --
-hg.PointShop = hg.PointShop or {}
+zc.PointShop = zc.PointShop or {}
 
-local PLUGIN = hg.PointShop
+local PLUGIN = zc.PointShop
 
 PLUGIN.Items = PLUGIN.Items or {}
 

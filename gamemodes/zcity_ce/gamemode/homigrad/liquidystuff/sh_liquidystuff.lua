@@ -1,6 +1,6 @@
-hg.drums = hg.drums or {}
-hg.drums2 = hg.drums2 or {}
-hg.gasolinePath = hg.gasolinePath or {}
+zc.drums = zc.drums or {}
+zc.drums2 = zc.drums2 or {}
+zc.gasolinePath = zc.gasolinePath or {}
 
 local math_random = math.random
 local math_Round = math.Round
@@ -15,7 +15,7 @@ local whitelistModels = {
 	["models/props_junk/metalgascan.mdl"] = true,
 }
 
-hg.gas_models = whitelistModels
+zc.gas_models = whitelistModels
 
 local vecHole = {
 	["models/props_c17/oildrum001_explosive.mdl"] = Vector(10, 0, 0),
@@ -40,14 +40,14 @@ if SERVER then
 				pos = maxs + mins + vec
 			end
 
-			hg.drums[ent:EntIndex()] = {
+			zc.drums[ent:EntIndex()] = {
 				Entity = ent,
 				Volume = hole and math_random(1, pos[3]) or maxs[3] * 0.8,
 				high_point = {
 					[1] = hole and {pos, CurTime()} or nil
 				}
 			}
-			table.insert(hg.drums2, ent)
+			table.insert(zc.drums2, ent)
 		end
 	end
 
@@ -64,7 +64,7 @@ if SERVER then
 		if time > CurTime() then return end
 		time = time + 0.1
 
-		for i, drum in pairs(hg.drums) do
+		for i, drum in pairs(zc.drums) do
 			hook.Run("ZC_LiquidDrumThink", i, drum)
 		end
 	end)
@@ -75,14 +75,14 @@ if SERVER then
 		if time2 > CurTime() then return end
 		time2 = time2 + 1
 
-		for _, tbl in ipairs(hg.gasolinePath) do
+		for _, tbl in ipairs(zc.gasolinePath) do
 			local pos, ignited = tbl[1], tbl[2]
 
 			if isnumber(ignited) and (ignited + 60) < CurTime() then tbl[2] = true continue end
 
 			if isnumber(ignited) then
 
-				for _, tbl2 in ipairs(hg.gasolinePath) do
+				for _, tbl2 in ipairs(zc.gasolinePath) do
 					if not tbl2[2] and (tbl[1] - tbl2[1]):LengthSqr() < 2048 then
 						tbl2[2] = CurTime()
 						tbl2[3] = tbl[3] or tbl2[3]
@@ -103,14 +103,14 @@ if SERVER then
 		end
 
 		net.Start("ZC_GasolinePath")
-		net.WriteTable(hg.gasolinePath)
+		net.WriteTable(zc.gasolinePath)
 		net.Broadcast()
 	end)
 
 	hook.Add("PostCleanupMap","ZC_ClearLiquidTrails",function()
-		hg.drums = {}
-		hg.drums2 = {}
-		hg.gasolinePath = {}
+		zc.drums = {}
+		zc.drums2 = {}
+		zc.gasolinePath = {}
 	end)
 
 	local vecTemp = Vector(0, 0, 0)
@@ -119,7 +119,7 @@ if SERVER then
 		local ent = drum.Entity
 
 		if not IsValid(ent) then
-			hg.drums[i] = nil
+			zc.drums[i] = nil
 
 			return
 		end
@@ -169,7 +169,7 @@ if SERVER then
 					if (drum.lastFireCreated or 0) < CurTime() then
 						drum.lastFireCreated = CurTime() + 0.2
 
-						table.insert(hg.gasolinePath, {tr.HitPos, false})
+						table.insert(zc.gasolinePath, {tr.HitPos, false})
 					end
 				elseif tr.Entity != Entity(0) then
 					tr.Entity.shouldburn = tr.Entity.shouldburn and tr.Entity.shouldburn + 1 or 1
@@ -199,30 +199,30 @@ if SERVER then
 
 			ent:SetNWBool("EmptyBarrel", true)
 
-			hg.drums[i] = nil
+			zc.drums[i] = nil
 		end
 	end)
 
 	hook.Add("EntityRemoved", "ZC_DrumRemoved", function(ent)
-		local drum = hg.drums[ent:EntIndex()]
+		local drum = zc.drums[ent:EntIndex()]
 		if drum then
 			if drum.loopsound then
 				drum.loopsound:Stop()
 				drum.loopsound = nil
 			end
 		end
-		table.RemoveByValue(hg.drums2, ent)
+		table.RemoveByValue(zc.drums2, ent)
 	end)
 
 	hook.Add("ZC_ExplosivesTakeDamage", "ZC_DrumDamage", function(ent, dmgInfo)
-		if !hg.drums[ent:EntIndex()] then return end
+		if !zc.drums[ent:EntIndex()] then return end
 		if !(dmgInfo:IsDamageType(DMG_BULLET + DMG_BUCKSHOT) or (dmgInfo:IsDamageType(DMG_SLASH) and dmgInfo:GetDamage() >= 25)) then return end
 
 		local dmgPos = dmgInfo:GetDamagePosition()
 		local tr = util.QuickTrace(dmgPos,(ent:GetPos() + ent:OBBCenter()) - dmgPos)
 		if tr.Entity == ent then dmgPos = tr.HitPos end
 		local localPos, _ = WorldToLocal(dmgPos, angZero, ent:GetPos(), ent:GetAngles())
-		local drum = hg.drums[ent:EntIndex()]
+		local drum = zc.drums[ent:EntIndex()]
 
 		if #drum.high_point < 5 then
 			drum.high_point[#drum.high_point + 1] = {localPos, CurTime()}
@@ -230,19 +230,19 @@ if SERVER then
 	end)
 else
 	net.Receive("ZC_LiquidDrumDebug", function()
-		hg.drums = net.ReadTable()
+		zc.drums = net.ReadTable()
 	end)
 
-	hg.effparticles = hg.effparticles or {}
+	zc.effparticles = zc.effparticles or {}
 
 	local oldgas = {}
 	net.Receive("ZC_GasolinePath", function()
-		table.CopyFromTo(hg.gasolinePath, oldgas)
+		table.CopyFromTo(zc.gasolinePath, oldgas)
 
-		hg.gasolinePath = net.ReadTable()
+		zc.gasolinePath = net.ReadTable()
 
-		for i, eff in pairs(hg.effparticles) do
-			if hg.gasolinePath[i] then continue end
+		for i, eff in pairs(zc.effparticles) do
+			if zc.gasolinePath[i] then continue end
 
 			if eff and eff:IsValid() then
 				eff:StopEmissionAndDestroyImmediately()
@@ -251,9 +251,9 @@ else
 	end)
 
 	hook.Add("PreDrawEffects","ZC_Fireeffects",function()
-		for i, tbl in ipairs(hg.gasolinePath) do
+		for i, tbl in ipairs(zc.gasolinePath) do
 
-			local effparticles = hg.effparticles
+			local effparticles = zc.effparticles
 
 			if isnumber(tbl[2]) and (!effparticles[i] or !effparticles[i]:IsValid()) then
 				effparticles[i] = CreateParticleSystemNoEntity("vFire_Base_Medium",tbl[1],AngleRand()*5)
@@ -274,9 +274,9 @@ else
 	end)
 
 	hook.Add("PostCleanupMap","ZC_ClearLiquidTrails",function()
-		hg.gasolinePath = {}
+		zc.gasolinePath = {}
 
-		for _, eff in pairs(hg.effparticles) do
+		for _, eff in pairs(zc.effparticles) do
 			if eff and eff:IsValid() then
 				eff:StopEmissionAndDestroyImmediately()
 			end
@@ -286,11 +286,11 @@ else
 	hook.Add("HUDPaint","ZC_DrumClient",function()
 		if true then return end
 
-        for i, drum in pairs(hg.drums) do
+        for i, drum in pairs(zc.drums) do
             local ent = drum.Entity
 
             if not IsValid(ent) then
-                hg.drums[i] = nil
+                zc.drums[i] = nil
                 continue
             end
 
@@ -336,7 +336,7 @@ else
             end
         end
 
-		for i,tbl in pairs(hg.gasolinePath) do
+		for i,tbl in pairs(zc.gasolinePath) do
 			local pos, ignited = tbl[1], tbl[2]
 			surface.SetDrawColor(255,255,255,255)
 			surface.DrawRect(pos:ToScreen().x,pos:ToScreen().y,10,10)

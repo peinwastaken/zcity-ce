@@ -111,7 +111,7 @@ function MODE:EndWave()
     net.Start("ZC_DefenseWaveMusicStop")
     net.Broadcast()
 
-    if DEFENSE_MUSIC.WAITING[self.Wave] and zb.ROUND_STATE == 1 then
+    if DEFENSE_MUSIC.WAITING[self.Wave] and zc.ROUND_STATE == 1 then
         net.Start("ZC_DefenseWaveMusicStart")
         net.WriteString(DEFENSE_MUSIC.WAITING[self.Wave])
         net.Broadcast()
@@ -142,8 +142,8 @@ function MODE:EndWave()
 
     if self.Wave and self.TotalWaves and self.Wave >= self.TotalWaves then
         timer.Simple(5, function()
-            if zb and zb.ROUND_STATE == 1 then
-                zb.EndMatch()
+            if zc and zc.ROUND_STATE == 1 then
+                zc.EndMatch()
             end
         end)
     end
@@ -185,7 +185,7 @@ function MODE:GetGroundedPlayerSpawn(spawnPoint)
 end
 
 function MODE:GetUsualPlayerSpawnPoints()
-    local points = zb.GetMapPoints("Spawnpoint") or {}
+    local points = zc.GetMapPoints("Spawnpoint") or {}
 
     if #points > 0 then
         local newPoints = {}
@@ -215,12 +215,12 @@ function MODE:GetUsualPlayerSpawnPoints()
 end
 
 function MODE:GetDefenseAnchorPoints()
-    local npcSpawnPoints = zb.GetMapPoints("NPC_DEFENSE_SPAWN") or {}
+    local npcSpawnPoints = zc.GetMapPoints("NPC_DEFENSE_SPAWN") or {}
     if #npcSpawnPoints > 0 then
         return npcSpawnPoints
     end
 
-    local defensePoints = zb.GetMapPoints("DEFENSE_POINT") or {}
+    local defensePoints = zc.GetMapPoints("DEFENSE_POINT") or {}
     if #defensePoints > 0 then
         return defensePoints
     end
@@ -383,7 +383,7 @@ function MODE:ShouldRoundEnd()
         return false
     end
 
-    if (#zb:CheckAlive(true) <= 0) then
+    if (#zc:CheckAlive(true) <= 0) then
         local menuActive = false
         for _, ply in player.Iterator() do
             if ply.HasVoted ~= nil then
@@ -421,8 +421,8 @@ function MODE:RoundThink()
 
     if not self:IsWaveActive() then
         if self.WaveCompleted and self.Wave and self.TotalWaves and self.Wave >= self.TotalWaves then
-            if zb and type(zb.EndMatch) == "function" then
-                zb.EndMatch()
+            if zc and type(zc.EndMatch) == "function" then
+                zc.EndMatch()
             else
 
                 self:ClearAllTimers()

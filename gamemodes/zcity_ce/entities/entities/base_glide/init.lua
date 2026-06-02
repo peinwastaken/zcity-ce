@@ -105,7 +105,7 @@ function ENT:Initialize()
     self.lastDriver = NULL
     self.lastBodygroups = {}
     
-	table.insert(hg.vehicles, self)
+	table.insert(zc.vehicles, self)
 
     self.inputBools = {}        -- Per-seat bool inputs
     self.inputFloats = {}       -- Per-seat float inputs

@@ -29,11 +29,11 @@ function EFFECT:Init(data)
 	local hitnormal = data:GetStart()
 	local ammotype = string.lower(string.Replace(gun.Primary and gun.Primary.Ammo or "nil", " ", ""))
 
-	self.bullet = hg.ammotypes[ammotype] and hg.ammotypes[ammotype].TracerSetings or tracer
+	self.bullet = zc.ammotypes[ammotype] and zc.ammotypes[ammotype].TracerSetings or tracer
 
 	if ammotype == "nil" or ammotype == "" then return end
 
-	if not ammotype or not hg.ammotypes[ammotype] or not hg.ammotypes[ammotype].TracerSetings or hg.ammotypes[ammotype].TracerSetings.TracerHeadSize < 2 then
+	if not ammotype or not zc.ammotypes[ammotype] or not zc.ammotypes[ammotype].TracerSetings or zc.ammotypes[ammotype].TracerSetings.TracerHeadSize < 2 then
 		self:Remove()
 		return
 	end
@@ -54,7 +54,7 @@ function EFFECT:Init(data)
 	dir2:Add(dir * math.random(2))
 	-- dir2:Add(vector_up * math.random(2))
 
-	if ammotype and hg.ammotypes[ammotype] and not hg.ammotypes[ammotype].NoSpin and math.random(8) < (data:GetMagnitude() or 1) then self.AddVelocity = math.random(4) * (data:GetMagnitude() or 1) * (math.random(2) == 1 and -1 or 1) end
+	if ammotype and zc.ammotypes[ammotype] and not zc.ammotypes[ammotype].NoSpin and math.random(8) < (data:GetMagnitude() or 1) then self.AddVelocity = math.random(4) * (data:GetMagnitude() or 1) * (math.random(2) == 1 and -1 or 1) end
 
 	self.Velocity = dir2
 end

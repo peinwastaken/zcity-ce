@@ -1,9 +1,9 @@
 -- Player spawns; thankfully I learned to do this properly :steamhappy:
 --; Deka made them >:D
-ZBox = ZBox or {}
-ZBox.Plugins = ZBox.Plugins or {}
-ZBox.Plugins["Spawnpoints"] = ZBox.Plugins["Spawnpoints"] or {}
-local PLUGIN = ZBox.Plugins["Spawnpoints"]
+zc = zc or {}
+zc.Plugins = zc.Plugins or {}
+zc.Plugins["Spawnpoints"] = zc.Plugins["Spawnpoints"] or {}
+local PLUGIN = zc.Plugins["Spawnpoints"]
 
 PLUGIN.Name = "Spawnpoints"
 

@@ -54,7 +54,7 @@ function ENT:ActivateExplosive()
 	bullet.AmmoType = "14.5x114mm B32" 
 	bullet.Attacker = self.owner
 	bullet.Distance = 56756
-	bullet.Callback = hg.bulletHit
+	bullet.Callback = zc.bulletHit
 	bullet.Tracer = 10000
 	bullet.DisableLagComp = true
 	bullet.Filter = {self}
@@ -116,9 +116,9 @@ function ENT:ActivateExplosive()
 
 	timer.Simple(0.1,function()
 		ParticleEffect("pcf_jack_airsplode_small",selfPos+vector_up*-5,vector_up:Angle())
-		--hg.ExplosionEffect(selfPos, blastdist, 80)
+		--zc.ExplosionEffect(selfPos, blastdist, 80)
 	end)
-	hg.ExplosionEffect(selfPos, self.BlastDis, 5)
+	zc.ExplosionEffect(selfPos, self.BlastDis, 5)
 
 	timer.Simple(0, function()
 		if not IsValid(self) then return end

@@ -35,7 +35,7 @@ SWEP.Slot = 2
 SWEP.SlotPos = 1
 
 function SWEP:GetEyeTrace()
-	return hg.eyeTrace(self:GetOwner())
+	return zc.eyeTrace(self:GetOwner())
 end
 
 SWEP.offsetVec = Vector(4,-3,1)
@@ -107,11 +107,11 @@ function SWEP:Initialize()
 end
 
 function SWEP:BoneSet(layerID, lookup_name, vec, ang)
-	hg.bone.Set(self:GetOwner(), layerID, lookup_name, vec, ang)
+	zc.bone.Set(self:GetOwner(), layerID, lookup_name, vec, ang)
 end
 
 function SWEP:BoneGet(lookup_name)
-	return hg.bone.Get(self:GetOwner(), lookup_name)
+	return zc.bone.Get(self:GetOwner(), lookup_name)
 end
 
 function SWEP:Animation()
@@ -151,7 +151,7 @@ function SWEP:PrimaryAttack()
 
 	local ply = self:GetOwner()
 	if not ply:IsNPC() then
-		ent:SetPos(hg.eye(ply,60,hg.GetCurrentCharacter(ply)) - ply:GetAimVector() * 2)
+		ent:SetPos(zc.eye(ply,60,zc.GetCurrentCharacter(ply)) - ply:GetAimVector() * 2)
 	else
 		ent:SetPos(ply:EyePos() + ply:EyeAngles():Forward() * 2)
 	end
