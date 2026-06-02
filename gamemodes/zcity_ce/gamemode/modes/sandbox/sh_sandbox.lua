@@ -68,3 +68,14 @@ MODE.Config = {
 		}
 	}
 }
+
+function GiveCurrentAmmo(ply)
+	if SERVER then
+		local wep = ply:GetActiveWeapon()
+		local ammoType = wep:GetPrimaryAmmoType()
+
+		ply:SetAmmo(wep:GetMaxClip1() * 68, ammoType)
+	end
+end
+
+concommand.Add("zc_givecurrentammo", GiveCurrentAmmo, function() end, "Gives ammo for the current weapon (SANDBOX ONLY)")
