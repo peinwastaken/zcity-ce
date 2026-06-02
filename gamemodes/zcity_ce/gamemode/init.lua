@@ -445,7 +445,7 @@ local function getspawnpos()
         if not v:HasSpawnFlags(1) then continue end
         tab[#tab + 1] = v:GetPos()
     end
-    return tab[1] or tbl[1]:GetPos()
+    return tab[1] or (IsValid(tbl[1]) and tbl[1]:GetPos()) or vector_origin
 end
 
 
@@ -457,6 +457,8 @@ hook.Add("PostCleanupMap","ZC_GenerateChangelevelData",function()
 
     local maps = {}
     for _, map in pairs(ents.FindByClass("trigger_changelevel")) do
+        if !map.map or map.map == "" then continue end
+
         local min, max = map:WorldSpaceAABB()
         local tdmlPos = max - ((max - min) / 2)
 
@@ -478,7 +480,12 @@ hook.Add("PostCleanupMap","ZC_GenerateChangelevelData",function()
 		map = randomMap
 	end
 
-    print("Next map is: "..map.map)
+    if not IsValid(map) then
+        print("ZC_GenerateChangelevelData: no trigger_changelevel found for coop map end.")
+        return
+    end
+
+    print("Next map is: " .. tostring(map.map))
 
     local min, max = map:WorldSpaceAABB()
     local tdmlPos = max - ((max - min) / 2)
