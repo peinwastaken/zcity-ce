@@ -115,7 +115,7 @@ function binds.SaveBinds()
 end
 
 function binds.LoadBinds()
-  local bindConfig = zc.ParseDataFile(BIND_SAVE_PATH)
+  local bindConfig = zc.ParseDataFile(BIND_SAVE_PATH, {})
 
   if type(bindConfig) != "table" then
     zc.dev.DevPrint("binds file could not be loaded, restoring default")
@@ -128,11 +128,22 @@ function binds.LoadBinds()
   for id, bind in pairs(binds.allbinds) do
     local configBind = bindConfig[id]
 
-    if !configBind then
+    if type(configBind) != "table" then
       needsUpdate = true
     else
-      bind.key = configBind.key
-      bind.should_override = configBind.should_override
+      if isnumber(configBind.key) then
+        bind.key = configBind.key
+      else
+        needsUpdate = true
+      end
+
+      if isbool(configBind.should_override) then
+        bind.should_override = configBind.should_override
+      else
+        needsUpdate = true
+      end
+
+      loaded = loaded + 1
     end
   end
 

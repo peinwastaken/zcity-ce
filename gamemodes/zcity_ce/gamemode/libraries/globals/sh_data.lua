@@ -27,8 +27,9 @@ function zc.ParseDataFile(filePath, default)
   if !json or json == "" then return default end
 
   local tbl = util.JSONToTable(json)
-  if !tbl then
+  if tbl == nil then
     print("failed to parse file " .. filePath)
+    return default
   end
 
   return tbl
@@ -83,8 +84,7 @@ function zc.WriteData(path, data, ensureExists)
 end
 
 function zc.DataFileExists(filePath)
-  local filePath = zc.GetDataPath(path)
-  return file.Exists(filePath, "DATA")
+  return file.Exists(zc.GetDataPath(filePath), "DATA")
 end
 
 function zc.DeleteDataFile(path)
@@ -94,7 +94,7 @@ function zc.DeleteDataFile(path)
   end
 
   local dataPath = zc.GetDataPath(path)
-  return file.Delete(dataPath, "DATA")
+  return file.Delete(dataPath)
 end
 
 function zc.GetDataFiles(dir, pattern)

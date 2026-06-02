@@ -271,8 +271,8 @@ hook.Add("ZC_UpdatePlayerBones", "ZC_UpdateWeaponLeanBones", function(ply, dtime
 	local isragdoll = IsValid(ply.FakeRagdoll) and !IsValid(ply:GetNWEntity("FakeRagdollOld"))
 	local leftBind = IsZCBindDown(ply, "lean_left")
 	local rightBind = IsZCBindDown(ply, "lean_right")
-	local left = ((isragdoll and !ragdollcombat and zc.KeyDown(ply, IN_MOVERIGHT)) or leftBind) and not rightBind
-	local right = ((isragdoll and !ragdollcombat and zc.KeyDown(ply, IN_MOVELEFT)) or rightBind) and not leftBind
+	local left = ((isragdoll and !ragdollcombat and zc.KeyDown(ply, IN_MOVERIGHT)) or rightBind) and not leftBind
+	local right = ((isragdoll and !ragdollcombat and zc.KeyDown(ply, IN_MOVELEFT)) or leftBind) and not rightBind
 
 	ply.lean = Lerp(
 		zc.lerpFrameTime( ( left or right ) and 0.045 * ply:GetNetVar("leanSpeedMul",1) or 0.075, dtime * game.GetTimeScale()),
