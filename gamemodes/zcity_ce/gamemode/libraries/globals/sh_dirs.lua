@@ -1,1 +1,0 @@
-DATA_PATH = "/zcity_ce"
