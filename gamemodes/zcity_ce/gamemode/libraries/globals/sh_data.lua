@@ -24,7 +24,7 @@ function zc.ParseDataFile(filePath, default)
   end
 
   local json = file.Read(fullPath, "DATA")
-  if !json then return default end
+  if !json or json == "" then return default end
 
   local tbl = util.JSONToTable(json)
   if !tbl then
@@ -55,7 +55,7 @@ function zc.EnsureDataFile(path)
 end
 
 function zc.WriteData(path, data, ensureExists)
-  if !data then
+  if data == nil then
     print("no data to write")
     return
   end
