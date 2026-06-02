@@ -274,16 +274,13 @@ function zc.GetModes()
 end
 
 ZBATTLE_BIGMAP = 5700
+local MAP_SIZES_PATH = "maps/sizes.json"
 
 hook.Add("InitPostEntity", "ZC_LoadLargeMapConfig", function()
-	local filik = file.Read("zbattle/mapsizes.json", "DATA")
+	local tbl = zc.ParseDataFile(MAP_SIZES_PATH, {})
 
-	if filik then
-		local tbl = util.JSONToTable(filik)
-
-		if tbl[game.GetMap()] then
-			ZBATTLE_BIGMAP = tbl[game.GetMap()]
-		end
+	if tbl[game.GetMap()] then
+		ZBATTLE_BIGMAP = tbl[game.GetMap()]
 	end
 end)
 
@@ -294,13 +291,11 @@ COMMANDS.bigmap = {
 		ply:ChatPrint("Distance for big map: " .. ZBATTLE_BIGMAP)
 		zc.RerollChances()
 
-		file.CreateDir("zbattle")
-
-		local tbl = util.JSONToTable(file.Read("zbattle/mapsizes.json", "DATA") or util.TableToJSON({[game.GetMap()] = ZBATTLE_BIGMAP}))
+		local tbl = zc.ParseDataFile(MAP_SIZES_PATH, {[game.GetMap()] = ZBATTLE_BIGMAP})
 
 		tbl[game.GetMap()] = ZBATTLE_BIGMAP
 
-		file.Write("zbattle/mapsizes.json", util.TableToJSON(tbl))
+		zc.WriteData(MAP_SIZES_PATH, tbl, true)
 
 		ply:ChatPrint("Saved into a file")
 	end,

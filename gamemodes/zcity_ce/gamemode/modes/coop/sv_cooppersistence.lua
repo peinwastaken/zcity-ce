@@ -1,13 +1,10 @@
 zc = zc or {}
 zc.CoopPersistence = zc.CoopPersistence or {}
 
-local SAVE_PATH = "coop_persistence/"
-
-
-file.CreateDir(SAVE_PATH)
+local SAVE_PATH = "coop/session_data.json"
 
 function zc.CoopPersistence.GetSavePath()
-    return SAVE_PATH .. "session_data.json"
+    return SAVE_PATH
 end
 
 function zc.CoopPersistence.SaveAllPlayers()
@@ -18,31 +15,23 @@ function zc.CoopPersistence.SaveAllPlayers()
     end
 
     if table.Count(data) > 0 then
-        file.Write(zc.CoopPersistence.GetSavePath(), util.TableToJSON(data, true))
+        zc.WriteData(zc.CoopPersistence.GetSavePath(), data, true)
     end
 end
 
 function zc.CoopPersistence.LoadAllPlayers()
     local path = zc.CoopPersistence.GetSavePath()
-    local content = file.Read(path, "DATA")
+    local data = zc.ParseDataFile(path, {})
 
-    if content then
-        local data = util.JSONToTable(content)
-        if data then
-            zc.CoopPersistence.LoadedData = data
-            return data
-        end
-    end
-
-    zc.CoopPersistence.LoadedData = {}
-    return {}
+    zc.CoopPersistence.LoadedData = data
+    return data
 end
 
 
 function zc.CoopPersistence.ClearSavedData()
     zc.CoopPersistence.PendingSave = {}
     zc.CoopPersistence.LoadedData = {}
-    file.Delete(zc.CoopPersistence.GetSavePath())
+    zc.DeleteDataFile(zc.CoopPersistence.GetSavePath())
 end
 
 

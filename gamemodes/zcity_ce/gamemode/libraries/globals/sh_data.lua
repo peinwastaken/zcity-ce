@@ -1,4 +1,4 @@
-local zc = zc or {}
+zc = zc or {}
 
 local GAMEMODE_DATA_PATH = "zcity_ce"
 
@@ -34,6 +34,21 @@ function zc.ParseDataFile(filePath, default)
   return tbl
 end
 
+function zc.EnsureDataDir(path)
+  path = zc.NormalizePath(path)
+  if path == "" then return end
+
+  local current = zc.GetDataPath()
+  local split = string.Split(path, "/")
+
+  for _, dirName in ipairs(split) do
+    if dirName == "" then continue end
+
+    current = current .. "/" .. dirName
+    file.CreateDir(current)
+  end
+end
+
 function zc.EnsureDataFile(path)
   local fullPath = zc.GetDataPath(path)
   local exists = file.Exists(fullPath, "DATA")
@@ -41,15 +56,10 @@ function zc.EnsureDataFile(path)
   if !exists then
     path = zc.NormalizePath(path)
     local split = string.Split(path, "/") // normalize path
-    local fileName = table.remove(split, #split) // remove last value (filename)
-    local current = zc.GetDataPath()
+    table.remove(split, #split) // remove last value (filename)
+    zc.EnsureDataDir(table.concat(split, "/"))
 
-    for _, dirName in ipairs(split) do
-      file.CreateDir(current .. "/" .. dirName)
-      current = current .. "/" .. dirName
-    end
-
-    local finalPath = current .. "/" .. fileName
+    local finalPath = zc.GetDataPath(path)
     file.Write(finalPath, "")
   end
 end

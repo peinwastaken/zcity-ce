@@ -373,20 +373,13 @@ surface.CreateFont("ZB_InterfaceHumongous", {
 })
 
 zc.playerInfo = zc.playerInfo or {}
+local MUTED_PLAYERS_PATH = "settings/muted_players.json"
 
 local function addToPlayerInfo(ply, muted, volume)
 	zc.playerInfo[ply:SteamID()] = {muted and true or false, volume}
 
-	local json = util.TableToJSON(zc.playerInfo)
-	file.Write("zcity_muted.txt", json)
-
-	if file.Exists("zcity_muted.txt", "DATA") then
-		local json = file.Read("zcity_muted.txt", "DATA")
-
-		if json then
-			zc.playerInfo = util.JSONToTable(json)
-		end
-	end
+	zc.WriteData(MUTED_PLAYERS_PATH, zc.playerInfo, true)
+	zc.playerInfo = zc.ParseDataFile(MUTED_PLAYERS_PATH, zc.playerInfo) or zc.playerInfo
 
 	//PrintTable(zc.playerInfo)
 end
@@ -401,27 +394,23 @@ hook.Add("player_connect", "ZC_ShowPlayerConnectMessage", function(data)
 end)
 
 hook.Add("InitPostEntity", "ZC_LoadMutedPlayers", function()
-	if file.Exists("zcity_muted.txt", "DATA") then
-		local json = file.Read("zcity_muted.txt", "DATA")
+	zc.playerInfo = zc.ParseDataFile(MUTED_PLAYERS_PATH, zc.playerInfo)
 
-		if json then
-			zc.playerInfo = util.JSONToTable(json)
-		end
+	if zc.playerInfo then
+		for _, ply in player.Iterator() do
+			local steamID = ply:SteamID()
+			local info = zc.playerInfo[steamID]
 
-		if zc.playerInfo then
-			for _, ply in player.Iterator() do
-				if not istable(zc.playerInfo[ply:SteamID()]) then
-					local muted = zc.playerInfo[ply:SteamID()]
-					zc.playerInfo[ply:SteamID()] = {}
-					zc.playerInfo[ply:SteamID()][1] = muted
-					zc.playerInfo[ply:SteamID()][2] = 1
-				end//compatibility with old json
+			if info == nil then continue end
 
-				if zc.playerInfo[ply:SteamID()] then
-					ply:SetMuted(zc.playerInfo[ply:SteamID()][1])
-					ply:SetVoiceVolumeScale(zc.playerInfo[ply:SteamID()][2])
-				end
-			end
+			if not istable(info) then
+				zc.playerInfo[steamID] = {}
+				zc.playerInfo[steamID][1] = info
+				zc.playerInfo[steamID][2] = 1
+			end//compatibility with old json
+
+			ply:SetMuted(zc.playerInfo[steamID][1])
+			ply:SetVoiceVolumeScale(zc.playerInfo[steamID][2])
 		end
 	end
 end)

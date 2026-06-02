@@ -61,31 +61,14 @@ local function GetSafeServerName()
 end
 
 
-local function GetDataPath(fileName)
+local function GetRtvDataPath(fileName)
     local serverName = GetSafeServerName()
-    return "zbattle/" .. serverName .. "/" .. fileName
+    return "rtv/" .. serverName .. "/" .. fileName
 end
-
-
-local function EnsureDataDirectory()
-    local serverName = GetSafeServerName()
-    if not file.Exists("zbattle", "DATA") then
-        file.CreateDir("zbattle")
-    end
-    if not file.Exists("zbattle/" .. serverName, "DATA") then
-        file.CreateDir("zbattle/" .. serverName)
-    end
-end
-
-
-EnsureDataDirectory()
 
 local mapPopularity = {}
-local popularityPath = GetDataPath("MapPopularity.json")
-if file.Exists(popularityPath, "DATA") then
-    local data = file.Read(popularityPath, "DATA")
-    mapPopularity = util.JSONToTable(data) or {}
-end
+local popularityPath = GetRtvDataPath("MapPopularity.json")
+mapPopularity = zc.ParseDataFile(popularityPath, {})
 
 local function getmaps()
     table.Empty(mappull)
@@ -218,10 +201,8 @@ function zc.EndRTV()
     mapPopularity[winmap] = math.min((mapPopularity[winmap] or 0) + 5, 100)
 
     local PlayedMaps = {}
-    local playedMapsPath = GetDataPath("PlayedMaps.json")
-    if file.Exists(playedMapsPath, "DATA") then
-        PlayedMaps = util.JSONToTable(file.Read(playedMapsPath, "DATA")) or {}
-    end
+    local playedMapsPath = GetRtvDataPath("PlayedMaps.json")
+    PlayedMaps = zc.ParseDataFile(playedMapsPath, {})
 
     if not table.HasValue(PlayedMaps, winmap) then
         table.insert(PlayedMaps, 1, winmap)
@@ -250,7 +231,7 @@ function zc.EndRTV()
             end
         end
 
-        file.Write(playedMapsPath, util.TableToJSON(PlayedMaps))
+        zc.WriteData(playedMapsPath, PlayedMaps, true)
     end
 
     for map, pop in pairs(mapPopularity) do
@@ -259,7 +240,7 @@ function zc.EndRTV()
         end
     end
 
-    file.Write(popularityPath, util.TableToJSON(mapPopularity))
+    zc.WriteData(popularityPath, mapPopularity, true)
 
     net.Start("ZC_RockTheVoteEnd")
         net.WriteString(winmap)
@@ -334,13 +315,8 @@ function zc.StartRTV(time)
     rtvtime = CurTime() + (time or 45)
 
     local PlayedMaps = {}
-    local playedMapsPath = GetDataPath("PlayedMaps.json")
-    if file.Exists(playedMapsPath, "DATA") then
-        PlayedMaps = util.JSONToTable(file.Read(playedMapsPath, "DATA"))
-    end
-    if not PlayedMaps then
-        PlayedMaps = {}
-    end
+    local playedMapsPath = GetRtvDataPath("PlayedMaps.json")
+    PlayedMaps = zc.ParseDataFile(playedMapsPath, {})
 
     --;; First we will try to choose 3 "unique" prefix
     --;; through weighted random. Each must have >=4 maps,

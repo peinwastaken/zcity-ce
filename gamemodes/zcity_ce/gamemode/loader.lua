@@ -182,11 +182,11 @@ local function InitMode()
 	end
 end
 
-local chancesfile = "zbattle/modeschances.json"
+local chancesfile = "config/modes_chances.json"
 
 if SERVER then
 	hook.Add("ShutDown", "ZC_SaveModeChances", function()
-		file.Write(chancesfile, util.TableToJSON(zc.ModesChances or {}, true))
+		zc.WriteData(chancesfile, zc.ModesChances or {}, true)
 	end)
 
 	concommand.Add("zb_getmodeschances", function(ply, cmd, args)
@@ -203,7 +203,7 @@ if SERVER then
 	end)
 
 	concommand.Add("zb_savemodeschances", function(ply, cmd, args)
-		file.Write(chancesfile, util.TableToJSON(zc.ModesChances or {}, true))
+		zc.WriteData(chancesfile, zc.ModesChances or {}, true)
 	end)
 end
 
@@ -212,7 +212,7 @@ local function LoadModes()
 	local files, folders = file.Find(directory .. "/*", "LUA")
 
 	if SERVER then
-		zc.ModesChances = util.JSONToTable(file.Read(chancesfile,  "DATA") or "") or {}
+		zc.ModesChances = zc.ParseDataFile(chancesfile, {})
 	end
 
 	for _, v in ipairs(files) do
@@ -229,8 +229,8 @@ local function LoadModes()
 		MODE = nil
 	end
 
-	if SERVER and !file.Exists(chancesfile,  "DATA") then
-		file.Write(chancesfile, util.TableToJSON(zc.ModesChances, true))
+	if SERVER and !zc.DataFileExists(chancesfile) then
+		zc.WriteData(chancesfile, zc.ModesChances, true)
 	end
 
 	if SERVER then

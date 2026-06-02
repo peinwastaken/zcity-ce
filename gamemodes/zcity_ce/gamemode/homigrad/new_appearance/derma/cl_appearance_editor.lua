@@ -17,21 +17,19 @@ colors.scrollbarGripHover = Color(100,100,130,255)
 colors.scrollbarBorder = Color(100,100,120,200)
 colors.previewBorder = Color(255,200,50,255)
 
-local presetsDir = "zcity/appearances/presets/"
+local presetsDir = "appearance/presets/"
 
 local function SavePreset(strName, tblAppearance)
-    file.CreateDir(presetsDir)
-    file.Write(presetsDir .. strName .. ".json", util.TableToJSON(tblAppearance, true))
+    zc.WriteData(presetsDir .. strName .. ".json", tblAppearance, true)
 end
 
 local function LoadPreset(strName)
-    if not file.Exists(presetsDir .. strName .. ".json", "DATA") then return nil end
-    return util.JSONToTable(file.Read(presetsDir .. strName .. ".json", "DATA"))
+    return zc.ParseDataFile(presetsDir .. strName .. ".json")
 end
 
 local function GetPresetList()
-    file.CreateDir(presetsDir)
-    local files = file.Find(presetsDir .. "*.json", "DATA")
+    zc.EnsureDataDir(presetsDir)
+    local files = zc.GetDataFiles(presetsDir, "*.json")
     local presets = {}
     for _, f in ipairs(files or {}) do
         table.insert(presets, string.StripExtension(f))
@@ -40,11 +38,7 @@ local function GetPresetList()
 end
 
 local function DeletePreset(strName)
-    if file.Exists(presetsDir .. strName .. ".json", "DATA") then
-        file.Delete(presetsDir .. strName .. ".json")
-        return true
-    end
-    return false
+    return zc.DeleteDataFile(presetsDir .. strName .. ".json")
 end
 
 zc.Appearance.SavePreset = SavePreset

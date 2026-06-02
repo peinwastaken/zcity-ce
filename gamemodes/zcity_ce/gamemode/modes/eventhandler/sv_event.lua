@@ -212,37 +212,22 @@ end)
 
 local serverIdentifier = string.Trim(string.lower(GetConVar("hostname"):GetString()))
 serverIdentifier = string.gsub(serverIdentifier, "[^%w]", "_")
+local EVENT_LOOT_PATH = "event_loot/loot_table_" .. serverIdentifier .. ".json"
 
 function MODE:SaveLootTable()
-    if not file.Exists("zbattle", "DATA") then
-        file.CreateDir("zbattle")
-    end
-
-    if not file.Exists("zbattle/event_loot", "DATA") then
-        file.CreateDir("zbattle/event_loot")
-    end
-
-    local data = util.TableToJSON(self.CustomLootTable)
-    file.Write("zbattle/event_loot/loot_table_" .. serverIdentifier .. ".txt", data)
+    zc.WriteData(EVENT_LOOT_PATH, self.CustomLootTable, true)
     print("[Event Mode] Loot table saved for server: " .. serverIdentifier)
 end
 
 function MODE:LoadLootTable()
-    if not file.Exists("zbattle/event_loot/loot_table_" .. serverIdentifier .. ".txt", "DATA") then
+    if not zc.DataFileExists(EVENT_LOOT_PATH) then
         print("[Event Mode] No saved loot table found for server: " .. serverIdentifier)
         self.CustomLootTable = { {50, {}} }
         return
     end
 
-    local data = file.Read("zbattle/event_loot/loot_table_" .. serverIdentifier .. ".txt", "DATA")
-    if not data or data == "" then
-        print("[Event Mode] Empty or corrupt loot table file for server: " .. serverIdentifier)
-        self.CustomLootTable = { {50, {}} }
-        return
-    end
-
-    local success, loadedTable = pcall(util.JSONToTable, data)
-    if not success or not loadedTable then
+    local loadedTable = zc.ParseDataFile(EVENT_LOOT_PATH)
+    if not loadedTable then
         print("[Event Mode] Failed to parse loot table JSON for server: " .. serverIdentifier)
         self.CustomLootTable = { {50, {}} }
         return

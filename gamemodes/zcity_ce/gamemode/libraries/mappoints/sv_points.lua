@@ -5,11 +5,13 @@ zc.Points = zc.Points or {}
 
 zc.Points.Example = zc.Points.Example or {}
 
+local function GetMapPointPath(pointGroup)
+    return "mappoints/" .. game.GetMap() .. "/" .. pointGroup .. ".json"
+end
+
 function zc.CreateMapDir()
-    local map = game.GetMap()
-    if not file.Exists( "zbattle", "DATA" ) then file.CreateDir( "zbattle/mappoints" ) end
-    if not file.Exists( "zbattle/mappoints/" .. map, "DATA" ) then file.CreateDir( "zbattle/mappoints/" .. map ) end
-    if file.Exists( "zbattle/mappoints/" .. map, "DATA" ) then return true end
+    zc.EnsureDataDir("mappoints/" .. game.GetMap())
+    return true
 end
 
 function zc.GetMapPoints( pointGroup, forceupdatepoints ) -- Load points into game memory... The client will have roughly the same function.
@@ -23,9 +25,7 @@ function zc.GetMapPoints( pointGroup, forceupdatepoints ) -- Load points into ga
         return newTbl
     end
 
-    local map = game.GetMap()
-
-    zc.Points[pointGroup].Points = util.JSONToTable( file.Read( "zbattle/mappoints/" .. map .. "/"..pointGroup..".json", "DATA" ) or "" )
+    zc.Points[pointGroup].Points = zc.ParseDataFile(GetMapPointPath(pointGroup), {})
 
     local newTbl = {}
     if zc.Points[pointGroup].Points then
@@ -40,9 +40,7 @@ function zc.SaveMapPoints( pointGroup, pointsData ) -- Saves all points in the g
     if not zc.CreateMapDir() then PrintMessage( HUD_PRINTTALK, "sv_points.lua: map folder dosen't exists?" ) return false end
     if not zc.Points[pointGroup] then PrintMessage( HUD_PRINTTALK, "sv_points.lua: point group " .. "\"" .. pointGroup .. "\"" .. " doesn't exist." ) return false end
 
-    local map = game.GetMap()
-
-    file.Write( "zbattle/mappoints/" .. map .. "/" .. pointGroup .. ".json", util.TableToJSON( pointsData, true ) )
+    zc.WriteData(GetMapPointPath(pointGroup), pointsData, true)
 end
 
 -- pointData = { pos = Vector(), ang = Angle() } // Point table

@@ -18,8 +18,9 @@ end)
 local VerficationTable = {}
 local STEAMIDs = {}
 
-if file.Exists("zcity/verification.json","DATA") then
-    VerficationTable = util.JSONToTable(file.Read("zcity/verification.json","DATA"))
+VerficationTable = zc.ParseDataFile("config/verification.json", {})
+
+if VerficationTable then
     STEAMIDs={}
     timer.Simple(0,function()
         for _, T in pairs(VerficationTable) do

@@ -121,16 +121,13 @@ local screens = zc.screens
 local screened = 0
 local curscreen = 1
 local switch = false
-local file_Delete = file.Delete
 zc.alivecntr = zc.alivecntr or 0
 
 local function remove_imgs()
-	if file.Exists("dreams", "DATA") then
-		local files, _ = file.Find("dreams/*", "DATA")
+	local files = zc.GetDataFiles("dreams")
 
-		for i, file in pairs(files) do
-			file_Delete("dreams/"..file)
-		end
+	for i, file in pairs(files or {}) do
+		zc.DeleteDataFile("dreams/" .. file)
 	end
 end
 
@@ -283,11 +280,10 @@ hook.Add("PostRender", "ZC_ScreenshotThink", function()
 
 		local name = "dreams/dream"..zc.alivecntr.."_"..(#screens + 1)..".jpeg"
 
-		if not file.Exists("dreams", "DATA") then file.CreateDir("dreams") end
-		file.Write(name, data)
+		zc.WriteData(name, data, true)
 
 		timer.Simple(1, function()
-			screens[#screens + 1] = Material("data/"..name)
+			screens[#screens + 1] = Material("data/" .. zc.GetDataPath(name))
 		end)
 	end
 end)

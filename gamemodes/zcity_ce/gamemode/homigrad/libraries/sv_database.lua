@@ -1,6 +1,7 @@
 --if not util.IsBinaryModuleInstalled("mysqloo") then return end
 
 zc.db = zc.db or {}
+local SQL_CONFIG_PATH = "config/sql.json"
 
 function zc.db.Connect()
     local standart_tbl = {
@@ -12,10 +13,11 @@ function zc.db.Connect()
             port = 3306
         }
 
-    if not file.Exists("zbattle/sql.json","DATA") then file.Write("zbattle/sql.json", util.TableToJSON(standart_tbl,true)) end
-    local cfg = file.Exists("zbattle/sql.json","DATA") and 
-        util.JSONToTable(file.Read("zbattle/sql.json","DATA")) or 
-        standart_tbl
+    if not zc.DataFileExists(SQL_CONFIG_PATH) then
+        zc.WriteData(SQL_CONFIG_PATH, standart_tbl, true)
+    end
+
+    local cfg = zc.ParseDataFile(SQL_CONFIG_PATH, standart_tbl)
 
     local dbmodule = cfg.dbmodule
     local hostname = cfg.hostname

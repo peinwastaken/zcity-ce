@@ -5,23 +5,22 @@ zc.Appearance = zc.Appearance or {}
 zc.Appearance.SelectedAppearance = ConVarExists("zc_appearance_selected") and GetConVar("zc_appearance_selected") or CreateClientConVar("zc_appearance_selected","main",true,false,"name of selected appearance json file")
 zc.Appearance.ForcedRandom = ConVarExists("zc_appearance_force_random") and GetConVar("zc_appearance_force_random") or CreateClientConVar("zc_appearance_force_random","0",true,false,"forced appearance random",0,1)
 
-local dir = "zcity/appearances/"
+local dir = "appearance/"
 function zc.Appearance.CreateAppearanceFile(strFile_name, tblAppearance)
-	file.CreateDir(dir)
-	file.Write(dir .. strFile_name .. ".json", util.TableToJSON(tblAppearance, true) )
+	zc.WriteData(dir .. strFile_name .. ".json", tblAppearance, true)
 end
 
 function zc.Appearance.LoadAppearanceFile(strFile_name)
-	if not file.Exists(dir .. strFile_name .. ".json", "DATA") then return false end
-	local tblAppearance = util.JSONToTable(file.Read(dir .. strFile_name .. ".json"))
+	local tblAppearance = zc.ParseDataFile(dir .. strFile_name .. ".json")
+	if !tblAppearance then return false end
 
-	if not zc.Appearance.AppearanceValidater(tblAppearance) then return false, "file is damaged [data/zcity/appearances/" .. strFile_name .. ".json]"  end
+	if not zc.Appearance.AppearanceValidater(tblAppearance) then return false, "file is damaged [data/zcity_ce/appearance/" .. strFile_name .. ".json]"  end
 
 	return tblAppearance
 end
 
 function zc.Appearance.GetAppearanceList()
-	local files = file.Find( dir .. "*.json" )
+	local files = zc.GetDataFiles(dir, "*.json")
 	return files
 end
 
