@@ -1,7 +1,7 @@
 zc = zc or {}
 zc.ConVars = zc.ConVars or {}
 
-GM.Name = "ZCity"
+GM.Name = "Z-City CE"
 GM.Author = "uzelezz, sadsalat, Mr. Point, Zac90, Deka, Mannytko"
 GM.Email = "N/A"
 GM.Website = "N/A"
