@@ -10,6 +10,76 @@ end
 
 local forcemodeconvar = CreateConVar("zc_forcemode", "random", nil, "Set force mode (set to 'random' to disable)")
 forcemodeconvar:SetString("random")
+
+local CHANGELEVEL_TRIGGER_CLASS = "trigger_changelevel"
+local CHANGELEVEL_TRIGGER_REFRESH_INTERVAL = 5
+local cachedChangelevelTrigger
+local cachedChangelevelTriggerExists = false
+local nextChangelevelTriggerRefresh = 0
+
+local function RefreshChangelevelTrigger(ignoreEnt)
+	local found
+	for _, ent in ipairs(ents.FindByClass(CHANGELEVEL_TRIGGER_CLASS)) do
+		if ent != ignoreEnt and IsValid(ent) then
+			found = ent
+			break
+		end
+	end
+
+	cachedChangelevelTrigger = found
+	cachedChangelevelTriggerExists = IsValid(found)
+	nextChangelevelTriggerRefresh = CurTime() + CHANGELEVEL_TRIGGER_REFRESH_INTERVAL
+	return cachedChangelevelTriggerExists
+end
+
+local function HasChangelevelTrigger()
+	if cachedChangelevelTriggerExists and IsValid(cachedChangelevelTrigger) then return true end
+
+	-- EntityRemoved normally keeps this exact, while the bounded refresh also
+	-- covers entities created or removed by systems that bypass the usual hooks.
+	if cachedChangelevelTriggerExists then
+		cachedChangelevelTrigger = nil
+		cachedChangelevelTriggerExists = false
+		nextChangelevelTriggerRefresh = 0
+	end
+
+	if nextChangelevelTriggerRefresh <= CurTime() then
+		return RefreshChangelevelTrigger()
+	end
+
+	return false
+end
+
+hook.Add("InitPostEntity", "ZC_CacheChangelevelTrigger", function()
+	RefreshChangelevelTrigger()
+end)
+hook.Add("PostCleanupMap", "ZC_CacheChangelevelTrigger", function()
+	RefreshChangelevelTrigger()
+end)
+hook.Add("OnEntityCreated", "ZC_CacheDynamicChangelevelTrigger", function(ent)
+	if ent:GetClass() != CHANGELEVEL_TRIGGER_CLASS then return end
+
+	cachedChangelevelTrigger = ent
+	cachedChangelevelTriggerExists = true
+	nextChangelevelTriggerRefresh = CurTime() + CHANGELEVEL_TRIGGER_REFRESH_INTERVAL
+
+	-- Some scripted entities are announced before their initialization finishes.
+	-- Reconfirm on the next tick so the cache cannot get stuck on a NULL entity.
+	timer.Simple(0, function()
+		if IsValid(ent) then
+			cachedChangelevelTrigger = ent
+			cachedChangelevelTriggerExists = true
+			nextChangelevelTriggerRefresh = CurTime() + CHANGELEVEL_TRIGGER_REFRESH_INTERVAL
+		elseif cachedChangelevelTrigger == ent then
+			RefreshChangelevelTrigger(ent)
+		end
+	end)
+end)
+hook.Add("EntityRemoved", "ZC_CacheDynamicChangelevelTrigger", function(ent)
+	if ent != cachedChangelevelTrigger and ent:GetClass() != CHANGELEVEL_TRIGGER_CLASS then return end
+	RefreshChangelevelTrigger(ent)
+end)
+
 function zc:GetMode(round)
 	if zc.modes[round] then return round end
 
@@ -21,7 +91,7 @@ function zc:GetMode(round)
 end
 
 function CurrentRound()
-	if IsValid(ents.FindByClass( "trigger_changelevel" )[1]) then
+	if HasChangelevelTrigger() then
 		zc.nextround = "coop"
 		zc.CROUND = zc.CROUND or "coop"
 		return zc.modes["coop"]
@@ -39,7 +109,7 @@ function CurrentRound()
 end
 
 function NextRound(round)
-	if IsValid(ents.FindByClass( "trigger_changelevel" )[1]) then
+	if HasChangelevelTrigger() then
 		zc.nextround = "coop"
 	else
 		zc.nextround = round

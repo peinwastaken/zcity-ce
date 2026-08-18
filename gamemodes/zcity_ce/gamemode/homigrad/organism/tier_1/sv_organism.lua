@@ -244,7 +244,7 @@ function META:IsBerserk()
 	if self:IsPlayer() and not self:Alive() then return false end
 
 	local org = self.organism
-	return org.berserkActive2 or false
+	return org and org.berserkActive2 or false
 end
 
 function META:IsStimulated()
@@ -252,7 +252,7 @@ function META:IsStimulated()
 	if self:IsPlayer() and not self:Alive() then return false end
 
 	local org = self.organism
-	return org.noradrenalineActive or false
+	return org and org.noradrenalineActive or false
 end
 
 local META2 = FindMetaTable("Entity")
@@ -690,7 +690,8 @@ end)
 hook.Add("SetupMove", "ZC_Speed", function(ply, mv) end) --mv:SetMaxClientSpeed(100) --mv:SetMaxSpeed(100)
 
 hook.Add("StartCommand","ZC_BlockMovementWhileUnconscious",function(ply,cmd)
-	if ply.organism.unconscious and ply:Alive() then
+	local org = ply.organism
+	if org and org.unconscious and ply:Alive() then
 		cmd:ClearMovement()
 	end
 end)

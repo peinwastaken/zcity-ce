@@ -4,30 +4,159 @@ local _ENV = zc.PlayerBots
 setmetatable(_ENV, {__index = _G})
 setfenv(1, _ENV)
 
-function GetStoredWeaponBase(class)
+local CurTime, IsValid = CurTime, IsValid
+local ipairs, setmetatable = ipairs, setmetatable
+local weapons, ents, util = weapons, ents, util
+
+-- These caches deliberately live in this file's local scope. Re-running the file
+-- replaces both the tables and the generation token, so stale entity state cannot
+-- survive an autorefresh with values produced by an older version of the code.
+local CACHE_MISS = {}
+local WEAPON_CACHE_GENERATION = {}
+local storedWeaponCache = {}
+local weaponBaseCache = {}
+local weaponAncestryCache = {}
+local weaponTraitCache = {}
+local classListMembershipCache = setmetatable({}, {__mode = "k"})
+
+local BOT_WEAPON_SELECTION_CACHE_TIME = 0.15
+local BOT_PICKUP_SCAN_INTERVAL = 0.35
+local BOT_PICKUP_FAILED_SCAN_INTERVAL = 0.5
+local BOT_PICKUP_VISIBILITY_INTERVAL = 0.25
+local BOT_PICKUP_BLOCKED_TIME = 0.75
+local BOT_PICKUP_NO_PROGRESS_TIME = 3.5
+local BOT_PICKUP_UNREACHABLE_TIME = 4
+local BOT_PICKUP_PROGRESS_DISTANCE = 24
+local TOURNIQUET_CLASSES = {"weapon_tourniquet"}
+
+local function ClearWeaponClassCaches()
+	storedWeaponCache = {}
+	weaponBaseCache = {}
+	weaponAncestryCache = {}
+	weaponTraitCache = {}
+	classListMembershipCache = setmetatable({}, {__mode = "k"})
+end
+
+local function GetStoredWeapon(class)
+	if not isstring(class) or class == "" then return nil end
+
+	local cached = storedWeaponCache[class]
+	if cached ~= nil then return cached ~= CACHE_MISS and cached or nil end
+
 	local stored = weapons.GetStored and weapons.GetStored(class) or weapons.Get(class)
-	return stored and stored.Base
+	storedWeaponCache[class] = stored or CACHE_MISS
+	return stored
+end
+
+function GetStoredWeaponBase(class)
+	if not isstring(class) or class == "" then return nil end
+
+	local cached = weaponBaseCache[class]
+	if cached ~= nil then return cached ~= CACHE_MISS and cached or nil end
+
+	local stored = GetStoredWeapon(class)
+	local base = stored and stored.Base
+	weaponBaseCache[class] = base or CACHE_MISS
+	return base
 end
 
 function WeaponInheritsBase(wep, baseName)
-	if not IsValid(wep) then return false end
+	if not IsValid(wep) or not isstring(baseName) then return false end
 	if wep.Base == baseName then return true end
 	if (wep.ishgwep or wep.ishgweapon) and baseName == "homigrad_base" then return true end
 
-	local seen = {}
-	local base = GetStoredWeaponBase(wep:GetClass()) or wep.Base
-	while isstring(base) and base ~= "" and not seen[base] do
-		if base == baseName then return true end
+	local class = wep:GetClass()
+	local firstBase = GetStoredWeaponBase(class) or wep.Base
+	local cached = weaponAncestryCache[class]
+	if cached and cached.firstBase == firstBase then
+		return cached.bases[baseName] or false
+	end
 
-		seen[base] = true
+	local bases = {}
+	local base = firstBase
+	while isstring(base) and base ~= "" and not bases[base] do
+		bases[base] = true
 		base = GetStoredWeaponBase(base)
 	end
 
-	return false
+	weaponAncestryCache[class] = {
+		firstBase = firstBase,
+		bases = bases,
+	}
+
+	return bases[baseName] or false
+end
+
+local function GetWeaponTraits(wep)
+	if not IsValid(wep) then return nil end
+
+	local class = wep:GetClass()
+	local cached = weaponTraitCache[class]
+	if cached then return cached end
+
+	local primary = wep.Primary
+	local stored = GetStoredWeapon(class)
+	local storedPrimary = stored and stored.Primary
+	local medicine = MEDICINE_CLASSES[class] == true
+	local ranged = not medicine and primary ~= nil and primary.Ammo ~= "none" and WeaponInheritsBase(wep, "homigrad_base")
+	local secondary = ranged and (
+		wep.SecondaryWeapon or wep.IsSecondaryWeapon or wep.IsPistol or
+		SECONDARY_WEAPON_CLASSES[class] or class:find("pistol", 1, true) or class:find("revolver", 1, true)
+	) or false
+	local hands = class == "weapon_hands_sh"
+	local unarmed = hands or class:find("hands", 1, true) ~= nil
+	local melee = not ranged and (
+		hands or class == "weapon_melee" or unarmed or class:find("melee", 1, true) or
+		WeaponInheritsBase(wep, "homigrad_base_melee")
+	) or false
+
+	cached = {
+		medicine = medicine,
+		ranged = not not ranged,
+		secondary = not not secondary,
+		primary = not not ranged and not secondary,
+		automatic = not not (
+			primary and (primary.Automatic or primary.RealAutomatic) or
+			storedPrimary and (storedPrimary.Automatic or storedPrimary.RealAutomatic)
+		),
+		singleRoundReload = WeaponInheritsBase(wep, "homigrad_base_shotgun"),
+		melee = not not melee,
+		hands = hands,
+		unarmed = not not unarmed,
+	}
+
+	weaponTraitCache[class] = cached
+	return cached
+end
+
+local function GetClassListMembership(classList)
+	if not istable(classList) then return nil end
+
+	local cached = classListMembershipCache[classList]
+	local count = #classList
+	if cached and cached.count == count then return cached.classes end
+
+	local classes = {}
+	for index = 1, count do
+		classes[classList[index]] = true
+	end
+
+	classListMembershipCache[classList] = {
+		count = count,
+		classes = classes,
+	}
+
+	return classes
+end
+
+local function ClassListContains(classList, class)
+	local classes = GetClassListMembership(classList)
+	return classes and classes[class] or false
 end
 
 function IsMedicineWeapon(wep)
-	return IsValid(wep) and MEDICINE_CLASSES[wep:GetClass()]
+	local traits = GetWeaponTraits(wep)
+	return traits and traits.medicine or false
 end
 
 function GetBotFakeWeapon(bot)
@@ -88,28 +217,25 @@ function HasReserveAmmoForWeapon(bot, wep)
 end
 
 function ShouldReloadWeapon(bot, wep)
-	if not IsValid(wep) or wep:Clip1() >= wep:GetMaxClip1() then return false end
-	if wep:GetMaxClip1() == 0 then return false end
+	if not IsValid(wep) then return false end
+
+	local maxClip = wep:GetMaxClip1()
+	if maxClip == 0 or wep:Clip1() >= maxClip then return false end
 
 	return HasReserveAmmoForWeapon(bot, wep)
 end
 
-function ShouldCycleManualAction(wep)
+function ShouldCycleManualAction(wep, clip)
 	if not IsValid(wep) or wep.drawBullet ~= false then return false end
-	if wep:Clip1() <= 0 then return false end
+	if (clip or wep:Clip1()) <= 0 then return false end
 
 	local nextCycle = wep.GetNetVar and wep:GetNetVar("shootgunReload", 0) or 0
 	return nextCycle <= CurTime()
 end
 
 function IsAutomaticWeapon(wep)
-	if not IsValid(wep) then return false end
-
-	local primary = wep.Primary
-	if primary and (primary.Automatic or primary.RealAutomatic) then return true end
-
-	local stored = weapons.GetStored and weapons.GetStored(wep:GetClass()) or weapons.Get(wep:GetClass())
-	return stored and stored.Primary and stored.Primary.Automatic or false
+	local traits = GetWeaponTraits(wep)
+	return traits and traits.automatic or false
 end
 
 function IsWeaponReadyToFire(wep)
@@ -128,13 +254,16 @@ function IsWeaponReadyToFire(wep)
 end
 
 function IsSingleRoundReloadWeapon(wep)
-	return WeaponInheritsBase(wep, "homigrad_base_shotgun")
+	local traits = GetWeaponTraits(wep)
+	return traits and traits.singleRoundReload or false
 end
 
 function IsWeaponDry(wep)
 	if not IsValid(wep) then return false end
-	if ShouldCycleManualAction(wep) then return true end
-	if wep:Clip1() <= 0 then return true end
+
+	local clip = wep:Clip1()
+	if ShouldCycleManualAction(wep, clip) then return true end
+	if clip <= 0 then return true end
 
 	return wep.drawBullet == false
 end
@@ -143,9 +272,10 @@ function GetReloadGoalClip(bot, wep, enemyNearby)
 	local maxClip = wep:GetMaxClip1()
 	if not IsSingleRoundReloadWeapon(wep) or not enemyNearby then return maxClip end
 
+	local clip = wep:Clip1()
 	local reserve = GetBotWeaponReserveAmmo(bot, wep)
-	local targetClip = (bot.ZCBotReloadStartClip or wep:Clip1()) + BOT_COMBAT_RELOAD_SHELLS
-	return math_min(maxClip, targetClip, wep:Clip1() + reserve)
+	local targetClip = (bot.ZCBotReloadStartClip or clip) + BOT_COMBAT_RELOAD_SHELLS
+	return math_min(maxClip, targetClip, clip + reserve)
 end
 
 function BotPressReload(bot, cmd, wep)
@@ -203,30 +333,23 @@ function BotTapAttack(bot, cmd, wep)
 end
 
 function IsRangedWeapon(wep)
-	if not IsValid(wep) or IsMedicineWeapon(wep) then return false end
-
-	local primary = wep.Primary
-	if not primary or primary.Ammo == "none" then return false end
-
-	return WeaponInheritsBase(wep, "homigrad_base")
+	local traits = GetWeaponTraits(wep)
+	return traits and traits.ranged or false
 end
 
 function IsHandsWeapon(wep)
-	return IsValid(wep) and wep:GetClass() == "weapon_hands_sh"
+	local traits = GetWeaponTraits(wep)
+	return traits and traits.hands or false
 end
 
 function IsSecondaryRangedWeapon(wep)
-	if not IsRangedWeapon(wep) then return false end
-	if wep.SecondaryWeapon or wep.IsSecondaryWeapon or wep.IsPistol then return true end
-
-	local class = wep:GetClass()
-	if SECONDARY_WEAPON_CLASSES[class] then return true end
-
-	return class:find("pistol", 1, true) or class:find("revolver", 1, true)
+	local traits = GetWeaponTraits(wep)
+	return traits and traits.secondary or false
 end
 
 function IsPrimaryRangedWeapon(wep)
-	return IsRangedWeapon(wep) and not IsSecondaryRangedWeapon(wep)
+	local traits = GetWeaponTraits(wep)
+	return traits and traits.primary or false
 end
 
 function SelectWeaponIfNeeded(bot, active, wep)
@@ -236,19 +359,70 @@ function SelectWeaponIfNeeded(bot, active, wep)
 	return wep
 end
 
+local function ResetBotWeaponCacheState(bot)
+	bot.ZCBotWeaponCacheGeneration = WEAPON_CACHE_GENERATION
+	bot.ZCBotSelectedWeapon = nil
+	bot.ZCBotWeaponSelectionUntil = nil
+	bot.ZCBotWeaponSelectionEmpty = nil
+	bot.ZCBotPickupWeapon = nil
+	bot.ZCBotPickupNextScan = nil
+	bot.ZCBotPickupScanRange = nil
+	bot.ZCBotPickupVisibleUntil = nil
+	bot.ZCBotPickupBestDistance = nil
+	bot.ZCBotPickupLastProgressAt = nil
+	bot.ZCBotPickupBlacklist = setmetatable({}, {__mode = "k"})
+end
+
+local function EnsureBotWeaponCacheState(bot)
+	if bot.ZCBotWeaponCacheGeneration ~= WEAPON_CACHE_GENERATION then
+		ResetBotWeaponCacheState(bot)
+	end
+end
+
+function InvalidateBotWeaponSelection(bot)
+	if not IsValid(bot) then return end
+	EnsureBotWeaponCacheState(bot)
+
+	bot.ZCBotSelectedWeapon = nil
+	bot.ZCBotWeaponSelectionUntil = nil
+	bot.ZCBotWeaponSelectionEmpty = nil
+end
+
+local function ClearBotPickupTarget(bot, nextScan)
+	bot.ZCBotPickupWeapon = nil
+	bot.ZCBotPickupVisibleUntil = nil
+	bot.ZCBotPickupBestDistance = nil
+	bot.ZCBotPickupLastProgressAt = nil
+	bot.ZCBotPickupNextScan = nextScan
+end
+
+local function IsWeaponOwnedByBot(bot, wep, active)
+	if wep == active or wep == GetBotFakeWeapon(bot) then return true end
+	return bot:HasWeapon(wep:GetClass())
+end
+
+local function IsCachedBotWeaponUsable(bot, wep, active)
+	if not IsValid(wep) or not IsWeaponOwnedByBot(bot, wep, active) then return false end
+
+	local traits = GetWeaponTraits(wep)
+	if not traits or traits.medicine then return false end
+	if traits.ranged then return HasAmmoForWeapon(bot, wep) end
+
+	return true
+end
+
 function IsMeleeWeapon(wep)
 	if not IsValid(wep) then return true end
-	if IsRangedWeapon(wep) then return false end
 
-	local class = wep:GetClass()
-	return class == "weapon_hands_sh" or class == "weapon_melee" or class:find("hands", 1, true) or class:find("melee", 1, true) or WeaponInheritsBase(wep, "homigrad_base_melee")
+	local traits = GetWeaponTraits(wep)
+	return traits and traits.melee or false
 end
 
 function IsUnarmedWeapon(wep)
 	if not IsValid(wep) then return true end
 
-	local class = wep:GetClass()
-	return class == "weapon_hands_sh" or class:find("hands", 1, true)
+	local traits = GetWeaponTraits(wep)
+	return traits and traits.unarmed or false
 end
 
 function IsBotMeaningfullyArmed(bot)
@@ -257,7 +431,8 @@ function IsBotMeaningfullyArmed(bot)
 end
 
 function IsMeaningfullyArmedWeapon(wep)
-	return IsValid(wep) and not IsMedicineWeapon(wep) and not IsUnarmedWeapon(wep)
+	local traits = GetWeaponTraits(wep)
+	return traits and not traits.medicine and not traits.unarmed or false
 end
 
 function GetMeleeWeaponAttackRange(wep)
@@ -271,8 +446,11 @@ end
 
 function IsBotPickupWeapon(bot, ent)
 	if not IsValid(bot) or not IsValid(ent) or not ent:IsWeapon() then return false end
-	if IsValid(ent:GetOwner()) or IsMedicineWeapon(ent) then return false end
-	if not IsRangedWeapon(ent) or not HasAmmoForWeapon(bot, ent) then return false end
+	if IsValid(ent:GetOwner()) then return false end
+
+	local traits = GetWeaponTraits(ent)
+	if not traits or traits.medicine or not traits.ranged then return false end
+	if not HasAmmoForWeapon(bot, ent) then return false end
 	if bot:HasWeapon(ent:GetClass()) then return false end
 
 	return true
@@ -290,20 +468,92 @@ function BotCanSeePickup(bot, ent)
 	return (not tr.Hit) or tr.Entity == ent
 end
 
-function FindNearbyPickupWeapon(bot, maxRange)
-	local botPos = bot:GetPos()
-	local bestWeapon
-	local bestDistSqr = (maxRange or BOT_WEAPON_PICKUP_SCAN_RANGE) ^ 2
+local function IsBotPickupBlacklisted(bot, ent, now)
+	local blacklist = bot.ZCBotPickupBlacklist
+	local blockedUntil = blacklist and blacklist[ent]
+	if not blockedUntil then return false end
+	if blockedUntil > now then return true end
 
-	for _, ent in ipairs(ents.FindInSphere(botPos, maxRange or BOT_WEAPON_PICKUP_SCAN_RANGE)) do
+	blacklist[ent] = nil
+	return false
+end
+
+local function BlacklistBotPickup(bot, ent, duration, now)
+	if not IsValid(ent) then return end
+
+	EnsureBotWeaponCacheState(bot)
+	bot.ZCBotPickupBlacklist[ent] = (now or CurTime()) + duration
+	if bot.ZCBotPickupWeapon == ent then
+		ClearBotPickupTarget(bot, 0)
+	end
+end
+
+local function ValidateCachedPickup(bot, ent, botPos, maxDistSqr, now)
+	if not IsValid(ent) or IsBotPickupBlacklisted(bot, ent, now) then return false end
+	if not IsBotPickupWeapon(bot, ent) then return false end
+
+	local distSqr = botPos:DistToSqr(ent:GetPos())
+	if distSqr > maxDistSqr then return false end
+
+	return true, distSqr
+end
+
+function FindNearbyPickupWeapon(bot, maxRange)
+	if not IsValid(bot) then return nil end
+	EnsureBotWeaponCacheState(bot)
+
+	maxRange = maxRange or BOT_WEAPON_PICKUP_SCAN_RANGE
+	local now = CurTime()
+	local botPos = bot:GetPos()
+	local maxDistSqr = maxRange * maxRange
+	local cachedWeapon = bot.ZCBotPickupWeapon
+
+	if cachedWeapon ~= nil and not IsValid(cachedWeapon) then
+		ClearBotPickupTarget(bot, 0)
+	elseif IsValid(cachedWeapon) then
+		local usable, distSqr = ValidateCachedPickup(bot, cachedWeapon, botPos, maxDistSqr, now)
+		if usable then
+			if (bot.ZCBotPickupVisibleUntil or 0) <= now then
+				if not BotCanSeePickup(bot, cachedWeapon) then
+					BlacklistBotPickup(bot, cachedWeapon, BOT_PICKUP_BLOCKED_TIME, now)
+				else
+					bot.ZCBotPickupVisibleUntil = now + BOT_PICKUP_VISIBILITY_INTERVAL
+					return cachedWeapon, distSqr
+				end
+			else
+				return cachedWeapon, distSqr
+			end
+		else
+			ClearBotPickupTarget(bot, 0)
+		end
+	end
+
+	if (bot.ZCBotPickupNextScan or 0) > now and (bot.ZCBotPickupScanRange or 0) >= maxRange then
+		return nil
+	end
+
+	local bestWeapon
+	local bestDistSqr = maxDistSqr
+
+	for _, ent in ipairs(ents.FindInSphere(botPos, maxRange)) do
+		if IsBotPickupBlacklisted(bot, ent, now) then continue end
 		if not IsBotPickupWeapon(bot, ent) then continue end
-		if not BotCanSeePickup(bot, ent) then continue end
 
 		local distSqr = botPos:DistToSqr(ent:GetPos())
-		if distSqr < bestDistSqr then
-			bestDistSqr = distSqr
-			bestWeapon = ent
-		end
+		if distSqr >= bestDistSqr then continue end
+		if not BotCanSeePickup(bot, ent) then continue end
+
+		bestDistSqr = distSqr
+		bestWeapon = ent
+	end
+
+	bot.ZCBotPickupScanRange = maxRange
+	bot.ZCBotPickupNextScan = now + (IsValid(bestWeapon) and BOT_PICKUP_SCAN_INTERVAL or BOT_PICKUP_FAILED_SCAN_INTERVAL)
+	if IsValid(bestWeapon) then
+		bot.ZCBotPickupWeapon = bestWeapon
+		bot.ZCBotPickupVisibleUntil = now + BOT_PICKUP_VISIBILITY_INTERVAL
+		bot.ZCBotPickupBestDistance = math.sqrt(bestDistSqr)
+		bot.ZCBotPickupLastProgressAt = now
 	end
 
 	return bestWeapon, bestDistSqr
@@ -313,12 +563,27 @@ function TryBotPickupNearbyWeapon(bot, cmd, aimAng)
 	local weapon, distSqr = FindNearbyPickupWeapon(bot, BOT_WEAPON_PICKUP_SCAN_RANGE)
 	if not IsValid(weapon) then return false end
 
+	local now = CurTime()
+	local distance = math.sqrt(distSqr)
+	local bestDistance = bot.ZCBotPickupBestDistance or distance
+	local madeProgress = distance <= bestDistance - BOT_PICKUP_PROGRESS_DISTANCE
+	if madeProgress then
+		bot.ZCBotPickupBestDistance = distance
+		bot.ZCBotPickupLastProgressAt = now
+	elseif distance > BOT_WEAPON_PICKUP_USE_RANGE and
+		(bot.ZCBotPickupLastProgressAt or now) + BOT_PICKUP_NO_PROGRESS_TIME <= now then
+		BlacklistBotPickup(bot, weapon, BOT_PICKUP_UNREACHABLE_TIME, now)
+		return false
+	end
+
 	local weaponPos = weapon:GetPos()
 	if distSqr <= BOT_WEAPON_PICKUP_USE_RANGE * BOT_WEAPON_PICKUP_USE_RANGE then
 		cmd:SetButtons(bit_bor(cmd:GetButtons(), IN_USE))
 		bot.force_pickup = true
 		bot:PickupWeapon(weapon)
 		bot.force_pickup = nil
+		InvalidateBotWeaponSelection(bot)
+		ClearBotPickupTarget(bot, now + BOT_PICKUP_SCAN_INTERVAL)
 		return true
 	end
 
@@ -341,8 +606,28 @@ function TryBotPickupNearbyWeapon(bot, cmd, aimAng)
 end
 
 function SelectBotWeapon(bot)
+	if not IsValid(bot) then return NULL end
+	EnsureBotWeaponCacheState(bot)
+
+	local now = CurTime()
 	local active = GetBotActiveWeapon(bot)
-	if IsPrimaryRangedWeapon(active) and HasAmmoForWeapon(bot, active) then return active end
+	local activeTraits = GetWeaponTraits(active)
+	if activeTraits and activeTraits.primary and HasAmmoForWeapon(bot, active) then
+		bot.ZCBotSelectedWeapon = active
+		bot.ZCBotWeaponSelectionEmpty = nil
+		bot.ZCBotWeaponSelectionUntil = now + BOT_WEAPON_SELECTION_CACHE_TIME
+		return active
+	end
+
+	if (bot.ZCBotWeaponSelectionUntil or 0) > now then
+		local cachedWeapon = bot.ZCBotSelectedWeapon
+		if IsCachedBotWeaponUsable(bot, cachedWeapon, active) then
+			return SelectWeaponIfNeeded(bot, active, cachedWeapon)
+		end
+
+		if bot.ZCBotWeaponSelectionEmpty then return active end
+		InvalidateBotWeaponSelection(bot)
+	end
 
 	local primary
 	local secondary
@@ -350,20 +635,30 @@ function SelectBotWeapon(bot)
 	local hands = IsHandsWeapon(active) and active or nil
 
 	for _, wep in ipairs(bot:GetWeapons()) do
-		if not IsValid(wep) or IsMedicineWeapon(wep) then continue end
+		local traits = GetWeaponTraits(wep)
+		if not traits or traits.medicine then continue end
 
-		if IsHandsWeapon(wep) then
+		if traits.hands then
 			hands = hands or wep
-		elseif IsPrimaryRangedWeapon(wep) and HasAmmoForWeapon(bot, wep) then
-			primary = primary or wep
-		elseif IsSecondaryRangedWeapon(wep) and HasAmmoForWeapon(bot, wep) then
-			secondary = secondary or wep
-		elseif IsMeleeWeapon(wep) then
+		elseif traits.ranged then
+			if HasAmmoForWeapon(bot, wep) then
+				if traits.primary then
+					primary = primary or wep
+				else
+					secondary = secondary or wep
+				end
+			end
+		elseif traits.melee then
 			melee = melee or wep
 		end
 	end
 
-	return SelectWeaponIfNeeded(bot, active, primary or secondary or melee or hands or active)
+	local selected = primary or secondary or melee or hands
+	bot.ZCBotWeaponSelectionUntil = now + BOT_WEAPON_SELECTION_CACHE_TIME
+	bot.ZCBotSelectedWeapon = selected
+	bot.ZCBotWeaponSelectionEmpty = not IsValid(selected)
+
+	return SelectWeaponIfNeeded(bot, active, selected or active)
 end
 
 function HasUsableMedicine(wep, bot, needsTourniquet)
@@ -395,7 +690,7 @@ end
 
 function FindBotMedicine(bot, classList, needsTourniquet)
 	local active = bot:GetActiveWeapon()
-	if IsValid(active) and table.HasValue(classList, active:GetClass()) and HasUsableMedicine(active, bot, needsTourniquet) then
+	if IsValid(active) and ClassListContains(classList, active:GetClass()) and HasUsableMedicine(active, bot, needsTourniquet) then
 		return active
 	end
 
@@ -413,7 +708,7 @@ function TryBotSelfCare(bot, cmd)
 	end
 
 	local active = bot:GetActiveWeapon()
-	if HasUsableMedicine(active, bot, needsTourniquet) and (needsTourniquet or table.HasValue(BANDAGE_CLASSES, active:GetClass())) then
+	if HasUsableMedicine(active, bot, needsTourniquet) and (needsTourniquet or ClassListContains(BANDAGE_CLASSES, active:GetClass())) then
 		cmd:SetForwardMove(0)
 		cmd:SetSideMove(0)
 		cmd:SetButtons(bit_bor(cmd:GetButtons(), IN_ATTACK))
@@ -424,7 +719,7 @@ function TryBotSelfCare(bot, cmd)
 
 	local wep
 	if needsTourniquet then
-		wep = FindBotMedicine(bot, {"weapon_tourniquet"}, true)
+		wep = FindBotMedicine(bot, TOURNIQUET_CLASSES, true)
 	end
 
 	if not IsValid(wep) and needsBandage then
@@ -439,7 +734,7 @@ function TryBotSelfCare(bot, cmd)
 	cmd:SetSideMove(0)
 	cmd:SetButtons(bit_bor(cmd:GetButtons(), IN_ATTACK))
 
-	BotDevPrint(string.format("%s self-care=%s", bot:Name(), wep:GetClass()))
+	BotDevPrint("%s self-care=%s", bot:Name(), wep:GetClass())
 	return true
 end
 
@@ -468,7 +763,7 @@ function TryBotFakeUp(bot)
 		bot.ZCBotNextFakeUpTry = CurTime() + BOT_FAKEUP_INTERVAL
 		if zc.FakeUp and zc.FakeUp(bot) then
 			bot.ZCBotFakeUpCooldownUntil = CurTime() + BOT_FAKEUP_COOLDOWN
-			BotDevPrint(string.format("%s fakeup", bot:Name()))
+			BotDevPrint("%s fakeup", bot:Name())
 		end
 	end
 
@@ -483,4 +778,18 @@ function IsDeathmatchRoundActive(round)
 	round = round or GetCurrentRound()
 	return round and round.name == "dm" and zc and zc.ROUND_STATE == 1
 end
+
+local function ResetBotWeaponCachesOnInventoryChange(wep, owner)
+	if not IsValid(owner) or not owner:IsPlayer() or not owner:IsBot() then return end
+	ResetBotWeaponCacheState(owner)
+end
+
+hook.Add("WeaponEquip", "ZCPlayerBotWeaponCacheEquip", ResetBotWeaponCachesOnInventoryChange)
+hook.Add("PlayerDroppedWeapon", "ZCPlayerBotWeaponCacheDrop", function(bot)
+	if IsValid(bot) and bot:IsBot() then ResetBotWeaponCacheState(bot) end
+end)
+hook.Add("PlayerSpawn", "ZCPlayerBotWeaponCacheSpawn", function(bot)
+	if IsValid(bot) and bot:IsBot() then ResetBotWeaponCacheState(bot) end
+end)
+hook.Add("OnReloaded", "ZCPlayerBotWeaponClassCacheReload", ClearWeaponClassCaches)
 

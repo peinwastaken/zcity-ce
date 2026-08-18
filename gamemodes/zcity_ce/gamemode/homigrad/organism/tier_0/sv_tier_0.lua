@@ -13,10 +13,27 @@ function zc.organism.Add(ent)
 	return org
 end
 
+function zc.organism.Ensure(ent)
+	if not IsValid(ent) then return nil, false end
+
+	local org = ent.organism or zc.organism.list[ent]
+	if istable(org) then
+		org.owner = ent
+		ent.organism = org
+		zc.organism.list[ent] = org
+		return org, false
+	end
+
+	return zc.organism.Add(ent), true
+end
+
 function zc.organism.Clear(org)
+	if not istable(org) then return false end
+
 	hook_Run("ZC_OrganismClear", org)//.owner.organism_internal)
 	if IsValid(org.owner) then org.owner.fullsend = true end
-	zc.send_organism(org)
+	if zc.send_organism then zc.send_organism(org) end
+	return true
 end
 
 function zc.organism.Remove(ent)
@@ -25,17 +42,54 @@ function zc.organism.Remove(ent)
 	zc.organism.list[ent] = nil
 end
 
-hook.Add("PlayerInitialSpawn", "ZC_AddOrganismOnInitialSpawn", function(ply) zc.organism.Add(ply) end)
-hook.Add("ZC_PlayerSpawn", "ZC_ClearOrganismOnPlayerSpawn", function(ply) zc.organism.Clear(ply.organism) end)
+hook.Add("PlayerInitialSpawn", "ZC_AddOrganismOnInitialSpawn", function(ply)
+	zc.organism.Ensure(ply)
+end)
+hook.Add("OnEntityCreated", "ZC_EnsureOrganismOnPlayerCreated", function(ent)
+	if not ent:IsPlayer() then return end
+
+	timer.Simple(0, function()
+		if not IsValid(ent) or not ent:IsPlayer() then return end
+
+		local org, created = zc.organism.Ensure(ent)
+		if org and (created or org.unconscious == nil) then zc.organism.Clear(org) end
+	end)
+end)
+hook.Add("PlayerSpawn", "ZC_EnsureOrganismOnPlayerSpawn", function(ply)
+	local org, created = zc.organism.Ensure(ply)
+	if org and (created or org.unconscious == nil) then zc.organism.Clear(org) end
+end)
+hook.Add("ZC_PlayerSpawn", "ZC_ClearOrganismOnPlayerSpawn", function(ply)
+	local org = zc.organism.Ensure(ply)
+	if org then zc.organism.Clear(org) end
+end)
+
+local function BackfillMissingPlayerOrganisms()
+	for _, ply in player.Iterator() do
+		local org, created = zc.organism.Ensure(ply)
+		if org and (created or org.unconscious == nil) then zc.organism.Clear(org) end
+	end
+end
+
+hook.Add("ZC_OnLoaded", "ZC_BackfillMissingPlayerOrganisms", BackfillMissingPlayerOrganisms)
+hook.Add("InitPostEntity", "ZC_BackfillMissingPlayerOrganisms", BackfillMissingPlayerOrganisms)
+hook.Add("OnReloaded", "ZC_BackfillMissingPlayerOrganisms", BackfillMissingPlayerOrganisms)
+timer.Simple(0, function()
+	if zc.loaded then BackfillMissingPlayerOrganisms() end
+end)
 hook.Add("PlayerDisconnected", "ZC_RemoveOrganismOnDisconnect", function(ply) zc.organism.Remove(ply) end)
 hook.Add("PostPlayerDeath", "ZC_MoveOrganismToDeathRagdoll", function(ply)
+	local playerOrg, created = zc.organism.Ensure(ply)
+	if not playerOrg then return end
+	if created or playerOrg.unconscious == nil then zc.organism.Clear(playerOrg) end
+
 	local ragdoll = ply:GetNWEntity("RagdollDeath")
 	
 	if not IsValid(ragdoll) then ragdoll = ply.FakeRagdoll end
 
 	if IsValid(ragdoll) then
 		local newOrg = zc.organism.Add(ragdoll)
-		table.Merge(newOrg, ply.organism)
+		table.Merge(newOrg, playerOrg)
 
 		hook.Run("ZC_OnRagdollDeath", ply, ragdoll)
 
@@ -48,7 +102,7 @@ hook.Add("PostPlayerDeath", "ZC_MoveOrganismToDeathRagdoll", function(ply)
 		zc.send_bareinfo(newOrg)
 	end
 
-	zc.organism.Clear(ply.organism)
+	zc.organism.Clear(playerOrg)
 
 	hook.Run("ZC_AfterPostPlayerDeath", ply, ragdoll)
 end)
@@ -100,6 +154,8 @@ end)
 
 
 hook.Add("ZC_OnFakeRagdollCreated", "ZC_Organism", function(ply, ragdoll)
-	ragdoll.organism = ply.organism
+	local org, created = zc.organism.Ensure(ply)
+	if org and (created or org.unconscious == nil) then zc.organism.Clear(org) end
+	ragdoll.organism = org
 	--zc.net.list[ragdoll] = zc.net.list[ply]
 end)
