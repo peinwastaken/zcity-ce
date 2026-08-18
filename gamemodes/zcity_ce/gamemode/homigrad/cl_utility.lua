@@ -904,8 +904,6 @@ players : 1 humans, 0 bots (20 max)
 
 --\\ CL Utils setting adjustments
 	if CLIENT then
-		RunConsoleCommand("mp_decals", "4096")  -- "4194304" can crash the client.
-
 		hook.Add("Think","ZC_RemoveLegacyGasmaskDrawHook",function()
 			hook.Remove("PostPlayerDraw","BA2_GasmaskDraw")
 			hook.Remove("Think","ZC_RemoveLegacyGasmaskDrawHook")
