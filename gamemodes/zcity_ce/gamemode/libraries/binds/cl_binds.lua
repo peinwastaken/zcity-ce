@@ -30,9 +30,8 @@ BindConfig
 }
 */
 
-local binds = {}
-
-zc.binds = binds or {}
+local binds = zc.binds or {}
+zc.binds = binds
 
 local BIND_SAVE_PATH = "settings/binds.json"
 local bindPressedWindow = 0.15
@@ -250,12 +249,6 @@ binds.categories = {
   { ["id"] = "posture", ["label"] = "binds/category/posture" },
   { ["id"] = "misc", ["label"] = "binds/category/misc"},
   { ["id"] = "admin", ["label"] = "binds/category/admin" }
-}
-
-binds.bindConditions = {
-  ["ragdoll_aim"] = function()
-    return LocalPlayer():IsFakeRagdolled()
-  end
 }
 
 binds.allbinds = {
