@@ -499,12 +499,12 @@ function zc.DrawBinds(ParentPanel)
     end
 
     // load binds
-    for id, bindInfo in pairs(zc.binds.allbinds) do
+    for _, bindInfo in ipairs(zc.binds.allbinds) do
         local categoryPanel = categoryPanels[bindInfo.category]
         if !categoryPanel then continue end
 
         local bindRow = zc.CreateBindRow(
-            id,
+            bindInfo.id,
             bindInfo,
             categoryPanel,
             optionOffset)

@@ -6,7 +6,8 @@ end)
 /*
 BindInfo
 {
-  ["bind_id"] = {
+  {
+    ["id"] = "bind_id",
     ["key"] = KEY_T, // current bind
     ["default"] = KEY_NONE, // what the bind defaults to when the player first joins
     ["label"] = "Toggle ragdoll", // bind label in binds menu
@@ -66,6 +67,9 @@ local function SendBindState(id, down)
 end
 
 local function PressBind(id, bind)
+  local condition = binds.bindConditions[id]
+  if condition and !condition() then return end
+
   SetBindState(id, true)
   SendBindState(id, true)
   hook.Run("ZC_BindStateChanged", id, true)
@@ -85,7 +89,7 @@ local function CreateBindSave(default)
   default = default or false
   local bindSave = {}
 
-  for k,v in pairs(zc.binds.allbinds) do
+  for k,v in ipairs(binds.allbinds) do
     local key = default and v.default or v.key
     local override = default and v.default_override or v.should_override
 
@@ -125,7 +129,7 @@ function binds.LoadBinds()
 
   local loaded = 0
   local needsUpdate = false
-  for id, bind in pairs(binds.allbinds) do
+  for id, bind in ipairs(binds.allbinds) do
     local configBind = bindConfig[id]
 
     if type(configBind) != "table" then
@@ -155,10 +159,10 @@ function binds.LoadBinds()
 end
 
 function binds.GetBind(id)
-  local bind = binds.allbinds[id]
-
-  if bind then
-    return bind
+  for _, bind in ipairs(binds.allbinds) do
+    if bind.id == id then
+      return bind
+    end
   end
 
   if zc.dev.IsDeveloper() then
@@ -185,7 +189,7 @@ function binds.UpdateBindOverride(id, override)
 end
 
 function binds.FindFirstBind(keycode)
-  for k,v in pairs(zc.binds.allbinds) do
+  for _,v in ipairs(binds.allbinds) do
     if keycode == v.key then
       return v
     end
@@ -248,9 +252,16 @@ binds.categories = {
   { ["id"] = "admin", ["label"] = "binds/category/admin" }
 }
 
+binds.bindConditions = {
+  ["ragdoll_aim"] = function()
+    return LocalPlayer():IsFakeRagdolled()
+  end
+}
+
 binds.allbinds = {
   // movement
-  ["kick"] = {
+  {
+    ["id"] = "kick",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/kick",
@@ -261,7 +272,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["zoom"] = {
+  {
+    ["id"] = "zoom",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/zoom",
@@ -271,7 +283,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["lean_left"] = {
+  {
+    ["id"] = "lean_left",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/lean_left",
@@ -281,7 +294,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["lean_right"] = {
+  {
+    ["id"] = "lean_right",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/lean_right",
@@ -291,7 +305,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["altlook"] = {
+  {
+    ["id"] = "altlook",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/altlook",
@@ -301,7 +316,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["suicide"] = {
+  {
+    ["id"] = "suicide",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/suicide",
@@ -314,7 +330,8 @@ binds.allbinds = {
   },
 
   // weapons
-  ["drop_weapon"] = {
+  {
+    ["id"] = "drop_weapon",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/drop_weapon",
@@ -325,7 +342,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["hold_breath"] = {
+  {
+    ["id"] = "hold_breath",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/hold_breath",
@@ -335,7 +353,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["toggle_laser"] = {
+  {
+    ["id"] = "toggle_laser",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/toggle_laser",
@@ -348,7 +367,8 @@ binds.allbinds = {
   },
 
   // ragdoll
-  ["fake"] = {
+  {
+    ["id"] = "fake",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/fake",
@@ -359,7 +379,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["fake_grab_left"] = {
+  {
+    ["id"] = "fake_grab_left",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/fake_grab_left",
@@ -369,7 +390,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["fake_grab_right"] = {
+  {
+    ["id"] = "fake_grab_right",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/fake_grab_right",
@@ -379,7 +401,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["ragdoll_aim"] = {
+  {
+    ["id"] = "ragdoll_aim",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/ragdoll_aim",
@@ -389,7 +412,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["fake_aim_toggle"] = {
+  {
+    ["id"] = "fake_aim_toggle",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/fake_aim_toggle",
@@ -401,7 +425,8 @@ binds.allbinds = {
   },
 
   // stances
-  ["posture_regular"] = {
+  {
+    ["id"] = "posture_regular",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/posture_regular",
@@ -413,7 +438,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["posture_hipfire"] = {
+  {
+    ["id"] = "posture_hipfire",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/posture_hipfire",
@@ -425,7 +451,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["posture_leftshoulder"] = {
+  {
+    ["id"] = "posture_leftshoulder",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/posture_leftshoulder",
@@ -437,7 +464,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["posture_highready"] = {
+  {
+    ["id"] = "posture_highready",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/posture_highready",
@@ -449,7 +477,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["posture_lowready"] = {
+  {
+    ["id"] = "posture_lowready",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/posture_lowready",
@@ -461,7 +490,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["posture_pointshooting"] = {
+  {
+    ["id"] = "posture_pointshooting",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/posture_pointshooting",
@@ -473,7 +503,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["posture_cover"] = {
+  {
+    ["id"] = "posture_cover",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/posture_cover",
@@ -485,7 +516,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["posture_gangsta"] = {
+  {
+    ["id"] = "posture_gangsta",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/posture_gangsta",
@@ -497,7 +529,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["posture_onehanded"] = {
+  {
+    ["id"] = "posture_onehanded",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/posture_onehanded",
@@ -509,7 +542,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["posture_somalian"] = {
+  {
+    ["id"] = "posture_somalian",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/posture_somalian",
@@ -523,7 +557,8 @@ binds.allbinds = {
   },
 
   // misc
-  ["open_radial"] = {
+  {
+    ["id"] = "open_radial",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/open_radial",
@@ -535,7 +570,8 @@ binds.allbinds = {
   },
 
   // admin
-  ["open_admin"] = {
+  {
+    ["id"] = "open_admin",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/open_admin",
@@ -546,7 +582,8 @@ binds.allbinds = {
     ["should_override"] = false,
     ["default_override"] = false
   },
-  ["open_admin_config"] = {
+  {
+    ["id"] = "open_admin_config",
     ["key"] = KEY_NONE,
     ["default"] = KEY_NONE,
     ["label"] = "binds/open_admin_config",
@@ -560,8 +597,8 @@ binds.allbinds = {
 }
 
 function binds.RegisterConCommands()
-  for id, bind in pairs(binds.allbinds) do
-    bind.id = id
+  for _, bind in ipairs(binds.allbinds) do
+    local id = bind.id
 
     local command = bind.command or ""
     if command == "" then continue end
