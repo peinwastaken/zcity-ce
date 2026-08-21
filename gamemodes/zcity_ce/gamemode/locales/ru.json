@@ -96,6 +96,8 @@
 
     "binds/altlook": "Свободный взгляд",
     "binds/altlook/desc": "Осматриваться, не поворачивая тело",
+    "binds/alt_modifier": "Альтернативный модификатор",
+    "binds/alt_modifier/desc": "Медленно открывать двери и регулировать угол открытия",
     "binds/category/admin": "Админ",
     "binds/category/misc": "Разное",
     "binds/category/movement": "Движение",
@@ -120,6 +122,8 @@
     "binds/lean_left/desc": "Наклониться влево",
     "binds/lean_right": "Наклон вправо",
     "binds/lean_right/desc": "Наклониться вправо",
+    "binds/modifier": "Модификатор",
+    "binds/modifier/desc": "Быстро открывать двери",
     "binds/open_admin": "Открыть админ-меню",
     "binds/open_admin/desc": "для админских злоупотреблений",
     "binds/open_admin_config": "Открыть конфиг режима",

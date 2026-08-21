@@ -1409,7 +1409,7 @@ end
 
 hook.Add("StartCommand", "ZC_AdjustDoorOpenAngleWithMouseWheel", function(ply, cmd)
 	local whl = cmd:GetMouseWheel()
-	if ply:KeyDown(IN_WALK) and math.abs(whl) > 0 then
+	if ply:ZCBindDown("alt_modifier") and math.abs(whl) > 0 then
 		local old_amt = ply:GetNWInt("door_open_amt", 0)
 
 		ply:SetNWInt("door_open_amt", math.Clamp(old_amt + whl, -90, 90))
@@ -1491,7 +1491,7 @@ end
 
 hook.Add( "AcceptInput", "ZC_StealthOpenDoors", function( ent, inp, act, ply, val )
 	if inp == "Use" and ent:SDOIsDoor() then
-		local func = ((ply:KeyDown( IN_SPEED ) and "FastOpenDoor") or ( ply:KeyDown( IN_WALK ) and "StealthOpenDoor") or "NormalOpenDoor")
+		local func = ((ply:ZCBindDown("modifier") and "FastOpenDoor") or (ply:ZCBindDown("alt_modifier") and "StealthOpenDoor") or "NormalOpenDoor")
 		ent[func](ent,ply)
 		if ent:GetInternalVariable( "slavename" ) then
 			for _,v in pairs( ents.FindByName( ent:GetInternalVariable( "slavename" ) ) ) do

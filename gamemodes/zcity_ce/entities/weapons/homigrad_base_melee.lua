@@ -125,6 +125,7 @@ function SWEP:InUse()
 	local ply = self:GetOwner()
 
 	if !IsValid(ply) then return false end
+	if not ply:IsPlayer() then return true end
 
 	local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
 

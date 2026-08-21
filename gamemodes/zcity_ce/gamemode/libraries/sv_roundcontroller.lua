@@ -30,9 +30,10 @@ end
 
 local function WriteResult(result)
 	if result then
+		local winner = result.winner
 		net.WriteBool(true)
 		net.WriteString(result.reason or "unknown")
-		net.WriteEntity(result.winner and IsValid(result.winner) and result.winner or NULL)
+		net.WriteEntity(isentity(winner) and IsValid(winner) and winner or NULL)
 	else
 		net.WriteBool(false)
 		net.WriteString("")

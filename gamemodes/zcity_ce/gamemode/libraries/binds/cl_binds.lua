@@ -171,6 +171,20 @@ function binds.GetBind(id)
   return nil
 end
 
+function binds.GetBindKeyString(id)
+  for _, bind in ipairs(binds.allbinds) do
+    if bind.id == id then
+      return input.GetKeyName(bind["key"])
+    end
+  end
+
+  if zc.dev.IsDeveloper() then
+    print(string.format("failed to find bind with id %s", id))
+  end
+
+  return id
+end
+
 function binds.UpdateBind(id, keycode)
   local bind = binds.GetBind(id)
   if !bind then return end
@@ -187,14 +201,16 @@ function binds.UpdateBindOverride(id, override)
   binds.SaveBinds()
 end
 
-function binds.FindFirstBind(keycode)
-  for _,v in ipairs(binds.allbinds) do
-    if keycode == v.key then
-      return v
+function binds.FindBinds(keycode)
+  local found = {}
+
+  for _, bind in ipairs(binds.allbinds) do
+    if keycode == bind.key then
+      found[#found + 1] = bind
     end
   end
 
-  return nil
+  return found
 end
 
 function binds.IsDown(id)
@@ -218,24 +234,27 @@ function binds.WasReleased(id, window)
 end
 
 hook.Add("PlayerBindPress", "ZC_PlayerBindPressed", function(ply, bind, pressed, key)
-  local zcBind = binds.FindFirstBind(key)
-  if !zcBind then return end
-  if zcBind.key == KEY_NONE then return end
+  local shouldOverride = false
 
-  if pressed then
-    PressBind(zcBind.id, zcBind)
+  for _, zcBind in ipairs(binds.FindBinds(key)) do
+    if zcBind.key == KEY_NONE then continue end
+
+    if pressed then
+      PressBind(zcBind.id, zcBind)
+    end
+
+    if zcBind.should_override == true then
+      shouldOverride = true
+    end
   end
 
-  if zcBind.should_override == true then
-    return true
-  end
+  if shouldOverride then return true end
 end)
 
 hook.Add("PlayerButtonUp", "ZC_PlayerBindUnpressed", function(ply, key)
-  local zcBind = binds.FindFirstBind(key)
-  if !zcBind then return end
-
-  ReleaseBind(zcBind.id, zcBind)
+  for _, zcBind in ipairs(binds.FindBinds(key)) do
+    ReleaseBind(zcBind.id, zcBind)
+  end
 end)
 
 hook.Add("InitPostEntity", "ZC_LoadBindsAfterInit", function()
@@ -588,6 +607,28 @@ binds.allbinds = {
     ["category"] = "admin",
     ["command"] = "openadminconfig",
     ["run_command"] = "adminmenu_modeconfig",
+    ["should_override"] = false,
+    ["default_override"] = false
+  },
+  {
+    ["id"] = "modifier",
+    ["key"] = KEY_LSHIFT,
+    ["default"] = KEY_LSHIFT,
+    ["label"] = "binds/modifier",
+    ["description"] = "binds/modifier/desc",
+    ["category"] = "movement",
+    ["command"] = "+modifier",
+    ["should_override"] = false,
+    ["default_override"] = false
+  },
+  {
+    ["id"] = "alt_modifier",
+    ["key"] = KEY_LALT,
+    ["default"] = KEY_LALT,
+    ["label"] = "binds/alt_modifier",
+    ["description"] = "binds/alt_modifier/desc",
+    ["category"] = "movement",
+    ["command"] = "+altmodifier",
     ["should_override"] = false,
     ["default_override"] = false
   }

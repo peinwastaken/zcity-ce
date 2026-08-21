@@ -322,17 +322,17 @@ if CLIENT then
 		if SDOIsDoor(ent) then
 			if CLIENT then
 				local use = input.LookupBinding("+use") or "BIND YOUR +USE KEY PLEASE. WRITE \"bind e +use\" IN CONSOLE FOR THE LOVE OF GOD"
-				local walk = input.LookupBinding("+walk") or "BIND YOUR +WALK KEY PLEASE. WRITE \"bind alt +walk\" IN CONSOLE FOR THE LOVE OF GOD"
-				local speed = input.LookupBinding("+speed") or "BIND YOUR +SPEED KEY PLEASE. WRITE \"bind shift +speed\" IN CONSOLE FOR THE LOVE OF GOD"
+				local modifier = zc.binds.GetBindKeyString("modifier")
+				local altModifier = zc.binds.GetBindKeyString("alt_modifier")
 
 				ent.HowToUseInstructions =
-				"<font=ZCity_Tiny>"..string.upper( use ).." open normally</font>\n"..
-				"<font=ZCity_Tiny>"..string.upper( walk ).." + ".. string.upper( use ) .." open slower</font>\n"..
-				"<font=ZCity_Tiny>"..string.upper( speed ).." + ".. string.upper( use ) .." open faster</font>\n"
+				"<font=ZCity_Tiny>".. string.upper(use) .." open normally</font>\n"..
+				"<font=ZCity_Tiny>".. string.upper(modifier) .. " + " .. string.upper( use ) .. " open slower</font>\n"..
+				"<font=ZCity_Tiny>".. string.upper(altModifier) .. " + " .. string.upper( use ) .. " open faster</font>\n"
 
 				ent.HudHintMarkup = markup.Parse("<font=ZCity_Tiny>".. "Door" .."</font>\n<font=ZCity_SuperTiny><colour=125,125,125>".. ent.HowToUseInstructions .."</colour></font>", 450)
 				ent.AdditionalInfoFunc = function()
-					return lply:KeyDown(IN_WALK) and "Open door for "..math.Round(100 - math.min(math.abs(lply:EyeAngles().p) / 60, 1) * 100).."%" or ""--lply:GetNWInt("door_open_amt", 0)
+					return zc.binds.IsDown("alt_modifier") and "Open door for "..math.Round(100 - math.min(math.abs(lply:EyeAngles().p) / 60, 1) * 100).."%" or ""--lply:GetNWInt("door_open_amt", 0)
 				end
 			end
 		end

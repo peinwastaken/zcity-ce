@@ -96,6 +96,8 @@
 
     "binds/altlook": "Free look",
     "binds/altlook/desc": "Look around without moving your body",
+    "binds/alt_modifier": "Alternate modifier",
+    "binds/alt_modifier/desc": "Alternate modifier for certain actions",
     "binds/category/admin": "Admin",
     "binds/category/misc": "Miscellaneous",
     "binds/category/movement": "Movement",
@@ -120,6 +122,8 @@
     "binds/lean_left/desc": "Lean to the left",
     "binds/lean_right": "Lean right",
     "binds/lean_right/desc": "Lean to the right",
+    "binds/modifier": "Modifier",
+    "binds/modifier/desc": "Modifier for certain actions",
     "binds/open_admin": "Open admin menu",
     "binds/open_admin/desc": "for admin abusers",
     "binds/open_admin_config": "Open gamemode config menu",

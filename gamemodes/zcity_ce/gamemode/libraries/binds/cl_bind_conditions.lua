@@ -54,6 +54,8 @@ local function CanOpenAdminConfig()
 end
 
 zc.binds.bindConditions = {
+  ["modifier"] = IsAlive,
+  ["alt_modifier"] = IsAlive,
   ["kick"] = IsStanding,
   ["zoom"] = function()
     return IsValid(LocalPlayer())
