@@ -1838,3 +1838,145 @@ hook.Add("PlayerDeath", "ZC_UpdateTraitorsList", function(ply)
 		end)
 	end)
 end)
+
+-- Player bot integration ----------------------------------------------------
+-- Homicide bots must not treat secret roles as universal knowledge.
+-- Innocent bots only learn hostility from direct experience (their own
+-- attackers); traitor bots use conservative, witness-aware victim selection.
+-- Per-bot knowledge lives in bot.ZCBotAI.modes and never changes the global
+-- relationship between all innocents.
+
+local BOT_OPENING_QUIET_TIME = 15
+local HOSTILITY_MEMORY_TIME = 180
+local TRAITOR_WITNESS_RANGE_SQR = 1500 * 1500
+
+local function GetHomicideData(bot)
+	local bots = zc.PlayerBots
+	if not bots or not bots.GetOrCreateState then return nil end
+
+	local state = bots.GetOrCreateState(bot)
+	if not state then return nil end
+
+	local data = state.modes.homicide
+	if not data then
+		data = {
+			hostile = setmetatable({}, {__mode = "k"}),
+			exposedAt = 0,
+			victimVerdict = setmetatable({}, {__mode = "k"}),
+		}
+		state.modes.homicide = data
+	end
+
+	return data
+end
+
+-- Hook point for "the mode has publicly revealed that player's role".
+-- No reliable mid-round reveal flag exists yet, so this stays reserved.
+local function IsPubliclyRevealed(ply)
+	return ply.homicidePubliclyHostile == true
+end
+
+local function IsTraitor(ply)
+	return ply.isTraitor == true
+end
+
+function MODE:IsBotTeammate(bot, other)
+	if not IsValid(bot) or not IsValid(other) then return false end
+	if bot == other then return true end
+
+	if IsTraitor(bot) then
+		-- Traitors only consider fellow traitors teammates.
+		return IsTraitor(other)
+	end
+
+	-- A learned attacker stops being a teammate for this bot alone.
+	local data = GetHomicideData(bot)
+	if data then
+		local hostileUntil = data.hostile[other]
+		if hostileUntil then
+			if hostileUntil > CurTime() then return false end
+			data.hostile[other] = nil
+		end
+	end
+
+	-- Gunners fight alongside innocents; ordinary innocents are teammates.
+	return not IsTraitor(other)
+end
+
+function MODE:OnBotDamaged(bot, attacker)
+	if not IsValid(attacker) or not attacker:IsPlayer() or bot == attacker then return end
+
+	local data = GetHomicideData(bot)
+	if not data then return end
+
+	if not IsTraitor(bot) then
+		-- Direct experience is legitimate knowledge for this bot alone.
+		data.hostile[attacker] = CurTime() + HOSTILITY_MEMORY_TIME
+	else
+		-- A traitor that attacks someone has exposed itself.
+		data.exposedAt = CurTime()
+		data.victimVerdict = setmetatable({}, {__mode = "k"})
+	end
+end
+
+function MODE:CanBotTarget(bot, other)
+	if not IsValid(other) or not other:IsPlayer() then return nil end
+
+	if IsTraitor(bot) then
+		if IsTraitor(other) then return nil end
+
+		local data = GetHomicideData(bot)
+		if not data then return nil end
+
+		-- Exposed traitors fight with ordinary combat rules.
+		if data.exposedAt > 0 or IsPubliclyRevealed(other) then return true end
+
+		-- Conservative initiation: quiet opening period first.
+		if (zc.ROUND_START or 0) + BOT_OPENING_QUIET_TIME > CurTime() then return false end
+
+		-- Bounded verdict cache keeps the witness checks off the hot path.
+		local now = CurTime()
+		local cached = data.victimVerdict[other]
+		if cached and cached.until_ > now then
+			return cached.verdict
+		end
+
+		local verdict = true
+		local botPos = bot:GetPos()
+		local victimPos = other:GetPos()
+
+		for _, witness in ipairs(player.GetAll()) do
+			if witness == bot or witness == other or not IsValid(witness) or not witness:Alive() then continue end
+			if IsTraitor(witness) then continue end
+
+			local wPos = witness:GetPos()
+			if wPos:DistToSqr(botPos) > TRAITOR_WITNESS_RANGE_SQR and wPos:DistToSqr(victimPos) > TRAITOR_WITNESS_RANGE_SQR then continue end
+
+			local traceData = { start = witness:EyePos(), filter = witness }
+			traceData.endpos = botPos + Vector(0, 0, 40)
+			if not util.TraceLine(traceData).Hit then
+				verdict = false  -- a witness sees the bot
+				break
+			end
+
+			traceData.endpos = victimPos + Vector(0, 0, 40)
+			if not util.TraceLine(traceData).Hit then
+				verdict = false  -- a witness sees the victim
+				break
+			end
+		end
+
+		data.victimVerdict[other] = { verdict = verdict, until_ = now + 1 }
+		return verdict
+	end
+
+	-- Innocent bots may only target openly hostile players they have learned
+	-- about themselves. Secret traitors stay secret at round start.
+	if IsTraitor(other) then
+		local data = GetHomicideData(bot)
+		if data and (data.hostile[other] or 0) > CurTime() then return true end
+		return false
+	end
+
+	return nil
+end

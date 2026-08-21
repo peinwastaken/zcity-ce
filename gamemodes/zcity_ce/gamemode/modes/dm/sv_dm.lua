@@ -301,3 +301,339 @@ hook.Add("Think","ZC_DmModeThink",function(ply)
 		end
 	end
 end)
+
+-- Player bot integration ----------------------------------------------------
+-- Deathmatch owns its zone behavior: different players are never teammates,
+-- bots seek the zone center while it shrinks, and movement goals stay inside
+-- the safe boundary. General AI only calls these optional methods.
+
+local ZONE_ROAM_MARGIN = 600
+local ZONE_CENTER_REACH = 500
+local ZONE_CENTER_SETTLE_RADIUS = 650
+local ZONE_CENTER_RESUME_RADIUS = 950
+local ZONE_CENTER_BIAS_STEP = 32
+local ZONE_CENTER_PATROL_RADIUS = 950
+local ZONE_CENTER_PATROL_INTERVAL = 3
+local ZONE_CENTER_SHRINK_FRACTION = 0.5
+local ZONE_CENTER_GOAL_RADIUS = 700
+local ZONE_CENTER_GOAL_INTERVAL = 4
+
+-- Different players are opponents, even teams with the same Team() id.
+function MODE:IsBotTeammate(bot, other)
+	return false
+end
+
+function MODE:IsBotSafeTime()
+	return self:IsSpawnProtectionActive()
+end
+
+local cachedZoneContext
+local cachedZoneContextTick = -1
+local cachedZoneContextRoundStart
+
+local function GetZoneContext(mode)
+	local tick = engine.TickCount()
+	local roundStart = zc and zc.ROUND_START
+	if cachedZoneContext and cachedZoneContextTick == tick and cachedZoneContextRoundStart == roundStart then
+		return cachedZoneContext
+	end
+
+	local active = zc and zc.ROUND_STATE == 1
+	local center
+	local radius
+
+	if active and not zc_deathmatch_nozone:GetBool() and isvector(zonepoint) then
+		local currentRadius = mode.GetZoneRadius and mode.GetZoneRadius()
+		if isnumber(currentRadius) and currentRadius > 0 and currentRadius < 1000000 then
+			center = zonepoint
+			radius = currentRadius
+		end
+	end
+
+	local shrinkProgress = 0
+	if active then
+		local shrinkTime = mode.ZoneTimeToShrink
+		if not isnumber(shrinkTime) or shrinkTime <= 0 then
+			shrinkProgress = 1
+		else
+			shrinkProgress = math.Clamp((CurTime() - (roundStart or CurTime())) / shrinkTime, 0, 1)
+		end
+	end
+
+	cachedZoneContext = {
+		active = active,
+		center = center,
+		radius = radius,
+		roundStart = roundStart,
+		seekCenter = shrinkProgress >= ZONE_CENTER_SHRINK_FRACTION,
+		shrinkProgress = shrinkProgress,
+	}
+	cachedZoneContextTick = tick
+	cachedZoneContextRoundStart = roundStart
+
+	return cachedZoneContext
+end
+
+local function IsPosInsideZone(ctx, pos, margin)
+	if not ctx.center then return true end
+
+	local insideRadius = math.max((ctx.radius or 0) - (margin or 0), 0)
+	return ctx.center:DistToSqr(pos) < insideRadius * insideRadius
+end
+
+local centerGoalCandidates
+local centerGoalCandidatesRefreshAt = 0
+local centerGoalCandidatesMap = game.GetMap()
+
+hook.Add("InitPostEntity", "ZC_DMCenterGoalCacheInit", function()
+	centerGoalCandidates = nil
+	centerGoalCandidatesRefreshAt = 0
+	centerGoalCandidatesMap = game.GetMap()
+end)
+
+hook.Add("PostCleanupMap", "ZC_DMCenterGoalCacheCleanup", function()
+	centerGoalCandidates = nil
+	centerGoalCandidatesRefreshAt = 0
+	centerGoalCandidatesMap = game.GetMap()
+end)
+
+local function GetCenterGoalCandidates(ctx)
+	local center = ctx.center
+	if not center or not navmesh or not navmesh.GetAllNavAreas then return {} end
+
+	local mapName = game.GetMap()
+	local now = CurTime()
+	local cacheMatches = centerGoalCandidates and centerGoalCandidatesMap == mapName
+		and centerGoalCandidates.roundStart == ctx.roundStart
+		and centerGoalCandidates.centerX == center.x
+		and centerGoalCandidates.centerY == center.y
+		and centerGoalCandidates.centerZ == center.z
+
+	if cacheMatches and centerGoalCandidatesRefreshAt > now then
+		return centerGoalCandidates.candidates
+	end
+
+	local candidates = {}
+	local goalRadiusSqr = ZONE_CENTER_GOAL_RADIUS * ZONE_CENTER_GOAL_RADIUS
+	local areas = navmesh.GetAllNavAreas()
+	for _, area in ipairs(areas or {}) do
+		if not IsValid(area) then continue end
+
+		local pos = area:GetCenter()
+		local centerDistSqr = pos:DistToSqr(center)
+		if centerDistSqr > goalRadiusSqr then continue end
+
+		candidates[#candidates + 1] = {
+			area = area,
+			centerDistSqr = centerDistSqr,
+			pos = pos
+		}
+	end
+
+	centerGoalCandidates = {
+		candidates = candidates,
+		centerX = center.x,
+		centerY = center.y,
+		centerZ = center.z,
+		roundStart = ctx.roundStart
+	}
+	centerGoalCandidatesMap = mapName
+	-- Empty results are cached too, but retried sooner in case nav areas were not ready yet.
+	centerGoalCandidatesRefreshAt = now + (#candidates > 0 and 30 or 1)
+
+	return candidates
+end
+
+local function IsSameCenterContext(bot, ctx)
+	local data = bot.ZCBotAI and bot.ZCBotAI.modes
+	if not data then return false end
+
+	local center = ctx.center
+	return data.centerGoalRoundStart == ctx.roundStart
+		and data.centerGoalX == center.x and data.centerGoalY == center.y and data.centerGoalZ == center.z
+end
+
+local function PickCenterGoal(bot, ctx, reachDistance)
+	local center = ctx.center
+	if not center then return end
+
+	reachDistance = reachDistance or ZONE_CENTER_REACH
+	local now = CurTime()
+	local data = bot.ZCBotAI and bot.ZCBotAI.modes
+	if isvector(data and data.centerGoalPos) and (data.nextCenterGoalPick or 0) > now
+		and IsSameCenterContext(bot, ctx)
+		and (not data.centerGoalFallback or IsPosInsideZone(ctx, data.centerGoalPos, ZONE_ROAM_MARGIN)) then
+		return data.centerGoalPos
+	end
+
+	local bestArea
+	local bestScore = math.huge
+	local botPos = bot:GetPos()
+	local reachDistanceSqr = reachDistance * reachDistance
+	local zoneReach = math.max((ctx.radius or 0) - ZONE_ROAM_MARGIN, 0)
+	local zoneReachSqr = zoneReach * zoneReach
+
+	for _, candidate in ipairs(GetCenterGoalCandidates(ctx)) do
+		local area = candidate.area
+		if not IsValid(area) or candidate.centerDistSqr >= zoneReachSqr then continue end
+		if botPos:DistToSqr(candidate.pos) <= reachDistanceSqr then continue end
+
+		local centerDist = math.sqrt(candidate.centerDistSqr)
+		local score = math.abs(centerDist - ZONE_CENTER_GOAL_RADIUS * 0.45) + math.Rand(0, 250)
+		if score < bestScore then
+			bestScore = score
+			bestArea = area
+		end
+	end
+
+	data = bot.ZCBotAI and bot.ZCBotAI.modes
+	if not data then return IsValid(bestArea) and bestArea:GetCenter() or center end
+
+	local goalPos = IsValid(bestArea) and bestArea:GetCenter() or center
+	data.centerGoalPos = goalPos
+	data.centerGoalFallback = not IsValid(bestArea)
+	data.centerGoalRoundStart = ctx.roundStart
+	data.centerGoalX = center.x
+	data.centerGoalY = center.y
+	data.centerGoalZ = center.z
+	data.nextCenterGoalPick = now + ZONE_CENTER_GOAL_INTERVAL + math.Rand(0, 2)
+
+	return goalPos
+end
+
+local function PickCenterPatrolArea(bot, ctx)
+	if not navmesh or not navmesh.GetAllNavAreas then return nil end
+
+	local data = bot.ZCBotAI and bot.ZCBotAI.modes
+	if (data and data.nextCenterPatrolPick or 0) > CurTime() then
+		return IsValid(data and data.centerPatrolArea) and data.centerPatrolArea or nil
+	end
+
+	local areas = navmesh.GetAllNavAreas()
+	if not areas or #areas == 0 then return nil end
+
+	local center = ctx.center
+	local botPos = bot:GetPos()
+	local bestArea
+	local bestScore = -math.huge
+	local tries = math.min(#areas, 48)
+	local patrolRadiusSqr = ZONE_CENTER_PATROL_RADIUS * ZONE_CENTER_PATROL_RADIUS
+	local sampledIndices = {}
+
+	for sample = 1, tries do
+		local remaining = #areas - sample + 1
+		local pickedSlot = math.random(1, remaining)
+		local areaIndex = sampledIndices[pickedSlot] or pickedSlot
+		sampledIndices[pickedSlot] = sampledIndices[remaining] or remaining
+		local area = areas[areaIndex]
+		if not IsValid(area) then continue end
+
+		local pos = area:GetCenter()
+		local centerDistSqr = pos:DistToSqr(center)
+		if centerDistSqr > patrolRadiusSqr then continue end
+		if botPos:DistToSqr(pos) < 180 * 180 then continue end
+		if not IsPosInsideZone(ctx, pos, ZONE_ROAM_MARGIN) then continue end
+
+		local score = math.sqrt(centerDistSqr) + math.Rand(0, 350)
+		if score > bestScore then
+			bestScore = score
+			bestArea = area
+		end
+	end
+
+	if data then
+		data.centerPatrolArea = bestArea
+		data.nextCenterPatrolPick = CurTime() + ZONE_CENTER_PATROL_INTERVAL + math.Rand(0, 1.5)
+	end
+
+	return bestArea
+end
+
+local function ShouldMoveTowardZoneCenter(bot, ctx)
+	local center = ctx.center
+	if not center or not ctx.seekCenter then return false end
+
+	local data = zc.PlayerBots and zc.PlayerBots.GetOrCreateState and zc.PlayerBots.GetOrCreateState(bot).modes
+	local distSqr = bot:GetPos():DistToSqr(center)
+	if distSqr <= ZONE_CENTER_SETTLE_RADIUS * ZONE_CENTER_SETTLE_RADIUS then
+		data.settledNearCenter = true
+	elseif distSqr >= ZONE_CENTER_RESUME_RADIUS * ZONE_CENTER_RESUME_RADIUS then
+		data.settledNearCenter = false
+	end
+
+	return not data.settledNearCenter
+end
+
+function MODE:GetBotGoal(bot)
+	local ctx = GetZoneContext(self)
+	if not ctx.active or not ctx.center or not ctx.seekCenter then return nil end
+
+	if not ShouldMoveTowardZoneCenter(bot, ctx) then
+		-- Settled near the shrinking center: patrol around it instead of roaming far.
+		local area = PickCenterPatrolArea(bot, ctx)
+		if not IsValid(area) then return nil end
+		return area:GetCenter()
+	end
+
+	return PickCenterGoal(bot, ctx) or Vector(ctx.center.x, ctx.center.y, ctx.center.z)
+end
+
+function MODE:AdjustBotGoal(bot, pos)
+	local ctx = GetZoneContext(self)
+	if not ctx.active or not ctx.center then return pos end
+
+	local safeRadius = math.max((ctx.radius or 0) - ZONE_ROAM_MARGIN, 0)
+	local botDistSqr = bot:GetPos():DistToSqr(ctx.center)
+	if safeRadius <= 0 or botDistSqr >= safeRadius * safeRadius then
+		return Vector(ctx.center.x, ctx.center.y, ctx.center.z)
+	end
+
+	local goalOffset = pos - ctx.center
+	if goalOffset:LengthSqr() >= safeRadius * safeRadius then
+		goalOffset:Normalize()
+		return ctx.center + goalOffset * math.max(safeRadius - ZONE_CENTER_BIAS_STEP, 0)
+	end
+
+	-- Pull goals back toward the center while it is closing.
+	if not ctx.seekCenter then return pos end
+	if botDistSqr <= ZONE_CENTER_REACH * ZONE_CENTER_REACH then return pos end
+
+	local improvedDist = math.max(math.sqrt(botDistSqr) - ZONE_CENTER_BIAS_STEP, 0)
+	if pos:DistToSqr(ctx.center) < improvedDist * improvedDist then return pos end
+
+	return PickCenterGoal(bot, ctx) or Vector(ctx.center.x, ctx.center.y, ctx.center.z)
+end
+
+function MODE:AdjustBotStrafe(bot, cmd, aimAng)
+	local ctx = GetZoneContext(self)
+	local center = ctx.center
+	if not center or not ctx.seekCenter then return end
+	if not ShouldMoveTowardZoneCenter(bot, ctx) then return end
+
+	local botPos = bot:GetPos()
+	local currentDistSqr = botPos:DistToSqr(center)
+	if currentDistSqr <= ZONE_CENTER_REACH * ZONE_CENTER_REACH then return end
+
+	local forwardMove = cmd:GetForwardMove()
+	local sideMove = cmd:GetSideMove()
+	if math.abs(forwardMove) < 40 and math.abs(sideMove) < 40 then return end
+
+	local moveAng = Angle(0, aimAng.y, 0)
+	local moveDir = moveAng:Forward() * forwardMove + moveAng:Right() * sideMove
+	moveDir.z = 0
+	if moveDir:LengthSqr() <= 1 then return end
+
+	moveDir:Normalize()
+	if (botPos + moveDir * ZONE_CENTER_BIAS_STEP):DistToSqr(center) < currentDistSqr then return end
+
+	local speed = math.max(math.abs(forwardMove), math.abs(sideMove), 300)
+	local goalPos = PickCenterGoal(bot, ctx) or center
+
+	local toGoal = goalPos - botPos
+	toGoal.z = 0
+	if toGoal:LengthSqr() <= 1 then return end
+
+	toGoal:Normalize()
+	cmd:SetForwardMove(toGoal:Dot(moveAng:Forward()) * speed)
+	cmd:SetSideMove(toGoal:Dot(moveAng:Right()) * speed)
+end
