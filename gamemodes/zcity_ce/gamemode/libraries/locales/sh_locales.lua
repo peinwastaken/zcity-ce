@@ -29,6 +29,11 @@ local LOCALE_PATH = "gamemodes/zcity_ce/gamemode/locales"
   zc.locale.GetLocalized("locale_key_missing") -> "locale_key_missing"
 */
 
+if SERVER then
+  resource.AddSingleFile("gamemodes/zcity_ce/gamemode/locales/en.json")
+  resource.AddSingleFile("gamemodes/zcity_ce/gamemode/locales/ru.json")
+end
+
 locale.locales = {}
 
 function locale.LoadAll()
