@@ -179,7 +179,6 @@ CreateEndMenu = function()
 	return true
 end
 
--- Client presentation callback: runs when the server round state changes.
 function MODE:OnClientStateChanged(round, oldState)
     if round.state == ROUND_PREPARING and IsValid(hmcdEndMenu) then
         hmcdEndMenu:Remove()

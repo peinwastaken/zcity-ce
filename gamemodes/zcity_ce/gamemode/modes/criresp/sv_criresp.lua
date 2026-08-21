@@ -44,7 +44,6 @@ function MODE:AssignTeams()
 end
 
 util.AddNetworkString("ZC_CrisisResponseStart")
--- Old Intermission() + GiveEquipment().
 function MODE:Prepare(round)
 	game.CleanUpMap()
 
@@ -84,7 +83,6 @@ end
 
 
 
--- Returns nil to continue or a result table to end the round.
 function MODE:CheckEnd(round)
 	if zc.ROUND_START + 91 > CurTime() then return nil end
 	local aliveTeams = self:CheckAlivePlayers()
@@ -258,7 +256,6 @@ function MODE:CanSpawn()
 end
 
 util.AddNetworkString("ZC_CrisisResponseRoundEnd")
--- Old EndRound().
 function MODE:Finish(round, result)
 	for _,ply in player.Iterator() do
 		if timer.Exists("SWATSpawn"..ply:EntIndex()) then

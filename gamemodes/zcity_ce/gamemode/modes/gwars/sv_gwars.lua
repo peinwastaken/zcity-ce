@@ -11,7 +11,6 @@ function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
 end
 
 util.AddNetworkString("ZC_GangWarsStart")
--- Old Intermission() + GiveEquipment().
 function MODE:Prepare(round)
 	game.CleanUpMap()
 
@@ -34,7 +33,6 @@ function MODE:CheckAlivePlayers()
 	return zc:CheckAliveTeams(true)
 end
 
--- Returns nil to continue or a result table to end the round.
 function MODE:CheckEnd(round)
 	local endround, _ = zc:CheckWinner(self:CheckAlivePlayers())
 
@@ -199,7 +197,6 @@ function MODE:CanSpawn()
 end
 
 util.AddNetworkString("ZC_GangWarsRoundEnd")
--- Old EndRound().
 function MODE:Finish(round, result)
 	timer.Simple(2,function()
 		net.Start("ZC_GangWarsRoundEnd")

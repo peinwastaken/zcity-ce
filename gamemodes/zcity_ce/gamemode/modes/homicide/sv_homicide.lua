@@ -627,7 +627,6 @@ local zc_homicide_traitoramount = ConVarExists("zc_homicide_traitoramount") and 
 
 MODE.TraitorFairness = MODE.TraitorFairness or {}
 
--- Old Intermission().
 function MODE:Prepare(round)
 	game.CleanUpMap()
 
@@ -1226,7 +1225,6 @@ function MODE.ShouldStartRoleRound()
 end
 --//
 
--- Returns nil to continue or a result table to end the round.
 function MODE:CheckEnd(round)
 	if(MODE.StartRoundTime and MODE.RoleChooseRound)then
 		if(MODE.StartRoundTime > CurTime())then
@@ -1267,7 +1265,6 @@ end
 
 util.AddNetworkString("ZC_HomicideRoundEnd")
 
--- Old EndRound().
 function MODE:Finish(round, result)
 	timer.Remove("HMCDSpawnSWAT")
 	timer.Remove("SpawnAdditionalPolice")

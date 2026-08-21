@@ -96,7 +96,6 @@ zc.fearphrase2 = zc.fearphrase2 or nil
 MODE.Hooks.RenderScreenspaceEffects = function(self, round)
 	local lply = LocalPlayer()
 
-	-- Call the inherited homicide intro/fade rendering explicitly.
 	local baseMode = zc.modes and zc.modes[self.base]
 	local baseFn = baseMode and baseMode.Hooks and baseMode.Hooks.RenderScreenspaceEffects
 	if baseFn then baseFn(self, round) end
@@ -227,7 +226,6 @@ MODE.Hooks.ZC_PlayerDeath = function(self, round, ply)
 	end)
 end
 
--- Client presentation callback: old client RoundStart/EndRound.
 function MODE:OnClientStateChanged(round, oldState)
 	if round.state == ROUND_PREPARING and IsValid(hmcdEndMenu) then
 		hmcdEndMenu:Remove()

@@ -11,7 +11,6 @@ function MODE:CanLaunch()
     return true//(zc.GetWorldSize() >= ZBATTLE_BIGMAP)
 end
 
--- Legacy Intermission(): map cleanup, spawns and zone setup.
 function MODE:Prepare(round)
 	game.CleanUpMap()
 
@@ -62,8 +61,6 @@ function MODE:CheckAlivePlayers()
 	return AlivePlyTbl
 end
 
--- Returns nil to continue or a result table to end the round.
--- Only called by the controller while ACTIVE (never during preparation).
 function MODE:CheckEnd(round)
 	local alive = self:CheckAlivePlayers()
 
@@ -232,8 +229,6 @@ MODE.Hooks.PlayerDeath = function(self, round, ply)
 	end
 end
 
--- Rewards and result presentation. The controller guarantees this runs at
--- most once per round.
 function MODE:Finish(round, result)
 	local playersharm = {}
 	for _, tbl in pairs(zc.HarmDone) do

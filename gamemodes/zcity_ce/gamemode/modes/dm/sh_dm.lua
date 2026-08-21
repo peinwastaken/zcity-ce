@@ -11,7 +11,6 @@ MODE.ForBigMaps = false
 MODE.Chance = 0.04
 MODE.SpawnProtectionTime = 7.5
 
--- New round API (see docs/gamemode-system-rewrite.md).
 MODE.MinPlayers = 2
 MODE.RoundTime = 300
 MODE.SetupTime = 0

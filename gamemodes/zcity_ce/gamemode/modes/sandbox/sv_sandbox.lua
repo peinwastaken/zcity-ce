@@ -15,7 +15,6 @@ function MODE:CanSpawn()
 	return true
 end
 
--- Old Intermission() + GiveEquipment().
 function MODE:Prepare(round)
 	game.CleanUpMap()
 

@@ -1,23 +1,3 @@
-/*
-	Z-City round controller.
-
-	One server-side controller owns the current round. Other code may read
-	zc.round but must not change its state directly; use the public
-	operations below.
-
-		Public API:
-			zc.round.Prepare(modeName)
-			zc.round.Start()
-			zc.round.RequestEnd(result)
-			zc.round.Update()
-			zc.round.GetCurrent()
-
-	States: WAITING -> PREPARING -> ACTIVE -> ENDING -> WAITING/PREPARING
-
-	Modes expose Prepare/Start/Think/CheckEnd/Finish lifecycle callbacks and
-	register GMod hooks exclusively through MODE.Hooks.
-*/
-
 local player_GetAll = player.GetAll
 
 local function DevLog(...)
@@ -32,27 +12,16 @@ zc.round.state = zc.round.state or ROUND_WAITING
 zc.round.participants = zc.round.participants or {}
 zc.round.stateStarted = zc.round.stateStarted or 0
 
-zc.round.IntroTime = 8 -- Controller-owned fixed intro length. Modes cannot change it.
+zc.round.IntroTime = 8
 zc.round.DefaultMinPlayers = 2
 
----------------------------------------------------------------------------
--- Legacy global sync
----------------------------------------------------------------------------
-
 local function SyncLegacyState()
-	-- Existing systems read these globals; the controller keeps them correct.
 	zc.ROUND_STATE = zc.LegacyRoundState(zc.round.state)
 end
-
----------------------------------------------------------------------------
--- Networking
----------------------------------------------------------------------------
 
 util.AddNetworkString("ZC_RoundState")
 util.AddNetworkString("ZC_RoundIntro")
 
--- The selected (raw) mode name may be a submode such as "standard"; clients
--- need the resolved parent key that exists inside zc.modes.
 local function ResolvedModeName()
 	local r = zc.round
 	if not r.modeName then return "" end
@@ -145,16 +114,11 @@ end
 local function BroadcastTransition()
 	SendRoundState()
 
-	-- Legacy clients/modes still listen to ZC_RoundInfo during migration.
 	net.Start("ZC_RoundInfo")
 		net.WriteString(ResolvedModeName())
 		net.WriteInt(zc.LegacyRoundState(zc.round.state), 4)
 	net.Broadcast()
 end
-
----------------------------------------------------------------------------
--- Participants
----------------------------------------------------------------------------
 
 local function RecordParticipants()
 	local list = {}
@@ -181,17 +145,10 @@ local function GetMinPlayers(mode)
 	return tonumber(mode.MinPlayers) or zc.round.DefaultMinPlayers
 end
 
----------------------------------------------------------------------------
--- Mode selection (existing systems stay authoritative)
----------------------------------------------------------------------------
-
 local function HasChangelevelTrigger()
-	-- Provided by sv_roundsystem.lua; forces coop on changelevel maps.
 	return zc.HasChangelevelTrigger and zc.HasChangelevelTrigger() or false
 end
 
--- Decides which mode name plays next. Forced modes, admin NextRound calls
--- and the weighted RoundList are consumed here, before Prepare.
 function zc.round.SelectNextMode()
 	if HasChangelevelTrigger() then return "coop" end
 
@@ -208,10 +165,7 @@ function zc.round.SelectNextMode()
 	return table.remove(zc.RoundList, 1) or "hmcd"
 end
 
--- After a round starts, queue what follows it (mirrors old RoundStart).
 function zc.round.QueueFollowingMode()
-	-- A mode may deliberately choose its successor during Start (CStrike
-	-- uses this to keep a multi-round match together).
 	if zc.nextround then return end
 
 	local forcemode = zc.GetForcemode and zc.GetForcemode() or "random"
@@ -231,10 +185,6 @@ function zc.round.QueueFollowingMode()
 	zc.nextround = nextMode
 end
 
----------------------------------------------------------------------------
--- Mode callbacks
----------------------------------------------------------------------------
-
 local function CallMode(mode, callback, ...)
 	local func = mode and mode[callback]
 	if not func then return true end
@@ -248,16 +198,11 @@ local function CallMode(mode, callback, ...)
 	return true, result
 end
 
--- Returns nil to continue, or a result table to end the round.
 local function CallCheckEnd(mode)
 	local ok, result = CallMode(mode, "CheckEnd", zc.round)
 	if not ok then return false end
 	return true, istable(result) and result or nil
 end
-
----------------------------------------------------------------------------
--- Transitions
----------------------------------------------------------------------------
 
 local function EnterWaiting(delay)
 	local r = zc.round
@@ -276,12 +221,11 @@ local function EnterWaiting(delay)
 	DevLog("WAITING for " .. math.Round(startDelay, 1) .. "s, next mode: " .. tostring(r.pendingMode))
 end
 
--- WAITING/PREPARING -> back to waiting (not enough players etc).
 local function CancelPreparation(why)
 	local r = zc.round
 	if r.state ~= ROUND_PREPARING then return end
 	DevLog("Preparation cancelled: " .. tostring(why))
-	r.pendingMode = r.modeName -- retry the same mode
+	r.pendingMode = r.modeName
 	EnterWaiting(5)
 	BroadcastTransition()
 end
@@ -305,8 +249,6 @@ function zc.round.Prepare(modeName)
 	local mode = zc.modes[resolved]
 
 	r.id = r.id + 1
-	-- modeName stays the raw selection name (may be a submode such as
-	-- "standard"); legacy globals keep their old semantics.
 	r.mode = mode
 	r.modeName = modeName
 	r.result = nil
@@ -324,7 +266,7 @@ function zc.round.Prepare(modeName)
 	r.introSent = false
 
 	hook.Run("ZC_PreRoundStart")
-	hook.Run("TTTPrepareRound") -- stormfox2 random_round_weather
+	hook.Run("TTTPrepareRound")
 
 	if mode.shouldfreeze then zc:Freeze() end
 
@@ -334,7 +276,6 @@ function zc.round.Prepare(modeName)
 		r.stateEnds
 	)
 
-	-- Map reset / player preparation (same order as the old transition).
 	zc:KillPlayers()
 	zc:AutoBalance()
 	mode.saved = {}
@@ -424,7 +365,6 @@ function zc.round.RequestEnd(result)
 	zc.Roundscount = (zc.Roundscount or 0) + 1
 
 	local mode = r.mode
-	-- End screen / fade delay (mirrors old END_TIME handling).
 	local delay = tonumber(mode.EndTime or mode.end_time) or 5
 	local upcoming = zc.nextround
 	if zc.HasChangelevelTrigger and zc.HasChangelevelTrigger() then upcoming = "coop" end
@@ -456,12 +396,7 @@ function zc.round.RequestEnd(result)
 	return true
 end
 
----------------------------------------------------------------------------
--- Per-tick update
----------------------------------------------------------------------------
-
 local function MaybeStartMapVote()
-	-- Same conditions as the old PreRound RTV gate.
 	local dev = GetConVar("zc_dev") and GetConVar("zc_dev"):GetBool()
 	local roundCountReachedMapVote = (zc.Roundscount or 0) > 15 and not dev
 
@@ -483,7 +418,6 @@ end
 local function UpdateEnding(now)
 	local r = zc.round
 
-	-- Fade out shortly before the next round (old SHOULD_FADE behavior).
 	if zc.SHOULD_FADE and (r.stateEnds or 0) < now + 1.5 then
 		zc.SHOULD_FADE = false
 		for _, ply in player.Iterator() do
@@ -507,8 +441,6 @@ local function UpdateActive(now)
 		return
 	end
 
-	-- Timeout uses live values so external extensions (e.g. the bomb entity
-	-- extending zc.ROUND_TIME) keep working.
 	local timerEnd = (zc.ROUND_START or now) + (zc.ROUND_TIME or 300)
 	if not mode.DisableRoundTimer and r.stateEnds ~= timerEnd then
 		r.stateEnds = timerEnd
@@ -542,7 +474,6 @@ function zc.round.Update()
 		if MaybeStartMapVote() then return end
 		if #player_GetAll() <= 1 then return end
 
-		-- First boot: apply a default grace delay before the first round.
 		if not r.stateEnds then
 			r.stateEnds = now + 5
 			return
@@ -568,23 +499,13 @@ function zc.round.Update()
 	end
 end
 
----------------------------------------------------------------------------
--- Pure getter
----------------------------------------------------------------------------
-
--- Read-only. Selection, forced modes and map behavior happen elsewhere.
 function zc.round.GetCurrent()
 	local r = zc.round
 	if r.mode then return r.mode, r.modeName end
 
-	-- Before the first Prepare: resolve lazily without mutating anything.
 	local name = zc.CROUND or "hmcd"
 	return zc.modes[zc:GetMode(name)], name
 end
-
----------------------------------------------------------------------------
--- Hooks
----------------------------------------------------------------------------
 
 hook.Add("PlayerDisconnected", "ZC_RoundParticipantLeave", function(ply)
 	local r = zc.round
@@ -603,7 +524,6 @@ hook.Add("PlayerInitialSpawn", "ZC_RoundStateLateJoin", function(ply)
 	end
 end)
 
--- Replaces the old ZC_RoundSystemThink driver (1 second cadence kept).
 hook.Add("Think", "ZC_RoundControllerThink", function()
 	local time = CurTime()
 	if (zc.thinkTime or time) > time then return end

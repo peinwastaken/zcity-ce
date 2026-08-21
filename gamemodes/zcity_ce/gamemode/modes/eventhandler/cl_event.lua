@@ -180,7 +180,6 @@ CreateEndMenu = function()
 	return true
 end
 
--- Client presentation callback: runs when the server round state changes.
 function MODE:OnClientStateChanged(round, oldState)
 if round.state ~= ROUND_PREPARING then return end
     for _, ply in player.Iterator() do

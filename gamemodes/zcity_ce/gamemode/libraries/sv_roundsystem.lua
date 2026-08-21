@@ -94,8 +94,6 @@ function zc.HasChangelevelTrigger()
 	return HasChangelevelTrigger()
 end
 
--- Pure getter: returns the current mode table (and its name) without any
--- side effects. The round controller owns all transitions.
 function CurrentRound()
 	if zc.round and zc.round.GetCurrent then
 		return zc.round.GetCurrent()
@@ -116,9 +114,6 @@ hook.Add("ZC_CanReceiveCommunication","ZC_RoundStartChat",function(output, input
 	if zc.ROUND_STATE == 0 or zc.ROUND_STATE == 3 then return true, false end
 end)
 
--- Legacy wrapper: ends the current round through the controller.
--- Repeated calls while not ACTIVE (or with a result already fixed) are
--- ignored by the controller.
 function zc:EndRound(result)
 	return zc.round.RequestEnd(istable(result) and result or { reason = "admin" })
 end
@@ -155,8 +150,6 @@ hook.Add("PlayerInitialSpawn", "ZC_SendRoundInfo", function(ply)
 end)
 
 util.AddNetworkString("ZC_RoundInfo")
-
--- Round ticking is owned by the round controller (ZC_RoundControllerThink).
 
 hook.Add("PlayerDeath", "ZC_ModeRespawnTimer", function(ply)
 	local mode = CurrentRound()
@@ -209,8 +202,6 @@ zc.forcemode = zc.forcemode or "random"
 
 local forcemode = zc.forcemode
 
--- Accessors for the round controller; the convar overrides until an admin
--- sets the force mode directly.
 function zc.GetForcemode()
 	local str = forcemodeconvar:GetString()
 	if str ~= "" then
@@ -545,9 +536,6 @@ function zc.SendRoundListToAllAdmins()
 		zc.SendRoundListToClient(admin)
 	end
 end
-
--- Round start/finish transitions live in sv_roundcontroller.lua now.
--- zc:EndRound above is the only legacy entry point kept for admins.
 
 concommand.Add("zb_checkchances",function(ply) if ply:IsAdmin() then zc.CheckChances() end end)
 concommand.Add("zb_rerollchances",function(ply) if ply:IsAdmin() then zc.RerollChances() zc.CheckChances() end end)

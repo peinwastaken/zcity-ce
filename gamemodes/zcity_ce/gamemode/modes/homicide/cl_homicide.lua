@@ -372,7 +372,6 @@ MODE.Hooks.HUDPaint = function(self, round)
 
 end
 
--- Round introductions are drawn by the shared controller.
 MODE.Hooks.RenderScreenspaceEffects = nil
 MODE.Hooks.HUDPaint = nil
 

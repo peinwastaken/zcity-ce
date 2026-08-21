@@ -38,7 +38,6 @@ end
 util.AddNetworkString("ZC_RiotStart")
 util.AddNetworkString("ZC_RiotRoundEnd")
 
--- Old Intermission() + GiveEquipment().
 function MODE:Prepare(round)
     game.CleanUpMap()
 
@@ -75,7 +74,6 @@ function MODE:CheckAlivePlayers()
 end
 
 
--- Old EndRound().
 function MODE:Finish(round, result)
     timer.Simple(2,function()
         net.Start("ZC_RiotRoundEnd")
@@ -84,7 +82,6 @@ function MODE:Finish(round, result)
 end
 
 
--- Returns nil to continue or a result table to end the round.
 function MODE:CheckEnd(round)
     local endround, _ = zc:CheckWinner(self:CheckAlivePlayers())
     if endround then

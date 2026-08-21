@@ -27,7 +27,6 @@ function MODE:CanLaunch()
     return true
 end
 
--- Old Intermission() + GiveEquipment().
 function MODE:Prepare(round)
 	game.CleanUpMap()
 
@@ -92,7 +91,6 @@ function MODE:CheckAlivePlayers()
 	return AlivePlyTbl
 end
 
--- Returns nil to continue or a result table to end the round.
 function MODE:CheckEnd(round)
     if self.EndLogicType == 1 then
         local aliveCount = 0
@@ -470,7 +468,6 @@ end)
 function MODE:CanSpawn()
 end
 
--- Old EndRound().
 function MODE:Finish(round, result)
     if timer.Exists("EventLootSpawnTimer") then
         timer.Remove("EventLootSpawnTimer")

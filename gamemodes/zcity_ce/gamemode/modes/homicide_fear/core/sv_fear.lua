@@ -97,7 +97,6 @@ function MODE:SubModes()
 	return modes
 end
 
--- Old Intermission().
 function MODE:Prepare(round)
 	game.CleanUpMap()
 
@@ -233,14 +232,12 @@ function MODE:Prepare(round)
 	self:SpawnPlayers(true)
 end
 
--- Returns nil to continue or a result table to end the round.
 function MODE:CheckEnd(round)
 	if #zc:CheckAlive() == 0 then
 		return { reason = "wiped" }
 	end
 end
 
--- Old EndRound().
 function MODE:Finish(round, result)
 	timer.Remove("HMCDSpawnSWAT")
 	timer.Remove("SpawnAdditionalPolice")
@@ -469,7 +466,6 @@ function MODE:PropKill(ply)
 end
 
 function MODE:Think(round)
-	-- Call the inherited homicide Think (police/SWAT logic) explicitly.
 	local baseMode = zc.modes and zc.modes[self.base]
 
 	if baseMode and baseMode.Think then

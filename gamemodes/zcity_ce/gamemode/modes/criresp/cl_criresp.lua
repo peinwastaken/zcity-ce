@@ -170,7 +170,6 @@ end
 	return true
 end
 
--- Client presentation callback: runs when the server round state changes.
 function MODE:OnClientStateChanged(round, oldState)
 if round.state ~= ROUND_PREPARING then return end
 	if IsValid(hmcdEndMenu) then

@@ -1,11 +1,3 @@
-/*
-	Client-side round state mirror.
-
-	The server sends round state; this file only stores it and notifies
-	modes through MODE:OnClientStateChanged(round, oldState). It never
-	calls server lifecycle functions such as RoundStart() or EndRound().
-*/
-
 zc.round = zc.round or {}
 zc.round.id = zc.round.id or 0
 zc.round.state = zc.round.state or ROUND_WAITING
@@ -40,7 +32,6 @@ net.Receive("ZC_RoundState", function()
 	local oldState = r.state
 	r.state = state
 
-	-- Legacy globals kept in sync for unmigrated client code.
 	zc.CROUND = modeName ~= "" and modeName or zc.CROUND
 	zc.ROUND_STATE = zc.LegacyRoundState(state)
 

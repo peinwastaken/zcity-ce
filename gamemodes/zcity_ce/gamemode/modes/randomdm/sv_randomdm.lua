@@ -154,7 +154,6 @@ local function GiveLoadout(ply, loadout)
 	zc.GiveRole(ply, "Fighter", Color(190, 15, 15))
 end
 
--- Overrides the inherited Deathmatch equipment step.
 function MODE:GiveEquipment(round)
 	local firearms, pistols, melees = GetWeaponPools()
 	local sharedLoadout = self.SharedLoadout and RandomLoadout(firearms, pistols, melees)

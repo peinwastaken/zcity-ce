@@ -140,12 +140,7 @@ local function addModeHook( MODE, hookName, func )
 	end )
 end
 
--- Lifecycle callbacks are called by the round controller / selection code,
--- never registered as GMod hooks. Only entries inside MODE.Hooks are
--- registered as hooks.
-
 local function RegisterModeHooks( MODE )
-	-- Only explicit entries inside MODE.Hooks are registered as hooks.
 	if not istable(MODE.Hooks) then return end
 
 	for hookName, func in pairs(MODE.Hooks) do
@@ -153,8 +148,6 @@ local function RegisterModeHooks( MODE )
 	end
 end
 
--- Modes are collected first and finalized afterwards, so a base mode does
--- not need to appear earlier alphabetically.
 local pendingModes = {}
 local pendingModeOrder = {}
 
@@ -199,7 +192,6 @@ local function FinalizeMode(name)
 
 		table.Inherit(MODE, parent)
 
-		-- Inherited tables must not share mutable state with their parent.
 		for key, value in pairs(MODE) do
 			if key ~= "base" and key ~= "Hooks" and istable(value) then
 				MODE[key] = table.Copy(value)
@@ -275,7 +267,6 @@ local function LoadModes()
 		zc.ModesChances = zc.ParseDataFile(chancesfile, {})
 	end
 
-	-- Pass 1: discover and execute every mode definition.
 	for _, v in ipairs(files) do
 		MODE = {}
 		IncluderFunc(directory .. "/" .. v)
@@ -290,7 +281,6 @@ local function LoadModes()
 		MODE = nil
 	end
 
-	-- Pass 2: resolve inheritance now that every mode table exists.
 	for _, name in ipairs(pendingModeOrder) do
 		FinalizeMode(name)
 	end

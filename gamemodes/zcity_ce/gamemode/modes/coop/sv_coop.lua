@@ -169,7 +169,6 @@ function zc.CheckMapCompleted(map, shouldAdd)
     end
 end
 
--- Old Intermission() + GiveEquipment().
 function MODE:Prepare(round)
     self.LootTimer = CurTime() + 2
     game.CleanUpMap()
@@ -190,7 +189,6 @@ end
 
 CreateConVar("zc_coop_autochangelevel", "1", FCVAR_PROTECTED, "Toggle auto changelevel in Half-Life 2 CO-OP mode", 0, 1)
 
--- Old ShouldRoundEnd(): returns nil to continue or a result table to end.
 function MODE:CheckEnd(round)
     local lives = 0
 
@@ -461,7 +459,6 @@ function MODE:GiveDefaultEquipment(ply, playerClass, hasGordon, medicCount, maxM
 end
 
 util.AddNetworkString("ZC_CoopRoundEnd")
--- Old EndRound().
 function MODE:Finish(round, result)
     timer.Simple(2, function()
         net.Start("ZC_CoopRoundEnd")

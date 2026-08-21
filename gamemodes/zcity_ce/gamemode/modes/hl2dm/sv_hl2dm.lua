@@ -11,7 +11,6 @@ function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
 end
 
 util.AddNetworkString("ZC_HL2DeathmatchStart")
--- Old Intermission() + GiveEquipment().
 function MODE:Prepare(round)
 	game.CleanUpMap()
 
@@ -29,7 +28,6 @@ function MODE:CheckAlivePlayers()
 	return zc:CheckAliveTeams(true)
 end
 
--- Returns nil to continue or a result table to end the round.
 function MODE:CheckEnd(round)
 	local endround, _ = zc:CheckWinner(self:CheckAlivePlayers())
 	if endround then
@@ -127,7 +125,6 @@ function MODE:CanSpawn()
 end
 
 util.AddNetworkString("ZC_HL2DeathmatchRoundEnd")
--- Old EndRound().
 function MODE:Finish(round, result)
 	self:ClearPlayerRoles()
 	timer.Simple(2,function()

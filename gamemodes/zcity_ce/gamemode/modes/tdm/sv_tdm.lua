@@ -14,7 +14,6 @@ end
 MODE.ForBigMaps = true
 
 util.AddNetworkString("ZC_TeamDeathmatchStart")
--- Old Intermission() + GiveEquipment().
 function MODE:Prepare(round)
 	game.CleanUpMap()
 
@@ -34,7 +33,6 @@ function MODE:CheckAlivePlayers()
 	return zc:CheckAliveTeams(true)
 end
 
--- Returns nil to continue or a result table to end the round.
 function MODE:CheckEnd(round)
 	local endround, _ = zc:CheckWinner(self:CheckAlivePlayers())
 	if endround then
@@ -129,7 +127,6 @@ function MODE:CanSpawn()
 end
 
 util.AddNetworkString("ZC_TeamDeathmatchRoundEnd")
--- Old EndRound().
 function MODE:Finish(round, result)
 	timer.Simple(2,function()
 		net.Start("ZC_TeamDeathmatchRoundEnd")

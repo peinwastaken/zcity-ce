@@ -35,8 +35,6 @@ function MODE:OverrideBalance()--return true to keep alive players
     return zc.RoundsLeft and (zc.RoundsLeft != self.Rounds)
 end
 
--- Old RoundStartPost(): chain into the next sub-round while rounds remain.
--- Also performs the inherited tdm Start() behavior of unfreezing players.
 function MODE:Start(round)
     for _, ply in player.Iterator() do
         ply:Freeze(false)
@@ -49,7 +47,6 @@ end
 
 
 
--- Old Intermission() (+ inherited tdm GiveEquipment at the end).
 function MODE:Prepare(round)
 	game.CleanUpMap()
 
@@ -172,7 +169,6 @@ COMMANDS.nextcsround = {
 }
 
 
--- Old EndRound().
 function MODE:Finish(round, result)
     zc.RoundsLeft = zc.RoundsLeft or self.Rounds
     zc.Winners = zc.Winners or {}
@@ -345,7 +341,6 @@ function HostageInZone(pos)
 	return (#pts >= 2 and pos:WithinAABox(vec1,vec2)) or (#pts >= 4 and pos:WithinAABox(vec3,vec4))
 end
 
--- Returns nil to continue or a result table to end the round.
 function MODE:CheckEnd(round)
     if zc.ROUND_START + 5 > CurTime() then return nil end
 

@@ -235,7 +235,6 @@ function MODE:CanLaunch()
     return (#points > 0) and (#navAreas > 0)
 end
 
--- Old Intermission().
 function MODE:Prepare(round)
     self.NPCCount = 0
     self.Wave = 0
@@ -379,7 +378,6 @@ function MODE:StartPrepPhase()
     net.Broadcast()
 end
 
--- Returns nil to continue or a result table to end the round.
 function MODE:CheckEnd(round)
     if self.VoteInProgress then
         return nil
@@ -545,7 +543,6 @@ function MODE:Think(round)
     end
 end
 
--- Old EndRound().
 function MODE:Finish(round, result)
     net.Start("ZC_DefenseRoundEnd")
     net.Broadcast()

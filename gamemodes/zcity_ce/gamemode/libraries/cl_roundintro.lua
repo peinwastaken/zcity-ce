@@ -1,11 +1,3 @@
-/*
-	Shared round introduction.
-
-	The controller owns the duration (zc.round.IntroTime); modes only supply
-	content via MODE.Intro / MODE:GetPlayerIntroData(ply), which arrives as a
-	ZC_RoundIntro message. Modes do not draw their own intro screens.
-*/
-
 zc.round = zc.round or {}
 
 surface.CreateFont("ZC_RoundIntroTitle", {
@@ -61,10 +53,8 @@ hook.Add("HUDPaint", "ZC_RoundIntro", function()
 		end
 	end
 
-	-- Clear the join/round fade while the intro is up (matches old intros).
 	if zc.RemoveFade then zc.RemoveFade() end
 
-	-- Fade in over the first half second, fade out over the final second.
 	local elapsed = now - intro.introStart
 	local remaining = intro.introEnd - now
 	local alpha = math.Clamp(elapsed / 0.5, 0, 1) * math.Clamp(remaining, 0, 1)
