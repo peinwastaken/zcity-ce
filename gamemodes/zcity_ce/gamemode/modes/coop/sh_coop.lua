@@ -9,6 +9,22 @@ MODE.ForBigMaps = true
 MODE.Chance = 1
 MODE.ROUND_TIME = 9000
 
+MODE.Intro = {
+    Title = "Homicide | CO-OP",
+    Objective = "Reach the end of the map.",
+    Role = "Rebel",
+    Color = Color(155, 55, 0),
+    Sound = "hl2mode1.wav"
+}
+
+function MODE:GetPlayerIntroData(ply)
+    local gordon = ply.PlayerClassName == "Gordon"
+    return {
+        Role = gordon and "Gordon" or "Rebel",
+        Objective = gordon and "Lead the resistance to victory!" or "Follow Gordon!"
+    }
+end
+
 zc = zc or {}
 zc.Points = zc.Points or {}
 

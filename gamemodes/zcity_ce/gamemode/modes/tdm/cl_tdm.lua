@@ -3,7 +3,6 @@ MODE.name = "tdm"
 local MODE = MODE
 
 net.Receive("ZC_TeamDeathmatchStart",function()
-    surface.PlaySound("csgo_round.wav")
 	zc.rtype = net.ReadString()
 	zc.DynaMusic:Start( "swat4" )
 	zc.RemoveFade()
@@ -26,7 +25,8 @@ local teams = {
 
 hook.Add( "StartCommand", "ZC_BlockTdmMovement", function( ply, mv )
 	--; BLYAT NY NAXUA PISAT VSE V ODNY LINIY BLYAAA
-	if zc.CROUND == "tdm" and (zc.ROUND_START or 0) + 20 > CurTime() then
+	local mode = CurrentRound()
+	if mode and (mode.name == "tdm" or mode.base == "tdm") and zc.round.state == ROUND_PREPARING then
 		mv:RemoveKey(IN_ATTACK)
 		mv:RemoveKey(IN_ATTACK2)
 		mv:RemoveKey(IN_FORWARD)
@@ -36,43 +36,14 @@ hook.Add( "StartCommand", "ZC_BlockTdmMovement", function( ply, mv )
 	end
 end)
 
-function MODE:RenderScreenspaceEffects()
-    local StartTime = zc.ROUND_START or CurTime()
-	if StartTime + 7.5 < CurTime() then return end
-    local fade = math.Clamp(StartTime + 7.5 - CurTime(),0,1)
+MODE.Hooks = MODE.Hooks or {}
 
-    surface.SetDrawColor(0,0,0,255 * fade)
-    surface.DrawRect(-1,-1,ScrW() + 1,ScrH() + 1)
-end
-
-function MODE:HUDPaint()
+MODE.Hooks.HUDPaint = function(self, round)
     local StartTime = zc.ROUND_START or CurTime()
 	self:AddHudPaint()
-	if StartTime + 20 > CurTime() then
-		draw.SimpleText( string.FormattedTime(StartTime + 20 - CurTime(), "%02i:%02i:%02i"	), "ZB_HomicideMedium", sw * 0.5, sh * 0.95, Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.SimpleText( zc.locale.GetLocalized("tdm/press_f3_buy_menu"), "ZB_HomicideMedium", sw * 0.5, sh * 0.9, Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	else
-		local time = string.FormattedTime( math.max(StartTime + (zc.ROUND_TIME or 400) - CurTime(), 0), "%02i:%02i:%02i" )
-		draw.SimpleText( time, "ZB_HomicideMedium", sw * 0.5, sh * 0.95, ColorObj, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	end
-
-    if StartTime + 20 < CurTime() then return end
-
-	if not lply:Alive() then return end
-	zc.RemoveFade()
-    local fade = math.Clamp(StartTime + 8 - CurTime(),0,1)
-	local team_ = lply:Team()
-    draw.SimpleText(zc.locale.GetLocalized("tdm/title", self.PrintName or zc.locale.GetLocalized("tdm/name")), "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    local Rolename = zc.locale.GetLocalized(teams[team_].name)
-    local ColorRole = teams[team_].color1
-    ColorRole.a = 255 * fade
-    draw.SimpleText(zc.locale.GetLocalized("tdm/you_are", Rolename), "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.5, ColorRole, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-
-    local Objective = teams[team_].objective
-    local ColorObj = teams[team_].color2
-    ColorObj.a = 255 * fade
-    draw.SimpleText( Objective, "ZB_HomicideMedium", sw * 0.5, sh * 0.9, ColorObj, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-
+	if round.state ~= ROUND_ACTIVE then return end
+	local time = string.FormattedTime(math.max(StartTime + (zc.ROUND_TIME or 400) - CurTime(), 0), "%02i:%02i:%02i")
+	draw.SimpleText(time, "ZB_HomicideMedium", sw * 0.5, sh * 0.95, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 
 function MODE:AddHudPaint()
@@ -224,8 +195,9 @@ CreateEndMenu = function()
 	return true
 end
 
-function MODE:RoundStart()
-    if IsValid(hmcdEndMenu) then
+-- Client presentation callback: runs when the server round state changes.
+function MODE:OnClientStateChanged(round, oldState)
+    if round.state == ROUND_PREPARING and IsValid(hmcdEndMenu) then
         hmcdEndMenu:Remove()
         hmcdEndMenu = nil
     end

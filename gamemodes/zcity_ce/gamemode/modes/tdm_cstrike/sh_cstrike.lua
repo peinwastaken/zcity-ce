@@ -11,6 +11,11 @@ MODE.base = "tdm"
 MODE.PrintName = "Counter-Strike"
 MODE.name = "cstrike"
 
+MODE.Intro = {
+    Title = "Counter-Strike",
+    Sound = "csgo_round.wav"
+}
+
 MODE.Config = {
     ["id"] = MODE.name or "cstrike",
     ["printname"] = MODE.PrintName or "Counter-Strike",

@@ -14,6 +14,13 @@ MODE.AllowRespawn = true
 MODE.RespawnTimer = 5
 MODE.ROUND_TIME = 3600
 
+MODE.Intro = {
+	Title = "Sandbox",
+	Objective = "Do whatever you want!",
+	Role = "sandboxer",
+	Color = Color(0, 162, 255)
+}
+
 MODE.Config = {
 	["id"] = MODE.name,
 	["printname"] = MODE.PrintName,

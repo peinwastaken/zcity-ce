@@ -32,38 +32,7 @@ local eventer = {
 
 
 
-function MODE:RenderScreenspaceEffects()
-
-    if zc.ROUND_START + 7.5 < CurTime() then return end
-
-    local fade = math.Clamp(zc.ROUND_START + 7.5 - CurTime(),0,1)
-
-    surface.SetDrawColor(0,0,0,255 * fade)
-    surface.DrawRect(-1,-1,ScrW() + 1,ScrH() + 1)
-end
-
-function MODE:HUDPaint()
-
-	if not lply:Alive() then return end
-    if zc.ROUND_START + 8.5 < CurTime() then return end
-	zc.RemoveFade()
-    local fade = math.Clamp(zc.ROUND_START + 8 - CurTime(),0,1)
-
-    local eventname = GetGlobalString("ZB_EventName","Event")
-    draw.SimpleText("ZCity | "..eventname, "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-
-
-    local isEventer = EventersList[LocalPlayer():SteamID()]
-    local Rolename = isEventer and "Eventer" or GetGlobalString("ZB_EventRole","Player")
-    local ColorRole = isEventer and eventer.color1 or fighter.color1
-    ColorRole.a = 255 * fade
-    draw.SimpleText("You are a "..Rolename , "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.5, ColorRole, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-
-    local Objective = GetGlobalString("ZB_EventObjective","")
-    local ColorObj = isEventer and eventer.color1 or fighter.color1
-    ColorObj.a = 255 * fade
-    draw.SimpleText( Objective, "ZB_HomicideMedium", sw * 0.5, sh * 0.9, ColorObj, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-end
+MODE.Hooks = MODE.Hooks or {}
 
 local CreateEndMenu = nil
 local wonply = nil
@@ -211,7 +180,9 @@ CreateEndMenu = function()
 	return true
 end
 
-function MODE:RoundStart()
+-- Client presentation callback: runs when the server round state changes.
+function MODE:OnClientStateChanged(round, oldState)
+if round.state ~= ROUND_PREPARING then return end
     for _, ply in player.Iterator() do
 		ply.won = nil
     end

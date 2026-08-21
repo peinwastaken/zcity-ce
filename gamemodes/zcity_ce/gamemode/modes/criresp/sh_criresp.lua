@@ -6,6 +6,27 @@ MODE.ForBigMaps = false
 MODE.ROUND_TIME = 480
 MODE.Chance = 0.05
 
+MODE.Intro = {
+    Title = "Crisis Response",
+    Sound = "zbattle/criresp.mp3"
+}
+
+function MODE:GetPlayerIntroData(ply)
+    if ply:Team() == 0 then
+        return {
+            Role = "SWAT Operator",
+            Objective = "Negotiations failed. Eliminate the threat.",
+            Color = Color(68, 10, 255)
+        }
+    end
+
+    return {
+        Role = "Suspect",
+        Objective = "Hold your ground against the response team.",
+        Color = Color(228, 49, 49)
+    }
+end
+
 MODE.Config = {
     ["id"] = MODE.name or "criresp",
     ["printname"] = MODE.PrintName or "Crisis Response",

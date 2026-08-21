@@ -169,7 +169,8 @@ function zc.CheckMapCompleted(map, shouldAdd)
     end
 end
 
-function MODE:Intermission()
+-- Old Intermission() + GiveEquipment().
+function MODE:Prepare(round)
     self.LootTimer = CurTime() + 2
     game.CleanUpMap()
 
@@ -183,18 +184,14 @@ function MODE:Intermission()
 
     net.Start("ZC_CoopStart")
     net.Broadcast()
-end
 
-function MODE:CheckAlivePlayers()
-end
-
-function MODE:ZC_OnTrackedEntityCreated( ent )
+    self:GiveEquipment()
 end
 
 CreateConVar("zc_coop_autochangelevel", "1", FCVAR_PROTECTED, "Toggle auto changelevel in Half-Life 2 CO-OP mode", 0, 1)
 
-function MODE:ShouldRoundEnd()
-
+-- Old ShouldRoundEnd(): returns nil to continue or a result table to end.
+function MODE:CheckEnd(round)
     local lives = 0
 
     for _,ply in player.Iterator() do
@@ -203,9 +200,8 @@ function MODE:ShouldRoundEnd()
         lives = lives + 1
     end
 
-
     if (lives <= 0) and (zc.MapCompleted or false) then
-        timer.Simple(5, function()
+        timer.Create("ZC_CoopMapComplete", 5, 1, function()
             zc.AddMapToTable(game.GetMap())
 
             if zc.CoopPersistence and zc.CoopPersistence.SaveAllPlayers then
@@ -214,11 +210,16 @@ function MODE:ShouldRoundEnd()
 
             RunConsoleCommand("changelevel", zc.NextMap)
         end)
+    elseif timer.Exists("ZC_CoopMapComplete") then
+        timer.Remove("ZC_CoopMapComplete")
     end
-    return (lives <= 0)
+
+    if lives <= 0 then
+        return { reason = "wiped" }
+    end
 end
 
-function MODE:RoundStart()
+function MODE:Start(round)
     for _, ply in player.Iterator() do
         if ply.PlayerClassName == "Gordon" then
             for _, ent in ipairs(ents.FindInSphere( ply:GetPos(), 512 )) do
@@ -460,15 +461,14 @@ function MODE:GiveDefaultEquipment(ply, playerClass, hasGordon, medicCount, maxM
 end
 
 util.AddNetworkString("ZC_CoopRoundEnd")
-function MODE:EndRound()
+-- Old EndRound().
+function MODE:Finish(round, result)
     timer.Simple(2, function()
         net.Start("ZC_CoopRoundEnd")
         net.Broadcast()
     end)
 end
 
-function MODE:RoundThink()
-end
 
 function MODE:CanSpawn()
 end

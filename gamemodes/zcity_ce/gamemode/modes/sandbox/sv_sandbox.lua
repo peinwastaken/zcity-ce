@@ -15,10 +15,8 @@ function MODE:CanSpawn()
 	return true
 end
 
-function MODE:ShouldRoundEnd()
-end
-
-function MODE:Intermission()
+-- Old Intermission() + GiveEquipment().
+function MODE:Prepare(round)
 	game.CleanUpMap()
 
 	for _, ply in player.Iterator() do
@@ -26,9 +24,11 @@ function MODE:Intermission()
 
 		ply:SetupTeam(ply:Team())
 	end
+
+	self:GiveEquipment()
 end
 
-function MODE:RoundStart()
+function MODE:Start(round)
 	for _, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		if not ply:Alive() then ply:Spawn() end
@@ -62,9 +62,6 @@ function MODE:GiveEquipment()
 			self:GivePlayerEquipment(ply)
 		end
 	end)
-end
-
-function MODE:EndRound()
 end
 
 function MODE:GetTeamSpawn()

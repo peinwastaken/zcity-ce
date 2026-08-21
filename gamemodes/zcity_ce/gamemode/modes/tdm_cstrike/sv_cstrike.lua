@@ -35,7 +35,13 @@ function MODE:OverrideBalance()--return true to keep alive players
     return zc.RoundsLeft and (zc.RoundsLeft != self.Rounds)
 end
 
-function MODE:RoundStartPost()
+-- Old RoundStartPost(): chain into the next sub-round while rounds remain.
+-- Also performs the inherited tdm Start() behavior of unfreezing players.
+function MODE:Start(round)
+    for _, ply in player.Iterator() do
+        ply:Freeze(false)
+    end
+
     if zc.RoundsLeft and zc.RoundsLeft > 1 then
         NextRound(self.name)
     end
@@ -43,7 +49,8 @@ end
 
 
 
-function MODE:Intermission()
+-- Old Intermission() (+ inherited tdm GiveEquipment at the end).
+function MODE:Prepare(round)
 	game.CleanUpMap()
 
     zc.RoundsLeft = zc.RoundsLeft or self.Rounds
@@ -133,6 +140,8 @@ function MODE:Intermission()
         net.Broadcast()
 
     self.GameStarted = nil
+
+    self:GiveEquipment()
 end
 
 concommand.Add("tdm_setrounds", function(ply, cmd, args)
@@ -163,7 +172,8 @@ COMMANDS.nextcsround = {
 }
 
 
-function MODE:EndRound()
+-- Old EndRound().
+function MODE:Finish(round, result)
     zc.RoundsLeft = zc.RoundsLeft or self.Rounds
     zc.Winners = zc.Winners or {}
 
@@ -335,51 +345,51 @@ function HostageInZone(pos)
 	return (#pts >= 2 and pos:WithinAABox(vec1,vec2)) or (#pts >= 4 and pos:WithinAABox(vec3,vec4))
 end
 
-function MODE:ShouldRoundEnd()
-    if zc.ROUND_START + 5 > CurTime() then return false end
+-- Returns nil to continue or a result table to end the round.
+function MODE:CheckEnd(round)
+    if zc.ROUND_START + 5 > CurTime() then return nil end
 
 	local tbl = zc:CheckAliveTeams(true)
 
     if zc.rtype == "bomb" then
         if zc.bombexploded then
-            return true
+            return { reason = "bomb_exploded" }
         end
 
         if not IsValid(zc.bomb) then
-            return true
+            return { reason = "bomb_gone" }
         end
 
         if #tbl[0] == 0 and not zc.bomb.active then
-            return true
+            return { reason = "team_wiped" }
         end
 
         if #tbl[1] == 0 and #tbl[0] > 0 then
-            return true
+            return { reason = "team_wiped" }
         end
 
         if #tbl[1] == 0 and #tbl[0] == 0 and zc.bomb.active then
-            return true
+            return { reason = "team_wiped" }
         end
 
         if #tbl[0] == 0 and #tbl[1] == 0 and not zc.bomb.active then
-            return true
+            return { reason = "team_wiped" }
         end
     elseif zc.rtype == "hostage" then
         if not IsValid(zc.hostage) then
-            return true
+            return { reason = "hostage_gone" }
         end
 
         if #tbl[0] == 0 or #tbl[1] == 0 or not zc.hostage.organism.alive then
-            return true
+            return { reason = "team_wiped" }
         end
 
         if zc.hostage.organism.alive and HostageInZone(zc.hostage:GetPos()) then
-            return true
+            return { reason = "hostage_rescued" }
         end
     end
-end
 
-function MODE:RoundThink()
+    return nil
 end
 
 hook.Add("ZC_OnHarmDone", "ZC_GiveMoneyForDamage", function(ply, victim, amt)

@@ -235,7 +235,8 @@ function MODE:CanLaunch()
     return (#points > 0) and (#navAreas > 0)
 end
 
-function MODE:Intermission()
+-- Old Intermission().
+function MODE:Prepare(round)
     self.NPCCount = 0
     self.Wave = 0
     self.WaveActive = false
@@ -378,9 +379,10 @@ function MODE:StartPrepPhase()
     net.Broadcast()
 end
 
-function MODE:ShouldRoundEnd()
+-- Returns nil to continue or a result table to end the round.
+function MODE:CheckEnd(round)
     if self.VoteInProgress then
-        return false
+        return nil
     end
 
     if (#zc:CheckAlive(true) <= 0) then
@@ -392,21 +394,19 @@ function MODE:ShouldRoundEnd()
             end
         end
 
-        if menuActive then
-            return false
+        if not menuActive then
+            return { reason = "wiped" }
         end
-
-        return true
     end
 
     if self.WaveCompleted and self.Wave >= self.TotalWaves then
-        return true
+        return { reason = "waves_complete" }
     end
 
-    return false
+    return nil
 end
 
-function MODE:RoundStart()
+function MODE:Start(round)
     if DEFENSE_MUSIC.WAITING[0] then
         net.Start("ZC_DefenseWaveMusicStart")
         net.WriteString(DEFENSE_MUSIC.WAITING[0])
@@ -414,7 +414,7 @@ function MODE:RoundStart()
     end
 end
 
-function MODE:RoundThink()
+function MODE:Think(round)
     self.Wave = self.Wave or 0
     self.TotalWaves = self.TotalWaves or 6
     self.WaveCompleted = self.WaveCompleted or false
@@ -545,7 +545,8 @@ function MODE:RoundThink()
     end
 end
 
-function MODE:EndRound()
+-- Old EndRound().
+function MODE:Finish(round, result)
     net.Start("ZC_DefenseRoundEnd")
     net.Broadcast()
     self:EndWave()
@@ -568,9 +569,6 @@ function MODE:EndRound()
     end
 end
 
-function MODE:PlayerDeath(ply)
-
-end
 
 function MODE:CreateTimer(name, delay, repetitions, func)
     timer.Create(name, delay, repetitions, func)

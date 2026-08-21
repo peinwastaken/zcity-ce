@@ -11,7 +11,8 @@ function MODE:CanLaunch()
     return true//(zc.GetWorldSize() >= ZBATTLE_BIGMAP)
 end
 
-function MODE:Intermission()
+-- Legacy Intermission(): map cleanup, spawns and zone setup.
+function MODE:Prepare(round)
 	game.CleanUpMap()
 
 	local poses = {}
@@ -46,6 +47,8 @@ function MODE:Intermission()
 		net.WriteVector(zonepoint)
 		net.WriteFloat(zonedistance)
 	net.Broadcast()
+
+	self:GiveEquipment(round)
 end
 
 function MODE:CheckAlivePlayers()
@@ -59,8 +62,17 @@ function MODE:CheckAlivePlayers()
 	return AlivePlyTbl
 end
 
-function MODE:ShouldRoundEnd()
-	return (#zc:CheckAlive(true) <= 1)
+-- Returns nil to continue or a result table to end the round.
+-- Only called by the controller while ACTIVE (never during preparation).
+function MODE:CheckEnd(round)
+	local alive = self:CheckAlivePlayers()
+
+	if #alive <= 1 then
+		return {
+			reason = "last_alive",
+			winner = alive[1]
+		}
+	end
 end
 
 local loadouts = {
@@ -140,7 +152,7 @@ local function MakeDissolver(ent, position, dissolveType)
     return Dissolver
 end
 
-function MODE:RoundStart()
+function MODE:GiveEquipment(round)
 	local loadout = loadouts[math.random(#loadouts)]
 	local selectedAttachments = istable(loadout.attachments) and table.Random(loadout.attachments) or loadout.attachments
 
@@ -201,10 +213,62 @@ function MODE:RoundStart()
 
 		if ply.organism then ply.organism.recoilmul = 0.5 end
 
-		timer.Simple(0.1, function() ply.noSound = false end)
+		timer.Simple(0.1, function()
+			if IsValid(ply) then ply.noSound = false end
+		end)
 		ply:SetSuppressPickupNotices(false)
 		zc.GiveRole(ply, "Fighter", Color(190,15,15))
 	end
+end
+
+function MODE:Start(round)
+end
+
+MODE.Hooks = MODE.Hooks or {}
+
+MODE.Hooks.PlayerDeath = function(self, round, ply)
+	if round.state == ROUND_ACTIVE then
+		ply:GiveSkill(-0.1)
+	end
+end
+
+-- Rewards and result presentation. The controller guarantees this runs at
+-- most once per round.
+function MODE:Finish(round, result)
+	local playersharm = {}
+	for _, tbl in pairs(zc.HarmDone) do
+		for attacker, harm in pairs(tbl) do
+			playersharm[attacker] = (playersharm[attacker] or 0) + harm
+		end
+	end
+
+	local most_violent_player
+	local curharm = 0
+	for ply, harm in pairs(playersharm) do
+		if harm > curharm then
+			most_violent_player = ply
+			curharm = harm
+		end
+	end
+
+	timer.Simple(2,function()
+		net.Start("ZC_DeathmatchEnd")
+		local ent = zc:CheckAlive(true)[1]
+
+		if IsValid(ent) then
+			ent:GiveExp(math.random(150,200))
+			ent:GiveSkill(math.Rand(0.2,0.3))
+		end
+
+		if IsValid(most_violent_player) then
+			most_violent_player:GiveExp(math.random(150,200))
+			most_violent_player:GiveSkill(math.Rand(0.2,0.3))
+		end
+
+		net.WriteEntity(IsValid(ent) and ent:Alive() and ent or NULL)
+		net.WriteEntity(IsValid(most_violent_player) and most_violent_player or NULL)
+		net.Broadcast()
+	end)
 end
 
 local cooldown = CurTime()
@@ -242,58 +306,3 @@ hook.Add("Think","ZC_DmModeThink",function(ply)
 		end
 	end
 end)
-
-function MODE:GiveWeapons()
-end
-
-function MODE:GiveEquipment()
-end
-
-function MODE:RoundThink()
-end
-
-function MODE:PlayerDeath(ply)
-	if zc.ROUND_STATE == 1 then
-		ply:GiveSkill(-0.1)
-	end
-end
-
-function MODE:CanSpawn()
-end
-
-function MODE:EndRound()
-	local playersharm = {}
-	for _, tbl in pairs(zc.HarmDone) do
-		for attacker, harm in pairs(tbl) do
-			playersharm[attacker] = (playersharm[attacker] or 0) + harm
-		end
-	end
-
-	local most_violent_player
-	local curharm = 0
-	for ply, harm in pairs(playersharm) do
-		if harm > curharm then
-			most_violent_player = ply
-			curharm = harm
-		end
-	end
-
-	timer.Simple(2,function()
-		net.Start("ZC_DeathmatchEnd")
-		local ent = zc:CheckAlive(true)[1]
-
-		if IsValid(ent) then
-			ent:GiveExp(math.random(150,200))
-			ent:GiveSkill(math.Rand(0.2,0.3))
-		end
-
-		if IsValid(most_violent_player) then
-			most_violent_player:GiveExp(math.random(150,200))
-			most_violent_player:GiveSkill(math.Rand(0.2,0.3))
-		end
-
-		net.WriteEntity(IsValid(ent) and ent:Alive() and ent or NULL)
-		net.WriteEntity(IsValid(most_violent_player) and most_violent_player or NULL)
-		net.Broadcast()
-	end)
-end

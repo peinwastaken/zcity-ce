@@ -11,6 +11,20 @@ MODE.ForBigMaps = false
 MODE.Chance = 0.04
 MODE.SpawnProtectionTime = 7.5
 
+-- New round API (see docs/gamemode-system-rewrite.md).
+MODE.MinPlayers = 2
+MODE.RoundTime = 300
+MODE.SetupTime = 0
+MODE.EndTime = 5
+
+MODE.Intro = {
+	Title = "Deathmatch",
+	Objective = "Kill everyone.",
+	Role = "Fighter",
+	Color = Color(190, 15, 15),
+	Sound = "snd_jack_hmcd_deathmatch.mp3"
+}
+
 MODE.Config = {
     ["id"] = "dm",
     ["printname"] = "Deathmatch",
@@ -74,11 +88,13 @@ function MODE.GetZoneRadius()
 end
 
 function MODE:IsSpawnProtectionActive()
-    return (zc.ROUND_START or 0) + MODE.SpawnProtectionTime > CurTime()
+    return zc.round and zc.round.state == ROUND_PREPARING
 end
 
-function MODE:ZC_CanPlayerLegAttack( ply )
-	if (zc.ROUND_START or 0) + 20 > CurTime() then
+MODE.Hooks = MODE.Hooks or {}
+
+MODE.Hooks.ZC_CanPlayerLegAttack = function(self, round, ply)
+	if round.state == ROUND_PREPARING then
 		return false
 	end
 end

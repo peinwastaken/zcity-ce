@@ -5,7 +5,9 @@ local function ShowShadows(ent, ply, bool)
 	ent:DrawShadow(bool)
 end
 
-function MODE:ZC_PreDrawPlayerOverride(ent, ply)
+MODE.Hooks = MODE.Hooks or {}
+
+MODE.Hooks.ZC_PreDrawPlayerOverride = function(self, round, ent, ply)
 	local lply = LocalPlayer()
 
 	if !IsValid(ent) or !IsValid(ply) then return end
@@ -91,10 +93,13 @@ local atpeace = {
 zc.fearphrase1 = zc.fearphrase1 or nil
 zc.fearphrase2 = zc.fearphrase2 or nil
 
-function MODE:RenderScreenspaceEffects()
+MODE.Hooks.RenderScreenspaceEffects = function(self, round)
 	local lply = LocalPlayer()
 
-	self.BaseClass.RenderScreenspaceEffects(self)
+	-- Call the inherited homicide intro/fade rendering explicitly.
+	local baseMode = zc.modes and zc.modes[self.base]
+	local baseFn = baseMode and baseMode.Hooks and baseMode.Hooks.RenderScreenspaceEffects
+	if baseFn then baseFn(self, round) end
 
 	local disappearance = lply:GetNetVar("disappearance", nil)
 
@@ -193,7 +198,7 @@ local notifs = {
 	"Where's everyone?",
 }
 
-function MODE:ZC_PlayerDeath(ply)
+MODE.Hooks.ZC_PlayerDeath = function(self, round, ply)
 	local lply = LocalPlayer()
 
 	self:CreateTimer("fearfearingfearful", 3, 1, function()
@@ -222,38 +227,46 @@ function MODE:ZC_PlayerDeath(ply)
 	end)
 end
 
-function MODE:RoundStart()
-	self:CreateTimer("FearSounds", 1, 0, function()
-		local lply = LocalPlayer()
-		if !IsValid(lply) then return end
-		local snd = table.Random(ScarySounds)
+-- Client presentation callback: old client RoundStart/EndRound.
+function MODE:OnClientStateChanged(round, oldState)
+	if round.state == ROUND_PREPARING and IsValid(hmcdEndMenu) then
+		hmcdEndMenu:Remove()
+		hmcdEndMenu = nil
+	end
 
-		if snd == "knock.mp3" then
-			surface.PlaySound("knock.mp3")
-			timer.Adjust("FearSounds", math.Rand(20, 60))
+	if round.state == ROUND_ACTIVE then
+		self:CreateTimer("FearSounds", 1, 0, function()
+			local lply = LocalPlayer()
+			if !IsValid(lply) then return end
+			local snd = table.Random(ScarySounds)
 
-			return
+			if snd == "knock.mp3" then
+				surface.PlaySound("knock.mp3")
+				timer.Adjust("FearSounds", math.Rand(20, 60))
+
+				return
+			end
+
+			local pos = lply:GetPos() + Vector(math.Rand(-512, 512), math.Rand(-512, 512), math.Rand(0, 512))
+
+			EmitSound(snd, pos, 0, nil)
+			timer.Adjust("FearSounds", math.Rand(40, 90))
+		end)
+	end
+
+	if round.state == ROUND_ENDING then
+		for k, _ in pairs(self.saved.Timers or {}) do
+			timer.Remove(k)
 		end
 
-		local pos = lply:GetPos() + Vector(math.Rand(-512, 512), math.Rand(-512, 512), math.Rand(0, 512))
-		
-		EmitSound(snd, pos, 0, nil)
-		timer.Adjust("FearSounds", math.Rand(40, 90))
-	end)
-end
-
-function MODE:EndRound()
-	for k, _ in pairs(self.saved.Timers or {}) do
-		timer.Remove(k)
-	end
-
-	if IsValid(zc.lastOneStation) then
-		zc.lastOneStation:Stop()
-		zc.lastOneStation = nil
+		if IsValid(zc.lastOneStation) then
+			zc.lastOneStation:Stop()
+			zc.lastOneStation = nil
+		end
 	end
 end
 
-function MODE:EntityEmitSound(data)
+MODE.Hooks.EntityEmitSound = function(self, round, data)
 	local disappearance = lply:GetNetVar("disappearance", nil)
 	if disappearance and IsValid(data.Entity) and (data.Entity:IsRagdoll() or data.Entity:IsPlayer() or ishgweapon(data.Entity) or data.Entity.ismelee) then
 		return false

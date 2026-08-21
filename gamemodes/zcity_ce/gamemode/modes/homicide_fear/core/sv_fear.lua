@@ -3,6 +3,10 @@ local MODE = MODE
 function MODE:AfterBaseInheritance()
 	self.Types.standard2 = self.Types.standard
 	self.Types.soe2 = self.Types.soe
+	self.Roles.standard2 = self.Roles.standard
+	self.Roles.soe2 = self.Roles.soe
+	self.TypeNames.standard2 = "Fear"
+	self.TypeNames.soe2 = "Fear: State of Emergency"
 
 	self.Types.wildwest = nil
 	self.Types.gunfreezone = nil
@@ -93,7 +97,8 @@ function MODE:SubModes()
 	return modes
 end
 
-function MODE:Intermission()
+-- Old Intermission().
+function MODE:Prepare(round)
 	game.CleanUpMap()
 
 	MODE.saved.TimePlayed = 0
@@ -101,7 +106,7 @@ function MODE:Intermission()
 
 	local _,CROUND = CurrentRound()
 
-	if not CROUND or CROUND == "hmcd" then
+	if not CROUND or CROUND == self.name then
 		CROUND = table.Random(self:SubModes())
 	end
 
@@ -224,13 +229,19 @@ function MODE:Intermission()
 			self:RandomStuff()
 		end)
 	end)
+
+	self:SpawnPlayers(true)
 end
 
-function MODE:ShouldRoundEnd()
-	return #zc:CheckAlive() == 0
+-- Returns nil to continue or a result table to end the round.
+function MODE:CheckEnd(round)
+	if #zc:CheckAlive() == 0 then
+		return { reason = "wiped" }
+	end
 end
 
-function MODE:EndRound()
+-- Old EndRound().
+function MODE:Finish(round, result)
 	timer.Remove("HMCDSpawnSWAT")
 	timer.Remove("SpawnAdditionalPolice")
 	timer.Remove("SpawnAdditionalNationalGuard")
@@ -457,8 +468,13 @@ function MODE:PropKill(ply)
 	end)
 end
 
-function MODE:RoundThink()
-	self.BaseClass.RoundThink(self)
+function MODE:Think(round)
+	-- Call the inherited homicide Think (police/SWAT logic) explicitly.
+	local baseMode = zc.modes and zc.modes[self.base]
+
+	if baseMode and baseMode.Think then
+		baseMode.Think(self, round)
+	end
 	local players = zc:CheckAlive()
 
 	self.saved.TimePlayed = (self.saved.TimePlayed or 0) + 0.5
@@ -575,12 +591,15 @@ function MODE:ResetNetworkVars(ply)
 	ply:CollisionRulesChanged()
 end
 
-function MODE:PlayerSilentDeath(ply)
+MODE.Hooks = MODE.Hooks or {}
+
+MODE.Hooks.PlayerSilentDeath = function(self, round, ply)
 	self:ResetNetworkVars(ply)
 end
 
-function MODE:PlayerDeath(ply)
+MODE.Hooks.PlayerDeath = function(self, round, ply)
 	self:ResetNetworkVars(ply)
+	if round.state ~= ROUND_ACTIVE then return end
 
 	self:CreateTimer("Fear_End", 3, 1, function()
 		local alive = zc:CheckAlive()
@@ -599,7 +618,7 @@ function MODE:PlayerDeath(ply)
 	end)
 end
 
-function MODE:ZC_OnPlayerRagdollCreated(ply, ent)
+MODE.Hooks.ZC_OnPlayerRagdollCreated = function(self, round, ply, ent)
 	if zc.QueueCollisionRulesChanged then
 		zc.QueueCollisionRulesChanged(ent, nil, true)
 	else
@@ -611,10 +630,10 @@ function MODE:ZC_OnPlayerRagdollCreated(ply, ent)
 	end
 end
 
-function MODE:ZC_CanHearPlayerVoice(listener, talker)
+MODE.Hooks.ZC_CanHearPlayerVoice = function(self, round, listener, talker)
 	if listener:GetNetVar("disappearance") or talker:GetNetVar("disappearance") then return true end
 end
 
-function MODE:ZC_CanSeePlayerChat(listener, talker)
+MODE.Hooks.ZC_CanSeePlayerChat = function(self, round, listener, talker)
 	if listener:GetNetVar("disappearance") or talker:GetNetVar("disappearance") then return true end
 end

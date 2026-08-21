@@ -131,7 +131,7 @@ local function addModeHook( MODE, hookName, func )
 		local modeHooks = zc.modesHooks[Current]
 		if modeHooks and modeHooks[hookName] then
 			local ModeTable = zc.modes[Current]
-			local a, b, c, d, e, f = modeHooks[hookName]( ModeTable, ... )
+			local a, b, c, d, e, f = modeHooks[hookName]( ModeTable, zc.round, ... )
 
 			if a ~= nil then
 				return a, b, c, d, e, f
@@ -140,23 +140,78 @@ local function addModeHook( MODE, hookName, func )
 	end )
 end
 
-local function InitMode()
+-- Lifecycle callbacks are called by the round controller / selection code,
+-- never registered as GMod hooks. Only entries inside MODE.Hooks are
+-- registered as hooks.
+
+local function RegisterModeHooks( MODE )
+	-- Only explicit entries inside MODE.Hooks are registered as hooks.
+	if not istable(MODE.Hooks) then return end
+
+	for hookName, func in pairs(MODE.Hooks) do
+		addModeHook(MODE, hookName, func)
+	end
+end
+
+-- Modes are collected first and finalized afterwards, so a base mode does
+-- not need to appear earlier alphabetically.
+local pendingModes = {}
+local pendingModeOrder = {}
+
+local function CollectMode()
 	if table.IsEmpty(MODE) then return end
 
 	local name = MODE.name
 	local saved = zc.modes[name] and zc.modes[name].saved or {} -- saved table is used for saving data between hotloads
 
+	zc.modes[name] = nil
+	pendingModes[name] = { def = MODE, saved = saved }
+	pendingModeOrder[#pendingModeOrder + 1] = name
+end
+
+local finalizedModes = {}
+local resolvingModes = {}
+
+local function FinalizeMode(name)
+	if finalizedModes[name] then return zc.modes[name] end
+
+	local entry = pendingModes[name]
+	if not entry then return nil end
+
+	if resolvingModes[name] then
+		ErrorNoHalt("[Z-City] Mode inheritance loop at '" .. tostring(name) .. "'\n")
+		return nil
+	end
+
+	resolvingModes[name] = true
+
+	local MODE = entry.def
+
 	if MODE.base then
-		table.Inherit(MODE, zc.modes[MODE.base])
+		local childHooks = MODE.Hooks
+		local parent = FinalizeMode(MODE.base)
 
-		for i in pairs(MODE) do
-			if istable(MODE[i]) and istable(zc.modes[MODE.base][i]) then
-				tbl2 = {}
+		if not parent then
+			ErrorNoHalt("[Z-City] Mode '" .. tostring(name) .. "' inherits from missing or invalid base mode '" .. tostring(MODE.base) .. "'\n")
+			resolvingModes[name] = nil
+			return nil
+		end
 
-				table.CopyFromTo(MODE[i], tbl2)
+		table.Inherit(MODE, parent)
 
-				MODE[i] = tbl2
+		-- Inherited tables must not share mutable state with their parent.
+		for key, value in pairs(MODE) do
+			if key ~= "base" and key ~= "Hooks" and istable(value) then
+				MODE[key] = table.Copy(value)
 			end
+		end
+
+		if istable(parent.Hooks) or istable(childHooks) then
+			local hooks = istable(parent.Hooks) and table.Copy(parent.Hooks) or {}
+			for hookName, func in pairs(childHooks or {}) do
+				hooks[hookName] = func
+			end
+			MODE.Hooks = hooks
 		end
 
 		if MODE.AfterBaseInheritance then
@@ -165,7 +220,9 @@ local function InitMode()
 	end
 
 	zc.modes[name] = MODE
-	zc.modes[name].saved = saved
+	zc.modes[name].saved = entry.saved
+	resolvingModes[name] = nil
+	finalizedModes[name] = true
 
 	if SERVER then
 		if MODE.SetupChances then
@@ -175,11 +232,14 @@ local function InitMode()
 		end
 	end
 
-	for k, v2 in pairs(MODE) do
-		if isfunction(v2) then
-			addModeHook(MODE, k, v2)
-		end
-	end
+	RegisterModeHooks(MODE)
+	return MODE
+end
+
+local function InitMode()
+	if table.IsEmpty(MODE) then return end
+
+	CollectMode()
 end
 
 local chancesfile = "config/modes_chances.json"
@@ -215,6 +275,7 @@ local function LoadModes()
 		zc.ModesChances = zc.ParseDataFile(chancesfile, {})
 	end
 
+	-- Pass 1: discover and execute every mode definition.
 	for _, v in ipairs(files) do
 		MODE = {}
 		IncluderFunc(directory .. "/" .. v)
@@ -228,6 +289,16 @@ local function LoadModes()
 		InitMode()
 		MODE = nil
 	end
+
+	-- Pass 2: resolve inheritance now that every mode table exists.
+	for _, name in ipairs(pendingModeOrder) do
+		FinalizeMode(name)
+	end
+
+	pendingModes = {}
+	pendingModeOrder = {}
+	finalizedModes = {}
+	resolvingModes = {}
 
 	if SERVER and !zc.DataFileExists(chancesfile) then
 		zc.WriteData(chancesfile, zc.ModesChances, true)

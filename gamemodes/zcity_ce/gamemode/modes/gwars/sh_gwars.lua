@@ -8,6 +8,27 @@ MODE.Chance = 0.02
 MODE.OverideSpawnPos = true
 MODE.LootSpawn = false
 
+MODE.Intro = {
+    Title = "ZBattle | Gang Wars",
+    Sound = "zbattle/nigshit.mp3"
+}
+
+function MODE:GetPlayerIntroData(ply)
+    if ply:Team() == 1 then
+        return {
+            Role = "Groove Member",
+            Objective = "Eliminate the Bloodz.",
+            Color = Color(0, 180, 0)
+        }
+    end
+
+    return {
+        Role = "Bloodz Member",
+        Objective = "Eliminate the Groove gang.",
+        Color = Color(180, 0, 0)
+    }
+end
+
 zc = zc or {}
 
 MODE.Config = {

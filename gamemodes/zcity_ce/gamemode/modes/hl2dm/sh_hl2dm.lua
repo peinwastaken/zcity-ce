@@ -6,6 +6,27 @@ MODE.Chance = 0.05
 MODE.LootSpawn = false
 MODE.ForBigMaps = true
 
+MODE.Intro = {
+    Title = "ZBattle | Half-Life 2 Deathmatch",
+    Sound = "hl2mode1.wav"
+}
+
+function MODE:GetPlayerIntroData(ply)
+    if ply:Team() == 1 then
+        return {
+            Role = "Combine Soldier",
+            Objective = "Destroy all rebel forces.",
+            Color = Color(0, 200, 220)
+        }
+    end
+
+    return {
+        Role = "Rebel",
+        Objective = "Destroy the Combine and survive.",
+        Color = Color(230, 100, 5)
+    }
+end
+
 MODE.Config = {
     ["id"] = MODE.name or "hl2dm",
     ["printname"] = MODE.PrintName or "Half-Life 2 Deathmatch",

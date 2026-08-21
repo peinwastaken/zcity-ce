@@ -8,6 +8,27 @@ MODE.buymenu = true
 MODE.ROUND_TIME = 240
 MODE.Chance = 0.04
 
+MODE.Intro = {
+    Title = "Team Deathmatch",
+    Sound = "csgo_round.wav"
+}
+
+function MODE:GetPlayerIntroData(ply)
+    if ply:Team() == 1 then
+        return {
+            Role = "Counter-Terrorist",
+            Objective = "Eliminate the opposing team.",
+            Color = Color(0, 120, 190)
+        }
+    end
+
+    return {
+        Role = "Terrorist",
+        Objective = "Eliminate the opposing team.",
+        Color = Color(190, 0, 0)
+    }
+end
+
 MODE.Config = {
     ["id"] = MODE.name or "tdm",
     ["printname"] = MODE.PrintName or "Team Deathmatch",
@@ -246,8 +267,10 @@ AddItemToBUY( ".44 Remington Magnum (20)", "Ammo", "ent_ammo_.44remingtonmagnum"
 
 AddItemToBUY( "Arrow", "Ammo", "ent_ammo_arrow", 25, "Ammo", {}, 5)
 
-function MODE:ZC_CalculateMovementModifiers( mul, ply, cmd, mv )
-    if (zc.ROUND_START or 0) + 20 > CurTime() and cmd then
+MODE.Hooks = MODE.Hooks or {}
+
+MODE.Hooks.ZC_CalculateMovementModifiers = function(self, round, mul, ply, cmd, mv)
+    if round.state == ROUND_PREPARING and cmd then
         cmd:RemoveKey(IN_ATTACK)
         cmd:RemoveKey(IN_FORWARD)
         cmd:RemoveKey(IN_BACK)
@@ -266,13 +289,13 @@ function MODE:ZC_CalculateMovementModifiers( mul, ply, cmd, mv )
             cmd:SelectWeapon(ply:GetWeapon("weapon_hands_sh"))
             if SERVER then ply:SelectWeapon("weapon_hands_sh") end
         end
-        
+
         mul[1] = 0
     end
 end
 
-function MODE:ZC_CanPlayerLegAttack( ply )
-	if zc.CROUND == "dm" and (zc.ROUND_START or 0) + 20 > CurTime() then
+MODE.Hooks.ZC_CanPlayerLegAttack = function(self, round, ply)
+	if round.state == ROUND_PREPARING then
 		return false
 	end
 end

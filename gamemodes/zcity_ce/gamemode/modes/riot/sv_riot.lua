@@ -38,7 +38,8 @@ end
 util.AddNetworkString("ZC_RiotStart")
 util.AddNetworkString("ZC_RiotRoundEnd")
 
-function MODE:Intermission()
+-- Old Intermission() + GiveEquipment().
+function MODE:Prepare(round)
     game.CleanUpMap()
 
 	for _, ply in player.Iterator() do
@@ -49,6 +50,8 @@ function MODE:Intermission()
 
     net.Start("ZC_RiotStart")
     net.Broadcast()
+
+    self:GiveEquipment()
 end
 
 
@@ -72,7 +75,8 @@ function MODE:CheckAlivePlayers()
 end
 
 
-function MODE:EndRound()
+-- Old EndRound().
+function MODE:Finish(round, result)
     timer.Simple(2,function()
         net.Start("ZC_RiotRoundEnd")
         net.Broadcast()
@@ -80,12 +84,12 @@ function MODE:EndRound()
 end
 
 
-function MODE:ShouldRoundEnd()
+-- Returns nil to continue or a result table to end the round.
+function MODE:CheckEnd(round)
     local endround, _ = zc:CheckWinner(self:CheckAlivePlayers())
-    return endround
-end
-
-function MODE:RoundStart()
+    if endround then
+        return { reason = "team_wiped" }
+    end
 end
 
 
@@ -183,9 +187,6 @@ end
 
 function MODE:GetTeamSpawn()
 	return zc.TranslatePointsToVectors(zc.GetMapPoints( "HMCD_TDM_T" )), zc.TranslatePointsToVectors(zc.GetMapPoints( "HMCD_TDM_CT" ))
-end
-
-function MODE:RoundThink()
 end
 
 

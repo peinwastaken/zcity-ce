@@ -14,7 +14,8 @@ end
 MODE.ForBigMaps = true
 
 util.AddNetworkString("ZC_TeamDeathmatchStart")
-function MODE:Intermission()
+-- Old Intermission() + GiveEquipment().
+function MODE:Prepare(round)
 	game.CleanUpMap()
 
 	for _, ply in player.Iterator() do
@@ -25,18 +26,23 @@ function MODE:Intermission()
 
 	net.Start("ZC_TeamDeathmatchStart")
 	net.Broadcast()
+
+	self:GiveEquipment()
 end
 
 function MODE:CheckAlivePlayers()
 	return zc:CheckAliveTeams(true)
 end
 
-function MODE:ShouldRoundEnd()
+-- Returns nil to continue or a result table to end the round.
+function MODE:CheckEnd(round)
 	local endround, _ = zc:CheckWinner(self:CheckAlivePlayers())
-	return endround
+	if endround then
+		return { reason = "team_wiped" }
+	end
 end
 
-function MODE:RoundStart()
+function MODE:Start(round)
 	for _,ply in player.Iterator() do
 		ply:Freeze(false)
 	end
@@ -115,9 +121,6 @@ function MODE:GiveEquipment()
 	end)
 end
 
-function MODE:RoundThink()
-end
-
 function MODE:GetTeamSpawn()
 	return zc.TranslatePointsToVectors(zc.GetMapPoints( "HMCD_TDM_T" )), zc.TranslatePointsToVectors(zc.GetMapPoints( "HMCD_TDM_CT" ))
 end
@@ -126,7 +129,8 @@ function MODE:CanSpawn()
 end
 
 util.AddNetworkString("ZC_TeamDeathmatchRoundEnd")
-function MODE:EndRound()
+-- Old EndRound().
+function MODE:Finish(round, result)
 	timer.Simple(2,function()
 		net.Start("ZC_TeamDeathmatchRoundEnd")
 		net.Broadcast()
@@ -144,15 +148,14 @@ function MODE:EndRound()
 	end
 end
 
-function MODE:PlayerDeath(ply)
-end
 util.AddNetworkString( "ZC_TeamDeathmatchOpenBuyMenu" )
-function MODE:ShowSpare1(ply ) -- OpenMenu
+MODE.Hooks = MODE.Hooks or {}
+
+MODE.Hooks.ShowSpare1 = function(self, round, ply) -- OpenMenu
 	if not ply:Alive() then return end
 	net.Start( "ZC_TeamDeathmatchOpenBuyMenu" )
 	net.Send( ply )
 end
-
 util.AddNetworkString( "ZC_TeamDeathmatchBuyItem" )
 
 local AttachmentPrice = 50

@@ -11,6 +11,21 @@ MODE.LootSpawn = true
 MODE.ForBigMaps = true
 MODE.Chance = 0.02
 MODE.VoteTime = 15
+MODE.SetupTime = MODE.VoteTime + 4
+
+MODE.Intro = {
+    Title = "ZBattle | HL2 Base Defense",
+    Objective = "Defend your base from the Combine.",
+    Role = "Refugee",
+    Color = Color(240, 109, 1),
+    Sound = "csgo_round.wav"
+}
+
+function MODE:GetPlayerIntroData(ply)
+    return {
+        Role = ply:GetNWString("PlayerRole", "Refugee")
+    }
+end
 
 MODE.Config = {
     ["id"] = MODE.name or "defense",

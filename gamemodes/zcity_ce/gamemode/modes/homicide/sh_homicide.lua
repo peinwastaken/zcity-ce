@@ -17,6 +17,30 @@ MODE.LootSpawn = true
 MODE.LootOnTime = true
 MODE.Chance = 0.2 -- this is mostly unused
 MODE.LootDivTime = 500
+
+MODE.TypeNames = {
+	standard = "Standard",
+	soe = "State of Emergency",
+	gunfreezone = "Gun Free Zone",
+	suicidelunatic = "Suicide Lunatic",
+	wildwest = "Wild West",
+	supermario = "Super Mario"
+}
+
+MODE.TypeSounds = {
+	standard = {"snd_jack_hmcd_psycho.mp3", "snd_jack_hmcd_shining.mp3"},
+	soe = "snd_jack_hmcd_disaster.mp3",
+	gunfreezone = "snd_jack_hmcd_panic.mp3",
+	suicidelunatic = "zbattle/jihadmode.mp3",
+	wildwest = "snd_jack_hmcd_wildwest.mp3",
+	supermario = "snd_jack_hmcd_psycho.mp3"
+}
+
+MODE.Intro = {
+	Title = "Homicide",
+	Objective = "Survive.",
+	Color = Color(0, 162, 255)
+}
 --\\
 MODE.TraitorExpectedAmtBits = 13
 --//
@@ -539,6 +563,32 @@ MODE.Roles.supermario = {
 		color = Color(0,120,190)
 	},
 }
+
+function MODE:GetPlayerIntroData(ply)
+	local roundType = self.Type or "standard"
+	local roleKey = ply.isTraitor and "traitor" or (ply.isGunner and "gunner" or "innocent")
+	local roles = self.Roles[roundType] or self.Roles.standard
+	local role = roles and roles[roleKey] or {}
+	local objective = role.objective
+
+	if ply.SubRole and self.SubRoles[ply.SubRole] and self.SubRoles[ply.SubRole].Objective then
+		objective = self.SubRoles[ply.SubRole].Objective
+	elseif ply.isTraitor and not ply.MainTraitor then
+		objective = "Help the other traitors win."
+	end
+
+	if not objective then
+		objective = ply.isTraitor and "Kill everyone." or "Survive and identify the murderer."
+	end
+
+	return {
+		Title = "Homicide | " .. (self.TypeNames[roundType] or roundType),
+		Role = role.name or roleKey,
+		Objective = objective,
+		Color = role.color or Color(0, 162, 255),
+		Sound = self.TypeSounds[roundType]
+	}
+end
 
 function MODE.GetPlayerTraceToOther(ply, aim_vector, dist)
 	local trace = zc.eyeTrace(ply, dist, nil, aim_vector)

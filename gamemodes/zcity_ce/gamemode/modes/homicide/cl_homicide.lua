@@ -7,14 +7,6 @@ local function screen_scale_2(num)
 end
 --//
 
-MODE.TypeSounds = {
-	["standard"] = {"snd_jack_hmcd_psycho.mp3","snd_jack_hmcd_shining.mp3"},
-	["soe"] = "snd_jack_hmcd_disaster.mp3",
-	["gunfreezone"] = "snd_jack_hmcd_panic.mp3" ,
-	["suicidelunatic"] = "zbattle/jihadmode.mp3",
-	["wildwest"] = "snd_jack_hmcd_wildwest.mp3",
-	["supermario"] = "snd_jack_hmcd_psycho.mp3"
-}
 local fade = 0
 net.Receive("ZC_HomicideRoundStart",function()
 	for _, ply in player.Iterator() do
@@ -32,7 +24,6 @@ net.Receive("ZC_HomicideRoundStart",function()
 	MODE.TraitorWord = net.ReadString()
 	MODE.TraitorWordSecond = net.ReadString()
 	MODE.TraitorExpectedAmt = net.ReadUInt(MODE.TraitorExpectedAmtBits)
-	StartTime = CurTime()
 	MODE.TraitorsLocal = {}
 
 	if(lply.isTraitor and screen_time_is_default)then
@@ -68,33 +59,10 @@ net.Receive("ZC_HomicideRoundStart",function()
 	lply.Profession = net.ReadString()
 	--//
 
-	if(MODE.RoleChooseRoundTypes[MODE.Type] and !screen_time_is_default)then
-		MODE.DynamicFadeScreenEndTime = CurTime() + MODE.RoleChooseRoundStartTime
-	else
-		MODE.DynamicFadeScreenEndTime = CurTime() + MODE.DefaultRoundStartTime
-	end
-
 	MODE.RoleEndedChosingState = screen_time_is_default
-
-	if(screen_time_is_default)then
-		if istable(MODE.TypeSounds[MODE.Type]) then
-			surface.PlaySound(table.Random(MODE.TypeSounds[MODE.Type]))
-		else
-			surface.PlaySound(MODE.TypeSounds[MODE.Type])
-		end
-	end
 
 	fade = 0
 end)
-
-MODE.TypeNames = {
-	["standard"] = "Standard",
-	["soe"] = "State of Emergency",
-	["gunfreezone"] = "Gun Free Zone",
-	["suicidelunatic"] = "Suicide Lunatic",
-	["wildwest"] = "Wild west",
-	["supermario"] = "Super Mario"
-}
 
 --local zc_coolvetica = ConVarExists("zc_coolvetica") and GetConVar("zc_coolvetica") or CreateClientConVar("zc_coolvetica", "0", true, false, "changes every text to coolvetica because its good", 0, 1)
 local zc_font = ConVarExists("zc_font") and GetConVar("zc_font") or CreateClientConVar("zc_font", "Bahnschrift", true, false, "Change UI text font")
@@ -276,7 +244,9 @@ MODE.TypeObjectives.supermario = {
 	},
 }
 
-function MODE:RenderScreenspaceEffects()
+MODE.Hooks = MODE.Hooks or {}
+
+MODE.Hooks.RenderScreenspaceEffects = function(self, round)
 	-- MODE.DynamicFadeScreenEndTime = MODE.DynamicFadeScreenEndTime or 0
 	fade_end_time = MODE.DynamicFadeScreenEndTime or 0
 	local time_diff = fade_end_time - CurTime()
@@ -298,7 +268,7 @@ local handicap = {
 	[4] = "You are handicapped: you are physically incapacitated."
 }
 
-function MODE:HUDPaint()
+MODE.Hooks.HUDPaint = function(self, round)
 	if not MODE.Type or not MODE.TypeObjectives[MODE.Type] then return end
 	if lply:Team() == TEAM_SPECTATOR then return end
 	if StartTime + 12 < CurTime() then return end
@@ -401,6 +371,10 @@ function MODE:HUDPaint()
 	draw.SimpleText( Objective, "ZB_HomicideMedium", sw * 0.5, sh * 0.9, ColorObj, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
 end
+
+-- Round introductions are drawn by the shared controller.
+MODE.Hooks.RenderScreenspaceEffects = nil
+MODE.Hooks.HUDPaint = nil
 
 local CreateEndMenu
 
@@ -598,11 +572,11 @@ CreateEndMenu = function(traitor)
 	return true
 end
 
-function MODE:RoundStart()
-	-- if IsValid(hmcdEndMenu) then
-	-- 	hmcdEndMenu:Remove()
-	-- 	hmcdEndMenu = nil
-	-- end
+function MODE:OnClientStateChanged(round, oldState)
+	if round.state == ROUND_PREPARING and IsValid(hmcdEndMenu) then
+		hmcdEndMenu:Remove()
+		hmcdEndMenu = nil
+	end
 end
 
 --\\

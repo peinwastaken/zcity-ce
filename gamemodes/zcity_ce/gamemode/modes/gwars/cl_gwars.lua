@@ -7,7 +7,6 @@ local ended
 local MusicVolume = GetConVar("snd_musicvolume")
 
 net.Receive("ZC_GangWarsStart", function()
-	surface.PlaySound("zbattle/nigshit.mp3")
 	zc.RemoveFade()
 	playstart = true
 	ended = nil
@@ -48,12 +47,7 @@ local teams = {
 	},
 }
 local lerpsnd = 0.3
-function MODE:RenderScreenspaceEffects()
-	if zc.ROUND_START + 7.5 < CurTime() then return end
-	local fade = math.Clamp(zc.ROUND_START + 7.5 - CurTime(), 0, 1)
-	surface.SetDrawColor(0, 0, 0, 255 * fade)
-	surface.DrawRect(-1, -1, ScrW() + 1, ScrH() + 1)
-end
+MODE.Hooks = MODE.Hooks or {}
 
 surface.CreateFont("timer_Font2", {
 	font = "Bahnschrift",
@@ -64,7 +58,7 @@ surface.CreateFont("timer_Font2", {
 	italic = false
 })
 
-function MODE:HUDPaint()
+MODE.Hooks.HUDPaint = function(self, round)
 	//if !lply.organism or !lply.organism.fear then return end
 
 	local timeBeforeSWAT = (zc.ROUND_START - CurTime() + 120)
@@ -83,7 +77,7 @@ function MODE:HUDPaint()
 		//draw.SimpleText(time, "timer_Font2", sw * 0.36, sh * 0.05, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
 
-	if zc.ROUND_START + 8 < CurTime() then
+	if round.state == ROUND_ACTIVE then
 		if playstart then
 			sound.PlayFile("sound/music_themes/ghetto_start.wav", "noblock noplay", function(station)
 				if IsValid(station) then
@@ -97,7 +91,7 @@ function MODE:HUDPaint()
 
 		lerpsnd = LerpFT(0.01, lerpsnd, !ended and (lply:Alive() and lply.organism and !lply.organism.unconscious and lply.organism.fear and math.Clamp(lply.organism.fear + 0.3 + (timeBeforeSWAT <= 0 and 2 or 0), 0, 1) or 0.3) or 0)
 
-		if zc.ROUND_START + 12 < CurTime() then
+		if zc.ROUND_START + 4 < CurTime() then
 			if IsValid(GWARS_LoopStation) then
 				GWARS_LoopStation:SetVolume(lerpsnd * MusicVolume:GetFloat())
 				GWARS_LoopStation:Play()
@@ -123,22 +117,6 @@ function MODE:HUDPaint()
 			end
 		end
 	end
-
-	if zc.ROUND_START + 8.5 < CurTime() then return end
-
-	if not lply:Alive() then return end
-	zc.RemoveFade()
-	local fade = math.Clamp(zc.ROUND_START + 8 - CurTime(), 0, 1)
-	local team_ = lply:Team()
-	draw.SimpleText("ZBattle | Gang Wars", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0, 162, 255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	local Rolename = teams[team_].name
-	local ColorRole = teams[team_].color1
-	ColorRole.a = 255 * fade
-	draw.SimpleText("You are " .. Rolename, "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.5, ColorRole, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	local Objective = teams[team_].objective
-	local ColorObj = teams[team_].color2
-	ColorObj.a = 255 * fade
-	draw.SimpleText(Objective, "ZB_HomicideMedium", sw * 0.5, sh * 0.9, ColorObj, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
 end
 
@@ -270,8 +248,9 @@ CreateEndMenu = function()
 	return true
 end
 
-function MODE:RoundStart()
-	if IsValid(hmcdEndMenu) then
+-- Client presentation callback: runs when the server round state changes.
+function MODE:OnClientStateChanged(round, oldState)
+	if round.state == ROUND_PREPARING and IsValid(hmcdEndMenu) then
 		hmcdEndMenu:Remove()
 		hmcdEndMenu = nil
 	end

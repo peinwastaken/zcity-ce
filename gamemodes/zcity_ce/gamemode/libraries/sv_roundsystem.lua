@@ -90,22 +90,18 @@ function zc:GetMode(round)
 	end
 end
 
+function zc.HasChangelevelTrigger()
+	return HasChangelevelTrigger()
+end
+
+-- Pure getter: returns the current mode table (and its name) without any
+-- side effects. The round controller owns all transitions.
 function CurrentRound()
-	if HasChangelevelTrigger() then
-		zc.nextround = "coop"
-		zc.CROUND = zc.CROUND or "coop"
-		return zc.modes["coop"]
+	if zc.round and zc.round.GetCurrent then
+		return zc.round.GetCurrent()
 	end
 
-	zc.CROUND = zc.CROUND or "hmcd"
-	if not zc.CROUND_MAIN or (zc.LASTCROUND != zc.CROUND) then
-		zc.CROUND_MAIN = zc:GetMode(zc.CROUND)
-		zc.LASTCROUND = zc.CROUND
-	end
-
-	local round = zc.CROUND_MAIN
-
-	return zc.modes[round], zc.CROUND
+	return zc.modes[zc.CROUND or "hmcd"], zc.CROUND
 end
 
 function NextRound(round)
@@ -116,57 +112,15 @@ function NextRound(round)
 	end
 end
 
-function zc:PreRound()
-	local roundCountReachedMapVote = (zc.Roundscount or 0) > 15 and not GetConVar("zc_dev"):GetBool()
-	local playersCanVote = false
-
-	if not roundCountReachedMapVote then
-		playersCanVote = player.GetCount() > 1 and zc.ROUND_STATE == 0 and zc.CheckRTVVotes()
-	end
-
-	local cstrikeRoundLimitActive = zc.RoundsLeft and zc.CROUND == "cstrike"
-
-	if (roundCountReachedMapVote or playersCanVote) and not cstrikeRoundLimitActive then
-		zc.StartRTV(20)
-		zc.ROUND_STATE = 0
-		return
-	end
-
-	if zc.ROUND_STATE == 0 and #player_GetAll() > 1 then
-		zc.END_TIME = nil
-
-		zc.START_TIME = zc.START_TIME or CurTime() + (CurrentRound().start_time or 5)
-		if zc.START_TIME < CurTime() then zc:RoundStart() end
-	end
-end
-
-function zc:RoundThink()
-	if zc.ROUND_STATE == 1 then
-		if CurrentRound().RoundThink then CurrentRound():RoundThink(CurrentRound()) end
-	end
-end
-
 hook.Add("ZC_CanReceiveCommunication","ZC_RoundStartChat",function(output, input, isChat, teamonly, text)
 	if zc.ROUND_STATE == 0 or zc.ROUND_STATE == 3 then return true, false end
 end)
 
-function zc:EndRound()
-	zc.ROUND_STATE = 3
-	zc.Roundscount = (zc.Roundscount or 0) + 1
-
-	local mode, _ = CurrentRound()
-
-	net.Start("ZC_RoundInfo")
-		net.WriteString(mode.name or "hmcd")
-		net.WriteInt(zc.ROUND_STATE, 4)
-	net.Broadcast()
-
-	--PrintMessage(HUD_PRINTTALK, "Round ended.")
-	CurrentRound():EndRound()
-	hook.Run("ZC_EndRound")
-	zc.AddFade()
-
-	zc.achievements.SavePlayerAchievements()
+-- Legacy wrapper: ends the current round through the controller.
+-- Repeated calls while not ACTIVE (or with a result already fixed) are
+-- ignored by the controller.
+function zc:EndRound(result)
+	return zc.round.RequestEnd(istable(result) and result or { reason = "admin" })
 end
 
 function zc:CheckWinner(tbl)
@@ -188,79 +142,6 @@ end
 zc.ROUND_TIME = zc.ROUND_TIME or 300
 zc.DEFAULT_RESPAWN_TIMER = zc.DEFAULT_RESPAWN_TIMER or 10
 
-function zc:ShouldRoundEnd()
-	local time = zc.ROUND_TIME
-	local mode = CurrentRound()
-	local shouldroundend = mode:ShouldRoundEnd()
-	if shouldroundend ~= false then
-		local boringround = not mode.DisableRoundTimer and (zc.ROUND_START + time) < CurTime()
-
-		if boringround and mode.BoringRoundFunction then
-			PrintMessage(HUD_PRINTTALK, "Stopping round because it was TOO boring.")
-
-			mode:BoringRoundFunction()
-		end
-
-		return (shouldroundend and true) or (boringround)
-	else
-		return false
-	end
-end
-
-function zc:EndRoundThink()
-	if zc.ROUND_STATE == 1 and zc:ShouldRoundEnd() then zc:EndRound() end
-	if zc.ROUND_STATE == 3 then
-		if !zc.END_TIME then
-			zc.END_TIME = (CurTime() + (CurrentRound().end_time or 5))
-			if zc.nextround == "coop" and GetGlobalVar("coop_first_round_timer", 0) == 0 then
-
-				zc.END_TIME = (CurTime() + (GetConVar("zc_dev") and 5 or 60))
-				SetGlobalVar("coop_first_round_timer", zc.END_TIME)
-			end
-		end
-
-		zc.SHOULD_FADE = zc.SHOULD_FADE != nil and zc.SHOULD_FADE or true
-
-		if zc.SHOULD_FADE and (zc.END_TIME < CurTime() + 1.5) then
-			zc.SHOULD_FADE = false
-
-			for _, ply in player.Iterator() do
-				ply:ScreenFade(SCREENFADE.OUT, Color(0, 0, 0), 1, 7)
-			end
-		end
-
-		if zc.END_TIME < CurTime() then
-			zc.ROUND_STATE = 0
-
-			zc.SHOULD_FADE = true
-
-			hook.Run("ZC_PreRoundStart")
-			hook.Run("TTTPrepareRound") -- stormfox2 random_round_weather
-
-			zc.CROUND = zc.nextround or "hmcd"
-			if CurrentRound().shouldfreeze then zc:Freeze() end
-
-			--PrintMessage(HUD_PRINTTALK, "Gamemode: " .. CurrentRound().PrintName or "None")
-
-			local mode, _ = CurrentRound()
-			net.Start("ZC_RoundInfo")
-				net.WriteString(mode.name or "hmcd")
-				net.WriteInt(zc.ROUND_STATE, 4)
-			net.Broadcast()
-
-			zc.UpdateRoundTime(CurrentRound().ROUND_TIME, CurTime(), CurTime() + (CurrentRound().start_time or 5))
-
-			self:KillPlayers()
-			self:AutoBalance()
-
-			CurrentRound().saved = {}
-
-			CurrentRound():Intermission()
-			CurrentRound():GiveEquipment()
-		end
-	end
-end
-
 hook.Add("PlayerInitialSpawn", "ZC_SendRoundInfo", function(ply)
 	if zc.CROUND then
 		local mode,_ = CurrentRound()
@@ -274,15 +155,8 @@ hook.Add("PlayerInitialSpawn", "ZC_SendRoundInfo", function(ply)
 end)
 
 util.AddNetworkString("ZC_RoundInfo")
-function zc:Think(time)
-	if (zc.thinkTime or CurTime()) > time then return end
-	zc.thinkTime = time + 1
-	zc:PreRound()
-	zc:RoundThink()
-	zc:EndRoundThink()
-end
 
-hook.Add("Think", "ZC_RoundSystemThink", function() zc:Think(CurTime()) end)
+-- Round ticking is owned by the round controller (ZC_RoundControllerThink).
 
 hook.Add("PlayerDeath", "ZC_ModeRespawnTimer", function(ply)
 	local mode = CurrentRound()
@@ -334,6 +208,21 @@ end
 zc.forcemode = zc.forcemode or "random"
 
 local forcemode = zc.forcemode
+
+-- Accessors for the round controller; the convar overrides until an admin
+-- sets the force mode directly.
+function zc.GetForcemode()
+	local str = forcemodeconvar:GetString()
+	if str ~= "" then
+		forcemode = str
+	end
+
+	return forcemode
+end
+
+function zc.SetForcemode(name)
+	forcemode = name
+end
 
 function zc.GetModes()
 	local newtbl = {}
@@ -550,8 +439,6 @@ function zc.RerollChances()
 
 		zc.RoundList[i] = round
 	end
-
-	zc.nextround = table.remove(zc.RoundList, 1)
 end
 
 function zc.GetModesInfo()
@@ -653,57 +540,14 @@ net.Receive("ZC_RoundListUpdate", function(len, ply)
 	end
 end)
 
-function zc:RoundStart()
-	if CurrentRound().shouldfreeze then zc:Unfreeze() end
-
-	zc.ROUND_STATE = 1
-	zc.START_TIME = nil
-
-	local mode, round = CurrentRound()
-
-	VFIRE_DISABLED = (mode.name == "coop")
-
-	zc.ROUND_BEGIN = CurTime()
-	zc.UpdateRoundTime()
-
-	net.Start("ZC_RoundInfo")
-		net.WriteString(mode.name or "hmcd")
-		net.WriteInt(zc.ROUND_STATE, 4)
-	net.Broadcast()
-
-	if forcemodeconvar:GetString() != "" then
-		forcemode = forcemodeconvar:GetString()
-	end
-
-	zc.AddCurrentModePlayed()
-
-	CurrentRound():RoundStart()
-
-	local nextMode
-
-	if #zc.RoundList == 0 then
-		zc.RerollChances()
-	end
-
-	nextMode = table.remove(zc.RoundList, 1)
-
-
-	print("Next game mode is " .. nextMode)
-
-	NextRound(forcemode ~= "random" and forcemode or (nextMode or "hmcd"))
-
-	if CurrentRound().RoundStartPost then
-		CurrentRound():RoundStartPost()
-	end
-
-	hook.Run("ZC_StartRound")
-
-	//zc.GetAllPoints(true)
-
+function zc.SendRoundListToAllAdmins()
 	for _, admin in ipairs(zc.GetAllAdmins()) do
 		zc.SendRoundListToClient(admin)
 	end
 end
+
+-- Round start/finish transitions live in sv_roundcontroller.lua now.
+-- zc:EndRound above is the only legacy entry point kept for admins.
 
 concommand.Add("zb_checkchances",function(ply) if ply:IsAdmin() then zc.CheckChances() end end)
 concommand.Add("zb_rerollchances",function(ply) if ply:IsAdmin() then zc.RerollChances() zc.CheckChances() end end)
@@ -744,7 +588,7 @@ net.Receive("ZC_AdminSetGameMode", function(len, ply)
 			zc.SyncQueueToAdmins()
 		end
 	elseif command == "setforcemode" then
-		forcemode = modeKey
+		zc.SetForcemode(modeKey)
 		NextRound(forcemode)
 		ply:ChatPrint("Force mode set to: " .. modeKey)
 
@@ -852,7 +696,7 @@ COMMANDS.setforcemode = {
 		if not ply:IsAdmin() then ply:ChatPrint("You don't have access") return end
 		if not args[1] or (not zc:GetMode(args[1]) and args[1]~="random") then return end
 		ply:ChatPrint(args[1])
-		forcemode = args[1]
+		zc.SetForcemode(args[1])
 		if args[1] ~= "random" then
 			NextRound(args[1])
 		end
@@ -915,8 +759,8 @@ if SERVER then
 				zc.SyncQueueToAdmins()
 			end
 		elseif command == "setforcemode" then
-			forcemode = modeKey
-			NextRound(forcemode)
+			zc.SetForcemode(modeKey)
+			NextRound(zc.GetForcemode())
 			ply:ChatPrint("Force mode set to: " .. modeKey)
 
 			if addToQueue then

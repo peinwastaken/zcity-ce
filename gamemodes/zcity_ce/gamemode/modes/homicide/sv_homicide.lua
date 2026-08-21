@@ -627,7 +627,8 @@ local zc_homicide_traitoramount = ConVarExists("zc_homicide_traitoramount") and 
 
 MODE.TraitorFairness = MODE.TraitorFairness or {}
 
-function MODE:Intermission()
+-- Old Intermission().
+function MODE:Prepare(round)
 	game.CleanUpMap()
 
 	local _, CROUND = CurrentRound()
@@ -868,6 +869,10 @@ function MODE:Intermission()
 			zc.organism.AddWoundManual(ent, 50, vector_origin, angle_zero,"ValveBiped.Bip01_Head1", CurTime() + 2)
 		end
 	end
+
+	self.RoleChooseRound = false
+	self.ChoosingPlayersList = {}
+	self:SpawnPlayers(true)
 end
 
 --[[concommand.Add("hmcd_call_police", function(ply, cmd, args)
@@ -934,7 +939,7 @@ MODE.swatDeployed = MODE.swatDeployed or false
 MODE.spawnedPoliceCount = MODE.spawnedPoliceCount or 0
 MODE.roundStartType = MODE.roundStartType or nil
 
-function MODE:RoundThink()
+function MODE:Think(round)
 	if not self.PoliceAllowed then return end
 
 	if self.Type ~= "soe" and not self.PoliceSpawned and self.saved.PoliceTime < CurTime() then
@@ -1221,33 +1226,30 @@ function MODE.ShouldStartRoleRound()
 end
 --//
 
-function MODE:ShouldRoundEnd()
+-- Returns nil to continue or a result table to end the round.
+function MODE:CheckEnd(round)
 	if(MODE.StartRoundTime and MODE.RoleChooseRound)then
 		if(MODE.StartRoundTime > CurTime())then
-			return false
+			return nil
 		else
 			MODE.StartRoundTime = nil
 
 			net.Start("ZC_HomicideRoleSelectionEnd")
 			net.Broadcast()
-			MODE.SpawnPlayers(true)
+			self:SpawnPlayers(true)
 		end
 	else
 		local endround, winner = zc:CheckWinner(self:CheckAlivePlayers())
 
 		if(endround)then
 			MODE.ChoosingPlayersList = {}
+			return { reason = "round_over", winner = winner }
 		end
-
-		return endround
 	end
 end
 
-function MODE:RoundStart()
-	local roles_choose = MODE.ShouldStartRoleRound()
+function MODE:Start(round)
 	MODE.StartRoundTime = CurTime()
-	MODE.RoleChooseRound = false
-
 
 	self.roundStartType = self.Type
 
@@ -1258,18 +1260,6 @@ function MODE:RoundStart()
 
 
 	timer.Remove("HMCDSpawnSWAT")
-
-	if(roles_choose)then
-		MODE.StartPlayersRoleSelection()
-		PrintMessage(HUD_PRINTTALK, "Traitor is choosing roles for " .. MODE.RoleChooseRoundStartTime ..  " seconds")
-	else
-		MODE.ChoosingPlayersList = {}
-
-		MODE.SpawnPlayers(true)
-	end
-end
-
-function MODE:GiveEquipment()
 end
 
 function MODE:CanSpawn()
@@ -1277,7 +1267,8 @@ end
 
 util.AddNetworkString("ZC_HomicideRoundEnd")
 
-function MODE:EndRound()
+-- Old EndRound().
+function MODE:Finish(round, result)
 	timer.Remove("HMCDSpawnSWAT")
 	timer.Remove("SpawnAdditionalPolice")
     timer.Remove("SpawnAdditionalNationalGuard")
@@ -1521,7 +1512,7 @@ end)
 
 util.AddNetworkString("ZC_HomicideTraitorAssistants")
 
-function MODE.SpawnPlayers(spawn_with_subroles)
+function MODE:SpawnPlayers(spawn_with_subroles)
     local gunner_found = false
 
     for _, ply in RandomPairs(player.GetAll()) do
@@ -1550,8 +1541,8 @@ function MODE.SpawnPlayers(spawn_with_subroles)
     end
 
     --= Professions
-    if(spawn_with_subroles and MODE.RoleChooseRoundTypes[MODE.Type])then
-        local professions_possible_pre = MODE.RoleChooseRoundTypes[MODE.Type].Professions
+    if(spawn_with_subroles and self.RoleChooseRoundTypes[self.Type])then
+        local professions_possible_pre = self.RoleChooseRoundTypes[self.Type].Professions
 
         if(professions_possible_pre)then
             local professions_possible = {}
@@ -1611,29 +1602,29 @@ function MODE.SpawnPlayers(spawn_with_subroles)
             current_ply:SetSuppressPickupNotices(true)
             current_ply.noSound = true
 
-            if(MODE.Type == "supermario")then
-                MODE.Types.supermario.CustomJump(current_ply)
+            if(self.Type == "supermario")then
+                self.Types.supermario.CustomJump(current_ply)
             end
 
             local sub_role = nil
-            if(spawn_with_subroles and MODE.RoleChooseRoundTypes[MODE.Type])then
+            if(spawn_with_subroles and self.RoleChooseRoundTypes[self.Type])then
                 if(current_ply.isTraitor)then
-                    local sub_role_id = MODE.Type == "soe" and (current_ply:GetInfo(MODE.ConVarName_SubRole_Traitor_SOE) or "traitor_default_soe") or (current_ply:GetInfo(MODE.ConVarName_SubRole_Traitor) or "traitor_default")
+                    local sub_role_id = self.Type == "soe" and (current_ply:GetInfo(self.ConVarName_SubRole_Traitor_SOE) or "traitor_default_soe") or (current_ply:GetInfo(self.ConVarName_SubRole_Traitor) or "traitor_default")
 					sub_role = sub_role_id
                 end
 
                 if(current_ply.isGunner)then
-                    MODE.Types[MODE.Type].GunManLoot(current_ply)
+                    self.Types[self.Type].GunManLoot(current_ply)
                 end
 
                 if(sub_role)then
                     if(current_ply.isGunner)then
 
                     elseif(current_ply.isTraitor)then
-                        local role_info = MODE.SubRoles[sub_role]
-                        if(!role_info or !MODE.RoleChooseRoundTypes[MODE.Type].Traitor[sub_role])then
-                            sub_role = MODE.RoleChooseRoundTypes[MODE.Type].TraitorDefaultRole or "traitor_default"
-                            role_info = MODE.SubRoles[sub_role]
+                        local role_info = self.SubRoles[sub_role]
+                        if(!role_info or !self.RoleChooseRoundTypes[self.Type].Traitor[sub_role])then
+                            sub_role = self.RoleChooseRoundTypes[self.Type].TraitorDefaultRole or "traitor_default"
+                            role_info = self.SubRoles[sub_role]
                         end
 
                         if(current_ply.MainTraitor)then
@@ -1645,21 +1636,21 @@ function MODE.SpawnPlayers(spawn_with_subroles)
                 end
             else
                 if(current_ply.isTraitor)then
-                    MODE.Types[MODE.Type].TraitorLoot(current_ply)
+                    self.Types[self.Type].TraitorLoot(current_ply)
                 end
 
                 if(current_ply.isGunner)then
-                    MODE.Types[MODE.Type].GunManLoot(current_ply)
+                    self.Types[self.Type].GunManLoot(current_ply)
                 end
             end
 
-            if(MODE.Type == "soe")then
+            if(self.Type == "soe")then
                 if(current_ply.isTraitor)then
                     local walkie_talkie = current_ply:Give("weapon_walkie_talkie")
 					if walkie_talkie.Frequencies then
-						MODE.TraitorFrequency = MODE.TraitorFrequency or math.random(1, #walkie_talkie.Frequencies)
-						walkie_talkie.Frequency = MODE.TraitorFrequency
-						current_ply:ChatPrint("Walkie-Talkie Frequency = " .. walkie_talkie.Frequencies[MODE.TraitorFrequency])
+						self.TraitorFrequency = self.TraitorFrequency or math.random(1, #walkie_talkie.Frequencies)
+						walkie_talkie.Frequency = self.TraitorFrequency
+						current_ply:ChatPrint("Walkie-Talkie Frequency = " .. walkie_talkie.Frequencies[self.TraitorFrequency])
 					end
                 end
             end
@@ -1716,19 +1707,19 @@ function MODE.SpawnPlayers(spawn_with_subroles)
                 net.Start("ZC_HomicideRoundStart")
                     net.WriteBool(this_player.isTraitor)
                     net.WriteBool(this_player.isGunner)
-                    net.WriteString(MODE.Type)
+                    net.WriteString(self.Type)
                     net.WriteBool(true)
                     net.WriteString(this_player.SubRole or "")
                     net.WriteBool(this_player.MainTraitor == true)
 
                     if (this_player.isTraitor) then
-                        net.WriteString(MODE.TraitorWord)
-                        net.WriteString(MODE.TraitorWordSecond)
-                        net.WriteUInt(traitor_amt, MODE.TraitorExpectedAmtBits)
+                        net.WriteString(self.TraitorWord)
+                        net.WriteString(self.TraitorWordSecond)
+                        net.WriteUInt(traitor_amt, self.TraitorExpectedAmtBits)
                     else
                         net.WriteString("")
                         net.WriteString("")
-                        net.WriteUInt(0, MODE.TraitorExpectedAmtBits)
+                        net.WriteUInt(0, self.TraitorExpectedAmtBits)
                     end
 
                     if (this_player.MainTraitor) then
@@ -1756,7 +1747,7 @@ function MODE.SpawnPlayers(spawn_with_subroles)
                     net.WriteString(this_player.Profession or "")
                 net.Send(this_player)
 
-                local role = MODE.Roles[MODE.Type][(this_player.isTraitor and "traitor") or (this_player.isGunner and "gunner") or "innocent"]
+                local role = self.Roles[self.Type][(this_player.isTraitor and "traitor") or (this_player.isGunner and "gunner") or "innocent"]
                 if role then
                     zc.GiveRole(this_player, role.name, role.color)
                 end

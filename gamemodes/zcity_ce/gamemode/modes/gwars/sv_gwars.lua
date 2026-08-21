@@ -6,13 +6,13 @@ function MODE:CanLaunch()
 	local points2 = zc.GetMapPoints( "HMCD_TDM_CT" )
     return (#points > 0) and (#points2 > 0)--]]
 end
-
 function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
 	return 1, true--returning true so guilt bans
 end
 
 util.AddNetworkString("ZC_GangWarsStart")
-function MODE:Intermission()
+-- Old Intermission() + GiveEquipment().
+function MODE:Prepare(round)
 	game.CleanUpMap()
 
 	self.CTPoints = {}
@@ -26,16 +26,21 @@ function MODE:Intermission()
 
 	net.Start("ZC_GangWarsStart")
 	net.Broadcast()
+
+	self:GiveEquipment()
 end
 
 function MODE:CheckAlivePlayers()
 	return zc:CheckAliveTeams(true)
 end
 
-function MODE:ShouldRoundEnd()
+-- Returns nil to continue or a result table to end the round.
+function MODE:CheckEnd(round)
 	local endround, _ = zc:CheckWinner(self:CheckAlivePlayers())
 
-	return endround or boringround
+	if endround then
+		return { reason = "team_wiped" }
+	end
 end
 
 function MODE:BoringRoundFunction()
@@ -46,7 +51,7 @@ end
 
 local swatSpawned = false
 
-function MODE:RoundStart()
+function MODE:Start(round)
     swatSpawned = false
 end
 
@@ -142,7 +147,7 @@ function MODE:GiveEquipment()
 	end)
 end
 
-function MODE:RoundThink()
+function MODE:Think(round)
     if not swatSpawned and (CurTime() - zc.ROUND_BEGIN) >= 120 then
         local deadPlayers = {}
 
@@ -194,7 +199,8 @@ function MODE:CanSpawn()
 end
 
 util.AddNetworkString("ZC_GangWarsRoundEnd")
-function MODE:EndRound()
+-- Old EndRound().
+function MODE:Finish(round, result)
 	timer.Simple(2,function()
 		net.Start("ZC_GangWarsRoundEnd")
 		net.Broadcast()
@@ -211,7 +217,4 @@ function MODE:EndRound()
 			ply:GiveSkill(-math.Rand(0.05,0.1))
 		end
 	end
-end
-
-function MODE:PlayerDeath(ply)
 end

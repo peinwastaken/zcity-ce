@@ -73,7 +73,9 @@ function MODE:StopEvent(userID)
 	MODE.StartedEvents[userID] = nil
 end
 
-function MODE:ShouldCollide(ent1, ent2)
+MODE.Hooks = MODE.Hooks or {}
+
+MODE.Hooks.ShouldCollide = function(self, round, ent1, ent2)
 	ent1 = ent1.ply or ent1
 	if !IsValid(ent1) or !ent1:IsPlayer() then return end
 	ent2 = ent2.ply or ent2

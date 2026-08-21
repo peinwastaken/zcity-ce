@@ -3,7 +3,6 @@ local MODE = MODE
 function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
 	return 1, true--returning true so guilt bans
 end
-
 function shuffle(tbl)
 	local len = #tbl
 	for i = len, 2, -1 do
@@ -45,7 +44,8 @@ function MODE:AssignTeams()
 end
 
 util.AddNetworkString("ZC_CrisisResponseStart")
-function MODE:Intermission()
+-- Old Intermission() + GiveEquipment().
+function MODE:Prepare(round)
 	game.CleanUpMap()
 
     self:AssignTeams()
@@ -58,6 +58,7 @@ function MODE:Intermission()
 	net.Start("ZC_CrisisResponseStart")
 	net.Broadcast()
 
+	self:GiveEquipment()
 end
 
 function MODE:CheckAlivePlayers()
@@ -83,18 +84,20 @@ end
 
 
 
-function MODE:ShouldRoundEnd()
-	if zc.ROUND_START + 91 > CurTime() then return end
+-- Returns nil to continue or a result table to end the round.
+function MODE:CheckEnd(round)
+	if zc.ROUND_START + 91 > CurTime() then return nil end
 	local aliveTeams = self:CheckAlivePlayers()
 	local endround, _ = zc:CheckWinner(aliveTeams)
-	return endround
+
+	if endround then
+		return { reason = "team_wiped" }
+	end
 end
 
 
 
-function MODE:RoundStart()
 
-end
 
 local tblweps = {
 	[0] = {
@@ -247,9 +250,6 @@ function MODE:GiveEquipment()
 	end)
 end
 
-function MODE:RoundThink()
-end
-
 function MODE:GetTeamSpawn()
 	return {zc:GetRandomSpawn()}, {zc:GetRandomSpawn()}
 end
@@ -258,7 +258,8 @@ function MODE:CanSpawn()
 end
 
 util.AddNetworkString("ZC_CrisisResponseRoundEnd")
-function MODE:EndRound()
+-- Old EndRound().
+function MODE:Finish(round, result)
 	for _,ply in player.Iterator() do
 		if timer.Exists("SWATSpawn"..ply:EntIndex()) then
 			timer.Remove("SWATSpawn"..ply:EntIndex())
@@ -284,7 +285,4 @@ function MODE:EndRound()
 			ply:GiveSkill(-math.Rand(0.05,0.1))
 		end
 	end
-end
-
-function MODE:PlayerDeath(ply)
 end

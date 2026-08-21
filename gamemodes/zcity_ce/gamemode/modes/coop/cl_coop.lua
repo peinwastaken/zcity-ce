@@ -3,7 +3,6 @@ MODE.name = "coop"
 local MODE = MODE
 
 net.Receive("ZC_CoopStart",function()
-    surface.PlaySound("hl2mode1.wav")
 	zc.RemoveFade()
 	zc.DynaMusic:Start("hl_coop")
 end)
@@ -17,15 +16,9 @@ local teams = {
 	}
 }
 
-function MODE:RenderScreenspaceEffects()
-    if zc.ROUND_START + 7.5 < CurTime() then return end
-    local fade = math.Clamp(zc.ROUND_START + 7.5 - CurTime(),0,1)
+MODE.Hooks = MODE.Hooks or {}
 
-    surface.SetDrawColor(0,0,0,255 * fade)
-    surface.DrawRect(-1,-1,ScrW() + 1,ScrH() + 1)
-end
-
-function MODE:HUDPaint()
+MODE.Hooks.HUDPaint = function(self, round)
 
 	local startTimer = GetGlobalVar("coop_first_round_timer", 0)
 
@@ -42,23 +35,6 @@ function MODE:HUDPaint()
 		surface.SetTextPos(sw * 0.5 + (w - w2) * 0.5, sh * 0.1 - h * 0.5)
 		surface.DrawText(string.FormattedTime(startTimer - CurTime(), "%02i:%02i"))
 	end
-
-    if zc.ROUND_START + 8.5 < CurTime() then return end
-
-	if not lply:Alive() then return end
-	zc.RemoveFade()
-    local fade = math.Clamp(zc.ROUND_START + 8 - CurTime(),0,1)
-	lply:Team()
-    draw.SimpleText("Homicide | CO-OP", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    local Rolename = (lply.role and lply.role.name) or "Unknown"
-    local ColorRole = teams[0].color1
-    ColorRole.a = 255 * fade
-    draw.SimpleText("You are "..Rolename , "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.5, ColorRole, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-
-    local Objective = lply.PlayerClassName == "Gordon" and "Lead the resistance to victory!" or "Follow the Gordon!"
-    local ColorObj = teams[0].color2
-    ColorObj.a = 255 * fade
-    draw.SimpleText( Objective, "ZB_HomicideMedium", sw * 0.5, sh * 0.9, ColorObj, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 
 local CreateEndMenu
@@ -200,7 +176,9 @@ CreateEndMenu = function()
 	return true
 end
 
-function MODE:RoundStart()
+-- Client presentation callback: runs when the server round state changes.
+function MODE:OnClientStateChanged(round, oldState)
+if round.state ~= ROUND_PREPARING then return end
     if IsValid(hmcdEndMenu) then
         hmcdEndMenu:Remove()
         hmcdEndMenu = nil

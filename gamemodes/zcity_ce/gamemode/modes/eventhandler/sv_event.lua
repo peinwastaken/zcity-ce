@@ -27,7 +27,8 @@ function MODE:CanLaunch()
     return true
 end
 
-function MODE:Intermission()
+-- Old Intermission() + GiveEquipment().
+function MODE:Prepare(round)
 	game.CleanUpMap()
 
 	for _, ply in player.Iterator() do
@@ -44,41 +45,7 @@ function MODE:Intermission()
 
 	net.Start("ZC_EventStart")
 	net.Broadcast()
-end
 
-function MODE:CheckAlivePlayers()
-	local AlivePlyTbl = {}
-	for _, ply in player.Iterator() do
-		if not ply:Alive() then continue end
-		if ply.organism and ply.organism.incapacitated then continue end
-		AlivePlyTbl[#AlivePlyTbl + 1] = ply
-	end
-	return AlivePlyTbl
-end
-
-function MODE:ShouldRoundEnd()
-    if self.EndLogicType == 1 then
-        local aliveCount = 0
-        local eventerCount = 0
-
-        for _, ply in ipairs(zc:CheckAlive(true)) do
-            aliveCount = aliveCount + 1
-            if self.EventersList[ply:SteamID()] then
-                eventerCount = eventerCount + 1
-            end
-        end
-
-        return (aliveCount == eventerCount)
-    elseif self.EndLogicType == 2 then
-        return (#zc:CheckAlive(true) <= 1)
-    elseif self.EndLogicType == 3 then
-        return false
-    end
-
-    return (#zc:CheckAlive(true) <= 1)
-end
-
-function MODE:RoundStart()
     self.EventersList = {}
     for _, ply in player.Iterator() do
         if ply:IsAdmin() then
@@ -88,8 +55,8 @@ function MODE:RoundStart()
 
     net.Start("ZC_EventParticipantsUpdate")
     local data = {}
-    for id, _ in pairs(self.EventersList) do
-        table.insert(data, id)
+    for id in pairs(self.EventersList) do
+        data[#data + 1] = id
     end
     net.WriteTable(data)
     net.Broadcast()
@@ -102,7 +69,7 @@ function MODE:RoundStart()
 		ply:SelectWeapon("weapon_hands_sh")
 
 		timer.Simple(0.1,function()
-			ply.noSound = false
+			if IsValid(ply) then ply.noSound = false end
 		end)
 
 		ply:SetSuppressPickupNotices(false)
@@ -113,7 +80,44 @@ function MODE:RoundStart()
             zc.GiveRole(ply, GetGlobalString("ZB_EventRole","Player"), Color(190,15,15))
         end
 	end
+end
 
+function MODE:CheckAlivePlayers()
+	local AlivePlyTbl = {}
+	for _, ply in player.Iterator() do
+		if not ply:Alive() then continue end
+		if ply.organism and ply.organism.incapacitated then continue end
+		AlivePlyTbl[#AlivePlyTbl + 1] = ply
+	end
+	return AlivePlyTbl
+end
+
+-- Returns nil to continue or a result table to end the round.
+function MODE:CheckEnd(round)
+    if self.EndLogicType == 1 then
+        local aliveCount = 0
+        local eventerCount = 0
+
+        for _, ply in ipairs(zc:CheckAlive(true)) do
+            aliveCount = aliveCount + 1
+            if self.EventersList[ply:SteamID()] then
+                eventerCount = eventerCount + 1
+            end
+        end
+
+        if aliveCount == eventerCount then return { reason = "eventers_only" } end
+    elseif self.EndLogicType == 2 then
+        if #zc:CheckAlive(true) <= 1 then return { reason = "last_alive" } end
+    elseif self.EndLogicType == 3 then
+        return nil
+    end
+
+    if #zc:CheckAlive(true) <= 1 then
+        return { reason = "last_alive" }
+    end
+end
+
+function MODE:Start(round)
     if self.LootEnabled then
         if timer.Exists("EventLootSpawnTimer") then
             timer.Remove("EventLootSpawnTimer")
@@ -127,13 +131,7 @@ function MODE:RoundStart()
     end
 end
 
-function MODE:GiveWeapons()
-end
-
-function MODE:GiveEquipment()
-end
-
-function MODE:RoundThink()
+function MODE:Think(round)
     if self.LootEnabled and (self.nextBoxesThink or 0) < CurTime() then
         self.nextBoxesThink = CurTime() + 2
         hook.Run("ZC_BoxThink")
@@ -461,21 +459,19 @@ end)
 concommand.Add("zb_event_end", function(ply, _, _, _)
     if not ply:IsAdmin() then return end
 
-    if zc.ROUND_PLAYING then
-        MODE:EndRound()
+    if zc.round and zc.round.state == ROUND_ACTIVE then
+        zc.round.RequestEnd({ reason = "admin" })
         ply:ChatPrint("Ending the event round...")
     else
         ply:ChatPrint("No event round is currently active.")
     end
 end)
 
-function MODE:PlayerDeath()
-end
-
 function MODE:CanSpawn()
 end
 
-function MODE:EndRound()
+-- Old EndRound().
+function MODE:Finish(round, result)
     if timer.Exists("EventLootSpawnTimer") then
         timer.Remove("EventLootSpawnTimer")
     end

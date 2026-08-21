@@ -7,7 +7,6 @@ local highlightNPCs = {}
 
 
 net.Receive("ZC_DefenseStart",function()
-    surface.PlaySound("csgo_round.wav")
 end)
 
 local teams = {
@@ -19,13 +18,7 @@ local teams = {
 	},
 }
 
-function MODE:RenderScreenspaceEffects()
-    if zc.ROUND_START + 7.5 < CurTime() then return end
-    local fade = math.Clamp(zc.ROUND_START + 7.5 - CurTime(), 0, 1)
-
-    surface.SetDrawColor(0, 0, 0, 255 * fade)
-    surface.DrawRect(-1, -1, ScrW() + 1, ScrH() + 1)
-end
+MODE.Hooks = MODE.Hooks or {}
 
 local NextWave_Time = 0
 
@@ -36,7 +29,7 @@ end)
 
 local timePos = 0
 
-function MODE:HUDPaint()
+MODE.Hooks.HUDPaint = function(self, round)
 	if NextWave_Time > CurTime() - 5 then
 		timePos = Lerp( FrameTime()*5, timePos, 1-math.min((NextWave_Time - CurTime())/1,1) )
 		local time = string.FormattedTime(NextWave_Time - CurTime())
@@ -44,24 +37,6 @@ function MODE:HUDPaint()
 		time.m = (time.m < 10 and "0" or "")..time.m
 		draw.SimpleText( "Next wave in ".. time.m ..":" .. time.s, "ZB_HomicideMedium", sw * 0.5, sh * (0.9 + timePos), Color(87,146,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
-
-    if zc.ROUND_START + 8.5 < CurTime() then return end
-
-	if not lply:Alive() then return end
-    local fade = math.Clamp(zc.ROUND_START + 8 - CurTime(), 0, 1)
-	local team_ = lply:Team()
-    draw.SimpleText("ZBattle | HL2 Base Defense", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-
-    local playerRole = lply:GetNWString("PlayerRole", "Refugee")
-    local roleColor = teams[team_].color1
-    roleColor.a = 255 * fade
-    draw.SimpleText("You are a " .. playerRole, "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.5, roleColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-
-    local objective = teams[team_].objective
-    local objectiveColor = teams[team_].color2
-    objectiveColor.a = 255 * fade
-    draw.SimpleText(objective, "ZB_HomicideMedium", sw * 0.5, sh * 0.9, objectiveColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-
 end
 
 
@@ -236,7 +211,9 @@ CreateEndMenu = function()
 	return true
 end
 
-function MODE:RoundStart()
+-- Client presentation callback: runs when the server round state changes.
+function MODE:OnClientStateChanged(round, oldState)
+if round.state ~= ROUND_PREPARING then return end
     if IsValid(hmcdEndMenu) then
         hmcdEndMenu:Remove()
         hmcdEndMenu = nil

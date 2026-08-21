@@ -7,6 +7,26 @@ MODE.LootSpawn = false
 MODE.ForBigMaps = false
 MODE.Chance = 0.03
 
+MODE.Intro = {
+    Title = "Riot"
+}
+
+function MODE:GetPlayerIntroData(ply)
+    if ply:Team() == 1 then
+        return {
+            Role = "Law Enforcement Officer",
+            Objective = "Restore order and stop the rioters.",
+            Color = Color(0, 120, 190)
+        }
+    end
+
+    return {
+        Role = "Rioter",
+        Objective = "Overwhelm law enforcement.",
+        Color = Color(190, 0, 0)
+    }
+end
+
 zc = zc or {}
 zc.Points = zc.Points or {}
 

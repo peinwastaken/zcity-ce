@@ -287,23 +287,10 @@ net.Receive("ZC_RoundInfo", function()
 
 	zc.ROUND_STATE = net.ReadInt(4)
 
-	if zc.ROUND_STATE == 0 then
+	if zc.ROUND_STATE == 0 and (not zc.round or zc.round.state == ROUND_WAITING) then
 		zc.fade = 7
 	end
 
-	if zc.CROUND ~= "" then
-		if CurrentRound() then
-			if zc.ROUND_STATE == 3 then
-				if CurrentRound().EndRound then
-					CurrentRound():EndRound()
-				end
-			elseif zc.ROUND_STATE == 1 then
-				if CurrentRound().RoundStart then
-					CurrentRound():RoundStart()
-				end
-			end
-		end
-	end
 end)
 
 if IsValid(scoreBoardMenu) then

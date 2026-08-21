@@ -11,7 +11,8 @@ function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
 end
 
 util.AddNetworkString("ZC_HL2DeathmatchStart")
-function MODE:Intermission()
+-- Old Intermission() + GiveEquipment().
+function MODE:Prepare(round)
 	game.CleanUpMap()
 
 	for _, ply in player.Iterator() do
@@ -20,19 +21,20 @@ function MODE:Intermission()
 
 	net.Start("ZC_HL2DeathmatchStart")
 	net.Broadcast()
+
+	self:GiveEquipment()
 end
 
 function MODE:CheckAlivePlayers()
 	return zc:CheckAliveTeams(true)
 end
 
-function MODE:ShouldRoundEnd()
+-- Returns nil to continue or a result table to end the round.
+function MODE:CheckEnd(round)
 	local endround, _ = zc:CheckWinner(self:CheckAlivePlayers())
-	--print("ShouldRoundEnd", endround, winner)
-	return endround
-end
-
-function MODE:RoundStart()
+	if endround then
+		return { reason = "team_wiped" }
+	end
 end
 
 function MODE:GetPlySpawn(ply)
@@ -117,9 +119,6 @@ function MODE:GiveEquipment()
 	end)
 end
 
-function MODE:RoundThink()
-end
-
 function MODE:GetTeamSpawn()
 	return zc.TranslatePointsToVectors(zc.GetMapPoints( "HMCD_TDM_T" )), zc.TranslatePointsToVectors(zc.GetMapPoints( "HMCD_TDM_CT" ))
 end
@@ -128,15 +127,13 @@ function MODE:CanSpawn()
 end
 
 util.AddNetworkString("ZC_HL2DeathmatchRoundEnd")
-function MODE:EndRound()
+-- Old EndRound().
+function MODE:Finish(round, result)
 	self:ClearPlayerRoles()
 	timer.Simple(2,function()
 		net.Start("ZC_HL2DeathmatchRoundEnd")
 		net.Broadcast()
 	end)
-end
-
-function MODE:PlayerDeath(ply)
 end
 
 function MODE:CanLaunch()
