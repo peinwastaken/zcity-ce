@@ -696,7 +696,7 @@ function MODE:Intermission()
 
 		local fairness = MODE.TraitorFairness[key]
 		local pity = TRAITOR_FAIRNESS_BASE_WEIGHT + math.min(fairness.misses or 0, TRAITOR_FAIRNESS_MAX_MISSES) * TRAITOR_FAIRNESS_MISS_WEIGHT
-		local karma_factor = math.Clamp((ply.Karma or 100) / 100, TRAITOR_FAIRNESS_MIN_KARMA_FACTOR, TRAITOR_FAIRNESS_MAX_KARMA_FACTOR)
+		local karma_factor = math.Clamp(zc.GetEffectiveKarma(ply) / 100, TRAITOR_FAIRNESS_MIN_KARMA_FACTOR, TRAITOR_FAIRNESS_MAX_KARMA_FACTOR)
 		local candidate = {
 			ply = ply,
 			fairness = fairness,
@@ -1526,7 +1526,7 @@ function MODE.SpawnPlayers(spawn_with_subroles)
 
     for _, ply in RandomPairs(player.GetAll()) do
         if ply.isTraitor or ply.isGunner or ply:Team() == TEAM_SPECTATOR then continue end
-        if math.random(100) > (ply.Karma or 100) then continue end
+        if math.random(100) > zc.GetEffectiveKarma(ply) then continue end
 
         ply.isGunner = true
         gunner_found = true
@@ -1563,7 +1563,7 @@ function MODE.SpawnPlayers(spawn_with_subroles)
 
             for _, ply in RandomPairs(player.GetAll()) do
                 if(ply:Team() != TEAM_SPECTATOR)then
-                    if((math.random(100) <= (ply.Karma or 100)) and (math.random(1, 3) == 1 or (!ply.isTraitor and !ply.isGunner)))then
+                    if((math.random(100) <= zc.GetEffectiveKarma(ply)) and (math.random(1, 3) == 1 or (!ply.isTraitor and !ply.isGunner)))then
                         local profession_key, profession = zc.WeightedRandomSelect(professions_possible)
                         professions_possible[profession_key][1] = professions_possible[profession_key][1] / 2
                         ply.Profession = profession

@@ -187,9 +187,10 @@ function zc.GenerateLoot(ply,ent,func)
 	end
 
 	local traitor_opened = IsValid(ply) and ply.isTraitor
-	local low_karma_player = IsValid(ply) and (ply.Karma < 70)
-	local very_low_karma_player = IsValid(ply) and (ply.Karma < 30)
-	local high_karma_player = IsValid(ply) and (ply.Karma >= zc.MaxKarma)
+	local karma = zc.GetEffectiveKarma(ply)
+	local low_karma_player = karma < 70
+	local very_low_karma_player = karma < 30
+	local high_karma_player = karma >= zc.MaxKarma
 
 	local time = CurTime() - (zc.ROUND_START or CurTime())
 	--print(time)

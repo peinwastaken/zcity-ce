@@ -221,9 +221,10 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen, ply)
 	ply:SetEyeAngles(ang)
 
 	local angRand2 = AngleRand(-0.1, 0.1)
+	local karma = zc.GetEffectiveKarma(ply)
 
-	if (ply.Karma or 100) < 70 then
-		ViewPunch2(angRand2 * (1 - ply.Karma / 60))
+	if karma < 70 then
+		ViewPunch2(angRand2 * (1 - karma / 60))
 	end
 
 	local outputPos, outputAng

@@ -83,7 +83,7 @@ hook.Add("PlayerPostThink", "ZC_AbnormalitiesConjureEqualizer", function(ply)
 	if(!PLUGIN.FunMode)then
 		if(ply.armors and ply:Alive())then
 			if(ply.armors["torso"] == "ego_equalizer")then
-				if(ply.Karma and ply.Karma < zc.MaxKarma)then
+				if(zc.IsGuiltEnabled() and ply.Karma and ply.Karma < zc.MaxKarma)then
 					ply:Kill()
 					PLUGIN.ShowMessage(ply, "You received your punishment")
 				end
@@ -95,7 +95,7 @@ end)
 hook.Add("ZC_CanEquipArmor", "ZC_AbnormalitiesConjureEqualizer", function(ply, armor_name)
 	if(!PLUGIN.FunMode)then
 		if(armor_name == "ego_equalizer")then
-			if(ply.Karma and ply.Karma < zc.MaxKarma)then
+			if(zc.IsGuiltEnabled() and ply.Karma and ply.Karma < zc.MaxKarma)then
 				PLUGIN.ShowMessage(ply, "It seems that I'm unworthy")
 				
 				return false

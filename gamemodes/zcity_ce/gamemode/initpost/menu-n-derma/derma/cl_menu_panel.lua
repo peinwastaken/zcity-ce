@@ -7,6 +7,7 @@ DISCORD_URL = "https://discord.gg/475EmEdTgH"
 
 local Selects = {
     {Title = "menu/return", Func = function(luaMenu) luaMenu:Close() end},
+    {Title = "menu/mainmenu", Func = function(luaMenu) gui.ActivateGameUI() luaMenu:Close() end},
     {Title = "menu/traitor_role",
     GamemodeOnly = true,
     CreatedFunc = function(self, parent, luaMenu)
@@ -81,7 +82,6 @@ local Selects = {
     {Title = "menu/appearance", Func = function(luaMenu,pp) zc.CreateApperanceMenu(pp) end},
     // {Title = "menu/discord", Func = function(luaMenu) luaMenu:Close() gui.OpenURL(DISCORD_URL)  end},
     {Title = "menu/disconnect", Func = function(luaMenu) RunConsoleCommand("disconnect") end},
-    {Title = "menu/mainmenu", Func = function(luaMenu) gui.ActivateGameUI() luaMenu:Close() end}
 }
 
 local splasheh = {

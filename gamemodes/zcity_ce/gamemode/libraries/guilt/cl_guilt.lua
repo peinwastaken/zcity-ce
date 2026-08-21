@@ -35,6 +35,7 @@ net.Receive("ZC_KarmaGet",function(len)
 end)
 
 concommand.Add("hg_guilt_menu",function(ply, cmd, args)
+    if not zc.IsGuiltEnabled() then return end
     net.Start("ZC_GuiltMenuOpen")
     net.SendToServer()
 end)
@@ -52,6 +53,7 @@ local BlurBackground = zc.DrawBlur
 
 local showstuff = CurTime() + 5
 hook.Add("ZC_PlayerDeath","ZC_CheckKarmaOnDeath",function(ply)
+    if not zc.IsGuiltEnabled() then return end
     if ply != LocalPlayer() then return end
 
     showstuff = CurTime() + 5
@@ -59,6 +61,7 @@ end)
 
 local pressed
 hook.Add("HUDPaint","ZC_DrawGuiltNotification",function()
+    if not zc.IsGuiltEnabled() then return end
     if LocalPlayer():Alive() then return end
 
     if showstuff > CurTime() then
