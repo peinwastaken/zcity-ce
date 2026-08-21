@@ -242,6 +242,10 @@ hook.Add("InitPostEntity", "ZC_LoadBindsAfterInit", function()
   zc.binds.LoadBinds()
 end)
 
+hook.Add("OnReloaded", "ZC_LoadBindsAfterReload", function()
+  zc.binds.LoadBinds()
+end)
+
 binds.categories = {
   { ["id"] = "movement", ["label"] = "binds/category/movement" },
   { ["id"] = "weapon", ["label"] = "binds/category/weapon" },
