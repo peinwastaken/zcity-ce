@@ -27,7 +27,8 @@ net.Receive("ZC_DeathmatchStart",function()
 end)
 
 hook.Add("Think", "ZC_ZoneSoundThink", function()
-	if CurrentRound() and CurrentRound().name ~= "dm" then return end
+	local rnd = CurrentRound()
+	if rnd and rnd.name ~= "dm" and rnd.base ~= "dm" then return end
 	local station = zc.SoundStation
 	if not IsValid(station) then return end
 	if zc_deathmatch_nozone:GetBool() then return end
@@ -100,7 +101,7 @@ function MODE:HUDPaint()
 	zc.RemoveFade()
     local fade = math.Clamp(zc.ROUND_START + 8 - CurTime(),0,1)
 
-    draw.SimpleText("Homicide | DeathMatch", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    draw.SimpleText("Homicide | " .. (self.PrintName or "Deathmatch"), "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     local Rolename = fighter.name
 	local ColorRole = fighter.color1
     ColorRole.a = 255 * fade
