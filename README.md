@@ -1,11 +1,12 @@
 # Z-City CE
 
 Z-City CE (Community Edition) is a modified version of the original [Z-City](https://github.com/uzelezz123/Z-City).
+Content available at (https://github.com/peinwastaken/zcity-ce-content)
 
 This fork focuses on:
 
 - Fixes and stability improvements
-- Content filesize reduction
+- Content filesize reductions
 - Quality of life additions
 - no furry shit
 
