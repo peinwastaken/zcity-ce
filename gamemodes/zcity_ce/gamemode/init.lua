@@ -7,6 +7,7 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 AddCSLuaFile("loader.lua")
 include("loader.lua")
+include("resources.lua")
 
 local PLAYER = FindMetaTable("Player")
 function PLAYER:CanSpawn()
